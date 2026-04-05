@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>We Buy Clean Trash - App Screens by User</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0e0e0e;
+    color: #e0e0e0;
+    min-height: 100vh;
+  }
+
+  .header {
+    text-align: center;
+    padding: 48px 20px 12px;
+  }
+  .header h1 { font-size: 2.2rem; color: #ffffff; margin-bottom: 6px; }
+  .header p { color: #9ca3af; font-size: 1rem; }
+
+  /* ── TAB NAV ── */
+  .tab-bar {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px 16px 32px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    padding: 10px 20px;
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+    color: #9ca3af;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .tab-btn:hover { border-color: rgba(255,255,255,0.3); color: #d1d5db; }
+  .tab-btn.active {
+    background: rgba(255,255,255,0.12);
+    border-color: #ffffff;
+    color: #ffffff;
+  }
+
+  /* ── PANEL CONTAINER ── */
+  .panel { display: none; max-width: 1100px; margin: 0 auto; padding: 0 24px 60px; }
+  .panel.active { display: block; }
+
+  /* ── PHONE MOCKUPS ── */
+  .screens-row {
+    display: flex;
+    gap: 28px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+
+  .phone {
+    width: 270px;
+    background: #161616;
+    border: 2px solid rgba(255,255,255,0.08);
+    border-radius: 28px;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .phone:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.3); }
+
+  .phone-status {
+    height: 32px;
+    background: #111111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    color: #6b7280;
+    letter-spacing: 0.5px;
+  }
+  .phone-header {
+    padding: 14px 18px 10px;
+    background: #111111;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .phone-header h4 {
+    font-size: 0.95rem;
+    color: #ffffff;
+    margin-bottom: 2px;
+  }
+  .phone-header span {
+    font-size: 0.7rem;
+    color: #6b7280;
+  }
+
+  .phone-body { padding: 14px 16px 20px; }
+
+  .screen-label {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: #6b7280;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── UI COMPONENTS INSIDE PHONES ── */
+  .ui-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .ui-card-title {
+    font-size: 0.72rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .stat-box {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .stat-box .num {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #ffffff;
+  }
+  .stat-box .label {
+    font-size: 0.6rem;
+    color: #9ca3af;
+    margin-top: 2px;
+  }
+
+  .ui-list-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .ui-list-item:last-child { border-bottom: none; }
+  .ui-list-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; flex-shrink: 0;
+  }
+  .ui-list-text { flex: 1; }
+  .ui-list-text .primary { font-size: 0.8rem; color: #d1d5db; }
+  .ui-list-text .secondary { font-size: 0.65rem; color: #6b7280; margin-top: 1px; }
+  .ui-list-badge {
+    padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 700;
+  }
+
+  .ui-btn {
+    display: block;
+    width: 100%;
+    padding: 11px;
+    border-radius: 10px;
+    border: none;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 8px;
+    cursor: default;
+  }
+  .btn-primary { background: #ffffff; color: #111111; }
+  .btn-secondary { background: rgba(255,255,255,0.06); color: #9ca3af; border: 1px solid rgba(255,255,255,0.1); }
+
+  .ui-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: #6b7280;
+    font-size: 0.78rem;
+    margin-bottom: 8px;
+  }
+
+  .ui-toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+  }
+  .ui-toggle-row span { font-size: 0.78rem; color: #d1d5db; }
+  .toggle-pill {
+    width: 36px; height: 20px; border-radius: 10px;
+    background: #ffffff; position: relative;
+  }
+  .toggle-pill::after {
+    content: ''; position: absolute; right: 3px; top: 3px;
+    width: 14px; height: 14px; border-radius: 50%; background: white;
+  }
+
+  .progress-bar {
+    height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08);
+    margin: 6px 0; overflow: hidden;
+  }
+  .progress-fill { height: 100%; border-radius: 3px; background: #ffffff; }
+
+  .ui-photo-placeholder {
+    width: 100%; height: 60px; border-radius: 10px;
+    background: rgba(255,255,255,0.04); border: 2px dashed rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; color: #6b7280; margin-bottom: 10px;
+  }
+
+  .notif-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #f87171; flex-shrink: 0;
+  }
+
+  .ui-nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 6px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    margin-top: 10px;
+  }
+  .ui-nav-item {
+    text-align: center;
+    font-size: 0.6rem;
+    color: #6b7280;
+  }
+  .ui-nav-item.active { color: #ffffff; }
+  .ui-nav-item .ico { font-size: 1.1rem; margin-bottom: 2px; }
+
+  /* ── DESCRIPTION CARDS ── */
+  .role-desc {
+    max-width: 800px;
+    margin: 0 auto 40px;
+    padding: 24px 28px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+  }
+  .role-desc h3 { color: #ffffff; font-size: 1.1rem; margin-bottom: 6px; }
+  .role-desc .subtitle { color: #9ca3af; font-size: 0.88rem; margin-bottom: 14px; }
+  .flow-steps {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .flow-chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.78rem;
+    color: #d1d5db;
+    white-space: nowrap;
+  }
+  .flow-arrow { color: #ffffff; font-size: 0.9rem; }
+
+  /* ── DASHBOARD (ADMIN) WIDE VIEW ── */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .dash-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 18px;
+  }
+  .dash-card .kpi { font-size: 1.8rem; font-weight: 800; color: #ffffff; }
+  .dash-card .kpi-label { font-size: 0.78rem; color: #9ca3af; margin-top: 2px; }
+  .dash-card .kpi-sub { font-size: 0.7rem; color: #6b7280; margin-top: 6px; }
+
+  .dash-wide {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .dash-wide h4 { color: #ffffff; font-size: 0.9rem; margin-bottom: 14px; }
+
+  .table-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.75rem;
+  }
+  .table-row.head { color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.65rem; }
+  .table-row .cell { color: #b0b8c4; }
+  .table-row .cell:first-child { color: #d1d5db; font-weight: 600; }
+
+  .mini-bar {
+    height: 18px; border-radius: 4px; background: rgba(255,255,255,0.06);
+    overflow: hidden; margin-bottom: 6px;
+  }
+  .mini-bar-fill { height: 100%; border-radius: 4px; }
+
+  @media (max-width: 650px) {
+    .screens-row { flex-direction: column; align-items: center; }
+    .phone { width: 90%; max-width: 300px; }
+    .dashboard-grid { grid-template-columns: 1fr 1fr; }
+    .table-row { grid-template-columns: 1.5fr 1fr 1fr; }
+    .table-row .cell:nth-child(4), .table-row .cell:nth-child(5),
+    .table-row.head .cell:nth-child(4), .table-row.head .cell:nth-child(5) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>App Screens by User Role</h1>
+  <p>What each person sees when they open the app</p>
+</div>
+
+<div class="tab-bar">
+  <div class="tab-btn active" onclick="showPanel('resident')">🏠 Resident</div>
+  <div class="tab-btn" onclick="showPanel('operator')">🚐 Operator</div>
+  <div class="tab-btn" onclick="showPanel('depot')">⚖️ Depot</div>
+  <div class="tab-btn" onclick="showPanel('pm')">🏢 Depot Mgr</div>
+  <div class="tab-btn" onclick="showPanel('admin')">📊 Admin</div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- RESIDENT -->
+<!-- ═══════════════════════════════════════ -->
+<div class="panel active" id="panel-resident">
+
+  <div class="role-desc">
+    <h3>🏠 Resident — The Customer</h3>
+    <div class="subtitle">Lives in the community. Buys bags, fills them, earns points.</div>
+    <div class="flow-steps">
+      <span class="flow-chip">Order bags</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Fill &amp; separate</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Scan QR</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Schedule pickup</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Earn points</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Redeem</span>
+    </div>
+  </div>
+
+  <div class="screens-row">
+
+    <!-- Screen 1: Home / Dashboard -->
+    <div>
+      <div class="phone">
+        <div class="phone-status">WE BUY CLEAN TRASH</div>
+        <div class="phone-header">
+          <h4>Hi, Maria 👋</h4>
+          <span>Your recycling dashboard</span>
+        </div>
+        <div class="phone-body">
+          <div class="stat-row">
+            <div class="stat-box">
+              <div class="num">54,320</div>
+              <div class="label">Points</div>
+            </div>
+            <div class="stat-box">
+              <div class="num">$5.43</div>
+              <div class="label">Value</div>
+            </div>
+          </div>
+          <div class="ui-card" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.15);text-align:center;">
+            <div style="font-size:0.75rem;color:#ffffff;font-weight:700;">🚐 Next pickup: Monday, 6:00 PM</div>
+            <div style="font-size:0.65rem;color:#6b7280;margin-top:2px;">Place bags at your door before pickup time</div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-card-title">🌍 Your Impact</div>
+            <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:#b0b8c4;margin-bottom:4px;">
+              <span>🌳 3 trees saved</span><span>💧 840 gal water</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:#b0b8c4;">
+              <span>♻️ 47 lbs recycled</span><span>🏭 12 lbs CO₂</span>
+            </div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-card-title">Recent Activity</div>
+            <div class="ui-list-item">
+              <div class="ui-list-icon" style="background:rgba(255,255,255,0.07)">📦</div>
+              <div class="ui-list-text">
+                <div class="primary">Bag #0472 picked up</div>
+                <div class="secondary">Cardboard &amp; Paper · 6.2 lbs · +1,200 pts</div>
+              </div>
+            </div>
+            <div class="ui-list-item">
+              <div class="ui-list-icon" style="background:rgba(160,160,160,0.06)">📦</div>
+              <div class="ui-list-text">
+                <div class="primary">Bag #0471 processed</div>
+                <div class="secondary">Commingled · 4.1 lbs · +500 pts</div>
+              </div>
+            </div>
+          </div>
+          <div class="ui-nav">
+            <div class="ui-nav-item active"><div class="ico">🏠</div>Home</div>
+            <div class="ui-nav-item"><div class="ico">📷</div>Scan</div>
+            <div class="ui-nav-item"><div class="ico">🎁</div>Rewards</div>
+            <div class="ui-nav-item"><div class="ico">👤</div>Profile</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-label">HOME DASHBOARD</div>
+    </div>
+
+    <!-- Screen 2: Scan & Schedule -->
+    <div>
+      <div class="phone">
+        <div class="phone-status">WE BUY CLEAN TRASH</div>
+        <div class="phone-header">
+          <h4>📷 Scan Your Bag</h4>
+          <span>Step 1 of 3</span>
+        </div>
+        <div class="phone-body">
+          <div class="ui-photo-placeholder">📸 Tap to scan QR code on bag</div>
+          <div style="text-align:center;font-size:0.75rem;color:#6b7280;margin-bottom:14px;">QR Code detected: <span style="color:#ffffff;font-weight:700;">BAG-2026-0473</span></div>
+          <div class="ui-card">
+            <div class="ui-card-title">What's in this bag?</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+              <div class="ui-btn btn-primary">📦 Cardboard &amp; Paper</div>
+              <div class="ui-btn btn-secondary">🔀 Commingled</div>
+            </div>
+            <div style="font-size:0.65rem;color:#6b7280;margin-top:6px;text-align:center;">
+              Commingled = glass, plastic, aluminum, tin
+            </div>
+          </div>
+          <div style="font-size:0.7rem;color:#6b7280;text-align:center;margin:8px 0;">
+            ⭐ Separated = <span style="color:#ffffff">2x points</span> &nbsp;·&nbsp; Commingled = base points
+          </div>
+          <div class="ui-btn btn-primary" style="margin-top:8px;">Next: Take photo →</div>
+        </div>
+      </div>
+      <div class="screen-label">SCAN &amp; CATEGORIZE</div>
+    </div>
+
+    <!-- Screen 3: Rewards -->
+    <div>
+      <div class="phone">
+        <div class="phone-status">WE BUY CLEAN TRASH</div>
+        <div class="phone-header">
+          <h4>🎁 Redeem Points</h4>
+          <span>54,320 points available</span>
+        </div>
+        <div class="phone-body">
+          <div class="ui-card" style="background:rgba(255,255,255,0.06);text-align:center;">
+            <div style="font-size:0.7rem;color:#6b7280;margin-bottom:4px;">Progress to next reward</div>
+            <div class="progress-bar" style="height:8px;"><div class="progress-fill" style="width:54%;"></div></div>
+            <div style="font-size:0.65rem;color:#9ca3af;margin-top:4px;">54,320 / 100,000 pts</div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-list-item">
+              <div class="ui-list-icon" style="background:rgba(255,255,255,0.12)">💵</div>
+              <div class="ui-list-text">
+                <div class="primary">Cash Out</div>
+                <div class="secondary">Transfer to your bank account</div>
+              </div>
+              <span class="ui-list-badge" style="background:rgba(255,255,255,0.12);color:#ffffff;">$5.43</span>
+            </div>
+            <div class="ui-list-item">
+              <div class="ui-list-icon" style="background:rgba(255,255,255,0.1)">🧾</div>
+              <div class="ui-list-text">
+                <div class="primary">Pay Trash Bill</div>
+                <div class="secondary">Apply to Valley Trash monthly</div>
+              </div>
+              <span class="ui-list-badge" style="background:rgba(255,255,255,0.1);color:#a0a0a0;">$5.43</span>
+            </div>
+            <div class="ui-list-item">
+              <div class="ui-list-icon" style="background:rgba(208,208,208,0.1)">❤️</div>
+              <div class="ui-list-text">
+                <div class="primary">Donate</div>
+                <div class="secondary">Clean Community Program nonprofit</div>
+              </div>
+              <span class="ui-list-badge" style="background:rgba(208,208,208,0.1);color:#d0d0d0;">54,320</span>
+            </div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-card-title">Points History</div>
+            <div class="ui-list-item">
+              <div class="ui-list-text">
+                <div class="primary" style="color:#ffffff;">+10,000 pts</div>
+                <div class="secondary">Signup bonus · Welcome! · Mar 15</div>
+              </div>
+            </div>
+            <div class="ui-list-item">
+              <div class="ui-list-text">
+                <div class="primary" style="color:#ffffff;">+1,200 pts</div>
+                <div class="secondary">Bag #0472 · Cardboard &amp; Paper · Mar 28</div>
+              </div>
+            </div>
+            <div class="ui-list-item">
+              <div class="ui-list-text">
+                <div class="primary" style="color:#ffffff;">+500 pts</div>
+                <div class="secondary">Bag #0471 · Commingled · Mar 25</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-label">REWARDS &amp; REDEMPTION</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- OPERATOR -->
+<!-- ═══════════════════════════════════════ -->
+<div class="panel" id="panel-operator">
+
+  <div class="role-desc">
+    <h3>🚐 Operator — The Driver</h3>
+    <div class="subtitle">Drives the van. Picks up bags from doorsteps. Scans them into the system.</div>
+    <div class="flow-steps">
+      <span class="flow-chip">View route</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Drive to stop</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Scan bag QR</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Confirm pickup</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Deliver to depot</span>
+    </div>
+  </div>
+
+  <div class="screens-row">
+
+    <!-- Screen 1: Route List -->
+    <div>
+      <div class="phone">
+        <div class="phone-status">WE BUY CLEAN TRASH · OPERATOR</div>
+        <div class="phone-header">
+          <h4>Today's Route</h4>
+          <span>Zone A · 14 pickups remaining</span>
+        </div>
+        <div class="phone-body">
+          <div class="stat-row">
+            <div class="stat-box">
+              <div class="num">14</div>
+              <div class="label">Stops</div>
+            </div>
+            <div class="stat-box">
+              <div class="num">6</div>
+              <div class="label">Done</div>
+            </div>
+            <div class="stat-box">
+              <div class="num">32</div>
+              <div class="label">Bags</div>
+            </div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-card-title">Next Stop</div>
+            <div class="ui-list-item">
+              <div class="ui-list-icon" style="background:rgba(255,255,255,0.12)">📍</div>
+              <div class="ui-list-text">
+                <div class="primary">1247 Oak Valley Dr, Unit 3B</div>
+                <div class="secondary">3 bags · Cardboard/Paper (2), Commingled (1)</div>
+              </div>
+            </div>
+            <div class="ui-btn btn-primary">Navigate →</div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-card-title">Upcoming</div>
+            <div class="ui-list-item">
+              <div class="ui-list-icon" style="background:rgba(255,255,255,0.06)">📍</div>
+              <div class="ui-list-text">
+                <div class="primary">1251 Oak Valley Dr, Unit 1A</div>
+                <div class="secondary">1 bag · Commingled</div>
+              </div>
+            </div>
+            <div class="ui-list-item">
+              <div class="ui-list-icon" style="background:rgba(255,255,255,0.06)">📍</div>
+              <div class="ui-list-text">
+                <div class="primary">1300 Elm St, Unit 12</div>
+                <div class="secondary">2 bags · Cardboard/Paper (1), Commingled (1)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-label">ROUTE &amp; STOP LIST</div>
+    </div>
+
+    <!-- Screen 2: Scan & Confirm -->
+    <div>
+      <div class="phone">
+        <div class="phone-status">WE BUY CLEAN TRASH · OPERATOR</div>
+        <div class="phone-header">
+          <h4>Pickup: 1247 Oak Valley</h4>
+          <span>Bag 1 of 3</span>
+        </div>
+        <div class="phone-body">
+          <div class="ui-photo-placeholder">📸 Scan bag QR code</div>
+          <div class="ui-card" style="border-color:rgba(255,255,255,0.18);">
+            <div style="text-align:center;margin-bottom:6px;">
+              <span style="color:#ffffff;font-weight:700;font-size:0.85rem;">✓ BAG-2026-0473</span>
+            </div>
+            <div style="font-size:0.75rem;color:#b0b8c4;text-align:center;">
+              Resident: Maria Johnson<br>
+              Contents: Cardboard &amp; Paper (separated)
+            </div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-card-title">Condition Check</div>
+            <div class="ui-toggle-row">
+              <span>Bag sealed properly?</span>
+              <div class="toggle-pill"></div>
+            </div>
+            <div class="ui-toggle-row">
+              <span>Visible contamination?</span>
+              <div class="toggle-pill" style="background:#374151;"><div style="position:absolute;left:3px;top:3px;width:14px;height:14px;border-radius:50%;background:white;"></div></div>
+            </div>
+          </div>
+          <div class="ui-photo-placeholder">📸 Take photo of doorstep</div>
+          <div class="ui-btn btn-primary">✓ Confirm Pickup</div>
+          <div class="ui-btn btn-secondary" style="color:#f87171;">⚠️ Report Issue</div>
+        </div>
+      </div>
+      <div class="screen-label">SCAN &amp; CONFIRM PICKUP</div>
+    </div>
+
+    <!-- Screen 3: End of route -->
+    <div>
+      <div class="phone">
+        <div class="phone-status">WE BUY CLEAN TRASH · OPERATOR</div>
+        <div class="phone-header">
+          <h4>Route Complete 🎉</h4>
+          <span>Today's summary</span>
+        </div>
+        <div class="phone-body">
+          <div class="stat-row">
+            <div class="stat-box">
+              <div class="num">20</div>
+              <div class="label">Stops</div>
+            </div>
+            <div class="stat-box">
+              <div class="num">32</div>
+              <div class="label">Bags</div>
+            </div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-card-title">Bags by type</div>
+            <div style="font-size:0.78rem;color:#b0b8c4;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span>📦 Cardboard &amp; Paper</span><span style="color:#ffffff">14</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>🔀 Commingled</span><span style="color:#d0d0d0">18</span></div>
+            </div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-card-title">Issues flagged</div>
+            <div class="ui-list-item">
+              <div class="ui-list-icon" style="background:rgba(248,113,113,0.12)">⚠️</div>
+              <div class="ui-list-text">
+                <div class="primary">Unit 7C — contamination</div>
+                <div class="secondary">Full soda bottle found in cans bag</div>
+              </div>
+            </div>
+          </div>
+          <div class="ui-btn btn-primary">Deliver to Depot →</div>
+        </div>
+      </div>
+      <div class="screen-label">ROUTE SUMMARY</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- DEPOT -->
+<!-- ═══════════════════════════════════════ -->
+<div class="panel" id="panel-depot">
+
+  <div class="role-desc">
+    <h3>⚖️ Depot Worker — The Sorter</h3>
+    <div class="subtitle">At the depot. Scans bags, checks for contamination, weighs materials, enters data.</div>
+    <div class="flow-steps">
+      <span class="flow-chip">Receive delivery</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Scan bag</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Check contamination</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Weigh</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Points auto-sent</span>
+    </div>
+  </div>
+
+  <div class="screens-row">
+
+    <!-- Screen 1: Incoming -->
+    <div>
+      <div class="phone">
+        <div class="phone-status">WE BUY CLEAN TRASH · DEPOT</div>
+        <div class="phone-header">
+          <h4>Incoming Deliveries</h4>
+          <span>Depot #01 — Ohio West</span>
+        </div>
+        <div class="phone-body">
+          <div class="ui-card" style="border-color:rgba(255,255,255,0.18);">
+            <div class="ui-list-item">
+              <div class="ui-list-icon" style="background:rgba(255,255,255,0.12)">🚐</div>
+              <div class="ui-list-text">
+                <div class="primary">Route A — Marcus J.</div>
+                <div class="secondary">32 bags · Arrived 2:14 PM</div>
+              </div>
+              <span class="ui-list-badge" style="background:rgba(255,255,255,0.12);color:#ffffff;">NEW</span>
+            </div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-list-item">
+              <div class="ui-list-icon" style="background:rgba(160,160,160,0.06)">🚐</div>
+              <div class="ui-list-text">
+                <div class="primary">Route B — Keisha T.</div>
+                <div class="secondary">28 bags · Processing: 19/28</div>
+              </div>
+              <span class="ui-list-badge" style="background:rgba(255,255,255,0.1);color:#a0a0a0;">IN PROGRESS</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:68%"></div></div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-list-item">
+              <div class="ui-list-icon" style="background:rgba(255,255,255,0.06)">🚐</div>
+              <div class="ui-list-text">
+                <div class="primary">Route C — David M.</div>
+                <div class="secondary">24 bags · Completed 11:30 AM</div>
+              </div>
+              <span class="ui-list-badge" style="background:rgba(255,255,255,0.06);color:#6b7280;">DONE</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-label">INCOMING DELIVERIES</div>
+    </div>
+
+    <!-- Screen 2: Weigh & Log -->
+    <div>
+      <div class="phone">
+        <div class="phone-status">WE BUY CLEAN TRASH · DEPOT</div>
+        <div class="phone-header">
+          <h4>Process Bag</h4>
+          <span>BAG-2026-0473 · Maria Johnson</span>
+        </div>
+        <div class="phone-body">
+          <div class="ui-card" style="border-color:rgba(255,255,255,0.15);">
+            <div style="text-align:center;font-size:0.78rem;color:#b0b8c4;margin-bottom:8px;">
+              Customer declared: <strong style="color:#ffffff;">Commingled</strong>
+            </div>
+            <div style="text-align:center;font-size:0.68rem;color:#6b7280;">
+              Commingled = base points · Just check contamination &amp; weigh
+            </div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-card-title">Bag Check</div>
+            <div style="margin-bottom:8px;">
+              <div style="font-size:0.72rem;color:#9ca3af;margin-bottom:4px;">Contamination?</div>
+              <div style="display:flex;gap:6px;">
+                <div class="ui-btn btn-primary" style="flex:1;font-size:0.75rem;padding:8px;">✓ Clean</div>
+                <div class="ui-btn btn-secondary" style="flex:1;font-size:0.75rem;padding:8px;color:#f87171;">✗ Contaminated</div>
+              </div>
+            </div>
+            <div style="margin-bottom:4px;">
+              <div style="font-size:0.72rem;color:#9ca3af;margin-bottom:4px;">Total Weight (lbs)</div>
+              <div class="ui-input">4.1</div>
+            </div>
+          </div>
+          <div class="ui-card" style="background:rgba(255,255,255,0.04);">
+            <div style="text-align:center;font-size:0.78rem;color:#b0b8c4;">
+              Auto-calculated: <strong style="color:#ffffff;">+500 points</strong> for Maria
+            </div>
+          </div>
+          <div class="ui-btn btn-primary">✓ Submit &amp; Next Bag</div>
+        </div>
+      </div>
+      <div class="screen-label">WEIGH &amp; LOG MATERIALS</div>
+    </div>
+
+    <!-- Screen 3: Inventory -->
+    <div>
+      <div class="phone">
+        <div class="phone-status">WE BUY CLEAN TRASH · DEPOT</div>
+        <div class="phone-header">
+          <h4>Depot Inventory</h4>
+          <span>Ready for mill shipment</span>
+        </div>
+        <div class="phone-body">
+          <div class="ui-card">
+            <div class="ui-card-title">Current Stock (lbs)</div>
+            <div style="margin-bottom:8px;">
+              <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:#b0b8c4;margin-bottom:3px;">
+                <span>📦 Cardboard &amp; Paper</span><span style="color:#ffffff;">1,240 lbs</span>
+              </div>
+              <div class="mini-bar"><div class="mini-bar-fill" style="width:95%;background:#fbbf24;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:#b0b8c4;margin-bottom:3px;">
+                <span>🔀 Commingled</span><span style="color:#a0a0a0;">1,772 lbs</span>
+              </div>
+              <div class="mini-bar"><div class="mini-bar-fill" style="width:58%;background:#ffffff;"></div></div>
+            </div>
+          </div>
+          <div class="ui-card" style="background:rgba(248,113,113,0.04);border-color:rgba(248,113,113,0.12);">
+            <div style="text-align:center;font-size:0.78rem;color:#f87171;font-weight:600;">
+              ⚠️ Cardboard at 95% — schedule truck
+            </div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-card-title">Yellow Sheet (this month)</div>
+            <div style="font-size:0.72rem;color:#b0b8c4;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span>Aluminum</span><span style="color:#ffffff;">$0.92/lb</span></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span>PET</span><span style="color:#ffffff;">$0.18/lb</span></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span>Cardboard</span><span style="color:#ffffff;">$0.08/lb</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>HDPE</span><span style="color:#ffffff;">$0.75/lb</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-label">INVENTORY &amp; PRICING</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- DEPOT MANAGER -->
+<!-- ═══════════════════════════════════════ -->
+<div class="panel" id="panel-pm">
+
+  <div class="role-desc">
+    <h3>🏢 Depot Manager</h3>
+    <div class="subtitle">Oversees one or more depot locations. Monitors inventory, schedules mill pickups, and tracks throughput.</div>
+    <div class="flow-steps">
+      <span class="flow-chip">View depots</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Monitor inventory</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Schedule mill pickups</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Review reports</span>
+    </div>
+  </div>
+
+  <div class="screens-row">
+
+    <!-- Screen 1: Depots overview -->
+    <div>
+      <div class="phone">
+        <div class="phone-status">WE BUY CLEAN TRASH · DEPOT MGR</div>
+        <div class="phone-header">
+          <h4>Your Depots</h4>
+          <span>3 locations managed</span>
+        </div>
+        <div class="phone-body">
+          <div class="stat-row">
+            <div class="stat-box">
+              <div class="num">3</div>
+              <div class="label">Depots</div>
+            </div>
+            <div class="stat-box">
+              <div class="num">4.2t</div>
+              <div class="label">In Stock</div>
+            </div>
+            <div class="stat-box">
+              <div class="num">84</div>
+              <div class="label">Bags Today</div>
+            </div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-list-item">
+              <div class="ui-list-icon" style="background:rgba(255,255,255,0.07)">🏭</div>
+              <div class="ui-list-text">
+                <div class="primary">Depot #01 — Ohio West</div>
+                <div class="secondary">1,842 lbs in stock · Cardboard at 95%</div>
+              </div>
+              <span class="ui-list-badge" style="background:rgba(248,113,113,0.15);color:#f87171;">FULL</span>
+            </div>
+            <div class="ui-list-item">
+              <div class="ui-list-icon" style="background:rgba(255,255,255,0.07)">🏭</div>
+              <div class="ui-list-text">
+                <div class="primary">Depot #02 — Ohio East</div>
+                <div class="secondary">1,420 lbs in stock · All normal</div>
+              </div>
+              <span class="ui-list-badge" style="background:rgba(255,255,255,0.1);color:#a0a0a0;">OK</span>
+            </div>
+            <div class="ui-list-item">
+              <div class="ui-list-icon" style="background:rgba(160,160,160,0.06)">🏭</div>
+              <div class="ui-list-text">
+                <div class="primary">Depot #03 — Maryland Pilot</div>
+                <div class="secondary">980 lbs in stock · All normal</div>
+              </div>
+              <span class="ui-list-badge" style="background:rgba(255,255,255,0.06);color:#6b7280;">OK</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-label">DEPOTS OVERVIEW</div>
+    </div>
+
+    <!-- Screen 2: Depot Detail / Inventory -->
+    <div>
+      <div class="phone">
+        <div class="phone-status">WE BUY CLEAN TRASH · DEPOT MGR</div>
+        <div class="phone-header">
+          <h4>Depot #01 — Ohio West</h4>
+          <span>Inventory &amp; Alerts</span>
+        </div>
+        <div class="phone-body">
+          <div class="ui-card">
+            <div class="ui-card-title">Current Stock (lbs)</div>
+            <div style="margin-bottom:8px;">
+              <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:#b0b8c4;margin-bottom:3px;">
+                <span>📦 Cardboard &amp; Paper</span><span style="color:#ffffff;">1,240 lbs</span>
+              </div>
+              <div class="mini-bar"><div class="mini-bar-fill" style="width:95%;background:#fbbf24;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:#b0b8c4;margin-bottom:3px;">
+                <span>🔀 Commingled</span><span style="color:#a0a0a0;">602 lbs</span>
+              </div>
+              <div class="mini-bar"><div class="mini-bar-fill" style="width:46%;background:#ffffff;"></div></div>
+            </div>
+          </div>
+          <div class="ui-card" style="background:rgba(248,113,113,0.04);border-color:rgba(248,113,113,0.12);">
+            <div style="text-align:center;font-size:0.78rem;color:#f87171;font-weight:600;">
+              ⚠️ Cardboard at 95% — schedule truck
+            </div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-card-title">Today's Processing</div>
+            <div style="font-size:0.78rem;color:#b0b8c4;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span>Bags received</span><span style="color:#ffffff;">32</span></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span>Bags processed</span><span style="color:#ffffff;">28</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Contamination flags</span><span style="color:#f87171;">2</span></div>
+            </div>
+          </div>
+          <div class="ui-btn btn-primary">🚛 Schedule Mill Pickup</div>
+        </div>
+      </div>
+      <div class="screen-label">DEPOT INVENTORY</div>
+    </div>
+
+    <!-- Screen 3: Monthly Report -->
+    <div>
+      <div class="phone">
+        <div class="phone-status">WE BUY CLEAN TRASH · DEPOT MGR</div>
+        <div class="phone-header">
+          <h4>Monthly Report</h4>
+          <span>All depots · March 2026</span>
+        </div>
+        <div class="phone-body">
+          <div class="ui-card">
+            <div class="ui-card-title">Throughput</div>
+            <div style="text-align:center;">
+              <div style="font-size:2rem;font-weight:800;color:#ffffff;">12.4t</div>
+              <div style="font-size:0.7rem;color:#6b7280;">total material processed this month</div>
+            </div>
+            <div class="progress-bar" style="height:10px;margin-top:10px;"><div class="progress-fill" style="width:78%;"></div></div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-card-title">This Month</div>
+            <div style="font-size:0.78rem;color:#b0b8c4;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>Total bags processed</span><span style="color:#ffffff;font-weight:700;">8,420</span></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>Mill shipments sent</span><span>6</span></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>Contamination rate</span><span style="color:#f87171;">3.2%</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Revenue from mills</span><span style="color:#ffffff;">$3,160</span></div>
+            </div>
+          </div>
+          <div class="ui-btn btn-primary">📄 Download Full Report</div>
+        </div>
+      </div>
+      <div class="screen-label">MONTHLY REPORT</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- ADMIN -->
+<!-- ═══════════════════════════════════════ -->
+<div class="panel" id="panel-admin">
+
+  <div class="role-desc">
+    <h3>📊 Admin — Tia &amp; Kirk</h3>
+    <div class="subtitle">Sees everything. All districts, all users, all revenue. The command center.</div>
+    <div class="flow-steps">
+      <span class="flow-chip">Monitor all zones</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Track revenue</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Manage users</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">View commodity pricing</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Export reports</span>
+    </div>
+  </div>
+
+  <!-- Wide dashboard view -->
+  <div class="dashboard-grid">
+    <div class="dash-card">
+      <div class="kpi">1,024</div>
+      <div class="kpi-label">Active Residents</div>
+      <div class="kpi-sub">↑ 12% from last month</div>
+    </div>
+    <div class="dash-card">
+      <div class="kpi">8,420</div>
+      <div class="kpi-label">Bags This Month</div>
+      <div class="kpi-sub">Avg 8.2 bags / resident</div>
+    </div>
+    <div class="dash-card">
+      <div class="kpi">12.4t</div>
+      <div class="kpi-label">Material Collected</div>
+      <div class="kpi-sub">Aluminum: 3.2t · PET: 2.8t · Card: 4.1t</div>
+    </div>
+    <div class="dash-card">
+      <div class="kpi" style="color:#d0d0d0;">$4,280</div>
+      <div class="kpi-label">Revenue (March)</div>
+      <div class="kpi-sub">Bags: $1,120 · Mill sales: $3,160</div>
+    </div>
+  </div>
+
+  <div class="dash-wide">
+    <h4>Zone Performance</h4>
+    <div class="table-row head">
+      <div class="cell">Zone</div>
+      <div class="cell">Residents</div>
+      <div class="cell">Bags</div>
+      <div class="cell">Weight (lbs)</div>
+      <div class="cell">Revenue</div>
+    </div>
+    <div class="table-row">
+      <div class="cell">Zone A — Ohio West</div>
+      <div class="cell">412</div>
+      <div class="cell">3,480</div>
+      <div class="cell">5,120</div>
+      <div class="cell" style="color:#ffffff;">$1,740</div>
+    </div>
+    <div class="table-row">
+      <div class="cell">Zone B — Ohio East</div>
+      <div class="cell">380</div>
+      <div class="cell">2,940</div>
+      <div class="cell">4,380</div>
+      <div class="cell" style="color:#ffffff;">$1,490</div>
+    </div>
+    <div class="table-row">
+      <div class="cell">Zone C — Maryland Pilot</div>
+      <div class="cell">232</div>
+      <div class="cell">2,000</div>
+      <div class="cell">3,300</div>
+      <div class="cell" style="color:#ffffff;">$1,050</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+    <div class="dash-wide">
+      <h4>Contamination Alerts</h4>
+      <div class="ui-list-item">
+        <div class="ui-list-icon" style="background:rgba(248,113,113,0.12)">⚠️</div>
+        <div class="ui-list-text">
+          <div class="primary" style="font-size:0.8rem;">Unit 7C — 3rd strike</div>
+          <div class="secondary">Oak Valley · Recommend removal</div>
+        </div>
+        <span class="ui-list-badge" style="background:rgba(248,113,113,0.15);color:#f87171;">ACTION</span>
+      </div>
+      <div class="ui-list-item">
+        <div class="ui-list-icon" style="background:rgba(208,208,208,0.07)">⚠️</div>
+        <div class="ui-list-text">
+          <div class="primary" style="font-size:0.8rem;">Unit 12A — 1st warning</div>
+          <div class="secondary">Elm Street · Education email sent</div>
+        </div>
+        <span class="ui-list-badge" style="background:rgba(208,208,208,0.1);color:#d0d0d0;">WARNED</span>
+      </div>
+    </div>
+    <div class="dash-wide">
+      <h4>Operator Leaderboard</h4>
+      <div class="ui-list-item">
+        <div class="ui-list-icon" style="background:rgba(255,255,255,0.07)">🥇</div>
+        <div class="ui-list-text">
+          <div class="primary" style="font-size:0.8rem;">Marcus J.</div>
+          <div class="secondary">142 pickups · 0 issues</div>
+        </div>
+      </div>
+      <div class="ui-list-item">
+        <div class="ui-list-icon" style="background:rgba(160,160,160,0.06)">🥈</div>
+        <div class="ui-list-text">
+          <div class="primary" style="font-size:0.8rem;">Keisha T.</div>
+          <div class="secondary">128 pickups · 1 issue</div>
+        </div>
+      </div>
+      <div class="ui-list-item">
+        <div class="ui-list-icon" style="background:rgba(208,208,208,0.07)">🥉</div>
+        <div class="ui-list-text">
+          <div class="primary" style="font-size:0.8rem;">David M.</div>
+          <div class="secondary">119 pickups · 2 issues</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-wide">
+    <h4>Commodity Pricing — Yellow Sheet (March 2026)</h4>
+    <div class="table-row head">
+      <div class="cell">Material</div>
+      <div class="cell">Market $/lb</div>
+      <div class="cell">Customer (30%)</div>
+      <div class="cell">In Stock</div>
+      <div class="cell">Potential $</div>
+    </div>
+    <div class="table-row">
+      <div class="cell">🥫 Aluminum</div>
+      <div class="cell">$0.92</div>
+      <div class="cell">$0.28</div>
+      <div class="cell">3,200 lbs</div>
+      <div class="cell" style="color:#ffffff;">$896</div>
+    </div>
+    <div class="table-row">
+      <div class="cell">🧴 PET Bottles</div>
+      <div class="cell">$0.18</div>
+      <div class="cell">$0.05</div>
+      <div class="cell">2,800 lbs</div>
+      <div class="cell" style="color:#ffffff;">$140</div>
+    </div>
+    <div class="table-row">
+      <div class="cell">📦 Cardboard</div>
+      <div class="cell">$0.08</div>
+      <div class="cell">$0.02</div>
+      <div class="cell">4,100 lbs</div>
+      <div class="cell" style="color:#ffffff;">$82</div>
+    </div>
+    <div class="table-row">
+      <div class="cell">🥛 HDPE (milk jugs)</div>
+      <div class="cell">$0.75</div>
+      <div class="cell">$0.23</div>
+      <div class="cell">1,400 lbs</div>
+      <div class="cell" style="color:#ffffff;">$308</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer" style="text-align:center;padding:30px;color:#4b5563;font-size:0.8rem;">
+  We Buy Clean Trash — App Screen Map · 5 User Roles · Pilot v1 · Residents focus (Property Managers deferred)
+</div>
+
+<script>
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({ top: 200, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>

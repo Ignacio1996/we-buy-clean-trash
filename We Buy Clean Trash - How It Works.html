@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>We Buy Clean Trash - How It Works</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0e0e0e;
+    color: #e0e0e0;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .header {
+    text-align: center;
+    padding: 50px 20px 30px;
+  }
+  .header h1 {
+    font-size: 2.4rem;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .header p {
+    font-size: 1.05rem;
+    color: #888888;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* ── FLOW SECTION ── */
+  .flow-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 30px 60px;
+    position: relative;
+  }
+
+  /* vertical line */
+  .flow-container::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 80px;
+    bottom: 120px;
+    width: 3px;
+    background: linear-gradient(to bottom, #ffffff 0%, #d0d0d0 40%, #a0a0a0 70%, #666666 100%);
+    transform: translateX(-50%);
+    border-radius: 2px;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .step:last-child { margin-bottom: 0; }
+
+  .step-left, .step-right {
+    width: 45%;
+    padding: 20px 24px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    backdrop-filter: blur(8px);
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .step-left:hover, .step-right:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,0.25);
+  }
+  .step-left { margin-right: auto; text-align: right; }
+  .step-right { margin-left: auto; text-align: left; }
+
+  .step-number {
+    position: absolute;
+    left: 50%;
+    top: 20px;
+    transform: translateX(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #222222;
+    border: 3px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+    color: #ffffff;
+    z-index: 2;
+  }
+
+  .step-icon {
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+  }
+  .step h3 {
+    font-size: 1.1rem;
+    color: #ffffff;
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .step p {
+    font-size: 0.9rem;
+    color: #a0a0a0;
+    line-height: 1.55;
+  }
+
+  .money-tag {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 3px 10px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  /* ── USERS SECTION ── */
+  .section-title {
+    text-align: center;
+    font-size: 1.6rem;
+    color: #ffffff;
+    margin: 60px 0 30px;
+  }
+
+  .users-grid {
+    max-width: 900px;
+    margin: 0 auto 60px;
+    padding: 0 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+    gap: 16px;
+  }
+  .user-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 22px 16px;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .user-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,255,255,0.25);
+  }
+  .user-card .icon { font-size: 2rem; margin-bottom: 10px; }
+  .user-card h4 { color: #ffffff; font-size: 0.95rem; margin-bottom: 6px; }
+  .user-card p { color: #888888; font-size: 0.78rem; line-height: 1.5; }
+
+  /* ── MONEY FLOW ── */
+  .money-section {
+    max-width: 750px;
+    margin: 0 auto 60px;
+    padding: 0 30px;
+  }
+  .money-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .money-row .num {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #222222; color: #ffffff; display: flex;
+    align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.85rem; flex-shrink: 0;
+  }
+  .money-row .label { color: #d1d5db; font-size: 0.92rem; flex: 1; }
+  .money-row .tag {
+    padding: 3px 10px; border-radius: 20px; font-size: 0.72rem;
+    font-weight: 600; flex-shrink: 0;
+  }
+  .tag-in { background: rgba(255,255,255,0.1); color: #ffffff; }
+  .tag-out { background: rgba(255,255,255,0.06); color: #a0a0a0; }
+
+  /* ── POINTS ── */
+  .points-box {
+    max-width: 600px;
+    margin: 0 auto 70px;
+    padding: 30px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    text-align: center;
+  }
+  .points-box h3 { color: #ffffff; margin-bottom: 16px; font-size: 1.15rem; }
+  .points-eq {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .points-eq .big {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #ffffff;
+  }
+  .points-eq .eq { font-size: 1.6rem; color: #666666; }
+  .redeem-options {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .redeem-pill {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  .pill-1 { background: rgba(255,255,255,0.1); color: #ffffff; }
+  .pill-2 { background: rgba(255,255,255,0.07); color: #a0a0a0; }
+  .pill-3 { background: rgba(255,255,255,0.05); color: #888888; }
+
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: #444444;
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 700px) {
+    .flow-container::before { left: 28px; }
+    .step { flex-direction: column; }
+    .step-left, .step-right {
+      width: 100%;
+      margin-left: 56px !important;
+      margin-right: 0 !important;
+      text-align: left !important;
+    }
+    .step-number { left: 28px; }
+    .header h1 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>We Buy Clean Trash</h1>
+  <p>The full lifecycle — from doorstep to recycling mill</p>
+</div>
+
+<!-- ── MAIN FLOW ── -->
+<div class="flow-container">
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-icon">🛒</div>
+      <h3>Buy the Bag</h3>
+      <p>Customer orders special recycling bags online. Each bag has a unique QR code that tracks it through the entire system.</p>
+      <span class="money-tag">💰 Revenue: bag sales</span>
+    </div>
+    <div class="step-number">1</div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-right">
+      <div class="step-icon">♻️</div>
+      <h3>Fill &amp; Separate</h3>
+      <p>Two bag types: <strong>Cardboard &amp; Paper</strong> in one bag, <strong>Commingled</strong> (glass, plastic, aluminum cans, tin) in another. Separated earns double points; commingled earns base points.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-icon">📱</div>
+      <h3>Scan &amp; Schedule</h3>
+      <p>Customer scans the QR code in the app, selects bag type (cardboard/paper or commingled), takes a photo, and places it at the door. The app confirms the next scheduled pickup date and time.</p>
+    </div>
+    <div class="step-number">3</div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">4</div>
+    <div class="step-right">
+      <div class="step-icon">🚐</div>
+      <h3>Operator Picks Up</h3>
+      <p>A driver in a small van arrives and scans the QR code again. The system now knows: this bag left this address at this time.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-icon">🏭</div>
+      <h3>Depot: Sort &amp; Weigh</h3>
+      <p>At the depot, bags are scanned again, opened, and checked for contamination. For commingled bags, only total weight is recorded. For separated bags, material-specific weight is logged. Results are sent back to the system.</p>
+    </div>
+    <div class="step-number">5</div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">6</div>
+    <div class="step-right">
+      <div class="step-icon">⭐</div>
+      <h3>Points Awarded</h3>
+      <p>Based on material type and weight, the customer earns points. They receive an email notification with their points earned and environmental impact — trees saved, water preserved, carbon footprint reduced.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-icon">🎁</div>
+      <h3>Redeem Rewards</h3>
+      <p>Cash out points for money, pay their trash bill, or donate to a nonprofit. Future: partner store bonuses (Walmart, Home Depot, etc.).</p>
+    </div>
+    <div class="step-number">7</div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">8</div>
+    <div class="step-right">
+      <div class="step-icon">📦</div>
+      <h3>Sell to Mills</h3>
+      <p>Sorted materials are palletized and sold to domestic and international recycling mills at market rates (the "yellow sheet").</p>
+      <span class="money-tag">💰 Revenue: 70% margin on sales</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── WHO USES THE APP ── -->
+<h2 class="section-title">Who Uses the App</h2>
+<div class="users-grid">
+  <div class="user-card">
+    <div class="icon">🏠</div>
+    <h4>Resident</h4>
+    <p>Orders bags, fills them, scans QR codes, earns &amp; redeems points</p>
+  </div>
+  <div class="user-card">
+    <div class="icon">🚐</div>
+    <h4>Operator</h4>
+    <p>Picks up bags, scans at doorstep, delivers to depot</p>
+  </div>
+  <div class="user-card">
+    <div class="icon">⚖️</div>
+    <h4>Depot Worker</h4>
+    <p>Scans bags, checks for contamination, weighs materials, enters data into system</p>
+  </div>
+  <div class="user-card">
+    <div class="icon">🏢</div>
+    <h4>Depot Manager</h4>
+    <p>Monitors depot inventory, manages multiple depot locations, schedules pickups from mills</p>
+  </div>
+  <div class="user-card">
+    <div class="icon">📊</div>
+    <h4>Admin</h4>
+    <p>Master dashboard — sees all data, all districts, all revenue</p>
+  </div>
+</div>
+
+<!-- ── HOW MONEY FLOWS ── -->
+<h2 class="section-title">How the Money Flows</h2>
+<div class="money-section">
+  <div class="money-row">
+    <div class="num">1</div>
+    <div class="label">Customer buys recycling bags</div>
+    <span class="tag tag-in">$ In</span>
+  </div>
+  <div class="money-row">
+    <div class="num">2</div>
+    <div class="label">Materials sold to recycling mills at market rate</div>
+    <span class="tag tag-in">$ In</span>
+  </div>
+  <div class="money-row">
+    <div class="num">3</div>
+    <div class="label">Customers redeem ~30% of material value as points</div>
+    <span class="tag tag-out">$ Out</span>
+  </div>
+  <div class="money-row">
+    <div class="num">4</div>
+    <div class="label">~70% margin kept on every transaction</div>
+    <span class="tag tag-in">$ Profit</span>
+  </div>
+  <div class="money-row">
+    <div class="num">5</div>
+    <div class="label">Long-term: franchise fees from new depot territories</div>
+    <span class="tag tag-in">$ Scale</span>
+  </div>
+</div>
+
+<!-- ── POINTS SYSTEM ── -->
+<div class="points-box">
+  <h3>Points System</h3>
+  <div class="points-eq">
+    <span class="big">100,000 pts</span>
+    <span class="eq">=</span>
+    <span class="big">$10</span>
+  </div>
+  <p style="color:#a0a0a0; font-size:0.85rem; margin-bottom:16px;">Signup bonus: 10,000 pts &nbsp;·&nbsp; ~500 pts per bag &nbsp;·&nbsp; Separated = double points &nbsp;·&nbsp; Commingled = base points &nbsp;·&nbsp; Contamination = lost points</p>
+  <p style="color:#888; font-size:0.8rem; margin-bottom:16px;">Redeem at 100,000 pts &nbsp;·&nbsp; Bonus points and multiplier weeks to build the habit early</p>
+  <div class="redeem-options">
+    <span class="redeem-pill pill-1">💵 Cash Out</span>
+    <span class="redeem-pill pill-2">🧾 Pay Trash Bill</span>
+    <span class="redeem-pill pill-3">❤️ Donate to Nonprofit</span>
+  </div>
+</div>
+
+<!-- ── LEARN & EARN ── -->
+<div class="points-box">
+  <h3>Learn &amp; Earn</h3>
+  <p style="color:#a0a0a0; font-size:0.9rem; margin-bottom:12px;">Watch short educational videos on recycling best practices and earn bonus points. Quick visual hits — skippable, but rewarded for watching.</p>
+  <div class="redeem-options">
+    <span class="redeem-pill pill-1">🎬 Watch Video</span>
+    <span class="redeem-pill pill-2">⭐ Earn Bonus Points</span>
+    <span class="redeem-pill pill-3">📚 Build Good Habits</span>
+  </div>
+</div>
+
+<div class="footer">We Buy Clean Trash — Pilot · Web/desktop app first · Residents only (property managers deferred)</div>
+
+</body>
+</html>
