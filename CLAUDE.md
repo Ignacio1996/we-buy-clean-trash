@@ -13,26 +13,28 @@ Two sibling planning files:
 
 ## Architecture (planned)
 
-**Single Next.js app at the repo root** + sibling `functions/` directory for Cloud Functions. A future mobile app will live in a **separate repo** — no monorepo here.
+**Single Next.js app at the repo root. No Cloud Functions.** All server-side logic runs in Next.js API routes (`src/app/api/*`) using the Firebase Admin SDK. One `package.json`, one tsconfig, one deploy target (Vercel). A future mobile app will live in a **separate repo**.
 
 ```
 src/app/               # Next.js 15 App Router, TS, Tailwind
-src/lib/firebase/      # client + admin SDK init
+src/app/api/           # server routes — privileged writes via Admin SDK
+src/lib/firebase/      # client.ts (web SDK) + admin.ts (Admin SDK, server-only)
 src/lib/types/         # Firestore doc types
 src/lib/logic/         # PURE functions: points, pricing, validation
 src/middleware.ts      # role-based route gating
-functions/             # Firebase Cloud Functions (own package.json + tsconfig)
 ```
 
-`src/lib/logic` must stay pure and framework-free (no React, no Next imports) because Cloud Functions imports it. **All points math lives here**, not in Cloud Functions or API routes. `functions/tsconfig.json` uses an `include` path for `../src/lib/logic` + `../src/lib/types` and a `@shared/*` path alias so `functions/src/index.ts` can import shared code cleanly.
+`src/lib/logic` stays pure and framework-free (no React, no Next imports) — makes unit tests trivial and keeps the points math legible. **All points math lives here**, not inlined in API routes.
+
+**Server-side trust boundary:** Firestore security rules deny client writes to `transactions`, `users.pointsBalance`, role-setting claims, `inventory`, and `bagProcessing`. Clients POST to an API route which verifies the ID token, runs validation, and performs writes atomically (Admin SDK transaction / batched write). Never import `src/lib/firebase/admin.ts` from a client component — it's server-only.
 
 **Five roles** drive the entire app: `resident`, `operator`, `depot_worker`, `depot_manager`, `admin`. Routing uses role-prefixed paths (`/resident`, `/operator`, `/depot`, `/manager`, `/admin`) gated by `src/middleware.ts` reading the session cookie + Firebase custom claims.
 
-**Auth model is asymmetric:** residents self-signup; operators/depot/manager/admin are **invite-only** — admin writes an `invites/{token}` doc, user accepts via emailed link, a Cloud Function sets the custom claim. Do not add a self-signup path for non-resident roles.
+**Auth model is asymmetric:** residents self-signup; operators/depot/manager/admin are **invite-only** — admin writes an `invites/{token}` doc via `/api/invites`, user accepts via emailed link, `/api/accept-invite` sets the custom claim with the Admin SDK. Do not add a self-signup path for non-resident roles.
 
 ## Locked-in decisions (don't re-litigate)
 
-- **Firebase project**: `we-buy-clean-trash` (already exists; Blaze plan required for Functions + external APIs)
+- **Firebase project**: `we-buy-clean-trash` (already exists; Blaze plan required for external API calls from backend)
 - **Vercel**: default `*.vercel.app` for pilot
 - **AI scan**: Google Gemini 2.5 Flash, server-side via `/api/scan`. Pre-signup scan is session-only (localStorage), no anonymous Firestore writes.
 - **Routing**: Google Maps Routes API `computeRoutes` with `optimizeWaypointOrder: true`, called from `/api/route-optimize`
@@ -73,9 +75,9 @@ pointsAwarded =
 
 Full collection list is in `planning/Build Plan.txt` "Data model" section. Key invariants:
 
-- `transactions` is an **immutable ledger** — every points change (signup_bonus, pickup, redemption) writes a new doc; don't mutate `users.pointsBalance` without a paired `transactions` write. Prefer Cloud Function triggers to keep them in sync.
-- `bagProcessing` writes are the trigger that awards points and updates inventory. Processing flow (Phase 7): depot worker submits → Cloud Function computes points via `src/lib/logic` → writes `bagProcessing` + `transactions` + increments `users.pointsBalance` + updates `inventory` + calls `sendSMS()` stub. This chain runs server-side only.
-- Bag order creation triggers a Cloud Function (`onBagOrderCreated`) that queues the next route for that zone to deliver.
+- `transactions` is an **immutable ledger** — every points change (signup_bonus, pickup, redemption) writes a new doc; `users.pointsBalance` is always paired with a `transactions` write in the same Admin SDK transaction. Never mutate `pointsBalance` on its own.
+- `bagProcessing` writes award points and update inventory. Processing flow (Phase 7): depot worker submits form → `POST /api/process-bag` → verifies auth (`depot_worker` claim) → calls `calculatePoints` from `src/lib/logic` → in one Admin SDK transaction writes `bagProcessing` + appends `transactions` + increments `users.pointsBalance` + updates `inventory` → calls `sendSMS()` stub. All server-side.
+- Bag order creation (`POST /api/bag-orders`) creates the `bagOrders` doc **and** enqueues it onto the next pending route for that zone in the same transaction — no separate trigger.
 
 ## Build phases
 
@@ -83,4 +85,4 @@ Follow the ordered phases in `planning/Build Plan.txt` (Phase 0 → 12). Don't s
 
 ## Commands
 
-None yet — app not scaffolded. After Phase 0: standard `npm run dev` / `npm run build` / `npm run lint` from repo root for the Next.js app; `cd functions && npm run build` + `firebase deploy --only functions` for Cloud Functions. Add real commands here when Phase 0 lands.
+None yet — app not scaffolded. After Phase 0: standard `npm run dev` / `npm run build` / `npm run lint` from repo root; `firebase deploy --only firestore:rules,storage` for rules; Vercel auto-deploys on push. Add real commands here when Phase 0 lands.
