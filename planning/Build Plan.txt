@@ -7,7 +7,7 @@ _Created April 16, 2026 · Pilot v1.2_
 ## Decisions locked in
 
 - **Stack**: Next.js 15 (App Router, TS) + Tailwind + Firebase (Auth, Firestore, Storage, Cloud Functions) + Vercel
-- **Structure**: pnpm + Turborepo monorepo (ready for Expo `apps/mobile` later)
+- **Structure**: single Next.js app at the repo root + sibling `functions/` dir for Cloud Functions. Shared pure logic lives in `src/lib/` and is imported by both. Mobile app (if built later) will live in a **separate repo** — not planned for here.
 - **Auth**: Email/password + Google sign-in. Residents self-signup. Operators / depot workers / managers are invite-only (admin creates invite → email link)
 - **AI scan**: Google Gemini 2.5 Flash (cheapest capable vision model)
 - **Routing**: Google Maps Routes API with waypoint optimization
@@ -31,24 +31,31 @@ _Created April 16, 2026 · Pilot v1.2_
 
 ---
 
-## Monorepo layout
+## Project layout
 
 ```
 we-buy-clean-trash/
-├── apps/
-│   └── web/                          # Next.js 15 App Router (pilot)
-│                                     #   apps/mobile added later (Expo)
-├── packages/
-│   ├── firebase/                     # shared client + admin init
-│   ├── types/                        # shared TS types (Firestore docs)
-│   └── logic/                        # pure points / pricing / validation fns
-├── functions/                        # Firebase Cloud Functions
+├── src/
+│   ├── app/                          # Next.js 15 App Router
+│   ├── lib/
+│   │   ├── firebase/                 # client + admin SDK init
+│   │   ├── logic/                    # PURE fns (points, pricing, validation)
+│   │   └── types/                    # TS types for Firestore docs
+│   └── middleware.ts
+├── functions/                        # Firebase Cloud Functions (own package.json)
+│   └── src/index.ts                  # imports shared logic/types via tsconfig path alias
+├── public/
 ├── firestore.rules
 ├── storage.rules
-├── turbo.json
-├── pnpm-workspace.yaml
+├── firebase.json
+├── next.config.ts
+├── tailwind.config.ts
+├── tsconfig.json
+├── package.json
 └── planning/
 ```
+
+**Sharing logic with Cloud Functions**: `functions/tsconfig.json` adds an `include` path for `../src/lib/logic` and `../src/lib/types`, plus a path alias so `functions/src/index.ts` can `import { calculatePoints } from '@shared/logic/calculatePoints'`. Pure files only — no Next.js, no React imports in `src/lib/logic` or `src/lib/types`.
 
 ---
 
@@ -107,22 +114,22 @@ pointsAwarded =
 ## Build steps — ordered
 
 ### Phase 0 — Foundation (~half day)
-1. Init monorepo: pnpm + Turborepo, workspaces, root `tsconfig`, prettier/eslint
-2. Scaffold `apps/web`: `create-next-app` (App Router, TS, Tailwind)
-3. Scaffold shared packages: `packages/firebase`, `packages/types`, `packages/logic`
-4. Firebase CLI: `firebase init` (Firestore, Functions, Storage, Emulators, Hosting off)
+1. `create-next-app` at repo root (App Router, TS, Tailwind, `src/` dir, ESLint). Add prettier
+2. Create `src/lib/firebase/`, `src/lib/logic/`, `src/lib/types/` (empty for now)
+3. Firebase CLI: `firebase init` at repo root (Firestore, Functions, Storage, Emulators, Hosting off). Functions lands in `functions/` with its own `package.json`
+4. Configure `functions/tsconfig.json` to include `../src/lib/logic` + `../src/lib/types` with a `@shared/*` path alias
 5. Env: `.env.local` with Firebase web config + placeholders for `GEMINI_API_KEY`, `GOOGLE_MAPS_API_KEY`, `FIREBASE_ADMIN_SA`
 6. Vercel: link repo, set env vars, first deploy of the empty app
 
 ### Phase 1 — Auth & role routing (~1 day)
 7. Firebase Auth: email/pass + Google provider enabled in console
 8. Custom claims: Cloud Function on user create → default role `resident`; admin-triggered function assigns other roles via invite
-9. Middleware: `apps/web/middleware.ts` reads session cookie, redirects by role prefix (`/resident`, `/operator`, `/depot`, `/manager`, `/admin`)
+9. Middleware: `src/middleware.ts` reads session cookie, redirects by role prefix (`/resident`, `/operator`, `/depot`, `/manager`, `/admin`)
 10. Invite flow: admin creates `invites/{token}` → emailed link → accept page sets custom claim
 
 ### Phase 2 — Shared types + logic (~half day)
-11. TS types for all Firestore docs in `packages/types`
-12. Pure functions in `packages/logic`:
+11. TS types for all Firestore docs in `src/lib/types`
+12. Pure functions in `src/lib/logic` (no framework / React / Next imports — must be Cloud Functions-safe):
     - `calculatePoints({ weights, materials, separated, contaminationSeverity })`
     - `calculateBagOrderTotal({ quantity, unitPrice })` with $20 free-ship rule
     - `pointsToDollars(pts)`
@@ -159,7 +166,7 @@ pointsAwarded =
 
 ### Phase 7 — Depot flow (~1 day)
 35. Incoming deliveries: list of completed routes arriving
-36. Process Bag: scan QR → 7 weight fields (manual entry) → Contamination severity picker (None / Minor / Major / Severe → 0 / 30 / 60 / 90%) → Submit → Cloud Function computes points via `packages/logic`, writes `bagProcessing` + `transactions` + increments `users.pointsBalance` + updates `inventory` + sends SMS stub
+36. Process Bag: scan QR → 7 weight fields (manual entry) → Contamination severity picker (None / Minor / Major / Severe → 0 / 30 / 60 / 90%) → Submit → Cloud Function computes points via `src/lib/logic`, writes `bagProcessing` + `transactions` + increments `users.pointsBalance` + updates `inventory` + sends SMS stub
 37. Inventory page: per-commodity weight + mini bars + threshold alerts
 
 ### Phase 8 — Depot Manager (~half day)
