@@ -1,0 +1,13 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny. Real per-collection rules land in Phase 11.
+    // Privileged writes (transactions, users.pointsBalance, inventory,
+    // bagProcessing, role claims) must always go through an API route
+    // using the Admin SDK — never direct client writes.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

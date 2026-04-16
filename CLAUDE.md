@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Pre-code.** The repo currently contains only `planning/` — no app code, no `package.json`, no config. `planning/Build Plan.txt` is the authoritative source for stack, phases, data model, and locked-in decisions. Read it before scaffolding anything. The two HTML files in `planning/` are design mockups (how the app should look and flow).
 
 Two sibling planning files:
+
 - `planning/Build Plan.txt` — ordered build phases 0–12, data model, points math, stubbed integrations table
 - `planning/App Design - We Buy Clean Trash - April 16th.html` — UI mockups per role
 - `planning/How It Works (April 16 2026).html` — product explainer
@@ -48,12 +49,12 @@ src/middleware.ts      # role-based route gating
 
 Several integrations are stubbed for the pilot. The rule: **build the typed interface first, wire a stub that logs + writes to Firestore, leave a clear TODO for the real swap.** Business logic must not import vendor SDKs directly — go through a thin adapter (e.g. `lib/payments/stripe.ts` exposes `createCheckoutSession()`; pilot returns a mock success, real impl swaps in later).
 
-| Integration | Pilot stub |
-|---|---|
-| Stripe (bag orders) | Mock checkout returns simulated success |
-| Twilio SMS | `sendSMS()` → console.log + write to `smsLog` collection |
-| Amazon/Walmart gift cards | Admin-fulfilled queue (`redemptions` collection) |
-| "Pay Trash Bill" / "Donate" redemptions | Disabled stub buttons |
+| Integration                             | Pilot stub                                               |
+| --------------------------------------- | -------------------------------------------------------- |
+| Stripe (bag orders)                     | Mock checkout returns simulated success                  |
+| Twilio SMS                              | `sendSMS()` → console.log + write to `smsLog` collection |
+| Amazon/Walmart gift cards               | Admin-fulfilled queue (`redemptions` collection)         |
+| "Pay Trash Bill" / "Donate" redemptions | Disabled stub buttons                                    |
 
 ## Points math (single source of truth)
 
@@ -85,4 +86,12 @@ Follow the ordered phases in `planning/Build Plan.txt` (Phase 0 → 12). Don't s
 
 ## Commands
 
-None yet — app not scaffolded. After Phase 0: standard `npm run dev` / `npm run build` / `npm run lint` from repo root; `firebase deploy --only firestore:rules,storage` for rules; Vercel auto-deploys on push. Add real commands here when Phase 0 lands.
+- `npm run dev` — start Next.js dev server (Turbopack)
+- `npm run build` — production build
+- `npm run start` — serve production build locally
+- `npm run lint` — ESLint (Next + TS + Prettier-compatible)
+- `npm run format` / `npm run format:check` — Prettier write / check
+- `firebase emulators:start` — local Auth + Firestore + Storage emulators (ports 9099/8080/9199, UI on 4000)
+- `firebase deploy --only firestore:rules,storage` — push security rules
+
+Vercel auto-deploys on push to main once the project is linked. Env vars live in `.env.local` (see `.env.local.example`) and must also be set in the Vercel dashboard for deploys.
