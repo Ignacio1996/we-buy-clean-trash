@@ -10,10 +10,15 @@ async function loadData() {
     adminDb.collection('zones').orderBy('name').get(),
     adminDb.collection('depots').orderBy('name').get(),
   ]);
-  return {
-    zones: zonesSnap.docs.map((d) => d.data() as ZoneDoc),
-    depots: depotsSnap.docs.map((d) => d.data() as DepotDoc),
-  };
+  const zones = zonesSnap.docs.map((d) => {
+    const { createdAt: _c, ...rest } = d.data() as ZoneDoc;
+    return rest;
+  });
+  const depots = depotsSnap.docs.map((d) => {
+    const { createdAt: _c, ...rest } = d.data() as DepotDoc;
+    return rest;
+  });
+  return { zones, depots };
 }
 
 export default async function AdminZonesPage() {

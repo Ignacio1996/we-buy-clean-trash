@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { clearPresignupScan } from '@/lib/presignup/scan-storage';
 
 export function WelcomeActions() {
   const router = useRouter();
@@ -11,6 +12,7 @@ export function WelcomeActions() {
     setBusy(true);
     try {
       await fetch('/api/onboarding/complete', { method: 'POST' });
+      clearPresignupScan();
       router.replace('/resident');
       router.refresh();
     } finally {

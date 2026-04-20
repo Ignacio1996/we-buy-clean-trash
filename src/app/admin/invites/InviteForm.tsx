@@ -6,6 +6,9 @@ import { INVITABLE_ROLES, type InvitableRole } from '@/lib/types/role';
 import type { ZoneDoc } from '@/lib/types/zone';
 import type { DepotDoc } from '@/lib/types/depot';
 
+type ZoneView = Omit<ZoneDoc, 'createdAt'>;
+type DepotView = Omit<DepotDoc, 'createdAt'>;
+
 const ROLE_LABELS: Record<InvitableRole, string> = {
   operator: 'Operator',
   depot_worker: 'Depot worker',
@@ -14,8 +17,8 @@ const ROLE_LABELS: Record<InvitableRole, string> = {
 };
 
 interface Props {
-  zones: ZoneDoc[];
-  depots: DepotDoc[];
+  zones: ZoneView[];
+  depots: DepotView[];
 }
 
 export function InviteForm({ zones, depots }: Props) {

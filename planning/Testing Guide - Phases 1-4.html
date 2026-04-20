@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Phases 1–4 Testing Guide</title>
+    <style>
+      @page {
+        size: Letter;
+        margin: 0.6in 0.7in;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+        font-size: 10.5pt;
+        line-height: 1.45;
+        color: #111;
+      }
+      h1 {
+        font-size: 22pt;
+        margin: 0 0 4pt 0;
+        letter-spacing: -0.01em;
+      }
+      h2 {
+        font-size: 15pt;
+        margin: 24pt 0 6pt 0;
+        border-bottom: 1px solid #d0d0d0;
+        padding-bottom: 4pt;
+        page-break-after: avoid;
+      }
+      h3 {
+        font-size: 12pt;
+        margin: 14pt 0 4pt 0;
+        page-break-after: avoid;
+      }
+      h4 {
+        font-size: 10.5pt;
+        margin: 10pt 0 2pt 0;
+        color: #333;
+        page-break-after: avoid;
+      }
+      p {
+        margin: 4pt 0;
+      }
+      ul,
+      ol {
+        padding-left: 20pt;
+        margin: 4pt 0;
+      }
+      li {
+        margin: 2pt 0;
+      }
+      code {
+        font-family: 'SF Mono', Menlo, Consolas, monospace;
+        font-size: 9.5pt;
+        background: #f2f2f2;
+        padding: 1pt 4pt;
+        border-radius: 3pt;
+      }
+      pre {
+        font-family: 'SF Mono', Menlo, Consolas, monospace;
+        font-size: 9pt;
+        background: #f7f7f7;
+        border: 1px solid #e4e4e4;
+        border-radius: 4pt;
+        padding: 8pt 10pt;
+        overflow: hidden;
+        white-space: pre-wrap;
+        margin: 6pt 0;
+      }
+      .lead {
+        color: #555;
+        font-size: 10pt;
+        margin: 0 0 10pt 0;
+      }
+      .callout {
+        border-left: 3px solid #22c55e;
+        background: #f0fdf4;
+        padding: 6pt 10pt;
+        margin: 6pt 0;
+        font-size: 9.5pt;
+        border-radius: 3pt;
+      }
+      .callout.warn {
+        border-left-color: #f59e0b;
+        background: #fffbeb;
+      }
+      .callout.note {
+        border-left-color: #3b82f6;
+        background: #eff6ff;
+      }
+      .callout.danger {
+        border-left-color: #ef4444;
+        background: #fef2f2;
+      }
+      .callout-title {
+        font-weight: 600;
+        margin-right: 6pt;
+      }
+      .expect {
+        display: inline-block;
+        font-size: 8.5pt;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #166534;
+        background: #dcfce7;
+        padding: 1pt 6pt;
+        border-radius: 3pt;
+        margin-right: 4pt;
+      }
+      .test {
+        margin: 10pt 0 14pt 0;
+        padding: 10pt 12pt;
+        border: 1px solid #e4e4e4;
+        border-radius: 5pt;
+        page-break-inside: avoid;
+      }
+      .test h4 {
+        margin-top: 0;
+      }
+      .meta {
+        font-size: 9pt;
+        color: #777;
+      }
+      .footer {
+        margin-top: 24pt;
+        padding-top: 10pt;
+        border-top: 1px solid #d0d0d0;
+        font-size: 9pt;
+        color: #666;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+      a {
+        color: #1d4ed8;
+        text-decoration: none;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 6pt 0;
+        font-size: 9.5pt;
+      }
+      th,
+      td {
+        border-bottom: 1px solid #e4e4e4;
+        padding: 5pt 6pt;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: #f7f7f7;
+        font-weight: 600;
+      }
+      kbd {
+        font-family: 'SF Mono', Menlo, Consolas, monospace;
+        font-size: 9pt;
+        border: 1px solid #c0c0c0;
+        border-bottom-width: 2px;
+        border-radius: 3pt;
+        padding: 1pt 5pt;
+        background: #fafafa;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>We Buy Clean Trash — Testing Guide</h1>
+      <p class="lead">
+        Phases 1–4 · Foundation → Auth → Resident flow → Admin core · Updated April 20, 2026
+      </p>
+    </header>
+
+    <h2>What you should be able to do so far</h2>
+    <ol>
+      <li>Sign up as a new <strong>resident</strong> and land on a working dashboard.</li>
+      <li>
+        Promote yourself to <strong>admin</strong> from the CLI and access the admin console.
+      </li>
+      <li>Send <strong>invite links</strong> that grant operator / depot / manager / admin roles.</li>
+      <li>
+        Browse the resident experience end-to-end: onboarding, order bags (mock Stripe), scan a
+        bag, use the payout calculator, view the recycling guide, redeem a gift card, edit your
+        profile.
+      </li>
+      <li>
+        Run the admin core: KPI dashboard, residents list, staff invites (create + revoke), zones
+        + depots CRUD, yellow-sheet pricing editor (with price history), redemption fulfillment
+        queue.
+      </li>
+    </ol>
+    <div class="callout warn">
+      <span class="callout-title">Not built yet (skip).</span>
+      Public landing page, pre-signup <code>/scan</code> (AI camera), zone auto-assignment at
+      signup, and Operator / Depot / Manager flows (Phases 5–9).
+    </div>
+
+    <h2>0 · Prerequisites</h2>
+
+    <h3>Environment</h3>
+    <ol>
+      <li>
+        <code>.env.local</code> has the Firebase web config (<code
+          >NEXT_PUBLIC_FIREBASE_*</code
+        >), the service account (<code>FIREBASE_ADMIN_SA</code>, one JSON line), and the storage
+        bucket (<code>NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET</code>).
+      </li>
+      <li>Firestore rules are in "default deny" — all writes go through API routes with the Admin SDK, so you don't need to deploy rules yet.</li>
+      <li>Firebase Auth providers enabled in the Firebase console: <strong>Email/Password</strong> (and Google if you want to test that path).</li>
+    </ol>
+
+    <h3>Install + seed</h3>
+    <pre>npm install
+npm run seed:materials      # writes 7 materials docs with pilot defaults
+npm run dev                 # boots http://localhost:3000</pre>
+    <div class="callout note">
+      <span class="callout-title">Tip.</span>
+      After the dev server starts, keep a second terminal open for the CLI helpers listed below
+      (<code>set-admin</code>, <code>dev:issue-bags</code>, <code>whoami</code>).
+    </div>
+
+    <h3>Useful CLI helpers</h3>
+    <table>
+      <tr>
+        <th>Command</th>
+        <th>Purpose</th>
+      </tr>
+      <tr>
+        <td><code>npm run set-admin -- you@example.com</code></td>
+        <td>Promote an existing user to admin (sets custom claim + updates <code>users</code> doc).</td>
+      </tr>
+      <tr>
+        <td><code>npm run whoami -- you@example.com</code></td>
+        <td>Dump UID, custom claims, and <code>users/{uid}</code> doc for debugging.</td>
+      </tr>
+      <tr>
+        <td><code>npm run dev:issue-bags -- you@example.com</code></td>
+        <td>Create a sticker sheet + 10 <code>bags</code> for a resident so scan-bag tests have something to scan.</td>
+      </tr>
+      <tr>
+        <td><code>npm run seed:materials</code></td>
+        <td>Re-seed yellow-sheet pricing (add <code>--force</code> to overwrite).</td>
+      </tr>
+    </table>
+
+    <div class="callout warn">
+      <span class="callout-title">Claim refresh.</span>
+      Anytime you change a user's role with the CLI, that user must <strong>sign out and back
+      in</strong> before the new claim reaches the browser.
+    </div>
+
+    <div class="page-break"></div>
+    <h2>Phase 1 · Auth &amp; role routing</h2>
+
+    <div class="test">
+      <h4>1.1 — Resident self-signup</h4>
+      <ol>
+        <li>Go to <code>http://localhost:3000/signup</code>.</li>
+        <li>Fill in name, email, password, and a full address (street, city, state, ZIP).</li>
+        <li>Submit.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> redirected to <code>/resident/welcome</code> (the
+        onboarding card). The user's custom claim is now <code>role: resident</code> and a{' '}
+        <code>transactions/&lt;id&gt;</code> doc of type <code>signup_bonus</code> for
+        <strong>+10,000 pts</strong> is written.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>1.2 — Login</h4>
+      <ol>
+        <li>Sign out (top-right on <code>/resident</code>).</li>
+        <li>Go to <code>/login</code>, enter the same email/password.</li>
+      </ol>
+      <p><span class="expect">Expect</span> redirect to <code>/resident</code>.</p>
+    </div>
+
+    <div class="test">
+      <h4>1.3 — Role-guarded route</h4>
+      <ol>
+        <li>While signed in as the resident, try to visit <code>/admin</code>.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> redirect back to <code>/resident</code> (the
+        <code>requireRole('admin')</code> guard bounces you to the home for your current role).
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>1.4 — Unauthenticated redirect</h4>
+      <ol>
+        <li>Sign out.</li>
+        <li>Visit <code>/resident</code>, <code>/admin</code>, or <code>/operator</code> directly.</li>
+      </ol>
+      <p><span class="expect">Expect</span> each one redirects to <code>/login</code>.</p>
+    </div>
+
+    <div class="test">
+      <h4>1.5 — Promote yourself to admin</h4>
+      <ol>
+        <li>In the second terminal, run <code>npm run set-admin -- you@example.com</code>.</li>
+        <li>Back in the browser, sign out and sign back in.</li>
+        <li>Visit <code>/admin</code>.</li>
+      </ol>
+      <p><span class="expect">Expect</span> the admin dashboard layout with the sidebar.</p>
+    </div>
+
+    <div class="test">
+      <h4>1.6 — Invite an operator (end-to-end)</h4>
+      <ol>
+        <li>As admin, go to <code>/admin/invites</code>.</li>
+        <li>
+          Fill in an email you can access (or any; you'll visit the link manually), role
+          <strong>Operator</strong>, leave zone unassigned.
+        </li>
+        <li>Click <strong>Create invite</strong>.</li>
+        <li>
+          The success box shows an invite URL of the form
+          <code>http://localhost:3000/invite/&lt;token&gt;</code>. Copy it.
+        </li>
+        <li>Open a <strong>private window</strong>, paste the URL, accept the invite with a new email/password.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> the new account is created with custom claim
+        <code>role: operator</code>, the invite row in <code>/admin/invites</code> flips to
+        <strong>Accepted</strong>, and visiting <code>/operator</code> in the private window shows
+        the (stub) operator placeholder.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>1.7 — Revoke a pending invite</h4>
+      <ol>
+        <li>Create another invite (don't accept it).</li>
+        <li>In the invites table click <strong>Revoke</strong>.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> row status changes to <strong>Revoked</strong>; opening
+        the link now shows the "invite unavailable" state instead of the acceptance form.
+      </p>
+    </div>
+
+    <div class="page-break"></div>
+    <h2>Phase 3 · Resident flow</h2>
+
+    <div class="callout note">
+      <span class="callout-title">Before testing.</span>
+      Sign in as the resident you created in Phase 1. For scan-bag, run
+      <code>npm run dev:issue-bags -- &lt;resident-email&gt;</code> in the second terminal — it
+      prints 10 bag codes like <code>BAG-4237-01</code> you can use in the manual-entry field.
+    </div>
+
+    <div class="test">
+      <h4>3.1 — Onboarding card</h4>
+      <ol>
+        <li>If you just signed up, you land on <code>/resident/welcome</code>.</li>
+        <li>Read the three-step card and click <strong>Let's go</strong>.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> redirect to <code>/resident</code>, and the
+        <code>users</code> doc now has <code>onboardingCompletedAt</code> set. Revisiting
+        <code>/resident</code> never shows the welcome card again.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>3.2 — Home dashboard</h4>
+      <p>On <code>/resident</code> you should see:</p>
+      <ul>
+        <li>Greeting with your first name.</li>
+        <li>
+          Points <strong>10,000</strong> / value <strong>$1.00</strong> (the formula is
+          <code>100,000 pts = $10</code>).
+        </li>
+        <li>"Order more bags" card at the top (primary revenue action).</li>
+        <li>"No pickup scheduled yet" placeholder (routes land in Phase 5).</li>
+        <li>"What's your trash worth?" link to the calculator.</li>
+        <li>Bottom nav: Home / Scan / Bags / Rewards / Profile.</li>
+      </ul>
+    </div>
+
+    <div class="test">
+      <h4>3.3 — Order bags (mock Stripe)</h4>
+      <ol>
+        <li>Open <code>/resident/order-bags</code>.</li>
+        <li>Use the stepper to set quantity to <strong>1</strong>.</li>
+        <li>
+          Confirm the total shows <strong>+$10 shipping</strong> because the subtotal is under the
+          $20 free-shipping threshold.
+        </li>
+        <li>Bump quantity to <strong>3</strong> — shipping should switch to free.</li>
+        <li>Click <strong>Pay (stub)</strong>.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> redirect to <code>/resident/order-bags/success?order=...</code>.
+        A new <code>bagOrders</code> doc exists in Firestore with
+        <code>stripeStubSuccess: true</code> and <code>status: queued</code>. Route enqueue is
+        deferred to Phase 5.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>3.4 — Scan a bag (QR or manual)</h4>
+      <ol>
+        <li>Run <code>npm run dev:issue-bags -- you@example.com</code>; copy a <code>BAG-XXXX-01</code> code.</li>
+        <li>Visit <code>/resident/scan-bag</code>.</li>
+        <li>
+          Use <strong>manual entry</strong>, paste the code, pick <strong>Mixed</strong> or
+          <strong>Separated</strong>, then attach a photo (use the file picker on desktop or the
+          camera on mobile).
+        </li>
+        <li>Submit.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> a success toast. A new <code>pickups</code> doc is
+        created with <code>status: pending</code> + <code>doorstepPhotoUrl</code> in Storage, and
+        the matching <code>bags</code> doc flips to <code>pending_pickup</code>. Rescanning the
+        same bag now errors with <em>bag already in use</em>.
+      </p>
+      <div class="callout warn">
+        <span class="callout-title">HTTPS for camera.</span>
+        <code>localhost</code> is treated as secure, so the live QR camera works on desktop
+        Chrome. On a phone, the iOS/Android browser may block camera access unless you serve over
+        HTTPS (use <code>ngrok</code> or the manual-entry fallback).
+      </div>
+    </div>
+
+    <div class="test">
+      <h4>3.5 — Payout calculator</h4>
+      <ol>
+        <li>Visit <code>/resident/calculator</code>.</li>
+        <li>Enter weights for aluminum, cardboard, PET, etc.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> a live-updating dollar estimate. The page reads
+        <code>materials</code> live — if you edit a price in
+        <code>/admin/pricing</code>, the calculator reflects it on reload.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>3.6 — Recycling guide</h4>
+      <p>
+        <code>/resident/guide</code> renders the good vs. not-accepted examples + the oil-can prep
+        tip (static content for now).
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>3.7 — Rewards + redemption</h4>
+      <ol>
+        <li>
+          Rewards gate at <strong>100,000 pts = $10</strong>. A fresh signup has only 10,000 so
+          redemption will be blocked. To actually test it, manually add points via the Firebase
+          console: set <code>users/{uid}.pointsBalance</code> to <code>100000</code> and add a
+          matching <code>transactions</code> entry if you care about ledger cleanliness.
+        </li>
+        <li>Visit <code>/resident/rewards</code> and click <strong>Amazon $10</strong>.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> balance drops by 100,000, a <code>redemptions</code>
+        doc with <code>status: pending</code> is created, and a new <code>transactions</code>
+        ledger entry of type <code>redemption</code> (negative delta) is written — all in one
+        transaction. <strong>Pay Trash Bill</strong> and <strong>Donate</strong> are disabled
+        stubs.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>3.8 — Profile</h4>
+      <p>
+        <code>/resident/profile</code> shows the address saved at signup, pickup day (read-only,
+        admin-assigned — will be blank for pilot until zones are assigned), and a Sign out button.
+      </p>
+    </div>
+
+    <div class="page-break"></div>
+    <h2>Phase 4 · Admin core</h2>
+
+    <div class="callout note">
+      <span class="callout-title">Before testing.</span>
+      Sign in as the admin user you promoted in 1.5. Everything below is under
+      <code>/admin/*</code>.
+    </div>
+
+    <div class="test">
+      <h4>4.1 — Dashboard</h4>
+      <ol>
+        <li>Visit <code>/admin</code>.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> four KPI cards:
+      </p>
+      <ul>
+        <li><strong>Active residents</strong> — count of <code>users</code> where role=resident.</li>
+        <li><strong>Bags issued this month</strong> — count of <code>bags</code> created this calendar month (run <code>dev:issue-bags</code> to bump this).</li>
+        <li><strong>Material in stock</strong> — sum of all <code>inventory.weight</code> (0 lbs until Phase 7 processing runs).</li>
+        <li><strong>Revenue · {current month}</strong> — sum of non-cancelled <code>bagOrders.total</code> this month.</li>
+      </ul>
+      <p>
+        Below the KPIs: inventory by material (7 rows, zeros for now). Zone performance,
+        contamination alerts, and operator leaderboard are Phase 9.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>4.2 — Users list</h4>
+      <ol>
+        <li>Visit <code>/admin/users</code>.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> a table of every resident (name, email, zone, points,
+        dollar value). Your signed-up resident from 1.1 appears with 10,000 pts / $1.00. Click
+        "Manage staff invites →" to jump to invites.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>4.3 — Create + list + revoke invites</h4>
+      <ol>
+        <li>Covered end-to-end in tests 1.6 and 1.7.</li>
+        <li>
+          Spot-check: Role picker shows zone input only for <strong>Operator</strong>, and depot
+          input only for <strong>Depot worker</strong> / <strong>Depot manager</strong>.
+        </li>
+        <li>
+          Expired invites appear with status <strong>Expired</strong> (TTL is 7 days from
+          creation; you can force this by editing <code>invites/{token}.expiresAt</code> in the
+          Firebase console to a past timestamp).
+        </li>
+      </ol>
+    </div>
+
+    <div class="test">
+      <h4>4.4 — Zones &amp; depots CRUD</h4>
+      <ol>
+        <li>Visit <code>/admin/zones</code>.</li>
+        <li>
+          Create a depot: <em>Name</em> "Kirk's Yard", <em>Street</em> "100 Pilot Ln",
+          <em>City</em> "Springfield", <em>State</em> "OH", <em>ZIP</em> "45501".
+        </li>
+        <li>
+          Create a zone: <em>Name</em> "North Pilot", <em>Depot</em> Kirk's Yard,
+          <em>Pickup day</em> Wednesday.
+        </li>
+        <li>Try to <strong>Delete</strong> the depot — should error with "zones still reference this depot".</li>
+        <li>Delete the zone first, then the depot.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> the <code>zones</code> and <code>depots</code> docs are
+        created/removed; the depot's <code>zoneIds</code> array is kept in sync (zone creation
+        uses a Firestore transaction to set both).
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>4.5 — Yellow-sheet pricing editor</h4>
+      <ol>
+        <li>Visit <code>/admin/pricing</code>.</li>
+        <li>
+          Edit a value — e.g. set Aluminum <em>Market $/lb</em> to <strong>1.50</strong>, leave
+          payout at <strong>30%</strong>.
+        </li>
+        <li>Watch the rightmost "Resident $/lb" column update live to $0.450.</li>
+        <li>Click <strong>Save pricing</strong>.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> all 7 <code>materials</code> docs updated and a new
+        <code>priceHistory</code> snapshot written in the same Admin SDK transaction (check the
+        Firebase console). Reload <code>/resident/calculator</code> as the resident — the new
+        price is used.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>4.6 — Redemption fulfillment queue</h4>
+      <ol>
+        <li>Trigger a redemption as the resident (see 3.7 for how to give them enough points).</li>
+        <li>As admin, visit <code>/admin/redemptions</code>.</li>
+        <li>
+          The request shows up under <strong>Pending</strong> (resident name, brand, points, $,
+          date).
+        </li>
+        <li>
+          Click <strong>Mark fulfilled</strong>. In the prompt, paste a fake code like
+          <code>AMZN-TEST-1234</code> (or leave blank) and confirm.
+        </li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> the row moves to <strong>Recently fulfilled</strong>
+        with the code shown, and the <code>redemptions</code> doc now has
+        <code>status: fulfilled</code>, <code>fulfilledBy: &lt;admin uid&gt;</code>, and
+        <code>fulfilledAt</code> set.
+      </p>
+    </div>
+
+    <h2>Quick regression checklist</h2>
+    <p>Five-minute smoke test before moving to Phase 5:</p>
+    <ol>
+      <li>Fresh signup works and hits <code>/resident/welcome</code>.</li>
+      <li>Signed-out resident cannot see <code>/resident</code>; signed-in resident cannot see <code>/admin</code>.</li>
+      <li>Invite link accepted in an incognito window grants the correct role.</li>
+      <li>Resident order-bags flow lands on the success page and writes a <code>bagOrders</code> doc.</li>
+      <li>Scanning an issued bag flips it to <code>pending_pickup</code> and creates a <code>pickups</code> doc with a photo in Storage.</li>
+      <li>Saving new material prices writes a <code>priceHistory</code> doc (visible in the Firebase console).</li>
+      <li>A resident redemption surfaces in <code>/admin/redemptions</code> and can be marked fulfilled.</li>
+    </ol>
+
+    <div class="footer">
+      We Buy Clean Trash · Pilot v1.2 · Testing guide generated April 20, 2026. Phases 5–12
+      (routes, operator, depot, manager, polish, QR sheets, security, launch) follow the
+      <code>planning/Build Plan.md</code> order and are not yet testable.
+    </div>
+  </body>
+</html>

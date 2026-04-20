@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getFreshIdToken, signupWithEmail, signupWithGoogle } from '@/lib/auth/client';
+import { PresignupScanBanner } from '@/components/PresignupScanBanner';
 
 interface Address {
   street: string;
@@ -104,6 +105,10 @@ export default function SignupPage() {
       <p className="mt-1 text-sm text-gray-600">
         Residents only — operator and depot accounts are invite-only.
       </p>
+
+      <div className="mt-4">
+        <PresignupScanBanner />
+      </div>
 
       <form onSubmit={handleEmail} className="mt-6 space-y-3">
         <input

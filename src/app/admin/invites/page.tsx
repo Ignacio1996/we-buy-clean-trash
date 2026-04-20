@@ -31,11 +31,15 @@ async function loadInvitesData() {
     else status = { label: 'Pending', tone: 'text-yellow-400' };
     return { invite, status, canRevoke: invite.status === 'pending' && !expired };
   });
-  return {
-    invites,
-    zones: zonesSnap.docs.map((d) => d.data() as ZoneDoc),
-    depots: depotsSnap.docs.map((d) => d.data() as DepotDoc),
-  };
+  const zones = zonesSnap.docs.map((d) => {
+    const { createdAt: _c, ...rest } = d.data() as ZoneDoc;
+    return rest;
+  });
+  const depots = depotsSnap.docs.map((d) => {
+    const { createdAt: _c, ...rest } = d.data() as DepotDoc;
+    return rest;
+  });
+  return { invites, zones, depots };
 }
 
 function formatTimestamp(ts: Timestamp | null): string {

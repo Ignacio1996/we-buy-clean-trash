@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
+import { PresignupScanBanner } from '@/components/PresignupScanBanner';
 import { WelcomeActions } from './WelcomeActions';
 
 export default async function WelcomePage() {
@@ -15,6 +16,10 @@ export default async function WelcomePage() {
     <main className="px-4 pt-10">
       <h1 className="text-2xl font-semibold text-white">👋 Welcome, {firstName}</h1>
       <p className="mt-1 text-sm text-gray-400">Get started in 3 easy steps — about 2 minutes.</p>
+
+      <div className="mt-4">
+        <PresignupScanBanner />
+      </div>
 
       <ol className="mt-6 space-y-3">
         <li className="rounded-xl border border-white/15 bg-white/5 p-4">

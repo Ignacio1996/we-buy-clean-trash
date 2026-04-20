@@ -5,9 +5,12 @@ import { useRouter } from 'next/navigation';
 import type { ZoneDoc } from '@/lib/types/zone';
 import type { DepotDoc } from '@/lib/types/depot';
 
+type ZoneView = Omit<ZoneDoc, 'createdAt'>;
+type DepotView = Omit<DepotDoc, 'createdAt'>;
+
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export function ZonesClient({ zones, depots }: { zones: ZoneDoc[]; depots: DepotDoc[] }) {
+export function ZonesClient({ zones, depots }: { zones: ZoneView[]; depots: DepotView[] }) {
   const depotNameById = new Map(depots.map((d) => [d.id, d.name]));
 
   return (
@@ -26,7 +29,7 @@ export function ZonesClient({ zones, depots }: { zones: ZoneDoc[]; depots: Depot
   );
 }
 
-function DepotList({ depots }: { depots: DepotDoc[] }) {
+function DepotList({ depots }: { depots: DepotView[] }) {
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -156,7 +159,7 @@ function ZoneList({
   zones,
   depotNameById,
 }: {
-  zones: ZoneDoc[];
+  zones: ZoneView[];
   depotNameById: Map<string, string>;
 }) {
   const router = useRouter();
@@ -216,7 +219,7 @@ function ZoneList({
   );
 }
 
-function ZoneForm({ depots }: { depots: DepotDoc[] }) {
+function ZoneForm({ depots }: { depots: DepotView[] }) {
   const router = useRouter();
   const [form, setForm] = useState({ name: '', depotId: '', pickupDayOfWeek: '1' });
   const [busy, setBusy] = useState(false);
