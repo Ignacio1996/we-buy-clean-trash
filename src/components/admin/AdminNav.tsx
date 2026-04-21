@@ -8,6 +8,7 @@ const ITEMS = [
   { href: '/admin/users', label: 'Users', icon: '👥' },
   { href: '/admin/invites', label: 'Invites', icon: '✉️' },
   { href: '/admin/zones', label: 'Zones & Depots', icon: '🗺️' },
+  { href: '/admin/routes', label: 'Routes', icon: '🚚' },
   { href: '/admin/pricing', label: 'Pricing', icon: '💲' },
   { href: '/admin/redemptions', label: 'Redemptions', icon: '🎁' },
 ] as const;

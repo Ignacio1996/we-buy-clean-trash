@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
+import { parseZipCodes } from '@/lib/types/zone';
 
 export const runtime = 'nodejs';
 
@@ -21,6 +22,13 @@ export async function POST(request: Request) {
   const name = typeof raw.name === 'string' ? raw.name.trim() : '';
   const depotId = typeof raw.depotId === 'string' ? raw.depotId.trim() : '';
   const pickupDayOfWeek = Number(raw.pickupDayOfWeek);
+  const zipCodesRaw =
+    typeof raw.zipCodes === 'string'
+      ? raw.zipCodes
+      : Array.isArray(raw.zipCodes)
+        ? (raw.zipCodes as unknown[]).filter((x): x is string => typeof x === 'string').join(',')
+        : '';
+  const zipCodes = parseZipCodes(zipCodesRaw);
 
   if (
     !name ||
@@ -45,6 +53,7 @@ export async function POST(request: Request) {
       name,
       depotId,
       pickupDayOfWeek,
+      zipCodes,
       createdAt: FieldValue.serverTimestamp(),
     });
     tx.update(depotRef, { zoneIds: FieldValue.arrayUnion(zoneRef.id) });

@@ -12,7 +12,7 @@ async function loadData() {
   ]);
   const zones = zonesSnap.docs.map((d) => {
     const { createdAt: _c, ...rest } = d.data() as ZoneDoc;
-    return rest;
+    return { ...rest, zipCodes: Array.isArray(rest.zipCodes) ? rest.zipCodes : [] };
   });
   const depots = depotsSnap.docs.map((d) => {
     const { createdAt: _c, ...rest } = d.data() as DepotDoc;

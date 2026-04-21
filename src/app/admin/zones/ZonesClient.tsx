@@ -162,17 +162,39 @@ function ZoneList({
   zones: ZoneView[];
   depotNameById: Map<string, string>;
 }) {
+  return (
+    <div className="mt-3 space-y-2">
+      {zones.length === 0 ? (
+        <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-3 text-xs text-gray-500">
+          No zones yet.
+        </div>
+      ) : (
+        zones.map((z) => <ZoneCard key={z.id} zone={z} depotNameById={depotNameById} />)
+      )}
+    </div>
+  );
+}
+
+function ZoneCard({
+  zone,
+  depotNameById,
+}: {
+  zone: ZoneView;
+  depotNameById: Map<string, string>;
+}) {
   const router = useRouter();
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [zipsInput, setZipsInput] = useState(zone.zipCodes.join(', '));
   const [error, setError] = useState<string | null>(null);
 
-  async function handleDelete(id: string) {
+  async function handleDelete() {
     if (!confirm('Delete this zone?')) return;
-    setBusyId(id);
+    setBusy(true);
     setError(null);
-    const res = await fetch(`/api/admin/zones/${id}`, { method: 'DELETE' });
+    const res = await fetch(`/api/admin/zones/${zone.id}`, { method: 'DELETE' });
     const json = await res.json().catch(() => ({}));
-    setBusyId(null);
+    setBusy(false);
     if (!res.ok) {
       setError(
         json.error === 'zone_has_residents'
@@ -184,44 +206,112 @@ function ZoneList({
     router.refresh();
   }
 
+  async function handleSaveZips() {
+    setBusy(true);
+    setError(null);
+    const res = await fetch(`/api/admin/zones/${zone.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ zipCodes: zipsInput }),
+    });
+    setBusy(false);
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}));
+      setError(typeof json.error === 'string' ? json.error : 'Save failed.');
+      return;
+    }
+    setEditing(false);
+    router.refresh();
+  }
+
   return (
-    <div className="mt-3 space-y-2">
-      {zones.length === 0 ? (
-        <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-3 text-xs text-gray-500">
-          No zones yet.
+    <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+      <div className="flex items-start justify-between">
+        <div className="min-w-0">
+          <div className="text-sm text-white">{zone.name}</div>
+          <div className="text-xs text-gray-500">
+            Depot: {depotNameById.get(zone.depotId) ?? zone.depotId} · Pickup:{' '}
+            {DAYS[zone.pickupDayOfWeek] ?? '—'}
+          </div>
         </div>
-      ) : (
-        zones.map((z) => (
-          <div
-            key={z.id}
-            className="flex items-start justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2"
-          >
-            <div>
-              <div className="text-sm text-white">{z.name}</div>
-              <div className="text-xs text-gray-500">
-                Depot: {depotNameById.get(z.depotId) ?? z.depotId} · Pickup:{' '}
-                {DAYS[z.pickupDayOfWeek] ?? '—'}
-              </div>
-            </div>
+        <button
+          type="button"
+          onClick={handleDelete}
+          disabled={busy}
+          className="shrink-0 rounded border border-red-500/30 px-2 py-1 text-[11px] text-red-400 hover:bg-red-500/10 disabled:opacity-50"
+        >
+          {busy ? '…' : 'Delete'}
+        </button>
+      </div>
+      <div className="mt-2">
+        <div className="flex items-center justify-between">
+          <div className="text-[10px] uppercase tracking-wide text-gray-500">
+            ZIP codes ({zone.zipCodes.length})
+          </div>
+          {!editing && (
             <button
               type="button"
-              onClick={() => handleDelete(z.id)}
-              disabled={busyId === z.id}
-              className="rounded border border-red-500/30 px-2 py-1 text-[11px] text-red-400 hover:bg-red-500/10 disabled:opacity-50"
+              onClick={() => setEditing(true)}
+              className="text-[11px] text-gray-400 underline"
             >
-              {busyId === z.id ? '…' : 'Delete'}
+              Edit
             </button>
+          )}
+        </div>
+        {editing ? (
+          <div className="mt-1">
+            <textarea
+              value={zipsInput}
+              onChange={(e) => setZipsInput(e.target.value)}
+              rows={3}
+              placeholder="10001, 10002, 10003…"
+              className="w-full rounded border border-white/10 bg-black/40 px-2 py-1.5 text-xs text-white placeholder-gray-600 focus:border-white/30 focus:outline-none"
+            />
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleSaveZips}
+                disabled={busy}
+                className="rounded bg-white px-2 py-1 text-[11px] font-semibold text-black disabled:opacity-50"
+              >
+                {busy ? 'Saving…' : 'Save'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setZipsInput(zone.zipCodes.join(', '));
+                  setEditing(false);
+                  setError(null);
+                }}
+                className="text-[11px] text-gray-400 underline"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
-        ))
-      )}
-      {error && <p className="text-xs text-red-400">{error}</p>}
+        ) : (
+          <div className="mt-1 text-xs text-gray-300">
+            {zone.zipCodes.length === 0 ? (
+              <span className="text-gray-500">None — add some to auto-assign residents.</span>
+            ) : (
+              zone.zipCodes.join(', ')
+            )}
+          </div>
+        )}
+        {error && <p className="mt-1 text-[11px] text-red-400">{error}</p>}
+      </div>
     </div>
   );
 }
 
 function ZoneForm({ depots }: { depots: DepotView[] }) {
   const router = useRouter();
-  const [form, setForm] = useState({ name: '', depotId: '', pickupDayOfWeek: '1' });
+  const [form, setForm] = useState({
+    name: '',
+    depotId: '',
+    pickupDayOfWeek: '1',
+    zipCodes: '',
+  });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -240,6 +330,7 @@ function ZoneForm({ depots }: { depots: DepotView[] }) {
         name: form.name,
         depotId: form.depotId,
         pickupDayOfWeek: Number(form.pickupDayOfWeek),
+        zipCodes: form.zipCodes,
       }),
     });
     setBusy(false);
@@ -248,7 +339,7 @@ function ZoneForm({ depots }: { depots: DepotView[] }) {
       setError(typeof json.error === 'string' ? json.error : 'Create failed.');
       return;
     }
-    setForm({ name: '', depotId: '', pickupDayOfWeek: '1' });
+    setForm({ name: '', depotId: '', pickupDayOfWeek: '1', zipCodes: '' });
     router.refresh();
   }
 
@@ -290,6 +381,18 @@ function ZoneForm({ depots }: { depots: DepotView[] }) {
               </option>
             ))}
           </select>
+        </label>
+        <label className="block sm:col-span-2">
+          <span className="text-[11px] uppercase tracking-wide text-gray-500">
+            ZIP codes (comma or newline separated)
+          </span>
+          <textarea
+            value={form.zipCodes}
+            onChange={(e) => setForm((f) => ({ ...f, zipCodes: e.target.value }))}
+            rows={2}
+            placeholder="10001, 10002, 10003"
+            className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-gray-600 focus:border-white/30 focus:outline-none"
+          />
         </label>
       </div>
       <div className="mt-4 flex items-center gap-3">

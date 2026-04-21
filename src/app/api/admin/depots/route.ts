@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
+import { geocodeAddress } from '@/lib/maps/geocode';
 
 export const runtime = 'nodejs';
 
@@ -32,6 +33,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });
   }
 
+  const result = await geocodeAddress({ street, unit: null, city, state, postalCode });
+  const geo = result ? { lat: result.lat, lng: result.lng } : null;
+
   const ref = adminDb.collection('depots').doc();
   await ref.set({
     id: ref.id,
@@ -40,7 +44,7 @@ export async function POST(request: Request) {
     city,
     state,
     postalCode,
-    geo: null,
+    geo,
     managerId: null,
     zoneIds: [],
     createdAt: FieldValue.serverTimestamp(),

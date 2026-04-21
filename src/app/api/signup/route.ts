@@ -1,8 +1,19 @@
 import { NextResponse } from 'next/server';
 import { FieldValue } from 'firebase-admin/firestore';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
+import { geocodeAddress } from '@/lib/maps/geocode';
 
 export const runtime = 'nodejs';
+
+async function resolveZoneIdForZip(postalCode: string): Promise<string | null> {
+  const snap = await adminDb
+    .collection('zones')
+    .where('zipCodes', 'array-contains', postalCode)
+    .limit(1)
+    .get();
+  if (snap.empty) return null;
+  return snap.docs[0].id;
+}
 
 interface SignupPayload {
   idToken: string;
@@ -65,6 +76,14 @@ export async function POST(request: Request) {
 
   await adminAuth.setCustomUserClaims(uid, { role: 'resident' });
 
+  // Geocode + resolve zone before the transaction (Admin SDK transactions
+  // can't run queries, only doc gets).
+  const [geoResult, zoneId] = await Promise.all([
+    geocodeAddress(payload.address),
+    resolveZoneIdForZip(payload.address.postalCode),
+  ]);
+  const geo = geoResult ? { lat: geoResult.lat, lng: geoResult.lng } : null;
+
   const SIGNUP_BONUS_POINTS = 10000;
   const addressRef = adminDb.collection('addresses').doc();
   const transactionRef = adminDb.collection('transactions').doc();
@@ -78,8 +97,8 @@ export async function POST(request: Request) {
       city: payload.address.city,
       state: payload.address.state,
       postalCode: payload.address.postalCode,
-      geo: null,
-      zoneId: null,
+      geo,
+      zoneId,
       createdAt: FieldValue.serverTimestamp(),
     });
     tx.set(userRef, {
@@ -87,7 +106,7 @@ export async function POST(request: Request) {
       email: email ?? null,
       name: payload.name,
       role: 'resident',
-      zoneId: null,
+      zoneId,
       addressId: addressRef.id,
       pointsBalance: SIGNUP_BONUS_POINTS,
       createdAt: FieldValue.serverTimestamp(),

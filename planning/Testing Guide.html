@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>We Buy Clean Trash — Phases 1–4 Testing Guide</title>
+    <title>We Buy Clean Trash — Testing Guide</title>
     <style>
       @page {
         size: Letter;
@@ -172,32 +172,49 @@
     <header>
       <h1>We Buy Clean Trash — Testing Guide</h1>
       <p class="lead">
-        Phases 1–4 · Foundation → Auth → Resident flow → Admin core · Updated April 20, 2026
+        Phases 1–5 · Foundation → Auth → Resident flow → Admin core → Routes · Updated April 20, 2026
       </p>
     </header>
 
     <h2>What you should be able to do so far</h2>
     <ol>
+      <li>
+        Visit the root URL and land on the <strong>public pre-signup scan</strong> page
+        (<code>/scan</code>) — camera or photo upload, AI identifies items, shows estimated $/pts,
+        persists across pages via <code>localStorage</code>.
+      </li>
       <li>Sign up as a new <strong>resident</strong> and land on a working dashboard.</li>
+      <li>
+        See the pre-signup scan banner carried through to <code>/signup</code> and
+        <code>/resident/welcome</code>, then cleared on "Let's go".
+      </li>
+      <li>
+        On signup, have the resident's address geocoded and their <strong>zone auto-assigned</strong> by ZIP
+        code (requires the admin to have set up zones with ZIPs first).
+      </li>
       <li>
         Promote yourself to <strong>admin</strong> from the CLI and access the admin console.
       </li>
       <li>Send <strong>invite links</strong> that grant operator / depot / manager / admin roles.</li>
       <li>
-        Browse the resident experience end-to-end: onboarding, order bags (mock Stripe), scan a
-        bag, use the payout calculator, view the recycling guide, redeem a gift card, edit your
-        profile.
+        Browse the resident experience end-to-end: onboarding, order bags (mock Stripe,
+        auto-enqueues onto a matching route if one exists), scan a bag, use the payout
+        calculator, view the recycling guide, redeem a gift card, edit your profile.
       </li>
       <li>
-        Run the admin core: KPI dashboard, residents list, staff invites (create + revoke), zones
-        + depots CRUD, yellow-sheet pricing editor (with price history), redemption fulfillment
-        queue.
+        Run the admin core: KPI dashboard, residents list, staff invites, zones + depots (with
+        ZIP lists + depot geocoding), yellow-sheet pricing editor, redemption fulfillment queue.
+      </li>
+      <li>
+        Build an <strong>optimized pickup route</strong> for a zone + day + operator — pending
+        pickups and queued bag orders in that zone are pulled in automatically and stop order is
+        optimized.
       </li>
     </ol>
     <div class="callout warn">
       <span class="callout-title">Not built yet (skip).</span>
-      Public landing page, pre-signup <code>/scan</code> (AI camera), zone auto-assignment at
-      signup, and Operator / Depot / Manager flows (Phases 5–9).
+      Operator / Depot / Depot-Manager flows, admin polish, QR sheet printing, hardened security
+      rules, and launch polish — Phases 6–12.
     </div>
 
     <h2>0 · Prerequisites</h2>
@@ -379,7 +396,10 @@ npm run dev                 # boots http://localhost:3000</pre>
           <code>100,000 pts = $10</code>).
         </li>
         <li>"Order more bags" card at the top (primary revenue action).</li>
-        <li>"No pickup scheduled yet" placeholder (routes land in Phase 5).</li>
+        <li>
+          "No pickup scheduled yet" placeholder until an admin builds a route that includes this
+          resident (see Phase 5 tests).
+        </li>
         <li>"What's your trash worth?" link to the calculator.</li>
         <li>Bottom nav: Home / Scan / Bags / Rewards / Profile.</li>
       </ul>
@@ -400,8 +420,11 @@ npm run dev                 # boots http://localhost:3000</pre>
       <p>
         <span class="expect">Expect</span> redirect to <code>/resident/order-bags/success?order=...</code>.
         A new <code>bagOrders</code> doc exists in Firestore with
-        <code>stripeStubSuccess: true</code> and <code>status: queued</code>. Route enqueue is
-        deferred to Phase 5.
+        <code>stripeStubSuccess: true</code> and <code>status: queued</code>. If a draft/assigned
+        route already exists for this resident's zone with a future date, the bag order is
+        enqueued onto it in the same transaction (<code>deliveryRouteId</code> set and the route's
+        <code>bagOrdersToDeliver</code> array updated). Otherwise <code>deliveryRouteId</code>
+        stays <code>null</code> and the next admin route build will sweep it in.
       </p>
     </div>
 
@@ -476,7 +499,62 @@ npm run dev                 # boots http://localhost:3000</pre>
       <h4>3.8 — Profile</h4>
       <p>
         <code>/resident/profile</code> shows the address saved at signup, pickup day (read-only,
-        admin-assigned — will be blank for pilot until zones are assigned), and a Sign out button.
+        sourced from the zone auto-assigned by ZIP match — blank only if no zone matches the
+        resident's ZIP), and a Sign out button.
+      </p>
+    </div>
+
+    <h2>Phase 3 backfill · Public landing + pre-signup scan</h2>
+
+    <div class="callout note">
+      <span class="callout-title">Before testing.</span>
+      Sign out of any existing session (or open an incognito window). <code>/api/scan</code>
+      returns a fixed 3-item mock result when <code>GEMINI_API_KEY</code> is unset — that's
+      expected for now.
+    </div>
+
+    <div class="test">
+      <h4>L.1 — Root redirects</h4>
+      <ol>
+        <li>Signed out: visit <code>http://localhost:3000/</code>.</li>
+        <li>Sign in as a resident, then visit <code>/</code> again.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> the anonymous visit redirects to <code>/scan</code>; the
+        authenticated visit redirects to the role home (<code>/resident</code>, <code>/admin</code>,
+        etc. per <code>ROLE_HOME_PATH</code>).
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>L.2 — Scan + accumulate</h4>
+      <ol>
+        <li>On <code>/scan</code>, click <strong>Open camera</strong> (grant permission) and tap
+          <strong>📸 Scan this</strong>. On desktop without a webcam, use the
+          <strong>upload a photo</strong> link instead.</li>
+        <li>A "Scanned items" card appears with the mocked 3 items. Scan again — the list should
+          <strong>accumulate</strong> (more copies of the same items appended).</li>
+        <li>Click <strong>Clear</strong> to empty the list.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> nothing in Firestore. The scan data persists only in
+        <code>localStorage</code> under <code>wbct.presignupScan</code> (open DevTools →
+        Application → Local Storage to confirm). No anonymous Firestore writes happen.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>L.3 — Banner carries into signup + welcome</h4>
+      <ol>
+        <li>With items in the stash from L.2, click <strong>Sign Up &amp; Start Earning →</strong>.</li>
+        <li>On <code>/signup</code>, confirm the green banner shows "You scanned N items worth $X · Y pts".</li>
+        <li>Finish signup. On <code>/resident/welcome</code>, confirm the same banner renders.</li>
+        <li>Click <strong>Let's go →</strong>.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> the <code>wbct.presignupScan</code> key is removed from
+        <code>localStorage</code> once you dismiss the welcome card. Revisiting
+        <code>/resident</code> doesn't re-show the banner.
       </p>
     </div>
 
@@ -538,25 +616,42 @@ npm run dev                 # boots http://localhost:3000</pre>
     </div>
 
     <div class="test">
-      <h4>4.4 — Zones &amp; depots CRUD</h4>
+      <h4>4.4 — Zones &amp; depots CRUD (with ZIP codes)</h4>
       <ol>
         <li>Visit <code>/admin/zones</code>.</li>
         <li>
           Create a depot: <em>Name</em> "Kirk's Yard", <em>Street</em> "100 Pilot Ln",
-          <em>City</em> "Springfield", <em>State</em> "OH", <em>ZIP</em> "45501".
+          <em>City</em> "Springfield", <em>State</em> "OH", <em>ZIP</em> "45501". The server
+          geocodes the address up-front, so the resulting <code>depots</code> doc has
+          <code>geo: { lat, lng }</code> populated (or coords from the mocked fallback if
+          <code>GOOGLE_MAPS_API_KEY</code> is unset — check the Firebase console).
         </li>
         <li>
           Create a zone: <em>Name</em> "North Pilot", <em>Depot</em> Kirk's Yard,
-          <em>Pickup day</em> Wednesday.
+          <em>Pickup day</em> Wednesday, <em>ZIP codes</em> "45501, 45502, 45503". The textarea
+          tolerates commas, newlines, spaces, and trailing <code>+4</code> suffixes — all
+          normalized to 5-digit strings and deduped.
+        </li>
+        <li>
+          On the saved zone card, confirm the ZIP count ("3") and click <strong>Edit</strong> to
+          remove one; click <strong>Save</strong> — the list updates via
+          <code>PATCH /api/admin/zones/[id]</code>.
         </li>
         <li>Try to <strong>Delete</strong> the depot — should error with "zones still reference this depot".</li>
         <li>Delete the zone first, then the depot.</li>
       </ol>
       <p>
         <span class="expect">Expect</span> the <code>zones</code> and <code>depots</code> docs are
-        created/removed; the depot's <code>zoneIds</code> array is kept in sync (zone creation
-        uses a Firestore transaction to set both).
+        created/removed; the depot's <code>zoneIds</code> array is kept in sync; and the zone doc
+        contains a normalized <code>zipCodes: string[]</code>.
       </p>
+      <div class="callout note">
+        <span class="callout-title">Why ZIPs matter.</span>
+        Zone auto-assignment at signup queries
+        <code>zones.where('zipCodes', 'array-contains', address.postalCode).limit(1)</code>. If no
+        zone covers the resident's ZIP, <code>users.zoneId</code> and <code>addresses.zoneId</code>
+        stay <code>null</code> and the resident won't appear in route builds.
+      </div>
     </div>
 
     <div class="test">
@@ -600,21 +695,137 @@ npm run dev                 # boots http://localhost:3000</pre>
       </p>
     </div>
 
+    <div class="page-break"></div>
+    <h2>Phase 5 · Routes (admin build + auto-enqueue)</h2>
+
+    <div class="callout note">
+      <span class="callout-title">Before testing.</span>
+      You'll need (a) a zone with <strong>ZIP codes</strong> populated (Phase 4.4), (b) at least
+      one resident whose address ZIP matches that zone's list (their <code>users.zoneId</code>
+      must be set), (c) at least one invited <strong>operator</strong> (Phase 1.6), and (d) at
+      least one pending <code>pickups</code> doc for that resident (Phase 3.4). If
+      <code>GOOGLE_MAPS_API_KEY</code> is unset, geocoding + optimization both run via mocks
+      (deterministic zip-based coords, nearest-neighbour ordering).
+    </div>
+
+    <div class="test">
+      <h4>5.1 — Zone auto-assignment at signup</h4>
+      <ol>
+        <li>As admin, make sure a zone exists with the ZIP you plan to use.</li>
+        <li>
+          Sign out and create a new resident account with an address whose ZIP matches one on the
+          zone list.
+        </li>
+        <li>Check the new <code>users/{uid}</code> and <code>addresses/{id}</code> docs in Firestore.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> <code>users.zoneId</code> and
+        <code>addresses.zoneId</code> both set to the matching zone's id, and
+        <code>addresses.geo</code> populated with <code>{lat, lng}</code>. Sign up with a ZIP
+        that <em>doesn't</em> match any zone — both <code>zoneId</code> fields stay
+        <code>null</code>, but <code>geo</code> is still populated.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>5.2 — Build a route</h4>
+      <ol>
+        <li>Sign in as admin and visit <code>/admin/routes</code>.</li>
+        <li>
+          Pick a <strong>date</strong> (today or later), the target <strong>zone</strong>, and an
+          <strong>operator</strong>, then click <strong>Build route</strong>.
+        </li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> a green status line like "Built: 1 stop, 0 bag orders"
+        (and "(mock ordering)" if running without a Google Maps key). In Firestore, a new
+        <code>routes/{id}</code> doc exists with
+      </p>
+      <ul>
+        <li><code>status: "assigned"</code>, <code>operatorId</code>, <code>zoneId</code>, <code>date</code>;</li>
+        <li>
+          <code>orderedStops[]</code> populated with each stop's <code>pickupId</code>,
+          <code>addressId</code>, <code>residentId</code>, and <code>order</code> index;
+        </li>
+        <li><code>bagOrdersToDeliver[]</code> listing any queued bag-order ids in the zone.</li>
+      </ul>
+      <p>
+        Each corresponding <code>pickups</code> doc now has <code>routeId</code> set to the new
+        route and <code>operatorId</code> set to the assigned operator. Each enrolled
+        <code>bagOrders</code> doc has <code>deliveryRouteId</code> set.
+      </p>
+      <p>The new route also appears in the <strong>Recent routes</strong> table below the builder.</p>
+    </div>
+
+    <div class="test">
+      <h4>5.3 — Bag order auto-enqueue onto an existing route</h4>
+      <ol>
+        <li>
+          With the route from 5.2 still in <code>assigned</code> status, sign in as the matching
+          resident and place a new bag order (<code>/resident/order-bags</code> → <strong>Pay (stub)</strong>).
+        </li>
+        <li>Check the new <code>bagOrders/{id}</code> doc and the <code>routes/{routeId}</code> doc in Firestore.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> the new bag order has
+        <code>deliveryRouteId</code> set to the existing route's id, and the route's
+        <code>bagOrdersToDeliver</code> array now includes the new order id. Both writes happen
+        inside a single Admin SDK transaction — the route is re-read inside the transaction and
+        skipped if its status changed to <code>in_progress</code>/<code>completed</code> between
+        lookup and commit.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>5.4 — Bag order placed with no matching route</h4>
+      <ol>
+        <li>Pick a zone that has <strong>no draft or assigned route</strong> (either a different
+          zone or mark the existing route as <code>in_progress</code>/<code>completed</code> via
+          the Firebase console for this test).</li>
+        <li>Place a bag order as a resident in that zone.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> the order is created with
+        <code>deliveryRouteId: null</code> and <code>status: queued</code>. Rebuild a route for
+        that zone in <code>/admin/routes</code> — the order is picked up and
+        <code>deliveryRouteId</code> is set by the build.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>5.5 — Invalid inputs</h4>
+      <ol>
+        <li>Try to build a route as a non-admin (should be blocked by the session check).</li>
+        <li>
+          In DevTools, <code>POST /api/route-optimize</code> with a bogus
+          <code>operatorId</code> (or a resident's uid).
+        </li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> <code>403 forbidden</code> for the non-admin call and
+        <code>400 invalid_operator</code> for the wrong-role body.
+      </p>
+    </div>
+
     <h2>Quick regression checklist</h2>
-    <p>Five-minute smoke test before moving to Phase 5:</p>
+    <p>Five-minute smoke test before moving to Phase 6:</p>
     <ol>
-      <li>Fresh signup works and hits <code>/resident/welcome</code>.</li>
+      <li>Anonymous visit to <code>/</code> redirects to <code>/scan</code>; the scan page accumulates mocked items into <code>localStorage</code>.</li>
+      <li>Fresh signup with a ZIP-matched address lands on <code>/resident/welcome</code> <em>with</em> the pre-signup banner, and <code>users.zoneId</code> + <code>addresses.geo</code> are populated.</li>
       <li>Signed-out resident cannot see <code>/resident</code>; signed-in resident cannot see <code>/admin</code>.</li>
       <li>Invite link accepted in an incognito window grants the correct role.</li>
-      <li>Resident order-bags flow lands on the success page and writes a <code>bagOrders</code> doc.</li>
+      <li>Resident order-bags flow lands on the success page and writes a <code>bagOrders</code> doc; if a draft/assigned route exists for the zone, the order is auto-enqueued.</li>
       <li>Scanning an issued bag flips it to <code>pending_pickup</code> and creates a <code>pickups</code> doc with a photo in Storage.</li>
+      <li>Admin zone form saves with ZIPs; editing zips via the per-zone <strong>Edit</strong> button persists.</li>
+      <li>Depot creation writes <code>geo</code> (real or mocked), not <code>null</code>.</li>
+      <li>Admin route builder writes a <code>routes</code> doc with ordered stops, flips the enrolled pickups' <code>routeId</code>, and sets any bag orders' <code>deliveryRouteId</code>.</li>
       <li>Saving new material prices writes a <code>priceHistory</code> doc (visible in the Firebase console).</li>
       <li>A resident redemption surfaces in <code>/admin/redemptions</code> and can be marked fulfilled.</li>
     </ol>
 
     <div class="footer">
-      We Buy Clean Trash · Pilot v1.2 · Testing guide generated April 20, 2026. Phases 5–12
-      (routes, operator, depot, manager, polish, QR sheets, security, launch) follow the
+      We Buy Clean Trash · Pilot v1.3 · Testing guide updated April 20, 2026. Phases 6–12
+      (operator, depot, manager, admin polish, QR sheets, security rules, launch) follow the
       <code>planning/Build Plan.md</code> order and are not yet testable.
     </div>
   </body>
