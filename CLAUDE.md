@@ -95,3 +95,7 @@ Follow the ordered phases in `planning/Build Plan.txt` (Phase 0 → 12). Don't s
 - `firebase deploy --only firestore:rules,storage` — push security rules
 
 Vercel auto-deploys on push to main once the project is linked. Env vars live in `.env.local` (see `.env.local.example`) and must also be set in the Vercel dashboard for deploys.
+
+## Feature guides
+
+Whenever a new feature is added (for residents, operators, depot workers, depot managers, or admins), ask the user if they want a guide written for it. Guides live in `planning/guides/`. Don't create the guide unless the user confirms.

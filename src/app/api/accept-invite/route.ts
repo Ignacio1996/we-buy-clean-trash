@@ -70,6 +70,7 @@ export async function POST(request: Request) {
       uid,
       email,
       name: payload.name,
+      phone: null,
       role: invite.role,
       zoneId: invite.zoneId ?? null,
       addressId: null,

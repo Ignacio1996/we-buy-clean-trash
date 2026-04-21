@@ -172,7 +172,8 @@
     <header>
       <h1>We Buy Clean Trash — Testing Guide</h1>
       <p class="lead">
-        Phases 1–5 · Foundation → Auth → Resident flow → Admin core → Routes · Updated April 20, 2026
+        Phases 1–6 · Foundation → Auth → Resident flow → Admin core → Routes → Operator flow ·
+        Updated April 21, 2026
       </p>
     </header>
 
@@ -210,11 +211,21 @@
         pickups and queued bag orders in that zone are pulled in automatically and stop order is
         optimized.
       </li>
+      <li>
+        Capture a <strong>phone number</strong> at signup (optional) or add/edit it later from
+        <code>/resident/profile</code>.
+      </li>
+      <li>
+        Sign in as an <strong>operator</strong> and run a full day: start route → scan &amp;
+        confirm each pickup (with operator photo + sealed/contamination toggles) → flag Not Out or
+        Issue → deliver bags (scan one sticker, server claims a 10-bag sheet) → tap Driver on the
+        way (SMS stub) → end-of-route summary → Deliver to depot.
+      </li>
     </ol>
     <div class="callout warn">
       <span class="callout-title">Not built yet (skip).</span>
-      Operator / Depot / Depot-Manager flows, admin polish, QR sheet printing, hardened security
-      rules, and launch polish — Phases 6–12.
+      Depot / Depot-Manager flows, admin polish, QR sheet PDF printing, hardened security rules,
+      and launch polish — Phases 7–12.
     </div>
 
     <h2>0 · Prerequisites</h2>
@@ -278,14 +289,21 @@ npm run dev                 # boots http://localhost:3000</pre>
       <h4>1.1 — Resident self-signup</h4>
       <ol>
         <li>Go to <code>http://localhost:3000/signup</code>.</li>
-        <li>Fill in name, email, password, and a full address (street, city, state, ZIP).</li>
+        <li>
+          Fill in name, email, <em>phone (optional)</em>, password, and a full address (street,
+          city, state, ZIP). Try submitting with an obviously broken phone like "abc" — the server
+          rejects with <code>invalid_payload</code>. Submit again leaving phone blank or using a
+          real 7-to-15-digit number.
+        </li>
         <li>Submit.</li>
       </ol>
       <p>
         <span class="expect">Expect</span> redirected to <code>/resident/welcome</code> (the
-        onboarding card). The user's custom claim is now <code>role: resident</code> and a{' '}
+        onboarding card). The user's custom claim is now <code>role: resident</code>, a
         <code>transactions/&lt;id&gt;</code> doc of type <code>signup_bonus</code> for
-        <strong>+10,000 pts</strong> is written.
+        <strong>+10,000 pts</strong> is written, and
+        <code>users/&lt;uid&gt;.phone</code> contains what you typed (or
+        <code>null</code> if you left it blank).
       </p>
     </div>
 
@@ -496,12 +514,26 @@ npm run dev                 # boots http://localhost:3000</pre>
     </div>
 
     <div class="test">
-      <h4>3.8 — Profile</h4>
-      <p>
-        <code>/resident/profile</code> shows the address saved at signup, pickup day (read-only,
-        sourced from the zone auto-assigned by ZIP match — blank only if no zone matches the
-        resident's ZIP), and a Sign out button.
-      </p>
+      <h4>3.8 — Profile (with phone editor)</h4>
+      <ol>
+        <li>
+          Visit <code>/resident/profile</code>. Confirm it shows Name, Email, Phone, Address, and
+          Pickup day (real day from the zone if ZIP-matched, or a "Not assigned" hint otherwise).
+        </li>
+        <li>
+          Click <strong>Edit</strong> next to Phone, type <code>abc</code>, hit Save — expect an
+          inline red "That phone number doesn't look right" error (400 <code>invalid_phone</code>
+          from <code>PATCH /api/profile</code>).
+        </li>
+        <li>
+          Save a real number (e.g. <code>555-123-4567</code>) — confirm the page updates and
+          <code>users/&lt;uid&gt;.phone</code> is set in Firestore.
+        </li>
+        <li>
+          Edit again, clear the field, Save — <code>users/&lt;uid&gt;.phone</code> becomes
+          <code>null</code>.
+        </li>
+      </ol>
     </div>
 
     <h2>Phase 3 backfill · Public landing + pre-signup scan</h2>
@@ -807,25 +839,235 @@ npm run dev                 # boots http://localhost:3000</pre>
       </p>
     </div>
 
+    <div class="page-break"></div>
+    <h2>Phase 6 · Operator flow</h2>
+
+    <div class="callout note">
+      <span class="callout-title">Before testing.</span>
+      You need (a) a resident with a matched ZIP and at least one pending <code>pickups</code>
+      doc (Phase 3.4), (b) a queued <code>bagOrders</code> doc for that resident (Phase 3.3,
+      optional but recommended to test the Deliver flow), (c) an invited <strong>operator</strong>
+      account, and (d) an admin-built <strong>route</strong> that assigned the operator to the
+      zone (Phase 5.2). Sign in as the operator for all tests below — a fresh login ensures the
+      <code>role: operator</code> custom claim has propagated.
+    </div>
+
+    <div class="test">
+      <h4>6.1 — Today's Route loads with the right state</h4>
+      <ol>
+        <li>Sign in as the operator and visit <code>/operator</code>.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> a mobile-shaped layout with a stat row (Stops / Bags /
+        Deliver), a blue "Ready to roll?" card with a <strong>Start route</strong> button (since
+        <code>route.status === 'assigned'</code>), and no current-stop card yet. If there's no
+        active route, you see "No active route" and a gentle hint to wait for admin to build one.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>6.2 — Start the route</h4>
+      <ol>
+        <li>Tap <strong>▶ Start route</strong>.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> the blue card disappears, a <strong>Current stop</strong>
+        card appears for the first-ordered address, and the <code>routes/{id}</code> doc now has
+        <code>status: in_progress</code> + <code>startedAt</code> set. Refreshing the page keeps
+        the same current stop (server-derived from first pending pickup).
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>6.3 — Driver on the way (SMS stub)</h4>
+      <ol>
+        <li>Tap <strong>📲 Text resident: driver on the way</strong>.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> a new <code>smsLog</code> doc with
+        <code>purpose: 'driver_on_the_way'</code>, the resident's phone in <code>toPhone</code>
+        (or <code>''</code> if they have no phone on file), the pickup id in <code>relatedDocId</code>,
+        and a console log from the dev server. If phone is missing, the UI shows the yellow
+        "logged to smsLog only" hint.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>6.4 — Scan &amp; Confirm a pickup</h4>
+      <ol>
+        <li>Tap <strong>✓ SCAN &amp; COMPLETE</strong>.</li>
+        <li>
+          On <code>/operator/stop/[pickupId]</code>, scan the bag QR (camera or type the printed
+          number). The screen rejects a code that doesn't match the expected bag.
+        </li>
+        <li>Flip <strong>sealed</strong> off, flip <strong>contamination</strong> on.</li>
+        <li>Take a doorstep photo (file picker on desktop, camera on mobile).</li>
+        <li>Tap <strong>✓ Confirm pickup</strong>.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> a success flash, then redirect back to
+        <code>/operator</code> advancing to the next pending pickup. In Firestore:
+      </p>
+      <ul>
+        <li>
+          <code>pickups/&lt;id&gt;.status === 'completed'</code>,
+          <code>sealed === false</code>,
+          <code>operatorPhotoUrl</code> populated at
+          <code>gs://.../pickups/&lt;uid&gt;/&lt;pickupId&gt;-op.jpg</code>,
+          <code>issue === 'contaminated'</code> (operator flag — depot worker sets severity in
+          Phase 7), and <code>operatorId</code> set.
+        </li>
+        <li><code>bags/&lt;id&gt;.status === 'picked_up'</code>.</li>
+        <li>
+          The original <code>doorstepPhotoUrl</code> (resident's pre-pickup photo) is
+          <strong>untouched</strong> — both photos coexist.
+        </li>
+      </ul>
+    </div>
+
+    <div class="test">
+      <h4>6.5 — Bag Not Out</h4>
+      <ol>
+        <li>On a different stop, tap <strong>📦 Not out</strong>, confirm the prompt.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> all pending pickups at that address update to
+        <code>status: missed</code>, <code>issue: 'not_out'</code>, and their bags to
+        <code>status: missed</code> — in parallel, one API call per pickup. The stop is removed
+        from the current slot.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>6.6 — Flag an issue</h4>
+      <ol>
+        <li>Tap <strong>⚠ Issue</strong> on a stop.</li>
+        <li>Pick <strong>Contaminated</strong> or <strong>Other</strong>, type a note, submit.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> all pending pickups at that address become
+        <code>status: issue</code> with the chosen <code>issue</code> enum and
+        <code>issueNote</code> set; their bags become <code>missed</code>. The end-of-route
+        summary (Phase 6.9) will surface these under "Issues flagged".
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>6.7 — Skip (local only)</h4>
+      <ol>
+        <li>Tap <strong>⏭ Skip</strong> on a stop.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> the stop disappears from the current card (another one
+        takes its place), <strong>but nothing is written</strong> — <code>pickups</code> and
+        <code>bags</code> remain <code>pending</code>/<code>pending_pickup</code>. Reload the page
+        and the skipped stop reappears. Skipping is UI-only session state.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>6.8 — Deliver bags + QR stickers</h4>
+      <ol>
+        <li>
+          On a stop that has a <strong>📦 Deliver bags + QR stickers</strong> card, tap the
+          inner link to go to <code>/operator/deliver/[bagOrderId]</code>.
+        </li>
+        <li>
+          Scan (or type) the first sticker of a physical sheet, e.g. <code>BAG-4237-01</code>.
+          The app rejects invalid formats like <code>BAG-4237</code> (no suffix) or
+          <code>BAG-4237-05</code> (mid-sheet anchor).
+        </li>
+        <li>On a valid code, submit.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> in one Admin SDK transaction:
+      </p>
+      <ul>
+        <li>
+          a new <code>stickerSheets</code> doc with
+          <code>residentId</code>, <code>bagIds: [10 ids]</code>, <code>bagOrderId</code>, and
+          <code>printedAt</code> set;
+        </li>
+        <li>
+          10 <code>bags</code> docs with sequential codes
+          <code>BAG-4237-01..10</code>, <code>status: 'unused'</code>, bound to the resident;
+        </li>
+        <li>
+          the <code>bagOrders/&lt;id&gt;</code> flipped to
+          <code>status: 'delivered'</code> with <code>deliveredAt</code> set.
+        </li>
+      </ul>
+      <p>
+        Attempting to scan the same sheet anchor twice returns
+        <code>sheet_already_issued</code>. Scanning an anchor into an already-delivered order
+        returns <code>already_delivered</code>.
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>6.9 — End-of-route summary + Deliver to Depot</h4>
+      <ol>
+        <li>
+          When every stop is handled, the current-stop card is replaced with a green "All stops
+          handled" card. Tap <strong>End-of-route summary →</strong>.
+        </li>
+        <li>
+          On <code>/operator/summary</code>, confirm the stat row matches (Stops / Bags / Missed /
+          Issues), Deliveries count is right, and any flagged issues show the address + note.
+        </li>
+        <li>Tap <strong>Deliver to depot →</strong>, confirm the prompt.</li>
+      </ol>
+      <p>
+        <span class="expect">Expect</span> the <code>routes/&lt;id&gt;</code> doc updates to
+        <code>status: 'completed'</code> with both <code>completedAt</code> and
+        <code>returnedToDepotAt</code> set. Redirect to <code>/operator</code> which now shows
+        "No active route."
+      </p>
+    </div>
+
+    <div class="test">
+      <h4>6.10 — Auth / state guards</h4>
+      <ol>
+        <li>
+          As the operator, try to POST directly to <code>/api/routes/&lt;id&gt;/start</code>
+          for a <em>different</em> operator's route (use a route id from another operator) —
+          expect <strong>403 not_your_route</strong>.
+        </li>
+        <li>
+          Try to complete a pickup while <code>route.status</code> is still
+          <code>assigned</code> (i.e., before tapping Start route) — expect
+          <strong>409 route_not_started</strong>.
+        </li>
+        <li>
+          Try to complete the same pickup twice — the second call returns
+          <strong>409 pickup_not_pending</strong>.
+        </li>
+      </ol>
+    </div>
+
     <h2>Quick regression checklist</h2>
-    <p>Five-minute smoke test before moving to Phase 6:</p>
+    <p>Five-minute smoke test before moving to Phase 7:</p>
     <ol>
       <li>Anonymous visit to <code>/</code> redirects to <code>/scan</code>; the scan page accumulates mocked items into <code>localStorage</code>.</li>
-      <li>Fresh signup with a ZIP-matched address lands on <code>/resident/welcome</code> <em>with</em> the pre-signup banner, and <code>users.zoneId</code> + <code>addresses.geo</code> are populated.</li>
-      <li>Signed-out resident cannot see <code>/resident</code>; signed-in resident cannot see <code>/admin</code>.</li>
+      <li>Fresh signup with a ZIP-matched address lands on <code>/resident/welcome</code> <em>with</em> the pre-signup banner; <code>users.zoneId</code>, <code>users.phone</code>, and <code>addresses.geo</code> all populate correctly.</li>
+      <li>Profile phone editor saves valid numbers, rejects gibberish, and clears to <code>null</code> when emptied.</li>
+      <li>Signed-out resident cannot see <code>/resident</code>; signed-in resident cannot see <code>/admin</code> or <code>/operator</code>.</li>
       <li>Invite link accepted in an incognito window grants the correct role.</li>
       <li>Resident order-bags flow lands on the success page and writes a <code>bagOrders</code> doc; if a draft/assigned route exists for the zone, the order is auto-enqueued.</li>
       <li>Scanning an issued bag flips it to <code>pending_pickup</code> and creates a <code>pickups</code> doc with a photo in Storage.</li>
       <li>Admin zone form saves with ZIPs; editing zips via the per-zone <strong>Edit</strong> button persists.</li>
       <li>Depot creation writes <code>geo</code> (real or mocked), not <code>null</code>.</li>
       <li>Admin route builder writes a <code>routes</code> doc with ordered stops, flips the enrolled pickups' <code>routeId</code>, and sets any bag orders' <code>deliveryRouteId</code>.</li>
+      <li>Operator can start → scan &amp; complete → deliver bags → close a route end-to-end; the closed route has both <code>completedAt</code> and <code>returnedToDepotAt</code> set.</li>
+      <li>Operator "Driver on the way" tap writes an <code>smsLog</code> doc with the resident's phone (or empty) and <code>purpose: 'driver_on_the_way'</code>.</li>
+      <li>Operator "Deliver bags" scans create one <code>stickerSheets</code> doc + 10 <code>bags</code> in one transaction and flip the bag order to <code>delivered</code>.</li>
       <li>Saving new material prices writes a <code>priceHistory</code> doc (visible in the Firebase console).</li>
       <li>A resident redemption surfaces in <code>/admin/redemptions</code> and can be marked fulfilled.</li>
     </ol>
 
     <div class="footer">
-      We Buy Clean Trash · Pilot v1.3 · Testing guide updated April 20, 2026. Phases 6–12
-      (operator, depot, manager, admin polish, QR sheets, security rules, launch) follow the
+      We Buy Clean Trash · Pilot v1.4 · Testing guide updated April 21, 2026. Phases 7–12
+      (depot, manager, admin polish, QR sheets, security rules, launch) follow the
       <code>planning/Build Plan.md</code> order and are not yet testable.
     </div>
   </body>

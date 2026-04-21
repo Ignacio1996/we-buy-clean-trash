@@ -21,6 +21,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [address, setAddress] = useState<Address>(EMPTY_ADDRESS);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -32,6 +33,7 @@ export default function SignupPage() {
       body: JSON.stringify({
         idToken,
         name: name.trim(),
+        phone: phone.trim() || null,
         address: {
           street: address.street.trim(),
           unit: address.unit.trim() || null,
@@ -124,6 +126,14 @@ export default function SignupPage() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          className="w-full rounded border border-gray-300 px-3 py-2"
+        />
+        <input
+          type="tel"
+          placeholder="Phone (optional — for pickup-day alerts)"
+          autoComplete="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
           className="w-full rounded border border-gray-300 px-3 py-2"
         />
         <input

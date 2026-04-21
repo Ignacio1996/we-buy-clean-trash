@@ -5,12 +5,24 @@ export interface UserDoc {
   uid: string;
   email: string;
   name: string;
+  phone: string | null;
   role: Role;
   zoneId: string | null;
   addressId: string | null;
   pointsBalance: number;
   createdAt: Timestamp;
   updatedAt: Timestamp;
+}
+
+// Lenient pilot-era phone validator — trim, cap length, require 7–15 digits.
+// Twilio will canonicalize to E.164 when real SMS is wired post-pilot.
+export function normalizePhone(raw: unknown): string | null {
+  if (typeof raw !== 'string') return null;
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed.length > 20) return null;
+  const digitCount = (trimmed.match(/\d/g) ?? []).length;
+  if (digitCount < 7 || digitCount > 15) return null;
+  return trimmed;
 }
 
 export interface AddressDoc {

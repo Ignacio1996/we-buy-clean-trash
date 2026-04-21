@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { FieldValue } from 'firebase-admin/firestore';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { geocodeAddress } from '@/lib/maps/geocode';
+import { normalizePhone } from '@/lib/types/user';
 
 export const runtime = 'nodejs';
 
@@ -18,6 +19,7 @@ async function resolveZoneIdForZip(postalCode: string): Promise<string | null> {
 interface SignupPayload {
   idToken: string;
   name: string;
+  phone: string | null;
   address: {
     street: string;
     unit: string | null;
@@ -38,8 +40,13 @@ function parsePayload(raw: unknown): SignupPayload | null {
   const state = typeof a.state === 'string' ? a.state.trim() : '';
   const postalCode = typeof a.postalCode === 'string' ? a.postalCode.trim() : '';
   const unit = typeof a.unit === 'string' && a.unit.trim() ? a.unit.trim() : null;
+  // Phone is optional. If the caller sends a value we normalize + reject if invalid;
+  // if the field is absent or empty we accept the signup with phone=null.
+  const phoneRaw = typeof r.phone === 'string' ? r.phone.trim() : '';
+  const phone = phoneRaw ? normalizePhone(phoneRaw) : null;
+  if (phoneRaw && !phone) return null;
   if (!idToken || !name || !street || !city || !state || !postalCode) return null;
-  return { idToken, name, address: { street, unit, city, state, postalCode } };
+  return { idToken, name, phone, address: { street, unit, city, state, postalCode } };
 }
 
 export async function POST(request: Request) {
@@ -105,6 +112,7 @@ export async function POST(request: Request) {
       uid,
       email: email ?? null,
       name: payload.name,
+      phone: payload.phone,
       role: 'resident',
       zoneId,
       addressId: addressRef.id,
