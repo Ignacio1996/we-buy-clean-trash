@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Resident App Guide</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <header>
+      <h1>Phase 3 · Resident App</h1>
+      <p class="lead">
+        Everything a homeowner can do: estimate their trash value before signing up, order recycling
+        bags, scan a bag before pickup, check their points, and redeem a gift card. All scenarios
+        in this guide are run as <strong>Maria Rodriguez</strong> unless noted.
+      </p>
+    </header>
+
+    <h2>What you're verifying</h2>
+    <ul>
+      <li>A visitor can try the AI scan before signing up.</li>
+      <li>A signed-in resident's dashboard shows the right numbers (points, next pickup).</li>
+      <li>Ordering bags produces an order confirmation.</li>
+      <li>Scanning a bag before pickup day registers it as "out for pickup."</li>
+      <li>The payout calculator reflects current material pricing.</li>
+      <li>Gift card redemptions show up in the admin queue (cross-checked in the Admin guide).</li>
+    </ul>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 1 — Pre-signup AI scan (visitor, no account yet)</div>
+      <div class="scenario-body">
+        <p><span class="actor tester">Visitor</span> No one signed in.</p>
+        <ol>
+          <li>Open the homepage in a private window on your phone.</li>
+          <li>Tap <strong>Try the scan</strong> (or the big camera button on the landing page).</li>
+          <li>
+            Allow camera access when the browser asks.
+          </li>
+          <li>
+            Point the camera at a small pile of recyclables (a soda can, a cardboard box, a
+            plastic bottle) and tap the shutter.
+          </li>
+          <li>Wait a few seconds.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> A list of detected items appears, each with an estimated
+          weight and an estimated dollar value. A total at the bottom shows what the pile would
+          earn. A <strong>Sign up to claim</strong> button is below the results.
+        </div>
+        <p><span class="checkbox"></span> Camera opens and captures an image</p>
+        <p><span class="checkbox"></span> AI returns a list of items (not an error)</p>
+        <p><span class="checkbox"></span> Closing the tab and reopening shows no saved scan (it's meant to be session-only)</p>
+
+        <div class="callout note">
+          <span class="callout-title">The estimate won't be perfect.</span>
+          The AI is rough on purpose — its job is to show the resident that their trash has real
+          value, not to be accurate to the cent. If it labels a can as a bottle, note it, but
+          don't call it a bug.
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 2 — The dashboard</div>
+      <div class="scenario-body">
+        <p><span class="actor resident">Resident</span> Signed in as Maria.</p>
+        <ol>
+          <li>Sign in as Maria and land on the resident home.</li>
+          <li>Read each card top to bottom.</li>
+        </ol>
+        <p>You should see:</p>
+        <ul>
+          <li>A <strong>points balance</strong> tile (10,000 right after signup).</li>
+          <li>A <strong>next pickup</strong> card with either a date or "Pickup day not assigned yet."</li>
+          <li>An <strong>Order more bags</strong> button near the top.</li>
+          <li>A notification or impact card further down.</li>
+          <li>A bottom nav bar: <em>Home · Scan · Calculator · Guide · Rewards</em>.</li>
+        </ul>
+        <div class="expected">
+          <strong>Expected:</strong> Everything loads in one pass, no long spinners. Numbers match
+          what you'd expect for a brand-new account (10,000 pts, no pickups yet).
+        </div>
+        <p><span class="checkbox"></span> Points balance correct</p>
+        <p><span class="checkbox"></span> Bottom nav switches screens cleanly</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 3 — Ordering bags</div>
+      <div class="scenario-body">
+        <p><span class="actor resident">Resident</span> Signed in as Maria.</p>
+        <ol>
+          <li>Tap <strong>Order more bags</strong> on the home screen.</li>
+          <li>Use the <strong>+</strong> / <strong>–</strong> stepper to choose a quantity. Try 1 first.</li>
+          <li>Read the order summary. With 1 sheet, you should see a <em>$10 shipping</em> line because the order is under $20.</li>
+          <li>Bump the quantity to 3. Shipping should drop to <em>Free</em> once the subtotal clears $20.</li>
+          <li>Tap <strong>Pay now</strong> (it's a placeholder button; no real payment happens).</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The checkout succeeds instantly. You land on an order
+          confirmation screen with an order number and a "delivered on next pickup" line. The
+          order appears in Maria's account history.
+        </div>
+        <p><span class="checkbox"></span> Shipping rule toggles at the $20 threshold</p>
+        <p><span class="checkbox"></span> "Pay now" doesn't ask for a real card — it just simulates success</p>
+        <p><span class="checkbox"></span> Order appears in Maria's order history after checkout</p>
+
+        <div class="callout warn">
+          <span class="callout-title">No real charges during the pilot.</span>
+          The payment button is intentionally a stub. Don't enter a real card number anywhere in
+          this flow. If a form asks for one, stop and report it.
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 4 — Scanning a bag before pickup day</div>
+      <div class="scenario-body">
+        <p><span class="actor resident">Resident</span> Signed in as Maria on her phone.</p>
+        <p>
+          <em>
+            Prerequisite: Maria needs at least one unused bag sticker in her account. The dev team
+            can pre-issue a sheet to her for testing, or James the operator will deliver one
+            during the operator guide.
+          </em>
+        </p>
+        <ol>
+          <li>Tap <strong>Scan</strong> on the bottom nav.</li>
+          <li>Allow camera access.</li>
+          <li>Hold the camera over the QR code on one of her stickers.</li>
+          <li>If the camera can't read the sticker, tap <strong>Enter code manually</strong> and type the printed number (something like <em>BAG-4237-03</em>).</li>
+          <li>Pick <strong>Separated</strong> or <strong>Mixed</strong> for what's inside the bag.</li>
+          <li>Take the "before" photo of the filled bag on her doorstep.</li>
+          <li>Submit.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Maria sees a "Your bag is scheduled for pickup" confirmation
+          and the bag now shows up in the <em>Upcoming pickups</em> area of her dashboard.
+        </div>
+        <p><span class="checkbox"></span> QR scanner reads the sticker directly</p>
+        <p><span class="checkbox"></span> Manual code entry works as a fallback</p>
+        <p><span class="checkbox"></span> Picking "Separated" vs "Mixed" is saved (visible in the pickup details)</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 5 — Payout calculator</div>
+      <div class="scenario-body">
+        <p><span class="actor resident">Resident</span> Signed in as Maria.</p>
+        <ol>
+          <li>Tap <strong>Calculator</strong> on the bottom nav.</li>
+          <li>Type weights into each of the seven material fields (try 1 lb aluminum, 2 lb cardboard, etc.).</li>
+          <li>Toggle <strong>Clean &amp; separated</strong> on and off.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The estimated points update live. Flipping the "separated"
+          toggle roughly <em>doubles</em> the estimate. Dollar equivalents ($10 per 100,000 pts)
+          match the point totals.
+        </div>
+        <p><span class="checkbox"></span> Live updates as you type</p>
+        <p><span class="checkbox"></span> Separated multiplier behaves correctly</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 6 — Recycling guide</div>
+      <div class="scenario-body">
+        <p><span class="actor resident">Resident</span> Signed in as Maria.</p>
+        <ol>
+          <li>Tap <strong>Guide</strong> on the bottom nav.</li>
+          <li>Scroll through the whole page.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> A readable explainer covering what each of the 7 accepted
+          materials looks like, what counts as contamination, and how to prepare each type. No
+          broken images, no lorem ipsum.
+        </div>
+        <p><span class="checkbox"></span> All images render</p>
+        <p><span class="checkbox"></span> Text is written for a homeowner, not for a developer</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 7 — Rewards and redemption</div>
+      <div class="scenario-body">
+        <p><span class="actor resident">Resident</span> Signed in as Maria.</p>
+        <ol>
+          <li>Tap <strong>Rewards</strong> on the bottom nav.</li>
+          <li>Confirm the current balance matches the home screen.</li>
+          <li>Look at the 4 redemption tiles: <em>Amazon gift card</em>, <em>Walmart gift card</em>, <em>Pay trash bill</em>, <em>Donate to nonprofit</em>.</li>
+          <li>Tap <strong>Amazon gift card</strong>.</li>
+          <li>Pick a dollar value (e.g. $5 = 50,000 pts).</li>
+          <li>Submit the request.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Maria's points balance drops by the selected amount and a
+          new entry appears in her history ("Amazon gift card — pending"). The request will also
+          show up in Sarah's admin redemption queue — you'll verify that in the Admin guide.
+          <br /><br />
+          <strong>Pay trash bill</strong> and <strong>Donate</strong> tiles should be visible but
+          disabled (greyed out) with a "Coming soon" label. That's intentional for the pilot.
+        </div>
+        <p><span class="checkbox"></span> Balance decreases immediately</p>
+        <p><span class="checkbox"></span> History shows the pending redemption</p>
+        <p><span class="checkbox"></span> Pay trash bill / Donate are disabled, not crash buttons</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 8 — Profile</div>
+      <div class="scenario-body">
+        <p><span class="actor resident">Resident</span> Signed in as Maria.</p>
+        <ol>
+          <li>Open the account menu (top-right) → <strong>Profile</strong>.</li>
+          <li>Confirm name, email, phone, and address are correct.</li>
+          <li>Try editing the phone number and saving.</li>
+          <li>Try signing out from this screen.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Editable fields save cleanly. The <em>pickup day</em> field
+          is read-only (only admin can change it). Sign-out returns to the public homepage.
+        </div>
+        <p><span class="checkbox"></span> Phone saves and persists after reload</p>
+        <p><span class="checkbox"></span> Pickup day is display-only</p>
+      </div>
+    </div>
+
+    <h2>When to stop and report</h2>
+    <p>
+      If any of these fail, note which scenario, what you did, what you expected, and what
+      actually happened. Screenshots help. You don't need to re-test all of Phase 3 after a fix —
+      just re-run the single scenario that failed.
+    </p>
+
+    <div class="footer">
+      We Buy Clean Trash · Phase 3 testing guide · Pilot April 2026
+    </div>
+  </body>
+</html>

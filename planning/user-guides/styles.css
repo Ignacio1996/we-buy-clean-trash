@@ -1,0 +1,220 @@
+@page {
+  size: Letter;
+  margin: 0.6in 0.7in;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.55;
+  color: #111;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 40px 32px 80px;
+}
+h1 {
+  font-size: 26pt;
+  margin: 0 0 6pt 0;
+  letter-spacing: -0.01em;
+}
+h2 {
+  font-size: 16pt;
+  margin: 28pt 0 8pt 0;
+  border-bottom: 1px solid #d0d0d0;
+  padding-bottom: 4pt;
+  page-break-after: avoid;
+}
+h3 {
+  font-size: 13pt;
+  margin: 18pt 0 6pt 0;
+  page-break-after: avoid;
+}
+h4 {
+  font-size: 11pt;
+  margin: 12pt 0 4pt 0;
+  color: #333;
+  page-break-after: avoid;
+}
+p {
+  margin: 6pt 0;
+}
+ul,
+ol {
+  padding-left: 22pt;
+  margin: 6pt 0;
+}
+li {
+  margin: 3pt 0;
+}
+.lead {
+  color: #555;
+  font-size: 11pt;
+  margin: 0 0 14pt 0;
+}
+.callout {
+  border-left: 3px solid #22c55e;
+  background: #f0fdf4;
+  padding: 8pt 12pt;
+  margin: 8pt 0;
+  font-size: 10.5pt;
+  border-radius: 3pt;
+}
+.callout.warn {
+  border-left-color: #f59e0b;
+  background: #fffbeb;
+}
+.callout.note {
+  border-left-color: #3b82f6;
+  background: #eff6ff;
+}
+.callout.danger {
+  border-left-color: #ef4444;
+  background: #fef2f2;
+}
+.callout.tester {
+  border-left-color: #8b5cf6;
+  background: #f5f3ff;
+}
+.callout-title {
+  font-weight: 600;
+  margin-right: 6pt;
+}
+.footer {
+  margin-top: 32pt;
+  padding-top: 10pt;
+  border-top: 1px solid #d0d0d0;
+  font-size: 9.5pt;
+  color: #666;
+}
+.page-break {
+  page-break-before: always;
+}
+a {
+  color: #1d4ed8;
+  text-decoration: none;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8pt 0;
+  font-size: 10.5pt;
+}
+th,
+td {
+  border-bottom: 1px solid #e4e4e4;
+  padding: 6pt 8pt;
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  background: #f7f7f7;
+  font-weight: 600;
+}
+.card {
+  margin: 12pt 0;
+  padding: 12pt 14pt;
+  border: 1px solid #e4e4e4;
+  border-radius: 6pt;
+  page-break-inside: avoid;
+  background: #fafafa;
+}
+.card h4 {
+  margin-top: 0;
+}
+.actor {
+  display: inline-block;
+  font-size: 9.5pt;
+  font-weight: 600;
+  padding: 2pt 8pt;
+  border-radius: 10pt;
+  margin-right: 4pt;
+  vertical-align: middle;
+}
+.actor.admin {
+  background: #fef3c7;
+  color: #92400e;
+}
+.actor.resident {
+  background: #dcfce7;
+  color: #166534;
+}
+.actor.operator {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.actor.depot {
+  background: #fce7f3;
+  color: #9d174d;
+}
+.actor.tester {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+.step-num {
+  display: inline-block;
+  width: 22pt;
+  height: 22pt;
+  line-height: 22pt;
+  text-align: center;
+  background: #1e293b;
+  color: white;
+  border-radius: 50%;
+  font-weight: 600;
+  margin-right: 6pt;
+  font-size: 10pt;
+}
+.scenario {
+  margin: 14pt 0;
+  border: 1px solid #e4e4e4;
+  border-radius: 6pt;
+  overflow: hidden;
+}
+.scenario > .scenario-head {
+  background: #1e293b;
+  color: white;
+  padding: 8pt 14pt;
+  font-weight: 600;
+  font-size: 11.5pt;
+}
+.scenario > .scenario-body {
+  padding: 10pt 14pt;
+}
+.checkbox {
+  display: inline-block;
+  width: 11pt;
+  height: 11pt;
+  border: 1.5px solid #333;
+  border-radius: 2pt;
+  margin-right: 6pt;
+  vertical-align: -1pt;
+}
+.expected {
+  background: #ecfdf5;
+  border-left: 3px solid #10b981;
+  padding: 6pt 10pt;
+  margin: 6pt 0;
+  font-size: 10.5pt;
+  border-radius: 3pt;
+}
+.expected strong {
+  color: #065f46;
+}
+.nav-back {
+  font-size: 10pt;
+  margin-bottom: 20pt;
+  color: #555;
+}
+@media print {
+  body {
+    max-width: none;
+    padding: 0;
+  }
+  .nav-back {
+    display: none;
+  }
+}

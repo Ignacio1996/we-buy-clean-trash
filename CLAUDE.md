@@ -98,4 +98,4 @@ Vercel auto-deploys on push to main once the project is linked. Env vars live in
 
 ## Feature guides
 
-Whenever a new feature is added (for residents, operators, depot workers, depot managers, or admins), ask the user if they want a guide written for it. Guides live in `planning/guides/`. Don't create the guide unless the user confirms.
+Whenever a new feature is added (for residents, operators, depot workers, depot managers, or admins), ask the user if they want a guide written for it. Guides live in `planning/user-guides/`. Don't create the guide unless the user confirms.

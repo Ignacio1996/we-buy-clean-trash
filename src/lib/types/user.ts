@@ -9,6 +9,7 @@ export interface UserDoc {
   role: Role;
   zoneId: string | null;
   addressId: string | null;
+  depotId: string | null;
   pointsBalance: number;
   createdAt: Timestamp;
   updatedAt: Timestamp;

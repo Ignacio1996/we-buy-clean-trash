@@ -116,6 +116,7 @@ export async function POST(request: Request) {
       role: 'resident',
       zoneId,
       addressId: addressRef.id,
+      depotId: null,
       pointsBalance: SIGNUP_BONUS_POINTS,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),

@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Operator Day Guide</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <header>
+      <h1>Phase 6 · Running an Operator Day</h1>
+      <p class="lead">
+        What the driver does from the moment they open the app in the morning to the moment they
+        return to the depot. All scenarios in this guide are run as
+        <strong>James Carter</strong> on a phone browser, with <strong>Sarah</strong> and
+        <strong>Maria</strong> on the side to set things up and verify.
+      </p>
+    </header>
+
+    <h2>What you're verifying</h2>
+    <ul>
+      <li>James sees today's route when Sarah has assigned it to him.</li>
+      <li>He can start the route, work through stops, and close it out.</li>
+      <li>Each stop's QR scan matches the expected resident — scanning the wrong bag is rejected.</li>
+      <li>"Skip", "Not out", and "Issue" all behave differently.</li>
+      <li>Delivering a sheet of new bags to a resident registers the 10 bags in the resident's account.</li>
+      <li>After the route is closed, the resident's bag shows up in the depot's incoming list (will be checked when Phase 7 lands).</li>
+    </ul>
+
+    <div class="callout note">
+      <span class="callout-title">Setup before you start.</span>
+      Make sure Sarah has already built today's route using the Phase 5 guide. The route must be
+      assigned to James and include at least one pickup stop (Maria) and one delivery stop (Tom
+      or Maria, whichever has a pending bag order).
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 1 — Seeing today's route</div>
+      <div class="scenario-body">
+        <p><span class="actor operator">Operator</span> Signed in as James Carter on a phone.</p>
+        <ol>
+          <li>Open the site on the phone. Sign in as James.</li>
+          <li>Land on the operator home screen.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The screen shows a summary row at the top
+          (<em>Stops done / total</em>, <em>Bags</em>, <em>Deliveries</em>), a
+          "Ready to roll?" card asking James to start the route, and a preview of the first
+          stop.
+        </div>
+        <p><span class="checkbox"></span> The operator home screen loads without needing admin menus</p>
+        <p><span class="checkbox"></span> James sees Maria's and Tom's addresses — not anyone else's</p>
+        <p><span class="checkbox"></span> If no route is scheduled, the screen says "No active route" (not an error)</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 2 — Start route and tap "Driver on the way"</div>
+      <div class="scenario-body">
+        <p><span class="actor operator">Operator</span> Signed in as James.</p>
+        <ol>
+          <li>Tap <strong>▶ Start route</strong>.</li>
+          <li>Once the first stop's card is showing, tap <strong>📲 Text resident: driver on the way</strong>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The "Ready to roll?" card disappears and the current stop
+          card becomes interactive. The "on the way" button fires instantly and shows a
+          confirmation ("Text sent" or similar).
+          <br /><br />
+          <em>
+            During the pilot the SMS isn't actually sent — it's simulated. You don't need to
+            check Maria's phone. The test is just that the button responds.
+          </em>
+        </div>
+        <p><span class="checkbox"></span> Start Route transitions the screen cleanly</p>
+        <p><span class="checkbox"></span> "On the way" button shows a confirmation toast</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 3 — Complete a pickup</div>
+      <div class="scenario-body">
+        <p><span class="actor operator">Operator</span> Signed in as James.</p>
+        <p>
+          For this test, the "resident" can just be a printed QR on a table — you don't have to
+          drive anywhere.
+        </p>
+        <ol>
+          <li>On the current stop (Maria's house), tap <strong>✓ Scan &amp; complete</strong>.</li>
+          <li>Allow camera access. Point the camera at Maria's pre-scanned bag QR sticker.</li>
+          <li>
+            If the camera is being stubborn, tap <strong>Enter code manually</strong> and type the
+            printed bag number (e.g. <em>BAG-4237-03</em>).
+          </li>
+          <li>Leave <strong>Bag sealed properly</strong> on (green).</li>
+          <li>Leave <strong>Visible contamination</strong> off (grey).</li>
+          <li>Take a quick photo (any photo is fine — it's the "I was here" record).</li>
+          <li>Tap <strong>Confirm pickup</strong>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> A checkmark flashes. James is returned to today's route,
+          which now shows "1 of 2 stops done" (or similar) and moves the current-stop card to
+          the next address.
+        </div>
+        <p><span class="checkbox"></span> The wrong QR is rejected — try scanning a random QR code (from anywhere) and it should refuse</p>
+        <p><span class="checkbox"></span> The pickup counter increments on the home screen</p>
+        <p><span class="checkbox"></span> If Maria had 3 bags, James has to repeat this 3 times — one per bag</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 4 — Skip vs Not Out vs Issue</div>
+      <div class="scenario-body">
+        <p><span class="actor operator">Operator</span> Signed in as James.</p>
+        <p>
+          For this one, it's easiest to set up a third test resident you can abuse. If you don't
+          have one, just reuse Tom — do the Skip test first, then come back and Not-out him.
+        </p>
+        <h4>Skip</h4>
+        <ol>
+          <li>Tap <strong>⏭ Skip</strong> on Tom's stop.</li>
+          <li>Continue with the other stops.</li>
+          <li>Reload the page.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> After reload, Tom's stop reappears at the end of the list.
+          Skipping is session-only — useful for "I'll come back to this one later today."
+        </div>
+        <h4>Not out</h4>
+        <ol>
+          <li>Tap <strong>📦 Not out</strong> on Tom's stop.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The stop is marked <em>missed</em> permanently. It does not
+          come back on reload. James moves on.
+        </div>
+        <h4>Issue</h4>
+        <ol>
+          <li>Set up a fourth test stop (or use any stop you haven't completed).</li>
+          <li>Tap <strong>⚠ Issue</strong>.</li>
+          <li>Pick <em>Contaminated</em>, type a short note like "Bag full of food waste."</li>
+          <li>Submit.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The stop is flagged as having an issue with James's note.
+          Sarah can see the note later in the route summary / admin view.
+        </div>
+        <p><span class="checkbox"></span> Skip is session-only</p>
+        <p><span class="checkbox"></span> Not out persists across reload</p>
+        <p><span class="checkbox"></span> Issue records the note</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 5 — Deliver a fresh sticker sheet</div>
+      <div class="scenario-body">
+        <p><span class="actor operator">Operator</span> Signed in as James.</p>
+        <p>
+          Tom ordered bags in Phase 5. Today James is delivering them. In real life James would
+          carry printed sticker sheets of 10 QRs each; for testing, the dev team will give you
+          one printed sheet per test order, or you can use a dummy QR sheet.
+        </p>
+        <ol>
+          <li>At Tom's stop, look for the green <strong>Deliver bags + stickers</strong> sub-card.</li>
+          <li>Tap it.</li>
+          <li>Scan the <strong>first</strong> sticker on a fresh sheet — the one with the lowest printed number (ending in <em>-01</em>).</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The app claims all 10 stickers for Tom at once. Tom's
+          account now has 10 unused bag stickers available. If you sign in as Tom and go to
+          <strong>Scan</strong>, he should be able to scan any of those 10 bags.
+        </div>
+        <p><span class="checkbox"></span> Scanning the first sticker succeeds</p>
+        <p><span class="checkbox"></span> Scanning a middle sticker (e.g. -05) is rejected with a helpful message</p>
+        <p><span class="checkbox"></span> Tom's unused-bag count goes up by 10</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 6 — End of day</div>
+      <div class="scenario-body">
+        <p><span class="actor operator">Operator</span> Signed in as James.</p>
+        <ol>
+          <li>Work through the rest of the stops (complete, not out, or issue — each stop needs some outcome).</li>
+          <li>Once everything has an outcome, the home screen replaces the current-stop card with <strong>All stops handled ✓</strong>.</li>
+          <li>Tap <strong>End-of-route summary</strong>.</li>
+          <li>Read the numbers — Stops visited, Bags picked up, Missed, Issues, Deliveries fulfilled.</li>
+          <li>Scroll to the bottom and tap <strong>Deliver to depot</strong>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The route flips to <em>completed</em>. It disappears from
+          James's home (tomorrow's route will replace it when built). Sarah can see the
+          completed route with all its outcomes in the admin routes list.
+        </div>
+        <p><span class="checkbox"></span> Summary numbers match what James actually did</p>
+        <p><span class="checkbox"></span> "Deliver to depot" is a one-way confirmation</p>
+        <p><span class="checkbox"></span> After closing, James cannot edit stops</p>
+
+        <div class="callout warn">
+          <span class="callout-title">Once closed, it's closed.</span>
+          Deliberately try to re-open the route after tapping Deliver to depot. James should not
+          be able to. If he can, that's a bug.
+        </div>
+      </div>
+    </div>
+
+    <h2>Quick troubleshooting</h2>
+    <table>
+      <tr>
+        <th>What you see</th>
+        <th>Likely cause</th>
+        <th>What to try</th>
+      </tr>
+      <tr>
+        <td>"No active route"</td>
+        <td>Sarah didn't assign a route to James for today, or assigned it for the wrong date.</td>
+        <td>Have Sarah check <strong>/admin/routes</strong>.</td>
+      </tr>
+      <tr>
+        <td>Camera stays black</td>
+        <td>Browser blocked camera access.</td>
+        <td>Reload, grant permission, or use manual code entry.</td>
+      </tr>
+      <tr>
+        <td>Scan keeps saying "wrong bag"</td>
+        <td>The QR you're scanning isn't assigned to this address.</td>
+        <td>Double-check you're at the right stop. Try manual entry. If you're sure, flag as an Issue.</td>
+      </tr>
+      <tr>
+        <td>Start route button does nothing</td>
+        <td>Route is already started on another device.</td>
+        <td>Reload — the current stop card should already be showing.</td>
+      </tr>
+    </table>
+
+    <h2>What's not testable yet</h2>
+    <p>
+      James finishing a route is meant to hand the pickups over to a depot worker for weighing
+      and points awarding. That depot flow is Phase 7, which isn't built yet — so after "Deliver
+      to depot," nothing further happens for the resident. Maria won't see points for her pickup
+      until Phase 7 is in. That's expected for this build.
+    </p>
+
+    <div class="footer">
+      We Buy Clean Trash · Phase 6 testing guide · Pilot April 2026
+    </div>
+  </body>
+</html>

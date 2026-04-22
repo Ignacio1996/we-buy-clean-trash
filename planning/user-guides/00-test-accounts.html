@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Test Accounts</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <header>
+      <h1>Test Accounts &amp; Ground Rules</h1>
+      <p class="lead">
+        Before you start testing, set up the accounts listed below. Every guide in this series
+        refers to these same people by name, so you can follow along without getting lost about
+        "who am I right now?"
+      </p>
+    </header>
+
+    <h2>The cast of testers</h2>
+    <p>
+      These are the sample accounts used throughout the guides. Real names and emails are up to
+      you — swap in anything you like — but keep the <em>roles</em> the same, because the app
+      behaves differently depending on which role is signed in.
+    </p>
+
+    <table>
+      <tr>
+        <th>Role</th>
+        <th>Name we'll use</th>
+        <th>Email</th>
+        <th>What they do in the app</th>
+      </tr>
+      <tr>
+        <td><span class="actor admin">Admin</span></td>
+        <td><strong>Sarah Chen</strong></td>
+        <td>sarah.admin@wbct-pilot.test</td>
+        <td>
+          Runs the back office. Sends invites, edits material pricing, creates zones and depots,
+          builds pickup routes, approves gift card redemptions.
+        </td>
+      </tr>
+      <tr>
+        <td><span class="actor resident">Resident</span></td>
+        <td><strong>Maria Rodriguez</strong></td>
+        <td>maria.rodriguez@example.com</td>
+        <td>
+          The primary homeowner tester. Signs up, orders bags, scans bags before pickup, checks
+          her points, redeems a gift card.
+        </td>
+      </tr>
+      <tr>
+        <td><span class="actor resident">Resident</span></td>
+        <td><strong>Tom Walker</strong></td>
+        <td>tom.walker@example.com</td>
+        <td>
+          A second resident used when a test needs two households on the same route (for example,
+          verifying the route builder orders stops correctly).
+        </td>
+      </tr>
+      <tr>
+        <td><span class="actor operator">Operator</span></td>
+        <td><strong>James Carter</strong></td>
+        <td>james.operator@wbct-pilot.test</td>
+        <td>
+          The driver. Signs in on a phone, starts the day's route, scans each bag he picks up,
+          delivers new bag sheets, closes out the route at the depot.
+        </td>
+      </tr>
+      <tr>
+        <td><span class="actor depot">Depot</span></td>
+        <td><strong>Priya Patel</strong></td>
+        <td>priya.depot@wbct-pilot.test</td>
+        <td>
+          The sorter. Signs in at the depot (tablet or laptop), opens each bag James dropped
+          off, weighs the seven materials separately, flags contamination, and submits — which
+          awards points to the resident and adds weight to the depot inventory.
+        </td>
+      </tr>
+    </table>
+
+    <div class="callout tester">
+      <span class="callout-title">Tip — use separate browsers.</span>
+      Testing flows across two roles at once (e.g. Sarah invites James, James accepts) is much
+      easier if you open each account in a different browser or a private/incognito window. You
+      can also use separate phones. Don't sign one account out just to sign another in — you'll
+      lose your spot in the flow.
+    </div>
+
+    <h2>How to create these accounts</h2>
+    <ol>
+      <li>
+        <strong>Sarah (admin)</strong> is created once, behind the scenes, by the dev team. You
+        won't sign her up through the public website — she comes preloaded. Ask the dev team for
+        her password.
+      </li>
+      <li>
+        <strong>Maria and Tom (residents)</strong> sign themselves up on the public website. You'll
+        walk through that in the <em>Sign-up &amp; sign-in</em> guide.
+      </li>
+      <li>
+        <strong>James (operator)</strong> cannot self-sign-up. Sarah has to invite him by email
+        from the admin dashboard first. You'll walk through that in the
+        <em>Admin dashboard</em> guide before you get to operator testing.
+      </li>
+      <li>
+        <strong>Priya (depot worker)</strong> also cannot self-sign-up. Sarah invites her by email
+        and <em>also picks the depot</em> she's assigned to — that link tells the app which
+        inventory to update when Priya processes a bag. You'll do this when you get to the depot
+        guide.
+      </li>
+    </ol>
+
+    <div class="callout note">
+      <span class="callout-title">Why the asymmetry?</span>
+      Homeowners are the general public — anyone with a valid address in the pilot zone can sign
+      up. Operators, depot staff, and managers are employees, so the system refuses to create
+      those accounts unless an admin has first sent an invite. This prevents random people from
+      giving themselves driver access.
+    </div>
+
+    <h2>What to have ready before you test</h2>
+    <ul>
+      <li>
+        A laptop or desktop browser for Sarah's admin work.
+      </li>
+      <li>
+        A second device (phone or a second browser window) for James the operator — operator
+        screens are designed phone-first.
+      </li>
+      <li>
+        A tablet or laptop for Priya the depot worker — the process-bag screen has seven weight
+        fields, so a real keyboard is easier than thumbs-on-glass.
+      </li>
+      <li>
+        A real address in the pilot zone for Maria and Tom. The zone is configured by the dev
+        team; if your address isn't recognized during sign-up, tell them and they'll widen the
+        zone for testing.
+      </li>
+      <li>
+        A test credit card number is <em>not</em> needed. Bag orders use a placeholder
+        "pay" button during the pilot — no real money moves.
+      </li>
+    </ul>
+
+    <h2>How to report what you find</h2>
+    <p>
+      Each guide has small empty checkboxes <span class="checkbox"></span> next to the things you
+      should verify. As you work through a guide, tick what passes. If something looks wrong, jot
+      a quick note — what you did, what you expected, what actually happened, and a screenshot if
+      possible. Send the list back when you're done with the phase.
+    </p>
+
+    <div class="callout warn">
+      <span class="callout-title">Don't worry about breaking things.</span>
+      This is a pilot build running against test data. You can create as many bags, orders, and
+      routes as you want; nothing is going to real customers or real mail. If something seems
+      stuck, reload the page. If it stays stuck, that's a bug — write it down.
+    </div>
+
+    <div class="footer">
+      We Buy Clean Trash · Test Accounts reference · Pilot April 2026
+    </div>
+  </body>
+</html>

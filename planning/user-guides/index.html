@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Full Pilot Testing Guide</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .toc {
+        background: #f7f7f7;
+        border: 1px solid #e4e4e4;
+        border-radius: 6pt;
+        padding: 14pt 18pt;
+        margin: 14pt 0;
+      }
+      .toc ol {
+        margin: 0;
+      }
+      .toc li {
+        margin: 6pt 0;
+        font-size: 11.5pt;
+      }
+      .toc a {
+        font-weight: 600;
+      }
+      .toc small {
+        color: #666;
+        font-weight: 400;
+        margin-left: 4pt;
+      }
+      .phase-divider {
+        margin: 36pt 0 18pt;
+        padding: 14pt 18pt;
+        background: #0f172a;
+        color: white;
+        border-radius: 6pt;
+      }
+      .phase-divider h2 {
+        color: white;
+        border: none;
+        margin: 0;
+        padding: 0;
+      }
+      .phase-divider .phase-label {
+        font-size: 10pt;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #94a3b8;
+      }
+      .fallback {
+        background: #fffbeb;
+        border: 1px solid #fcd34d;
+        border-radius: 6pt;
+        padding: 12pt 16pt;
+        margin: 20pt 0;
+        font-size: 11pt;
+      }
+      .fallback code {
+        background: #fef3c7;
+        padding: 1pt 6pt;
+        border-radius: 3pt;
+        font-family: 'SF Mono', Menlo, Consolas, monospace;
+        font-size: 10pt;
+      }
+      .loading {
+        color: #666;
+        font-style: italic;
+        padding: 12pt 0;
+      }
+      /* suppress the per-section "back to guide" link and redundant <h1> headers when combined */
+      .section .nav-back,
+      .section > header > h1 {
+        display: none;
+      }
+      .section > header > p.lead {
+        margin-top: -6pt;
+      }
+      @media print {
+        .fallback,
+        .toc {
+          break-inside: avoid;
+        }
+        .phase-divider {
+          break-before: page;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>We Buy Clean Trash</h1>
+      <p class="lead">
+        Full pilot testing guide · Phases 0 through 7 · April 2026
+      </p>
+      <p>
+        This document stitches together every individual phase guide into one long read. Each
+        phase is a self-contained chapter — you can work through them in order (recommended for
+        the first time) or jump straight to the phase you're re-testing.
+      </p>
+    </header>
+
+    <div class="toc">
+      <strong>Contents</strong>
+      <ol>
+        <li>
+          <a href="00-test-accounts.html">Test accounts &amp; ground rules</a>
+          <small>— meet Sarah, Maria, Tom, and James before you start</small>
+        </li>
+        <li>
+          <a href="phase-1-auth.html">Phase 1 · Sign-up &amp; sign-in</a>
+          <small>— residents self-signup, employees accept invites</small>
+        </li>
+        <li>
+          <em>Phases 0 &amp; 2 are internal setup (foundation, shared code) — nothing to click through.</em>
+        </li>
+        <li>
+          <a href="phase-3-resident.html">Phase 3 · Resident app</a>
+          <small>— dashboard, order bags, scan, calculator, rewards</small>
+        </li>
+        <li>
+          <a href="phase-4-admin.html">Phase 4 · Admin dashboard</a>
+          <small>— invites, zones, pricing, gift card queue</small>
+        </li>
+        <li>
+          <a href="phase-5-routes.html">Phase 5 · Route builder</a>
+          <small>— plan tomorrow's pickups and assign a driver</small>
+        </li>
+        <li>
+          <a href="phase-6-operator.html">Phase 6 · Operator day</a>
+          <small>— start the route, scan bags, deliver stickers, close out</small>
+        </li>
+        <li>
+          <a href="phase-7-depot.html">Phase 7 · Depot day</a>
+          <small>— receive routes, weigh bags, award points, read inventory</small>
+        </li>
+      </ol>
+    </div>
+
+    <div class="fallback" id="fallback" style="display: none">
+      <strong>Heads up:</strong>
+      The combined view below could not load the individual phase files automatically — this
+      usually happens when opening this file directly from disk, because some browsers block
+      it for security reasons. You have two easy options:
+      <ul>
+        <li>
+          Click any link in the table of contents above to open that phase on its own. This always works.
+        </li>
+        <li>
+          Or serve the folder with a tiny local server to unlock the combined view. From a
+          terminal in this folder:
+          <br />
+          <code>python3 -m http.server 8000</code>
+          <br />
+          then open <code>http://localhost:8000/index.html</code> in your browser.
+        </li>
+      </ul>
+    </div>
+
+    <div id="combined">
+      <div class="loading">Loading phase guides…</div>
+    </div>
+
+    <script>
+      const phases = [
+        { file: '00-test-accounts.html', label: 'Start here', title: 'Test accounts &amp; ground rules' },
+        { file: 'phase-1-auth.html', label: 'Phase 1', title: 'Sign-up &amp; sign-in' },
+        { file: 'phase-3-resident.html', label: 'Phase 3', title: 'Resident app' },
+        { file: 'phase-4-admin.html', label: 'Phase 4', title: 'Admin dashboard' },
+        { file: 'phase-5-routes.html', label: 'Phase 5', title: 'Route builder' },
+        { file: 'phase-6-operator.html', label: 'Phase 6', title: 'Operator day' },
+        { file: 'phase-7-depot.html', label: 'Phase 7', title: 'Depot day' },
+      ];
+
+      async function loadAll() {
+        const container = document.getElementById('combined');
+        const fragments = [];
+
+        for (const phase of phases) {
+          try {
+            const res = await fetch(phase.file);
+            if (!res.ok) throw new Error('fetch failed');
+            const html = await res.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const body = doc.body;
+
+            const section = document.createElement('section');
+            section.className = 'section';
+
+            const divider = document.createElement('div');
+            divider.className = 'phase-divider';
+            divider.innerHTML =
+              '<div class="phase-label">' +
+              phase.label +
+              '</div><h2>' +
+              phase.title +
+              '</h2>';
+            section.appendChild(divider);
+
+            while (body.firstChild) section.appendChild(body.firstChild);
+            fragments.push(section);
+          } catch (err) {
+            document.getElementById('fallback').style.display = 'block';
+            container.innerHTML = '';
+            return;
+          }
+        }
+
+        container.innerHTML = '';
+        fragments.forEach((f) => container.appendChild(f));
+      }
+
+      loadAll();
+    </script>
+
+    <div class="footer">
+      We Buy Clean Trash · Combined pilot testing guide · Generated from the individual phase
+      files in this folder. Edit a phase file and this combined view updates automatically.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Route Builder Guide</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <header>
+      <h1>Phase 5 · Building a Pickup Route</h1>
+      <p class="lead">
+        How Sarah turns "these residents need a pickup" into a driving plan for James. This is
+        the bridge between the admin dashboard (Phase 4) and the operator app (Phase 6) — you
+        need to run this one before operator testing will work.
+      </p>
+    </header>
+
+    <h2>What you're verifying</h2>
+    <ul>
+      <li>Sarah can pull up pending pickups and bag-order deliveries for a zone.</li>
+      <li>The route optimizer returns an ordered list of stops.</li>
+      <li>Sarah can assign the route to an operator by name.</li>
+      <li>When a resident places a bag order, it gets enqueued onto the next open route for that zone.</li>
+    </ul>
+
+    <div class="callout note">
+      <span class="callout-title">Before you start.</span>
+      You need at least two residents with either a scanned bag or a pending bag order, otherwise
+      the route will be empty. Use Maria (scanned bag from Phase 3, Scenario 4) and Tom (have
+      him order bags as in Phase 3, Scenario 3). An operator account also needs to exist — make
+      sure James has accepted his invite.
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 1 — Build tomorrow's route</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <ol>
+          <li>In the admin sidebar, click <strong>Routes</strong>.</li>
+          <li>Click <strong>New route</strong>.</li>
+          <li>Pick tomorrow's date.</li>
+          <li>Pick the zone Maria and Tom live in.</li>
+          <li>Click <strong>Pull pending stops</strong>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Both Maria and Tom appear in the stop list. Maria has a
+          pickup (her scanned bag). Tom has a delivery (his bag order). Each stop shows the
+          address and what's happening there.
+        </div>
+        <p><span class="checkbox"></span> Both residents appear in the stop list</p>
+        <p><span class="checkbox"></span> Pickups and deliveries are visually distinguished</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 2 — Optimize the stop order</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <ol>
+          <li>With the stop list showing, click <strong>Optimize order</strong>.</li>
+          <li>Wait a moment.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The stops get reordered into a sensible driving sequence. A
+          small map preview shows the resulting path. The total estimated drive time and
+          distance show at the bottom of the list.
+        </div>
+        <p><span class="checkbox"></span> Stop order changes after clicking Optimize</p>
+        <p><span class="checkbox"></span> Map preview matches the new order</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 3 — Assign and save</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <ol>
+          <li>In the <strong>Operator</strong> field, pick <strong>James Carter</strong>.</li>
+          <li>Click <strong>Save route</strong>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The route appears in the routes list with status
+          <em>scheduled</em>, tomorrow's date, and James's name. If you sign in as James (on a
+          different device or private window) he should see the route on his operator home
+          screen.
+        </div>
+        <p><span class="checkbox"></span> Route saves and appears in list</p>
+        <p><span class="checkbox"></span> James can see the route after the save</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 4 — Late bag order joins the route</div>
+      <div class="scenario-body">
+        <p>
+          This scenario tests that an order placed <em>after</em> the route is built still gets
+          picked up, by being tacked onto the next open route.
+        </p>
+        <p><span class="actor resident">Resident</span> Signed in as <strong>Tom Walker</strong> on his phone.</p>
+        <ol>
+          <li>Have Tom order another sheet of bags (repeat Phase 3, Scenario 3).</li>
+          <li>Now sign back in as Sarah and reopen tomorrow's route.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Tom's new order has automatically been added to the existing
+          route's delivery list — Sarah doesn't have to click anything. The stop count goes up by
+          one if Tom wasn't already on the route, or the existing stop now shows the additional
+          delivery.
+        </div>
+        <p><span class="checkbox"></span> New order attaches to the open route without admin action</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 5 — Edit a route</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <ol>
+          <li>Open an existing scheduled route.</li>
+          <li>Remove a stop manually using its <strong>×</strong> button.</li>
+          <li>Re-run <strong>Optimize order</strong>.</li>
+          <li>Save.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The edit sticks. If James was viewing the route at the same
+          time he should see it update on the next reload.
+        </div>
+        <p><span class="checkbox"></span> Removing a stop works</p>
+        <p><span class="checkbox"></span> Re-optimization doesn't bring the removed stop back</p>
+      </div>
+    </div>
+
+    <h2>Things to try that should fail</h2>
+    <ul>
+      <li>
+        Trying to save a route with <em>no</em> operator assigned — the save button should be
+        disabled or the form should block you.
+      </li>
+      <li>
+        Building two routes for the same date, same zone, same operator — you should get a
+        warning or a clean error.
+      </li>
+      <li>
+        Picking a date in the past — not allowed.
+      </li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="callout-title">If the map doesn't load.</span>
+      The route builder uses Google Maps. If the map tile is blank or the optimize button errors
+      out with a Google-related message, the Maps API key may not be configured — flag it to the
+      dev team, don't keep retrying.
+    </div>
+
+    <div class="footer">
+      We Buy Clean Trash · Phase 5 testing guide · Pilot April 2026
+    </div>
+  </body>
+</html>

@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Admin Dashboard Guide</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <header>
+      <h1>Phase 4 · Admin Dashboard</h1>
+      <p class="lead">
+        Sarah's back office: invites, zones, depots, material pricing, and the gift card queue.
+        All scenarios in this guide are run as <strong>Sarah Chen</strong>.
+      </p>
+    </header>
+
+    <h2>What you're verifying</h2>
+    <ul>
+      <li>The overview dashboard shows real numbers, not placeholders.</li>
+      <li>Sarah can send an operator invitation and it arrives (or simulates arriving).</li>
+      <li>Zones and depots can be created, edited, and deleted.</li>
+      <li>Material prices save and the resident calculator immediately reflects the change.</li>
+      <li>Gift card requests from residents appear in the redemption queue.</li>
+    </ul>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 1 — Overview dashboard</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <ol>
+          <li>Sign in. You land on <strong>/admin</strong>.</li>
+          <li>Read every KPI tile and every chart.</li>
+        </ol>
+        <p>Expect to see:</p>
+        <ul>
+          <li><strong>Total residents</strong> — should include Maria and Tom once they've signed up.</li>
+          <li><strong>Bags picked up this week / this month</strong>.</li>
+          <li><strong>Material totals</strong> — pounds of aluminum, cardboard, etc.</li>
+          <li><strong>Revenue</strong> — rough total value processed.</li>
+        </ul>
+        <div class="expected">
+          <strong>Expected:</strong> Numbers are real (zero is fine — it means nothing has been
+          processed yet). No "TODO" text, no sample data, no broken charts.
+        </div>
+        <p><span class="checkbox"></span> Resident count matches the signups you've done</p>
+        <p><span class="checkbox"></span> Material totals all read 0 before any depot processing</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 2 — Invite an operator</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <p>
+          This is how <strong>James Carter</strong> gets his operator account. Do this before
+          you run any operator scenarios.
+        </p>
+        <ol>
+          <li>In the sidebar, click <strong>Users &amp; Invites</strong>.</li>
+          <li>Click <strong>Send invite</strong>.</li>
+          <li>Fill in James's name, email (<em>james.operator@wbct-pilot.test</em>), and pick role <strong>Operator</strong>.</li>
+          <li>Click <strong>Send</strong>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The invite appears in the list below with status
+          <em>pending</em>. Sarah can click it to copy the invite link (real email sending is
+          simulated during the pilot — the dev team can fetch the link for you if needed).
+        </div>
+        <p><span class="checkbox"></span> Invite appears with James's email</p>
+        <p><span class="checkbox"></span> The invite link can be copied</p>
+        <p><span class="checkbox"></span> Once James accepts (see Phase 1, Scenario 5), the invite status flips to <em>accepted</em></p>
+
+        <div class="callout note">
+          <span class="callout-title">Try the other roles too.</span>
+          Repeat the invite flow for a depot worker and a depot manager, even though there's no
+          app flow built yet for those roles. You're just checking that the invite is issued and
+          received. Name them <em>Lisa Park</em> (depot worker) and <em>David Nguyen</em> (depot
+          manager) for consistency in future guides.
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 3 — Residents list</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <ol>
+          <li>Open <strong>Users &amp; Invites → Residents tab</strong>.</li>
+          <li>Find Maria Rodriguez.</li>
+          <li>Click her row.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> A detail panel shows Maria's name, email, phone, address,
+          zone, current points balance, and a history of her transactions (signup bonus,
+          pickups, redemptions).
+        </div>
+        <p><span class="checkbox"></span> Details match what Maria sees in her own profile</p>
+        <p><span class="checkbox"></span> Transaction history is chronological</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 4 — Zones and depots</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <ol>
+          <li>In the sidebar, click <strong>Zones &amp; Depots</strong>.</li>
+          <li>Check that the pilot zone (e.g. "North District") already exists.</li>
+          <li>Create a second test zone called <em>Testing Zone</em> with any zip code.</li>
+          <li>Edit its name to <em>Testing Zone 2</em>. Save.</li>
+          <li>Delete <em>Testing Zone 2</em>.</li>
+          <li>Create a depot and assign it to the original pilot zone.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Create / edit / delete all work and persist after reload.
+          Deleting a zone that still has residents should be blocked with a clear message.
+        </div>
+        <p><span class="checkbox"></span> Create / edit / delete all persist across reloads</p>
+        <p><span class="checkbox"></span> Deleting a zone with residents is blocked</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 5 — Yellow-sheet pricing editor</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <ol>
+          <li>In the sidebar, click <strong>Pricing</strong>.</li>
+          <li>You'll see 7 rows — one per material (aluminum, tin/steel, cardboard, paper, PET, HDPE, mixed plastic).</li>
+          <li>Each row has a <em>market price ($/lb)</em> and a <em>customer payout %</em>.</li>
+          <li>Change aluminum's market price to <strong>$1.00/lb</strong>. Save.</li>
+          <li>In a second browser, open Maria's account and go to her Calculator.</li>
+          <li>Enter 1 lb of aluminum.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> With a 30% payout, 1 lb should yield 3,000 points (= $0.30).
+          Double-check by flipping on <em>Separated</em> — points should roughly double to
+          6,000.
+        </div>
+        <p><span class="checkbox"></span> Price change saves and persists on reload</p>
+        <p><span class="checkbox"></span> Resident calculator reflects the new price within a few seconds</p>
+        <p><span class="checkbox"></span> A history of previous prices is visible (snapshot each time you save)</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 6 — Redemption queue</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <p>
+          <em>
+            Prerequisite: Maria requested a gift card in Phase 3, Scenario 7. If you haven't done
+            that yet, do it now.
+          </em>
+        </p>
+        <ol>
+          <li>In the sidebar, click <strong>Redemptions</strong>.</li>
+          <li>Find Maria's pending Amazon gift card request.</li>
+          <li>
+            Pretend you've emailed her the gift card code out of band (during the pilot we do this
+            manually).
+          </li>
+          <li>Click <strong>Mark fulfilled</strong>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The request moves from <em>Pending</em> to
+          <em>Fulfilled</em>. In Maria's own Rewards history, the entry changes status to
+          <em>Fulfilled</em> too.
+        </div>
+        <p><span class="checkbox"></span> Status flips on both sides (admin queue and Maria's history)</p>
+        <p><span class="checkbox"></span> Points are not refunded when fulfilling (they were already deducted)</p>
+      </div>
+    </div>
+
+    <h2>Admin sidebar at a glance</h2>
+    <table>
+      <tr>
+        <th>Menu item</th>
+        <th>What Sarah does there</th>
+      </tr>
+      <tr>
+        <td>Overview</td>
+        <td>KPI dashboard. Read-only.</td>
+      </tr>
+      <tr>
+        <td>Users &amp; Invites</td>
+        <td>List residents, send invitations to employees.</td>
+      </tr>
+      <tr>
+        <td>Zones &amp; Depots</td>
+        <td>Define service areas and drop-off locations.</td>
+      </tr>
+      <tr>
+        <td>Pricing</td>
+        <td>Edit the 7 material prices and payout percentages.</td>
+      </tr>
+      <tr>
+        <td>Redemptions</td>
+        <td>Approve gift card requests one at a time.</td>
+      </tr>
+      <tr>
+        <td>Routes</td>
+        <td>
+          Build the daily pickup route and assign it to an operator (covered in the
+          <em>Routes</em> guide — Phase 5).
+        </td>
+      </tr>
+    </table>
+
+    <div class="callout warn">
+      <span class="callout-title">Sign a non-admin account in and try to reach /admin.</span>
+      Open a private window, sign in as Maria, and manually type <strong>/admin</strong> into the
+      URL. You should be bounced back to the resident home. If the admin dashboard loads for a
+      resident, that's a serious bug — stop and report.
+    </div>
+
+    <div class="footer">
+      We Buy Clean Trash · Phase 4 testing guide · Pilot April 2026
+    </div>
+  </body>
+</html>

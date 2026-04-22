@@ -74,6 +74,7 @@ export async function POST(request: Request) {
       role: invite.role,
       zoneId: invite.zoneId ?? null,
       addressId: null,
+      depotId: typeof invite.depotId === 'string' && invite.depotId ? invite.depotId : null,
       pointsBalance: 0,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
