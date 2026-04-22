@@ -10,15 +10,15 @@
     <header>
       <h1>Phase 4 · Admin Dashboard</h1>
       <p class="lead">
-        Sarah's back office: invites, zones, depots, material pricing, and the gift card queue.
-        All scenarios in this guide are run as <strong>Sarah Chen</strong>.
+        Tia's back office: invites, zones, depots, material pricing, and the gift card queue.
+        All scenarios in this guide are run as <strong>Tia Johnson</strong>.
       </p>
     </header>
 
     <h2>What you're verifying</h2>
     <ul>
       <li>The overview dashboard shows real numbers, not placeholders.</li>
-      <li>Sarah can send an operator invitation and it arrives (or simulates arriving).</li>
+      <li>Tia can send an operator invitation and it arrives (or simulates arriving).</li>
       <li>Zones and depots can be created, edited, and deleted.</li>
       <li>Material prices save and the resident calculator immediately reflects the change.</li>
       <li>Gift card requests from residents appear in the redemption queue.</li>
@@ -27,14 +27,14 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 1 — Overview dashboard</div>
       <div class="scenario-body">
-        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
         <ol>
           <li>Sign in. You land on <strong>/admin</strong>.</li>
           <li>Read every KPI tile and every chart.</li>
         </ol>
         <p>Expect to see:</p>
         <ul>
-          <li><strong>Total residents</strong> — should include Maria and Tom once they've signed up.</li>
+          <li><strong>Total residents</strong> — should include Aguirre and Goode once they've signed up.</li>
           <li><strong>Bags picked up this week / this month</strong>.</li>
           <li><strong>Material totals</strong> — pounds of aluminum, cardboard, etc.</li>
           <li><strong>Revenue</strong> — rough total value processed.</li>
@@ -51,25 +51,25 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 2 — Invite an operator</div>
       <div class="scenario-body">
-        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
         <p>
-          This is how <strong>James Carter</strong> gets his operator account. Do this before
+          This is how <strong>Operator Aguirre</strong> gets his operator account. Do this before
           you run any operator scenarios.
         </p>
         <ol>
           <li>In the sidebar, click <strong>Users &amp; Invites</strong>.</li>
           <li>Click <strong>Send invite</strong>.</li>
-          <li>Fill in James's name, email (<em>james.operator@wbct-pilot.test</em>), and pick role <strong>Operator</strong>.</li>
+          <li>Fill in Aguirre's name, email (<em>operator.aguirre@wbct-pilot.test</em>), and pick role <strong>Operator</strong>.</li>
           <li>Click <strong>Send</strong>.</li>
         </ol>
         <div class="expected">
           <strong>Expected:</strong> The invite appears in the list below with status
-          <em>pending</em>. Sarah can click it to copy the invite link (real email sending is
+          <em>pending</em>. Tia can click it to copy the invite link (real email sending is
           simulated during the pilot — the dev team can fetch the link for you if needed).
         </div>
-        <p><span class="checkbox"></span> Invite appears with James's email</p>
+        <p><span class="checkbox"></span> Invite appears with Aguirre's email</p>
         <p><span class="checkbox"></span> The invite link can be copied</p>
-        <p><span class="checkbox"></span> Once James accepts (see Phase 1, Scenario 5), the invite status flips to <em>accepted</em></p>
+        <p><span class="checkbox"></span> Once Aguirre accepts (see Phase 1, Scenario 5), the invite status flips to <em>accepted</em></p>
 
         <div class="callout note">
           <span class="callout-title">Try the other roles too.</span>
@@ -84,18 +84,18 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 3 — Residents list</div>
       <div class="scenario-body">
-        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
         <ol>
           <li>Open <strong>Users &amp; Invites → Residents tab</strong>.</li>
-          <li>Find Maria Rodriguez.</li>
+          <li>Find Resident Aguirre.</li>
           <li>Click her row.</li>
         </ol>
         <div class="expected">
-          <strong>Expected:</strong> A detail panel shows Maria's name, email, phone, address,
+          <strong>Expected:</strong> A detail panel shows Aguirre's name, email, phone, address,
           zone, current points balance, and a history of her transactions (signup bonus,
           pickups, redemptions).
         </div>
-        <p><span class="checkbox"></span> Details match what Maria sees in her own profile</p>
+        <p><span class="checkbox"></span> Details match what Aguirre sees in her own profile</p>
         <p><span class="checkbox"></span> Transaction history is chronological</p>
       </div>
     </div>
@@ -103,7 +103,7 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 4 — Zones and depots</div>
       <div class="scenario-body">
-        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
         <ol>
           <li>In the sidebar, click <strong>Zones &amp; Depots</strong>.</li>
           <li>Check that the pilot zone (e.g. "North District") already exists.</li>
@@ -124,13 +124,13 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 5 — Yellow-sheet pricing editor</div>
       <div class="scenario-body">
-        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
         <ol>
           <li>In the sidebar, click <strong>Pricing</strong>.</li>
           <li>You'll see 7 rows — one per material (aluminum, tin/steel, cardboard, paper, PET, HDPE, mixed plastic).</li>
           <li>Each row has a <em>market price ($/lb)</em> and a <em>customer payout %</em>.</li>
           <li>Change aluminum's market price to <strong>$1.00/lb</strong>. Save.</li>
-          <li>In a second browser, open Maria's account and go to her Calculator.</li>
+          <li>In a second browser, open Aguirre's account and go to her Calculator.</li>
           <li>Enter 1 lb of aluminum.</li>
         </ol>
         <div class="expected">
@@ -147,16 +147,16 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 6 — Redemption queue</div>
       <div class="scenario-body">
-        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
         <p>
           <em>
-            Prerequisite: Maria requested a gift card in Phase 3, Scenario 7. If you haven't done
+            Prerequisite: Aguirre requested a gift card in Phase 3, Scenario 7. If you haven't done
             that yet, do it now.
           </em>
         </p>
         <ol>
           <li>In the sidebar, click <strong>Redemptions</strong>.</li>
-          <li>Find Maria's pending Amazon gift card request.</li>
+          <li>Find Aguirre's pending Amazon gift card request.</li>
           <li>
             Pretend you've emailed her the gift card code out of band (during the pilot we do this
             manually).
@@ -165,10 +165,10 @@
         </ol>
         <div class="expected">
           <strong>Expected:</strong> The request moves from <em>Pending</em> to
-          <em>Fulfilled</em>. In Maria's own Rewards history, the entry changes status to
+          <em>Fulfilled</em>. In Aguirre's own Rewards history, the entry changes status to
           <em>Fulfilled</em> too.
         </div>
-        <p><span class="checkbox"></span> Status flips on both sides (admin queue and Maria's history)</p>
+        <p><span class="checkbox"></span> Status flips on both sides (admin queue and Aguirre's history)</p>
         <p><span class="checkbox"></span> Points are not refunded when fulfilling (they were already deducted)</p>
       </div>
     </div>
@@ -177,7 +177,7 @@
     <table>
       <tr>
         <th>Menu item</th>
-        <th>What Sarah does there</th>
+        <th>What Tia does there</th>
       </tr>
       <tr>
         <td>Overview</td>
@@ -210,7 +210,7 @@
 
     <div class="callout warn">
       <span class="callout-title">Sign a non-admin account in and try to reach /admin.</span>
-      Open a private window, sign in as Maria, and manually type <strong>/admin</strong> into the
+      Open a private window, sign in as Aguirre, and manually type <strong>/admin</strong> into the
       URL. You should be bounced back to the resident home. If the admin dashboard loads for a
       resident, that's a serious bug — stop and report.
     </div>

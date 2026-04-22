@@ -3,6 +3,7 @@ import { adminDb } from '@/lib/firebase/admin';
 import type { RedemptionDoc } from '@/lib/types/redemption';
 import type { UserDoc } from '@/lib/types/user';
 import { RedemptionFulfillButton } from './RedemptionFulfillButton';
+import { GuideLink } from '@/components/admin/GuideLink';
 
 export const dynamic = 'force-dynamic';
 
@@ -65,11 +66,14 @@ export default async function AdminRedemptionsPage() {
 
   return (
     <div>
-      <header className="mb-6">
-        <h1 className="text-2xl font-semibold text-white">Redemption queue</h1>
-        <p className="mt-1 text-xs text-gray-500">
-          Manual fulfillment for pilot. Email gift-card codes to the resident, then mark fulfilled.
-        </p>
+      <header className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-white">Redemption queue</h1>
+          <p className="mt-1 text-xs text-gray-500">
+            Manual fulfillment for pilot. Email gift-card codes to the resident, then mark fulfilled.
+          </p>
+        </div>
+        <GuideLink href="/user-guides/phase-4-admin.html" />
       </header>
 
       <h2 className="text-sm font-semibold text-white">

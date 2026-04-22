@@ -10,7 +10,7 @@
     <header>
       <h1>Phase 5 · Building a Pickup Route</h1>
       <p class="lead">
-        How Sarah turns "these residents need a pickup" into a driving plan for James. This is
+        How Tia turns "these residents need a pickup" into a driving plan for Aguirre. This is
         the bridge between the admin dashboard (Phase 4) and the operator app (Phase 6) — you
         need to run this one before operator testing will work.
       </p>
@@ -18,34 +18,34 @@
 
     <h2>What you're verifying</h2>
     <ul>
-      <li>Sarah can pull up pending pickups and bag-order deliveries for a zone.</li>
+      <li>Tia can pull up pending pickups and bag-order deliveries for a zone.</li>
       <li>The route optimizer returns an ordered list of stops.</li>
-      <li>Sarah can assign the route to an operator by name.</li>
+      <li>Tia can assign the route to an operator by name.</li>
       <li>When a resident places a bag order, it gets enqueued onto the next open route for that zone.</li>
     </ul>
 
     <div class="callout note">
       <span class="callout-title">Before you start.</span>
       You need at least two residents with either a scanned bag or a pending bag order, otherwise
-      the route will be empty. Use Maria (scanned bag from Phase 3, Scenario 4) and Tom (have
+      the route will be empty. Use Aguirre (scanned bag from Phase 3, Scenario 4) and Goode (have
       him order bags as in Phase 3, Scenario 3). An operator account also needs to exist — make
-      sure James has accepted his invite.
+      sure Aguirre has accepted his invite.
     </div>
 
     <div class="scenario">
       <div class="scenario-head">Scenario 1 — Build tomorrow's route</div>
       <div class="scenario-body">
-        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
         <ol>
           <li>In the admin sidebar, click <strong>Routes</strong>.</li>
           <li>Click <strong>New route</strong>.</li>
           <li>Pick tomorrow's date.</li>
-          <li>Pick the zone Maria and Tom live in.</li>
+          <li>Pick the zone Aguirre and Goode live in.</li>
           <li>Click <strong>Pull pending stops</strong>.</li>
         </ol>
         <div class="expected">
-          <strong>Expected:</strong> Both Maria and Tom appear in the stop list. Maria has a
-          pickup (her scanned bag). Tom has a delivery (his bag order). Each stop shows the
+          <strong>Expected:</strong> Both Aguirre and Goode appear in the stop list. Aguirre has a
+          pickup (her scanned bag). Goode has a delivery (his bag order). Each stop shows the
           address and what's happening there.
         </div>
         <p><span class="checkbox"></span> Both residents appear in the stop list</p>
@@ -56,7 +56,7 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 2 — Optimize the stop order</div>
       <div class="scenario-body">
-        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
         <ol>
           <li>With the stop list showing, click <strong>Optimize order</strong>.</li>
           <li>Wait a moment.</li>
@@ -74,19 +74,19 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 3 — Assign and save</div>
       <div class="scenario-body">
-        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
         <ol>
-          <li>In the <strong>Operator</strong> field, pick <strong>James Carter</strong>.</li>
+          <li>In the <strong>Operator</strong> field, pick <strong>Operator Aguirre</strong>.</li>
           <li>Click <strong>Save route</strong>.</li>
         </ol>
         <div class="expected">
           <strong>Expected:</strong> The route appears in the routes list with status
-          <em>scheduled</em>, tomorrow's date, and James's name. If you sign in as James (on a
+          <em>scheduled</em>, tomorrow's date, and Aguirre's name. If you sign in as Aguirre (on a
           different device or private window) he should see the route on his operator home
           screen.
         </div>
         <p><span class="checkbox"></span> Route saves and appears in list</p>
-        <p><span class="checkbox"></span> James can see the route after the save</p>
+        <p><span class="checkbox"></span> Aguirre can see the route after the save</p>
       </div>
     </div>
 
@@ -97,15 +97,15 @@
           This scenario tests that an order placed <em>after</em> the route is built still gets
           picked up, by being tacked onto the next open route.
         </p>
-        <p><span class="actor resident">Resident</span> Signed in as <strong>Tom Walker</strong> on his phone.</p>
+        <p><span class="actor resident">Resident</span> Signed in as <strong>Resident Goode</strong> on his phone.</p>
         <ol>
-          <li>Have Tom order another sheet of bags (repeat Phase 3, Scenario 3).</li>
-          <li>Now sign back in as Sarah and reopen tomorrow's route.</li>
+          <li>Have Goode order another sheet of bags (repeat Phase 3, Scenario 3).</li>
+          <li>Now sign back in as Tia and reopen tomorrow's route.</li>
         </ol>
         <div class="expected">
-          <strong>Expected:</strong> Tom's new order has automatically been added to the existing
-          route's delivery list — Sarah doesn't have to click anything. The stop count goes up by
-          one if Tom wasn't already on the route, or the existing stop now shows the additional
+          <strong>Expected:</strong> Goode's new order has automatically been added to the existing
+          route's delivery list — Tia doesn't have to click anything. The stop count goes up by
+          one if Goode wasn't already on the route, or the existing stop now shows the additional
           delivery.
         </div>
         <p><span class="checkbox"></span> New order attaches to the open route without admin action</p>
@@ -115,7 +115,7 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 5 — Edit a route</div>
       <div class="scenario-body">
-        <p><span class="actor admin">Admin</span> Signed in as Sarah Chen.</p>
+        <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
         <ol>
           <li>Open an existing scheduled route.</li>
           <li>Remove a stop manually using its <strong>×</strong> button.</li>
@@ -123,7 +123,7 @@
           <li>Save.</li>
         </ol>
         <div class="expected">
-          <strong>Expected:</strong> The edit sticks. If James was viewing the route at the same
+          <strong>Expected:</strong> The edit sticks. If Aguirre was viewing the route at the same
           time he should see it update on the next reload.
         </div>
         <p><span class="checkbox"></span> Removing a stop works</p>

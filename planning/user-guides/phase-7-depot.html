@@ -11,77 +11,77 @@
       <h1>Phase 7 · Running a Depot Day</h1>
       <p class="lead">
         What the depot worker does from the moment a route arrives to the moment the resident's
-        points balance ticks up. All scenarios are run as <strong>Priya Patel</strong> on a tablet
-        or laptop, with <strong>Sarah</strong>, <strong>James</strong>, and <strong>Maria</strong>
+        points balance ticks up. All scenarios are run as <strong>Depot Goode</strong> on a tablet
+        or laptop, with <strong>Tia</strong>, <strong>Aguirre</strong>, and <strong>Aguirre</strong>
         on the side to set things up and verify.
       </p>
     </header>
 
     <h2>What you're verifying</h2>
     <ul>
-      <li>Priya sees James's completed routes show up under "Incoming deliveries."</li>
+      <li>Goode sees Aguirre's completed routes show up under "Incoming deliveries."</li>
       <li>She can open a route and see every bag that was actually picked up.</li>
       <li>Scanning a bag QR — or typing the printed number — jumps her to the process form.</li>
       <li>The contamination picker and seven weight fields together compute a live points preview.</li>
       <li>
-        Submitting the form awards points to Maria, appends a transaction ledger entry, marks the
+        Submitting the form awards points to Aguirre, appends a transaction ledger entry, marks the
         bag processed, and adds weight to the depot inventory — all in one atomic write.
       </li>
       <li>Re-scanning a processed bag refuses the action (no double-awarding).</li>
-      <li>The Inventory screen reflects what Priya just submitted.</li>
+      <li>The Inventory screen reflects what Goode just submitted.</li>
     </ul>
 
     <div class="callout note">
       <span class="callout-title">Setup before you start.</span>
-      Work through the earlier phases first — the depot flow has no shortcut. Sarah must have
-      (1) invited and provisioned <strong>Priya</strong> with a depot link, (2) set
+      Work through the earlier phases first — the depot flow has no shortcut. Tia must have
+      (1) invited and provisioned <strong>Goode</strong> with a depot link, (2) set
       <strong>Yellow Sheet</strong> prices for all seven materials (Phase 4), (3) built a route
-      for James that includes Maria (Phase 5), and James must have (4) completed the route and
-      tapped <strong>Deliver to depot</strong> (Phase 6). If any of those are missing, Priya's
+      for Aguirre that includes Aguirre (Phase 5), and Aguirre must have (4) completed the route and
+      tapped <strong>Deliver to depot</strong> (Phase 6). If any of those are missing, Goode's
       Incoming screen will be empty.
     </div>
 
     <div class="scenario">
       <div class="scenario-head">Scenario 1 — Invite the depot worker</div>
       <div class="scenario-body">
-        <p><span class="actor admin">Admin</span> Signed in as Sarah on a laptop.</p>
+        <p><span class="actor admin">Admin</span> Signed in as Tia on a laptop.</p>
         <ol>
           <li>Open <strong>/admin/invites</strong>.</li>
           <li>Click <strong>New invite</strong>.</li>
-          <li>Enter Priya's email, pick role <em>Depot worker</em>.</li>
+          <li>Enter Goode's email, pick role <em>Depot worker</em>.</li>
           <li>
             A <strong>Depot</strong> dropdown appears once the role is set. Pick the pilot depot
-            (the one Sarah created in Phase 4 — e.g. "Depot #01 — Ohio West").
+            (the one Tia created in Phase 4 — e.g. "Depot #01 — Ohio West").
           </li>
           <li>Send the invite.</li>
         </ol>
         <div class="expected">
-          <strong>Expected:</strong> An invite link is generated. Sarah copies it and sends it
-          to Priya. When Priya opens the link, sets a password, and lands in the app, her user
+          <strong>Expected:</strong> An invite link is generated. Tia copies it and sends it
+          to Goode. When Goode opens the link, sets a password, and lands in the app, her user
           record now has both the <em>depot_worker</em> role and the <em>depotId</em> pointing at
           the pilot depot.
         </div>
         <p><span class="checkbox"></span> The Depot dropdown only appears for depot-worker / depot-manager invites</p>
-        <p><span class="checkbox"></span> Priya lands at <strong>/depot/incoming</strong> after accepting</p>
-        <p><span class="checkbox"></span> The depot name in the header matches the depot Sarah picked</p>
+        <p><span class="checkbox"></span> Goode lands at <strong>/depot/incoming</strong> after accepting</p>
+        <p><span class="checkbox"></span> The depot name in the header matches the depot Tia picked</p>
       </div>
     </div>
 
     <div class="scenario">
       <div class="scenario-head">Scenario 2 — Seeing incoming deliveries</div>
       <div class="scenario-body">
-        <p><span class="actor depot">Depot</span> Signed in as Priya on a tablet.</p>
+        <p><span class="actor depot">Depot</span> Signed in as Goode on a tablet.</p>
         <p>
-          For this scenario you need a route James has already closed out (Phase 6, Scenario 6).
+          For this scenario you need a route Aguirre has already closed out (Phase 6, Scenario 6).
           If he hasn't, jump back and finish that first.
         </p>
         <ol>
-          <li>Open the app and sign in as Priya.</li>
+          <li>Open the app and sign in as Goode.</li>
           <li>Land on the depot home, which redirects to <strong>/depot/incoming</strong>.</li>
         </ol>
         <div class="expected">
-          <strong>Expected:</strong> A single card for James's route, labelled
-          <strong>NEW</strong>. The row shows James's name, the number of bags he actually picked
+          <strong>Expected:</strong> A single card for Aguirre's route, labelled
+          <strong>NEW</strong>. The row shows Aguirre's name, the number of bags he actually picked
           up, and the arrival time (whenever he tapped <em>Deliver to depot</em>).
         </div>
         <p><span class="checkbox"></span> Missed / issue bags are <em>not</em> counted in the bag total</p>
@@ -93,12 +93,12 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 3 — Scan a bag into the process form</div>
       <div class="scenario-body">
-        <p><span class="actor depot">Depot</span> Signed in as Priya.</p>
+        <p><span class="actor depot">Depot</span> Signed in as Goode.</p>
         <ol>
-          <li>From Incoming, tap James's route row.</li>
+          <li>From Incoming, tap Aguirre's route row.</li>
           <li>The route-detail screen lists every picked-up bag with a <strong>PENDING</strong> badge.</li>
           <li>Tap <strong>📷 Scan a bag</strong>.</li>
-          <li>Allow camera access. Point the camera at one of Maria's bag QR stickers.</li>
+          <li>Allow camera access. Point the camera at one of Aguirre's bag QR stickers.</li>
           <li>
             If the camera is being stubborn, tap the <em>Or type the printed number</em> field and
             type the printed number (e.g. <em>0473</em>) or the full code (e.g.
@@ -107,7 +107,7 @@
         </ol>
         <div class="expected">
           <strong>Expected:</strong> On a match, the app navigates to
-          <strong>/depot/process/[bagId]</strong>. The header shows Maria's name, the printed
+          <strong>/depot/process/[bagId]</strong>. The header shows Aguirre's name, the printed
           number, and the bag's declared type ("Commingled" or "Separated · 2× multiplier").
         </div>
         <p><span class="checkbox"></span> Scanning a random QR (not from this route) is rejected with a clear message</p>
@@ -119,10 +119,10 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 4 — Process a clean bag</div>
       <div class="scenario-body">
-        <p><span class="actor depot">Depot</span> Signed in as Priya.</p>
+        <p><span class="actor depot">Depot</span> Signed in as Goode.</p>
         <p>
-          For this test, the "bag" can be seven little piles of paper on Priya's table. The goal
-          is that the numbers she types turn into points for Maria.
+          For this test, the "bag" can be seven little piles of paper on Goode's table. The goal
+          is that the numbers she types turn into points for Aguirre.
         </p>
         <ol>
           <li>Leave <strong>Contamination</strong> on <em>None</em> (green).</li>
@@ -139,13 +139,13 @@
           <li>Tap <strong>✓ Submit &amp; next bag</strong>.</li>
         </ol>
         <div class="expected">
-          <strong>Expected:</strong> A green "points awarded" flash, then Priya bounces back to
+          <strong>Expected:</strong> A green "points awarded" flash, then Goode bounces back to
           the route bag list. The bag she just processed now reads <strong>PROCESSED</strong>.
-          Sign in as Maria in another browser — her points balance has gone up by exactly the
-          amount Priya saw on submit.
+          Sign in as Aguirre in another browser — her points balance has gone up by exactly the
+          amount Goode saw on submit.
         </div>
-        <p><span class="checkbox"></span> The preview total matches what Maria sees after submit</p>
-        <p><span class="checkbox"></span> Maria's latest transaction row (on her rewards / profile screen) shows type <em>pickup</em> with a positive delta</p>
+        <p><span class="checkbox"></span> The preview total matches what Aguirre sees after submit</p>
+        <p><span class="checkbox"></span> Aguirre's latest transaction row (on her rewards / profile screen) shows type <em>pickup</em> with a positive delta</p>
         <p><span class="checkbox"></span> The bag's status on the route list flipped to <em>Processed</em> on reload</p>
       </div>
     </div>
@@ -153,7 +153,7 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 5 — Contamination changes the math</div>
       <div class="scenario-body">
-        <p><span class="actor depot">Depot</span> Signed in as Priya.</p>
+        <p><span class="actor depot">Depot</span> Signed in as Goode.</p>
         <p>
           Open a different pending bag and type the same weights as Scenario 4. Before submitting,
           try each contamination level and watch the preview.
@@ -169,7 +169,7 @@
         <div class="expected">
           <strong>Expected:</strong> The four previews are roughly 100%, 70%, 40%, and 10% of
           the "None" amount — because the penalties are 0 / 30 / 60 / 90%. The submitted severe
-          bag awards Maria only ~10% of what the equivalent clean bag did.
+          bag awards Aguirre only ~10% of what the equivalent clean bag did.
         </div>
         <p><span class="checkbox"></span> The four preview amounts step down correctly</p>
         <p><span class="checkbox"></span> Submitting a severe bag is allowed (it's not a block — just a big penalty)</p>
@@ -182,18 +182,18 @@
       <div class="scenario-body">
         <p><span class="actor admin">Admin</span> + <span class="actor resident">Resident</span> + <span class="actor depot">Depot</span> All three.</p>
         <p>
-          This scenario needs a bag that Maria declared as <em>separated</em>. If the Phase 6
+          This scenario needs a bag that Aguirre declared as <em>separated</em>. If the Phase 6
           test data didn't cover that, set one up now:
         </p>
         <ol>
           <li>
-            As Maria, scan or declare a new bag with the <em>Separated</em> option (this is the
+            As Aguirre, scan or declare a new bag with the <em>Separated</em> option (this is the
             pre-pickup scan flow). If the UI doesn't expose the toggle, ask the dev team to set
             <code>bags.declaredType = 'separated'</code> on a test bag.
           </li>
-          <li>As James, run that bag through a pickup on today's route.</li>
-          <li>As James, close the route and deliver to depot.</li>
-          <li>As Priya, open the bag in the process form.</li>
+          <li>As Aguirre, run that bag through a pickup on today's route.</li>
+          <li>As Aguirre, close the route and deliver to depot.</li>
+          <li>As Goode, open the bag in the process form.</li>
         </ol>
         <div class="expected">
           <strong>Expected:</strong> The header on the process form reads "Declared · Separated
@@ -208,7 +208,7 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 7 — Re-processing is refused</div>
       <div class="scenario-body">
-        <p><span class="actor depot">Depot</span> Signed in as Priya.</p>
+        <p><span class="actor depot">Depot</span> Signed in as Goode.</p>
         <ol>
           <li>From the route bag list, try to tap an already-<strong>PROCESSED</strong> row.</li>
           <li>Then open the scanner and try to scan that same processed bag.</li>
@@ -226,14 +226,14 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 8 — Route progress fills in</div>
       <div class="scenario-body">
-        <p><span class="actor depot">Depot</span> Signed in as Priya.</p>
+        <p><span class="actor depot">Depot</span> Signed in as Goode.</p>
         <ol>
-          <li>Process a couple of bags from James's route but leave at least one still pending.</li>
+          <li>Process a couple of bags from Aguirre's route but leave at least one still pending.</li>
           <li>Tap <strong>← Back</strong> to return to Incoming.</li>
         </ol>
         <div class="expected">
           <strong>Expected:</strong> The route's badge has moved from <strong>NEW</strong> to
-          <strong>IN PROGRESS</strong>, a thin green bar shows how far along Priya is, and the
+          <strong>IN PROGRESS</strong>, a thin green bar shows how far along Goode is, and the
           subtitle reads "Processing X/Y". After the last bag is processed, the badge flips to
           <strong>DONE</strong>.
         </div>
@@ -245,7 +245,7 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 9 — Reading the Inventory dashboard</div>
       <div class="scenario-body">
-        <p><span class="actor depot">Depot</span> Signed in as Priya.</p>
+        <p><span class="actor depot">Depot</span> Signed in as Goode.</p>
         <ol>
           <li>Tap <strong>Inventory</strong> in the top nav.</li>
           <li>Review the <strong>Current stock (lbs)</strong> card for each of the seven materials.</li>
@@ -255,7 +255,7 @@
           <strong>Expected:</strong>
           <ul>
             <li>
-              The weights reflect exactly what Priya has submitted so far, summed per material
+              The weights reflect exactly what Goode has submitted so far, summed per material
               (aluminum = 1.4 × number of clean bags with 1.4 lb of aluminum, etc.).
             </li>
             <li>
@@ -269,9 +269,9 @@
             </li>
           </ul>
         </div>
-        <p><span class="checkbox"></span> Stock numbers match Priya's submissions</p>
+        <p><span class="checkbox"></span> Stock numbers match Goode's submissions</p>
         <p><span class="checkbox"></span> Bars visibly change color at the amber and red thresholds</p>
-        <p><span class="checkbox"></span> Yellow sheet values match what Sarah set in <strong>/admin/pricing</strong></p>
+        <p><span class="checkbox"></span> Yellow sheet values match what Tia set in <strong>/admin/pricing</strong></p>
       </div>
     </div>
 
@@ -280,11 +280,11 @@
       <div class="scenario-body">
         <p><span class="actor tester">Tester</span> With access to the dev console.</p>
         <p>
-          Twilio isn't wired for the pilot, so Maria won't see a real text. But the app should
+          Twilio isn't wired for the pilot, so Aguirre won't see a real text. But the app should
           still log the intent so the post-pilot Twilio swap has something to hook into.
         </p>
         <ol>
-          <li>Watch the dev-server terminal while Priya submits a bag.</li>
+          <li>Watch the dev-server terminal while Goode submits a bag.</li>
           <li>
             After submit, check the <em>smsLog</em> collection (Firestore console or a dev query).
           </li>
@@ -309,18 +309,18 @@
       </tr>
       <tr>
         <td>"No depot is assigned to your account"</td>
-        <td>Priya's invite didn't include a depot, or no depot exists yet.</td>
+        <td>Goode's invite didn't include a depot, or no depot exists yet.</td>
         <td>
-          Have Sarah re-invite Priya with the Depot dropdown set, or create a depot first in
+          Have Tia re-invite Goode with the Depot dropdown set, or create a depot first in
           <strong>/admin/depots</strong>.
         </td>
       </tr>
       <tr>
-        <td>Incoming is empty but James finished a route</td>
-        <td>James didn't tap <strong>Deliver to depot</strong>, or the route's zone isn't mapped to this depot.</td>
+        <td>Incoming is empty but Aguirre finished a route</td>
+        <td>Aguirre didn't tap <strong>Deliver to depot</strong>, or the route's zone isn't mapped to this depot.</td>
         <td>
-          Ask James to re-open the app — the summary page should show an "All stops handled"
-          card with the <em>Deliver to depot</em> button. Or have Sarah check zone↔depot
+          Ask Aguirre to re-open the app — the summary page should show an "All stops handled"
+          card with the <em>Deliver to depot</em> button. Or have Tia check zone↔depot
           mapping in <strong>/admin/depots</strong>.
         </td>
       </tr>
@@ -340,12 +340,12 @@
         <td>Wait for the spinner, or add at least one weight.</td>
       </tr>
       <tr>
-        <td>Maria says she didn't get points</td>
+        <td>Aguirre says she didn't get points</td>
         <td>
-          Two possible causes: (1) Priya's submit threw an error (check for a red banner),
-          (2) Maria is looking at a cached dashboard.
+          Two possible causes: (1) Goode's submit threw an error (check for a red banner),
+          (2) Aguirre is looking at a cached dashboard.
         </td>
-        <td>Have Maria reload her rewards / profile page. If still missing, check Firestore for a <em>transactions</em> doc with <em>type=pickup</em> and her uid.</td>
+        <td>Have Aguirre reload her rewards / profile page. If still missing, check Firestore for a <em>transactions</em> doc with <em>type=pickup</em> and her uid.</td>
       </tr>
     </table>
 
@@ -353,7 +353,7 @@
     <p>
       Depot manager screens (Phase 8) are where mill pickups <em>subtract</em> from inventory —
       until that ships, inventory only grows. Contamination strike tracking (Phase 9) will
-      generate warning letters for repeat offenders based on the severity flags Priya sets here;
+      generate warning letters for repeat offenders based on the severity flags Goode sets here;
       for now the flags just sit on the <em>bagProcessing</em> records. Real Twilio SMS ships
       post-pilot. None of those gaps should block Phase 7 verification.
     </p>

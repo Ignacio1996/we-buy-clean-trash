@@ -11,7 +11,7 @@
       <h1>Phase 1 · Sign-up &amp; Sign-in</h1>
       <p class="lead">
         How new residents join, and how employees accept invitations. Test this phase first —
-        every later phase assumes Maria, Tom, Sarah, and James all have working accounts.
+        every later phase assumes Aguirre, Goode, Tia, and Aguirre all have working accounts.
       </p>
     </header>
 
@@ -27,18 +27,18 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 1 — Resident signs up with email</div>
       <div class="scenario-body">
-        <p><span class="actor resident">Resident</span> Signed in as: <strong>Maria Rodriguez</strong> · maria.rodriguez@example.com</p>
+        <p><span class="actor resident">Resident</span> Signed in as: <strong>Resident Aguirre</strong> · resident.aguirre@example.com</p>
         <ol>
           <li>Open the public homepage in a fresh private/incognito window.</li>
           <li>Click <strong>Sign up</strong>.</li>
           <li>
-            Enter Maria's name, her email, and a password you'll remember. Use a real street
+            Enter Aguirre's name, her email, and a password you'll remember. Use a real street
             address in the pilot zone.
           </li>
           <li>Submit the form.</li>
         </ol>
         <div class="expected">
-          <strong>Expected:</strong> Maria lands on the resident home screen. It greets her by
+          <strong>Expected:</strong> Aguirre lands on the resident home screen. It greets her by
           name and shows <strong>10,000 points</strong> as a signup bonus. A short 3-step
           onboarding card ("Order bags → Schedule → Earn") appears.
         </div>
@@ -51,33 +51,33 @@
     <div class="scenario">
       <div class="scenario-head">Scenario 2 — Second resident signs up with Google</div>
       <div class="scenario-body">
-        <p><span class="actor resident">Resident</span> Signed in as: <strong>Tom Walker</strong> · tom.walker@example.com</p>
+        <p><span class="actor resident">Resident</span> Signed in as: <strong>Resident Goode</strong> · resident.goode@example.com</p>
         <ol>
           <li>In a different private window, open the homepage.</li>
           <li>Click <strong>Sign up → Continue with Google</strong>.</li>
-          <li>Pick Tom's Google account.</li>
+          <li>Pick Goode's Google account.</li>
           <li>Fill in the remaining form fields (address, phone).</li>
         </ol>
         <div class="expected">
-          <strong>Expected:</strong> Same as Maria — Tom lands on the resident home screen with
+          <strong>Expected:</strong> Same as Aguirre — Goode lands on the resident home screen with
           10,000 points. No password was required.
         </div>
         <p><span class="checkbox"></span> Google sign-in completes without asking for a password</p>
-        <p><span class="checkbox"></span> Tom's name and photo (if his Google account has one) appear in the top-right menu</p>
+        <p><span class="checkbox"></span> Goode's name and photo (if his Google account has one) appear in the top-right menu</p>
       </div>
     </div>
 
     <div class="scenario">
       <div class="scenario-head">Scenario 3 — Admin signs in</div>
       <div class="scenario-body">
-        <p><span class="actor admin">Admin</span> Signed in as: <strong>Sarah Chen</strong> · sarah.admin@wbct-pilot.test</p>
+        <p><span class="actor admin">Admin</span> Signed in as: <strong>Tia Johnson</strong> · tia.admin@wbct-pilot.test</p>
         <ol>
           <li>Open the homepage in your main browser.</li>
           <li>Click <strong>Sign in</strong>.</li>
-          <li>Use Sarah's email and the password the dev team gave you.</li>
+          <li>Use Tia's email and the password the dev team gave you.</li>
         </ol>
         <div class="expected">
-          <strong>Expected:</strong> Sarah is redirected straight to the admin dashboard
+          <strong>Expected:</strong> Tia is redirected straight to the admin dashboard
           (<em>not</em> the resident home). She sees KPI tiles and a left sidebar with Users,
           Zones, Pricing, Redemptions, Routes.
         </div>
@@ -101,7 +101,7 @@
         <div class="expected">
           <strong>Expected:</strong> There's no way to self-select the operator, depot, or admin
           role. The only path to those roles is an emailed invitation from an admin. You'll test
-          that in <em>Scenario 5</em> after Sarah sends James an invite in the Admin Dashboard
+          that in <em>Scenario 5</em> after Tia sends Aguirre an invite in the Admin Dashboard
           guide.
         </div>
         <p><span class="checkbox"></span> No role selector anywhere on sign-up</p>
@@ -113,29 +113,29 @@
       <div class="scenario-body">
         <p>
           <span class="actor operator">Operator</span> Will be signed in as:
-          <strong>James Carter</strong> · james.operator@wbct-pilot.test
+          <strong>Operator Aguirre</strong> · operator.aguirre@wbct-pilot.test
         </p>
         <p>
           <em>
-            Prerequisite: Sarah has already invited James from the admin dashboard. If you haven't
+            Prerequisite: Tia has already invited Aguirre from the admin dashboard. If you haven't
             done that yet, do the Admin Dashboard guide first and come back here.
           </em>
         </p>
         <ol>
           <li>
-            Open the invite email Sarah sent to James. (During the pilot the email is simulated —
+            Open the invite email Tia sent to Aguirre. (During the pilot the email is simulated —
             the dev team will hand you a direct link.)
           </li>
           <li>Click <strong>Accept invitation</strong>.</li>
-          <li>Set James's password when prompted.</li>
+          <li>Set Aguirre's password when prompted.</li>
           <li>Submit.</li>
         </ol>
         <div class="expected">
-          <strong>Expected:</strong> James lands on the operator home screen (<em>Today's
-          Route</em>). He sees either "No active route" or, if Sarah already built one for him
+          <strong>Expected:</strong> Aguirre lands on the operator home screen (<em>Today's
+          Route</em>). He sees either "No active route" or, if Tia already built one for him
           today, a route card.
         </div>
-        <p><span class="checkbox"></span> James lands on the operator screen, not resident</p>
+        <p><span class="checkbox"></span> Aguirre lands on the operator screen, not resident</p>
         <p><span class="checkbox"></span> The same invite link, if clicked again, says "already used"</p>
       </div>
     </div>
@@ -172,8 +172,8 @@
       </tr>
       <tr>
         <td>Invite link says "invalid or expired"</td>
-        <td>The invite was already accepted, or Sarah revoked it.</td>
-        <td>Ask Sarah to send a fresh one.</td>
+        <td>The invite was already accepted, or Tia revoked it.</td>
+        <td>Ask Tia to send a fresh one.</td>
       </tr>
     </table>
 

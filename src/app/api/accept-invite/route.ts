@@ -35,7 +35,8 @@ export async function POST(request: Request) {
   let decoded;
   try {
     decoded = await adminAuth.verifyIdToken(payload.idToken, true);
-  } catch {
+  } catch (err) {
+    console.error('verifyIdToken failed [accept-invite]', err);
     return NextResponse.json({ error: 'invalid_id_token' }, { status: 401 });
   }
   const { uid, email } = decoded;
@@ -61,6 +62,18 @@ export async function POST(request: Request) {
     }
     if (!isInvitableRole(invite.role)) return { error: 'invite_corrupt', status: 500 } as const;
 
+    const depotId =
+      typeof invite.depotId === 'string' && invite.depotId ? invite.depotId : null;
+
+    // A depot_manager invite scoped to a depot implies this user manages that depot.
+    // Wiring managerId here so the manager sees the depot on first login without
+    // a separate admin step. Must read before writing to satisfy Firestore tx order.
+    const shouldLinkManager = invite.role === 'depot_manager' && !!depotId;
+    const depotRef = shouldLinkManager
+      ? adminDb.collection('depots').doc(depotId!)
+      : null;
+    const depotSnap = depotRef ? await tx.get(depotRef) : null;
+
     tx.update(inviteRef, {
       status: 'consumed',
       consumedAt: FieldValue.serverTimestamp(),
@@ -74,11 +87,15 @@ export async function POST(request: Request) {
       role: invite.role,
       zoneId: invite.zoneId ?? null,
       addressId: null,
-      depotId: typeof invite.depotId === 'string' && invite.depotId ? invite.depotId : null,
+      depotId,
       pointsBalance: 0,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });
+
+    if (shouldLinkManager && depotRef && depotSnap?.exists) {
+      tx.update(depotRef, { managerId: uid });
+    }
     return { role: invite.role } as const;
   });
 

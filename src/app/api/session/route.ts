@@ -21,7 +21,8 @@ export async function POST(request: Request) {
   let decoded;
   try {
     decoded = await adminAuth.verifyIdToken(idToken, true);
-  } catch {
+  } catch (err) {
+    console.error('verifyIdToken failed [session]', err);
     return NextResponse.json({ error: 'invalid_id_token' }, { status: 401 });
   }
 

@@ -5,6 +5,7 @@ import type { ZoneDoc } from '@/lib/types/zone';
 import type { DepotDoc } from '@/lib/types/depot';
 import { InviteForm } from './InviteForm';
 import { InviteRowActions } from './InviteRowActions';
+import { GuideLink } from '@/components/admin/GuideLink';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,11 +67,14 @@ export default async function AdminInvitesPage() {
   const { invites, zones, depots } = await loadInvitesData();
   return (
     <div>
-      <header className="mb-6">
-        <h1 className="text-2xl font-semibold text-white">Staff invites</h1>
-        <p className="mt-1 text-xs text-gray-500">
-          Operators, depot workers, managers, and admins are invite-only.
-        </p>
+      <header className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-white">Staff invites</h1>
+          <p className="mt-1 text-xs text-gray-500">
+            Operators, depot workers, managers, and admins are invite-only.
+          </p>
+        </div>
+        <GuideLink href="/user-guides/phase-1-auth.html" />
       </header>
 
       <InviteForm zones={zones} depots={depots} />

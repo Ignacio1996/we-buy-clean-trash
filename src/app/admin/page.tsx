@@ -5,6 +5,7 @@ import {
   MATERIAL_DISPLAY_NAMES,
   type MaterialId,
 } from '@/lib/types/material';
+import { GuideLink } from '@/components/admin/GuideLink';
 
 export const dynamic = 'force-dynamic';
 
@@ -72,9 +73,12 @@ export default async function AdminDashboard() {
 
   return (
     <div>
-      <header className="mb-6">
-        <h1 className="text-2xl font-semibold text-white">Dashboard</h1>
-        <p className="mt-1 text-xs text-gray-500">Live counts across all zones · {monthLabel}</p>
+      <header className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-white">Dashboard</h1>
+          <p className="mt-1 text-xs text-gray-500">Live counts across all zones · {monthLabel}</p>
+        </div>
+        <GuideLink href="/user-guides/phase-4-admin.html" />
       </header>
 
       <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">

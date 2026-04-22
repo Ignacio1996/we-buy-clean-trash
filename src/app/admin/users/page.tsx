@@ -3,6 +3,7 @@ import { adminDb } from '@/lib/firebase/admin';
 import { pointsToDollars } from '@/lib/logic/pointsToDollars';
 import type { UserDoc } from '@/lib/types/user';
 import type { ZoneDoc } from '@/lib/types/zone';
+import { GuideLink } from '@/components/admin/GuideLink';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,12 +36,15 @@ export default async function AdminUsersPage() {
             {users.length} resident{users.length === 1 ? '' : 's'} signed up
           </p>
         </div>
-        <Link
-          href="/admin/invites"
-          className="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-white hover:bg-white/10"
-        >
-          Manage staff invites →
-        </Link>
+        <div className="flex items-center gap-2">
+          <GuideLink href="/user-guides/generating-users.html" />
+          <Link
+            href="/admin/invites"
+            className="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-white hover:bg-white/10"
+          >
+            Manage staff invites →
+          </Link>
+        </div>
       </header>
 
       <div className="overflow-hidden rounded-xl border border-white/10">

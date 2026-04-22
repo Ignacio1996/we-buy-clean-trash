@@ -3,6 +3,7 @@ import type { RouteDoc } from '@/lib/types/route';
 import type { ZoneDoc } from '@/lib/types/zone';
 import type { UserDoc } from '@/lib/types/user';
 import { RouteBuilderClient } from './RouteBuilderClient';
+import { GuideLink } from '@/components/admin/GuideLink';
 
 export const dynamic = 'force-dynamic';
 
@@ -76,12 +77,15 @@ export default async function AdminRoutesPage() {
   const { zones, operators, routes } = await loadData();
   return (
     <div>
-      <header className="mb-6">
-        <h1 className="text-2xl font-semibold text-white">Routes</h1>
-        <p className="mt-1 text-xs text-gray-500">
-          Build a pickup route for a zone on a given day. Pending pickups and queued bag orders in
-          that zone are pulled in automatically and the stop order is optimized.
-        </p>
+      <header className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-white">Routes</h1>
+          <p className="mt-1 text-xs text-gray-500">
+            Build a pickup route for a zone on a given day. Pending pickups and queued bag orders in
+            that zone are pulled in automatically and the stop order is optimized.
+          </p>
+        </div>
+        <GuideLink href="/user-guides/phase-5-routes.html" />
       </header>
 
       <RouteBuilderClient zones={zones} operators={operators} />

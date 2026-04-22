@@ -63,7 +63,8 @@ export async function POST(request: Request) {
   let decoded;
   try {
     decoded = await adminAuth.verifyIdToken(payload.idToken, true);
-  } catch {
+  } catch (err) {
+    console.error('verifyIdToken failed [signup]', err);
     return NextResponse.json({ error: 'invalid_id_token' }, { status: 401 });
   }
 
