@@ -15,8 +15,17 @@ function loadServiceAccount() {
       client_email: string;
       private_key: string;
     };
-  } catch {
-    throw new Error('FIREBASE_ADMIN_SA must be valid JSON');
+  } catch (err) {
+    // TEMP diagnostic: include parse-error details + safe shape hints (no secret content).
+    const msg = (err as Error).message;
+    const len = raw.length;
+    const startsWith = raw.slice(0, 1);
+    const endsWith = raw.slice(-1);
+    const rawNl = (raw.match(/\n/g) || []).length;
+    const escNl = (raw.match(/\\n/g) || []).length;
+    throw new Error(
+      `FIREBASE_ADMIN_SA must be valid JSON: ${msg} (len=${len} start=${JSON.stringify(startsWith)} end=${JSON.stringify(endsWith)} rawNewlines=${rawNl} escapedNewlines=${escNl})`,
+    );
   }
 }
 
