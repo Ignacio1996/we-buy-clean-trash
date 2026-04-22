@@ -20,10 +20,15 @@ function loadServiceAccount() {
   }
 }
 
-function initAdminApp(): App {
-  if (getApps().length) return getApp();
+let _app: App | null = null;
+function getAdminApp(): App {
+  if (_app) return _app;
+  if (getApps().length) {
+    _app = getApp();
+    return _app;
+  }
   const sa = loadServiceAccount();
-  return initializeApp({
+  _app = initializeApp({
     credential: cert({
       projectId: sa.project_id,
       clientEmail: sa.client_email,
@@ -31,9 +36,34 @@ function initAdminApp(): App {
     }),
     storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   });
+  return _app;
 }
 
-export const adminApp: App = initAdminApp();
-export const adminAuth: Auth = getAuth(adminApp);
-export const adminDb: Firestore = getFirestore(adminApp);
-export const adminStorage: Storage = getStorage(adminApp);
+// Lazy proxies: importing this module must not trigger Firebase init, otherwise
+// `next build`'s page-data collection crashes when FIREBASE_ADMIN_SA is unset.
+function lazyProxy<T extends object>(resolve: () => T): T {
+  return new Proxy({} as T, {
+    get(_t, prop) {
+      const target = resolve();
+      const value = Reflect.get(target, prop, target);
+      return typeof value === 'function' ? value.bind(target) : value;
+    },
+    has(_t, prop) {
+      return Reflect.has(resolve(), prop);
+    },
+    ownKeys() {
+      return Reflect.ownKeys(resolve());
+    },
+    getOwnPropertyDescriptor(_t, prop) {
+      return Reflect.getOwnPropertyDescriptor(resolve(), prop);
+    },
+    getPrototypeOf() {
+      return Reflect.getPrototypeOf(resolve());
+    },
+  });
+}
+
+export const adminApp: App = lazyProxy(getAdminApp);
+export const adminAuth: Auth = lazyProxy(() => getAuth(getAdminApp()));
+export const adminDb: Firestore = lazyProxy(() => getFirestore(getAdminApp()));
+export const adminStorage: Storage = lazyProxy(() => getStorage(getAdminApp()));
