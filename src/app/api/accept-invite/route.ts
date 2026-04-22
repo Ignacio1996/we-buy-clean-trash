@@ -36,7 +36,10 @@ export async function POST(request: Request) {
   try {
     decoded = await adminAuth.verifyIdToken(payload.idToken, true);
   } catch (err) {
-    console.error('verifyIdToken failed [accept-invite]', err);
+    const e = err as { code?: string; message?: string; name?: string };
+    console.error(
+      `verifyIdToken failed [accept-invite] code=${e.code} name=${e.name} msg=${e.message}`,
+    );
     return NextResponse.json({ error: 'invalid_id_token' }, { status: 401 });
   }
   const { uid, email } = decoded;

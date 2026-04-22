@@ -22,7 +22,10 @@ export async function POST(request: Request) {
   try {
     decoded = await adminAuth.verifyIdToken(idToken, true);
   } catch (err) {
-    console.error('verifyIdToken failed [session]', err);
+    const e = err as { code?: string; message?: string; name?: string };
+    console.error(
+      `verifyIdToken failed [session] code=${e.code} name=${e.name} msg=${e.message}`,
+    );
     return NextResponse.json({ error: 'invalid_id_token' }, { status: 401 });
   }
 

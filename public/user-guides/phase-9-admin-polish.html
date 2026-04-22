@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Phase 9 Admin Polish Guide</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <header>
+      <h1>Phase 9 · Admin polish</h1>
+      <p class="lead">
+        What Tia sees after Phase 8 lands: three new panels on the admin dashboard (zone
+        performance, contamination alerts, operator leaderboard) and a new
+        <strong>Compliance</strong> section for printing and mailing required residential
+        notices. Everything is admin-only — sign in as <strong>Tia</strong> on a laptop.
+      </p>
+    </header>
+
+    <h2>What you're verifying</h2>
+    <ul>
+      <li>The dashboard now shows a <strong>Zone performance</strong> table with per-zone residents, bags, weight, and revenue for the current month.</li>
+      <li><strong>Contamination alerts</strong> list the residents with the most flagged bags over the last 6 months, labelled 1st warning / 2nd strike / 3rd+ strike.</li>
+      <li>The <strong>Operator leaderboard</strong> ranks operators this month by completed pickups, with an issues tie-breaker.</li>
+      <li>Tia can generate an <strong>Initial Service Notice</strong> and a <strong>Semi-Annual Update</strong> batch per zone, print one letter per resident, and mark the batch as mailed.</li>
+      <li>Mailed batches become an auditable record in Firestore (<code>complianceBatches</code>) with status, generated-by, mailed-by, and timestamps.</li>
+    </ul>
+
+    <div class="callout note">
+      <span class="callout-title">Setup before you start.</span>
+      These panels are data-driven — they only become interesting once earlier phases have
+      produced records. At minimum have: one zone, one depot linked to the zone, 2–3 residents
+      with addresses in the zone, at least one completed route (Phase 6), and several processed
+      bags (Phase 7) including at least a couple flagged with <em>Minor</em>, <em>Major</em>, or
+      <em>Severe</em> contamination.
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 1 — Read the zone performance table</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Tia on a laptop.</p>
+        <ol>
+          <li>Open <strong>/admin</strong>.</li>
+          <li>Scroll below the KPI tiles to <strong>Zone performance</strong>.</li>
+          <li>
+            Find the zone you've been testing in. Cross-check each column:
+            <ul>
+              <li><em>Residents</em> should match the number of resident users Tia can count in <strong>/admin/users</strong> whose zone is this one.</li>
+              <li><em>Bags</em> is the count of <em>bagProcessing</em> records for residents in this zone, this month.</li>
+              <li><em>Weight</em> is the sum of every weight field on those bagProcessing records.</li>
+              <li><em>Revenue</em> is the sum of <em>bagOrders.total</em> for the zone, this month, excluding cancelled orders.</li>
+            </ul>
+          </li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Each zone row reflects exactly what Goode weighed this
+          month, not cumulative totals. A brand-new month shows zero bags and zero revenue even
+          if the zone has lots of historical activity.
+        </div>
+        <p><span class="checkbox"></span> Zones with no resident activity still list (with zeros), not missing</p>
+        <p><span class="checkbox"></span> A resident without a <em>zoneId</em> does not show up in any row</p>
+        <p><span class="checkbox"></span> Revenue of a cancelled bag order does not appear</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 2 — First-warning contamination alert</div>
+      <div class="scenario-body">
+        <p><span class="actor depot">Depot</span> + <span class="actor admin">Admin</span> Two tabs.</p>
+        <ol>
+          <li>As Goode, process one of Aguirre's bags with contamination set to <strong>Minor</strong>. Submit.</li>
+          <li>As Tia, reload <strong>/admin</strong>.</li>
+          <li>Scroll to the <strong>Contamination alerts</strong> panel.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> A row appears for Aguirre with the label
+          <em>1st warning</em>, the gray <strong>WARNED</strong> badge, her zone name, the
+          severity (Minor), and the date Goode just submitted.
+        </div>
+        <p><span class="checkbox"></span> A bag submitted with severity <em>None</em> does <em>not</em> add to the alerts list</p>
+        <p><span class="checkbox"></span> The address / zone shown matches Aguirre's current address</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 3 — Escalating to 2nd strike, then 3rd</div>
+      <div class="scenario-body">
+        <p><span class="actor depot">Depot</span> + <span class="actor admin">Admin</span> Same two tabs.</p>
+        <ol>
+          <li>As Goode, process a second Aguirre bag — <strong>Major</strong> contamination.</li>
+          <li>As Tia, reload <strong>/admin</strong>. Aguirre's row should now read <em>2nd strike</em> with an amber <strong>STRIKE</strong> badge.</li>
+          <li>As Goode, process a third Aguirre bag — <strong>Severe</strong>.</li>
+          <li>As Tia, reload again. The row flips to <em>3rd strike</em> with a red <strong>ACTION</strong> badge.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The strike count is the total number of non-clean
+          <em>bagProcessing</em> records for this resident across the last 6 months, regardless
+          of severity. Severe does not count for more than Minor — the severity is only shown as
+          the "last" value for context.
+        </div>
+        <p><span class="checkbox"></span> Badge color matches the count (gray at 1, amber at 2, red at 3+)</p>
+        <p><span class="checkbox"></span> A fourth flagged bag shows <em>4th strike</em> (still red ACTION)</p>
+        <p><span class="checkbox"></span> Most-struck residents sort to the top</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 4 — Operator leaderboard</div>
+      <div class="scenario-body">
+        <p><span class="actor operator">Operator</span> + <span class="actor admin">Admin</span> Two tabs.</p>
+        <p>
+          For this scenario the leaderboard only reads <em>pickups.status = 'completed'</em> (and
+          counts <em>issue</em> / <em>skipped</em> / <em>missed</em> into the issues column). You
+          only need one operator active to see data — more makes the ranking obvious.
+        </p>
+        <ol>
+          <li>As Aguirre the operator, complete a couple of pickups for today's route (Phase 6).</li>
+          <li>On the same route, tap <strong>Not out</strong> or <strong>Issue</strong> on one stop to generate an issue count.</li>
+          <li>As Tia, reload <strong>/admin</strong> and look at <strong>Operator leaderboard</strong>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Aguirre's name appears with a 🥇 medal icon, his completed
+          pickup count, and "1 issue" (or however many Not-Out/Issue/Skipped actions he did
+          today). The list is capped at top 5.
+        </div>
+        <p><span class="checkbox"></span> Completed pickups from before the 1st of this month are <em>not</em> counted</p>
+        <p><span class="checkbox"></span> If two operators tie on completions, the one with fewer issues ranks higher</p>
+        <p><span class="checkbox"></span> Pickups that are still <em>pending</em> don't affect either column</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 5 — Generate an Initial Service batch</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Tia.</p>
+        <ol>
+          <li>Open <strong>/admin/compliance</strong> (or click the new <em>📋 Compliance</em> tab in the sidebar).</li>
+          <li>In the <strong>Generate a new batch</strong> form, pick the pilot zone and leave the notice type on <em>Initial Service Notice</em>.</li>
+          <li>Optionally type a note (e.g. <em>"First mailing — Kirk USPS drop"</em>).</li>
+          <li>Click <strong>Generate batch · N letters</strong>. The button shows the count based on how many residents the zone currently has.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> A new row appears at the top of <strong>Recent batches</strong>
+          with the zone name, type, resident count, an amber <strong>GENERATED</strong> badge,
+          and today's date. No letters have been printed or mailed yet — that's still Tia's call.
+        </div>
+        <p><span class="checkbox"></span> The resident count on the row matches the one the form offered before clicking</p>
+        <p><span class="checkbox"></span> The note (if entered) shows up in the row subtitle</p>
+        <p><span class="checkbox"></span> An empty zone (0 residents) still generates a batch but its print view shows the empty-state</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 6 — Print the letters</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Tia.</p>
+        <ol>
+          <li>On the batch row, click <strong>Print letters</strong>. A new tab opens at <strong>/admin/compliance/[batchId]/print</strong>.</li>
+          <li>Scroll through the preview — there should be one letter per resident, with the resident's name, street address, zone pickup day, depot location, and the list of accepted materials.</li>
+          <li>Click <strong>🖨️ Print all letters</strong>. The browser print dialog opens.</li>
+          <li>Choose <em>Save as PDF</em> to verify the output; or send to an actual printer.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The admin sidebar, header, and the two buttons at the top of
+          the screen all disappear in the print preview. Each resident's letter begins on its own
+          page (CSS <code>break-after-page</code>). Letters are sorted alphabetically by street.
+        </div>
+        <p><span class="checkbox"></span> One page per resident — no two letters share a page</p>
+        <p><span class="checkbox"></span> The "Semi-Annual Update" copy is different from the "Initial Service" copy (test by generating both types and comparing)</p>
+        <p><span class="checkbox"></span> Residents without an address on file are silently skipped (pilot choice)</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 7 — Mark the batch as mailed</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Tia.</p>
+        <ol>
+          <li>Back on <strong>/admin/compliance</strong>, find the batch.</li>
+          <li>Click <strong>Mark as mailed</strong>.</li>
+          <li>The row's badge flips from amber <strong>GENERATED</strong> to green <strong>MAILED</strong>, and the subtitle gains a "Mailed [date]" note.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The <em>Mark as mailed</em> button disappears (idempotent —
+          no accidental double-mark). In Firestore, the <em>complianceBatches</em> document has
+          <em>status = "mailed"</em>, a <em>mailedAt</em> timestamp, and Tia's uid in
+          <em>mailedBy</em>. Print letters is still available for re-prints.
+        </div>
+        <p><span class="checkbox"></span> Clicking Mark-as-mailed twice does nothing (button disappears after the first click)</p>
+        <p><span class="checkbox"></span> Green MAILED badge persists across page reloads</p>
+        <p><span class="checkbox"></span> <em>mailedBy</em> is Tia's uid, not the resident's</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 8 — Semi-Annual update batch</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Tia.</p>
+        <ol>
+          <li>Generate a second batch for the same zone — this time pick <em>Semi-Annual Update</em>.</li>
+          <li>Open its print view.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The heading on each page reads <em>Semi-Annual Recycling
+          Service Update</em> (not <em>Notice of New Residential Recycling Service</em>). The body
+          copy says this is the required semi-annual update and invites contact-info corrections.
+          The service-details table is the same (pickup day, depot, accepted materials,
+          holidays).
+        </div>
+        <p><span class="checkbox"></span> Both batches coexist — the first stays in the list</p>
+        <p><span class="checkbox"></span> Each batch is independently mailable</p>
+      </div>
+    </div>
+
+    <h2>Quick troubleshooting</h2>
+    <table>
+      <tr>
+        <th>What you see</th>
+        <th>Likely cause</th>
+        <th>What to try</th>
+      </tr>
+      <tr>
+        <td>Zone performance table is empty</td>
+        <td>No zones created yet.</td>
+        <td>Open <strong>/admin/zones</strong> and create at least one.</td>
+      </tr>
+      <tr>
+        <td>A zone's bags and weight are 0 but Goode processed bags this week</td>
+        <td>The resident those bags belong to doesn't have the zone assigned.</td>
+        <td>Open <strong>/admin/users</strong>, find the resident, confirm <em>zoneId</em> matches.</td>
+      </tr>
+      <tr>
+        <td>Contamination alerts never populate</td>
+        <td>Every processed bag used severity <em>None</em>.</td>
+        <td>Have Goode flip a couple of bags to Minor / Major / Severe in Phase 7, then reload the dashboard.</td>
+      </tr>
+      <tr>
+        <td>Leaderboard missing the operator I just watched complete pickups</td>
+        <td>Those pickup docs don't have an <em>operatorId</em> set, or the completions happened before the 1st of the month.</td>
+        <td>Check <em>pickups</em> in Firestore for a <em>status = completed</em> doc with the expected <em>operatorId</em>. Historical months are intentionally ignored.</td>
+      </tr>
+      <tr>
+        <td>"Generate batch" form disabled</td>
+        <td>There are no zones yet.</td>
+        <td>Create a zone first in <strong>/admin/zones</strong>.</td>
+      </tr>
+      <tr>
+        <td>Print view shows "No residents with addresses in this zone"</td>
+        <td>The zone has residents but none have a linked <em>addressId</em> (rare once residents finish signup).</td>
+        <td>Have the affected resident re-run onboarding, or fix the <em>users.addressId</em> field directly in Firestore for seeded accounts.</td>
+      </tr>
+      <tr>
+        <td>Print output still shows the admin sidebar / nav</td>
+        <td>Browser's print media query isn't applying — check the print dialog's "Options → Headers and footers" and "Background graphics" switches.</td>
+        <td>Turn <em>Background graphics</em> OFF in the print dialog. The layout uses <code>print:hidden</code> which is driven by the media query.</td>
+      </tr>
+    </table>
+
+    <h2>What's not testable yet</h2>
+    <p>
+      Real mailing automation (Lob, Click2Mail, etc.) is out of scope for the pilot — Tia prints
+      letters and drops them in a USPS box, then comes back here to mark the batch mailed.
+      Per-resident opt-out tracking and automatic semi-annual reminders are future work; today
+      the admin just remembers to generate a new Semi-Annual batch every six months. Contamination
+      strikes are read-only — the app does not yet send a warning email or SMS when a resident
+      crosses a threshold; Tia takes that action manually.
+    </p>
+
+    <div class="footer">
+      We Buy Clean Trash · Phase 9 testing guide · Pilot April 2026
+    </div>
+  </body>
+</html>
