@@ -26,7 +26,11 @@ export async function POST(request: Request) {
     console.error(
       `verifyIdToken failed [session] code=${e.code} name=${e.name} msg=${e.message}`,
     );
-    return NextResponse.json({ error: 'invalid_id_token' }, { status: 401 });
+    // TEMP diagnostic — remove once root cause is known.
+    return NextResponse.json(
+      { error: 'invalid_id_token', _diag: { code: e.code, name: e.name, msg: e.message } },
+      { status: 401 },
+    );
   }
 
   // Reject ID tokens older than 5 minutes — forces fresh sign-in before issuing cookie.
