@@ -17,7 +17,7 @@ export interface BagDoc {
   qrCode: string;
   printedNumber: string;
   stickerSheetId: string;
-  residentId: string;
+  residentId: string | null;
   declaredType: DeclaredBagType | null;
   status: BagStatus;
   createdAt: Timestamp;
@@ -25,9 +25,11 @@ export interface BagDoc {
 
 export interface StickerSheetDoc {
   id: string;
-  residentId: string;
+  sheetNumber: string;
+  residentId: string | null;
   bagIds: string[];
   bagOrderId: string | null;
   printedAt: Timestamp | null;
+  issuedAt: Timestamp | null;
   createdAt: Timestamp;
 }

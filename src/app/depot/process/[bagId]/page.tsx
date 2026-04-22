@@ -71,6 +71,7 @@ export default async function ProcessBagPage({
   const route = routeSnap.data() as RouteDoc;
   if (!depotRes.context.depot.zoneIds.includes(route.zoneId)) notFound();
 
+  if (!bag.residentId) notFound();
   const [residentSnap, materialSnaps] = await Promise.all([
     adminDb.collection('users').doc(bag.residentId).get(),
     adminDb.getAll(...MATERIAL_IDS.map((id) => adminDb.collection('materials').doc(id))),

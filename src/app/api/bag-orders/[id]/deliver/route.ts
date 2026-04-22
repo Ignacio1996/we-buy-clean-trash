@@ -19,10 +19,6 @@ function parseAnchor(raw: string): { sheetNumber: string; startIndex: number } |
   return { sheetNumber, startIndex };
 }
 
-function bagCode(sheetNumber: string, index: number): string {
-  return `BAG-${sheetNumber}-${String(index).padStart(2, '0')}`;
-}
-
 export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
@@ -58,46 +54,45 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     return NextResponse.json({ error: 'route_not_started' }, { status: 409 });
   }
 
-  // Collision check: a sheet with the same number from a prior delivery would create
-  // duplicate bag codes. Keep this simple at pilot scale — just probe the first bag.
-  const firstCode = bagCode(anchor.sheetNumber, 1);
-  const collision = await adminDb
-    .collection('bags')
-    .where('qrCode', '==', firstCode)
+  // Look up the pre-issued sheet by sheetNumber. Phase 10 flow: admin pre-prints
+  // sticker sheets via /api/qr-sheet, which creates stickerSheets + 10 bag docs
+  // with residentId=null. Delivery claims that sheet for this resident.
+  const sheetQuery = await adminDb
+    .collection('stickerSheets')
+    .where('sheetNumber', '==', anchor.sheetNumber)
     .limit(1)
     .get();
-  if (!collision.empty) {
+  if (sheetQuery.empty) {
+    return NextResponse.json({ error: 'sheet_not_pre_issued' }, { status: 404 });
+  }
+  const sheetDoc = sheetQuery.docs[0];
+  const sheet = sheetDoc.data();
+  if (sheet.residentId) {
     return NextResponse.json({ error: 'sheet_already_issued' }, { status: 409 });
   }
-
-  const sheetRef = adminDb.collection('stickerSheets').doc();
-  const bagRefs = Array.from({ length: 10 }, () => adminDb.collection('bags').doc());
+  const sheetRef = sheetDoc.ref;
+  const bagIds: string[] = Array.isArray(sheet.bagIds) ? sheet.bagIds : [];
+  if (bagIds.length !== 10) {
+    return NextResponse.json({ error: 'sheet_bag_count_invalid' }, { status: 409 });
+  }
+  const bagRefs = bagIds.map((id) => adminDb.collection('bags').doc(id));
 
   await adminDb.runTransaction(async (tx) => {
     const freshOrder = await tx.get(orderRef);
     if (!freshOrder.exists || freshOrder.get('status') === 'delivered') {
       throw new Error('order_state_changed');
     }
-    for (let i = 0; i < bagRefs.length; i += 1) {
-      const code = bagCode(anchor.sheetNumber, i + 1);
-      tx.set(bagRefs[i], {
-        id: bagRefs[i].id,
-        qrCode: code,
-        printedNumber: code,
-        stickerSheetId: sheetRef.id,
-        residentId: order.residentId,
-        declaredType: null,
-        status: 'unused',
-        createdAt: FieldValue.serverTimestamp(),
-      });
+    const freshSheet = await tx.get(sheetRef);
+    if (!freshSheet.exists) throw new Error('sheet_not_pre_issued');
+    if (freshSheet.get('residentId')) throw new Error('sheet_already_issued');
+
+    for (const bagRef of bagRefs) {
+      tx.update(bagRef, { residentId: order.residentId });
     }
-    tx.set(sheetRef, {
-      id: sheetRef.id,
+    tx.update(sheetRef, {
       residentId: order.residentId,
-      bagIds: bagRefs.map((r) => r.id),
       bagOrderId: orderRef.id,
-      printedAt: FieldValue.serverTimestamp(),
-      createdAt: FieldValue.serverTimestamp(),
+      issuedAt: FieldValue.serverTimestamp(),
     });
     tx.update(orderRef, {
       status: 'delivered',
@@ -108,6 +103,6 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   return NextResponse.json({
     ok: true,
     stickerSheetId: sheetRef.id,
-    bagIds: bagRefs.map((r) => r.id),
+    bagIds,
   });
 }

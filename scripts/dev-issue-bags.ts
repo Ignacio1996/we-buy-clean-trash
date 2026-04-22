@@ -41,10 +41,12 @@ async function main() {
     }
     tx.set(sheetRef, {
       id: sheetRef.id,
+      sheetNumber: String(sheetNumber),
       residentId: user.uid,
       bagIds: bagRefs.map((r) => r.id),
       bagOrderId: null,
-      printedAt: null,
+      printedAt: FieldValue.serverTimestamp(),
+      issuedAt: FieldValue.serverTimestamp(),
       createdAt: FieldValue.serverTimestamp(),
     });
   });

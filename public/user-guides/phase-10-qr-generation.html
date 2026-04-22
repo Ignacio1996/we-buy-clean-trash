@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Phase 10 QR Generation Guide</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <header>
+      <h1>Phase 10 · QR sticker generation</h1>
+      <p class="lead">
+        What Tia sees after Phase 9 lands: a new <strong>🏷️ Bag stickers</strong> tab in the admin
+        sidebar that pre-prints the QR sticker sheets the whole system relies on. Each sheet is 10
+        labels sized for a Rollo thermal printer, with a scannable QR plus a printed-number
+        fallback. This is the fix for a bootstrap problem the earlier phases papered over: until
+        now, sticker sheets only existed as physical paper; the app did not know about them until
+        an operator scanned one at delivery. Phase 10 moves the QR codes into Firestore first,
+        then prints them.
+      </p>
+    </header>
+
+    <h2>What you're verifying</h2>
+    <ul>
+      <li>Tia can generate a new sticker sheet with one click — the app picks a unique 4-digit sheet number and writes the <em>stickerSheets</em> + 10 <em>bags</em> records atomically.</li>
+      <li>The print view renders 10 labels, each with a QR code and the printed number (<code>BAG-4237-01</code> through <code>BAG-4237-10</code>), sized for Rollo 2.25″×1.25″ thermal label stock.</li>
+      <li>Printing marks the sheet's <em>printedAt</em> timestamp so the admin knows which sheets are ready to hand to operators.</li>
+      <li>When Aguirre the operator scans the first sticker at delivery, the <strong>same 10 bag docs</strong> get claimed for the resident — no new bags created, no duplicates.</li>
+      <li>The admin list view correctly reflects each sheet's lifecycle: <em>Awaiting print</em> → <em>Printed · unassigned</em> → <em>Issued</em>.</li>
+    </ul>
+
+    <div class="callout note">
+      <span class="callout-title">Setup before you start.</span>
+      You only need an admin account signed in (Tia) to test most of this guide. To verify the
+      end-to-end delivery handoff in Scenario 5 you'll also need a pending bag order on an
+      in-progress route (same prerequisites as Phase 6). If you just want to sanity-check the
+      print view, skip Scenario 5.
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 1 — Generate your first sticker sheet</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Tia on a laptop.</p>
+        <ol>
+          <li>Open <strong>/admin/bags</strong> (or click <em>🏷️ Bag stickers</em> in the sidebar).</li>
+          <li>Observe the three status tiles — <em>Awaiting print</em>, <em>Ready to deliver</em>, <em>Issued</em>. On a fresh install all three are 0.</li>
+          <li>Click <strong>Generate new sheet</strong>. The button spins briefly, then the browser navigates to the print view for the new sheet.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> A brand-new print view opens at
+          <strong>/admin/bags/&lt;sheetId&gt;/print</strong> showing a <em>#XXXX</em> sheet number
+          (4 digits) and 10 labels labelled <code>BAG-XXXX-01</code> through <code>BAG-XXXX-10</code>.
+          Under the hood the API reserved that sheet number, created the <em>stickerSheets</em> doc
+          with <em>residentId: null</em>, and created 10 <em>bags</em> docs each with
+          <em>status: "unused"</em> and <em>residentId: null</em>.
+        </div>
+        <p><span class="checkbox"></span> QR codes look like machine-readable squares, not a broken image</p>
+        <p><span class="checkbox"></span> The printed number under each QR matches the same format <code>BAG-XXXX-NN</code></p>
+        <p><span class="checkbox"></span> The sheet number across all 10 labels is the same (e.g. all <code>BAG-4237-*</code>), index runs 01 through 10</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 2 — Print the sheet</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> On the same print view.</p>
+        <ol>
+          <li>Click <strong>Print + mark</strong> at the top of the page. The browser print dialog opens.</li>
+          <li>In the dialog, verify the paper size shows as <em>2.25 × 1.25 in</em> (or your browser's equivalent label preset).</li>
+          <li>Choose <em>Save as PDF</em> for a first test so you can inspect the output without burning label stock.</li>
+          <li>Open the saved PDF. Each of the 10 labels should occupy its own 2.25″×1.25″ page.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The browser sends 10 pages to the printer. The admin sidebar,
+          the print toolbar, and the "Preview below shows all 10 labels…" note all disappear in the
+          print output. After the print dialog closes, the page refreshes and the subtitle now
+          reads <em>"last printed &lt;timestamp&gt;"</em>. The Firestore <em>stickerSheets</em> doc
+          now has a <em>printedAt</em> value.
+        </div>
+        <p><span class="checkbox"></span> Each label prints on its own page — no two labels share a sheet</p>
+        <p><span class="checkbox"></span> The QR on each label looks dark and crisp in the saved PDF (not blurry or rasterized)</p>
+        <p><span class="checkbox"></span> The subtitle flips from <em>"not yet printed"</em> to the printed timestamp after the dialog closes</p>
+        <p><span class="checkbox"></span> Reopening the page the next day still shows the printed timestamp (persisted)</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 3 — Read the admin list view</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Back to <strong>/admin/bags</strong>.</p>
+        <ol>
+          <li>Reload the page.</li>
+          <li>The sheet you just printed should be the top row.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The row shows the sheet number (monospace), a sky-blue
+          <em>Printed · unassigned</em> badge, an empty resident column, and timestamps in the
+          Created and Printed columns. The top status tiles now show 1 in <em>Ready to deliver</em>
+          and 0 in <em>Awaiting print</em>.
+        </div>
+        <p><span class="checkbox"></span> Generating a second sheet before printing it increments the <em>Awaiting print</em> tile to 1 and drops its badge to the amber <em>Awaiting print</em> pill</p>
+        <p><span class="checkbox"></span> The <strong>Print view</strong> button on each row opens that sheet's print page directly</p>
+        <p><span class="checkbox"></span> Sheets sort newest-first</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 4 — Unique-number guard</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Rapid-fire test.</p>
+        <ol>
+          <li>Click <strong>Generate new sheet</strong> several times in a row (5–10 sheets).</li>
+          <li>After each generation finishes, go back to <strong>/admin/bags</strong> and skim the Sheet # column.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Every sheet has a distinct 4-digit number. The API retries up
+          to 8 times if it randomly lands on a colliding number. At pilot scale (a few hundred
+          sheets) collisions will be rare; if you ever see a 503 response with
+          <em>sheet_number_exhausted</em>, we've run out of the 9000-number space and the reservation
+          scheme needs to grow to 5+ digits.
+        </div>
+        <p><span class="checkbox"></span> No two rows share the same Sheet #</p>
+        <p><span class="checkbox"></span> Each sheet's 10 bag codes are unique across the whole <em>bags</em> collection</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 5 — Operator claims the sheet at delivery</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> + <span class="actor operator">Operator</span> Two devices (or two tabs).</p>
+        <p>
+          This is the end-to-end handoff. It requires a pending bag order already enqueued on
+          today's in-progress route — follow Phase 5 and Phase 6 to set that up if you don't have
+          one.
+        </p>
+        <ol>
+          <li>As Tia, grab one of the <em>Printed · unassigned</em> sheets from the list. Open its print view and note the first sticker's code, e.g. <code>BAG-4237-01</code>.</li>
+          <li>As Aguirre the operator, start the route and navigate to the bag-order delivery stop for a resident.</li>
+          <li>At the deliver step, scan or type <code>BAG-4237-01</code> and submit.</li>
+          <li>Switch back to Tia and reload <strong>/admin/bags</strong>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The sheet's row flips to a green <em>Issued</em> badge, the
+          Resident column now shows the receiving resident's name, and the Issued column fills in
+          with today's timestamp. In Firestore, the same 10 <em>bags</em> docs that were created in
+          Scenario 1 are still there — their <em>residentId</em> field changed from null to the
+          resident's uid (no new docs, no duplicates). The <em>stickerSheets</em> doc also has
+          <em>residentId</em> and <em>bagOrderId</em> set.
+        </div>
+        <p><span class="checkbox"></span> Bag count in Firestore's <em>bags</em> collection did not grow by 10 — the existing docs were updated, not recreated</p>
+        <p><span class="checkbox"></span> Trying to re-deliver the same sheet to a different bag order returns <em>sheet_already_issued</em></p>
+        <p><span class="checkbox"></span> Scanning a sheet number that was never generated (e.g. <code>BAG-9999-01</code>) returns <em>sheet_not_pre_issued</em></p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 6 — Resident scans a claimed bag</div>
+      <div class="scenario-body">
+        <p><span class="actor resident">Resident</span> Same resident the sheet was just delivered to.</p>
+        <ol>
+          <li>Open the resident app on the phone and go to <strong>/resident/scan-bag</strong>.</li>
+          <li>Scan or enter one of the codes from the delivered sheet (e.g. <code>BAG-4237-03</code>).</li>
+          <li>Complete the flow — declaration + doorstep photo → submit.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The pickup creates successfully. This confirms the delivery
+          handoff is complete: the bag exists, belongs to this resident, and is in <em>unused</em>
+          status ready to be claimed. Before Phase 10 this worked too, because the deliver
+          endpoint created the bag docs on-scan; after Phase 10 it still works, because the same
+          docs are claimed instead.
+        </div>
+        <p><span class="checkbox"></span> Scanning a sticker from a sheet that was <em>never delivered</em> returns <em>bag_not_yours</em> (the bag has residentId=null; the resident is not null; inequality rejects)</p>
+        <p><span class="checkbox"></span> Scanning a sticker from another resident's delivered sheet still returns <em>bag_not_yours</em></p>
+      </div>
+    </div>
+
+    <h2>Quick troubleshooting</h2>
+    <table>
+      <tr>
+        <th>What you see</th>
+        <th>Likely cause</th>
+        <th>What to try</th>
+      </tr>
+      <tr>
+        <td>"Generate new sheet" errors out with <em>sheet_number_exhausted</em></td>
+        <td>The 1000–9999 space has enough collisions that 8 retries in a row all hit existing sheets. Only realistic after thousands of sheets.</td>
+        <td>Outgrow the 4-digit scheme — widen <code>SHEET_NUMBER_MAX</code> in <code>/api/qr-sheet/route.ts</code> to 99999.</td>
+      </tr>
+      <tr>
+        <td>QR codes render as plain text or a broken <code>&lt;svg&gt;</code></td>
+        <td><code>qrcode</code> server render failed silently or the SVG markup is being stripped.</td>
+        <td>Check the print-view server logs for an exception from <code>QRCode.toString</code>. Confirm the dependency is installed and the route runs in <em>nodejs</em> runtime, not edge.</td>
+      </tr>
+      <tr>
+        <td>Print output cuts off or is wildly the wrong size</td>
+        <td>The browser ignored the <code>@page</code> 2.25 × 1.25in size and defaulted to Letter.</td>
+        <td>In the print dialog, under <em>More settings</em>, set paper size to a custom 2.25 × 1.25 inch or pick the Rollo preset. Some browsers need "Save as PDF" to honour custom @page sizes.</td>
+      </tr>
+      <tr>
+        <td>Operator scan returns <em>sheet_not_pre_issued</em> on a sticker you just printed</td>
+        <td>The printed label is reading as a different sheet number (e.g. smudged scan) or the sheet was deleted from Firestore.</td>
+        <td>Type the printed number manually instead of scanning — if the typed code works, the camera misread the QR. If typed also fails, verify the <em>stickerSheets</em> doc still exists.</td>
+      </tr>
+      <tr>
+        <td>Row shows <em>Printed · unassigned</em> but Tia never clicked Print</td>
+        <td>The Print + mark button also fires when Tia uses the browser's own print shortcut on the preview page, as long as the endpoint call succeeds afterward.</td>
+        <td>No action needed — this is intentional so the printed timestamp reflects the latest actual print attempt.</td>
+      </tr>
+      <tr>
+        <td>Admin list view is empty even though API calls succeeded</td>
+        <td>The page is server-rendered — its cached version may be stale.</td>
+        <td>Reload the tab. It's already <em>force-dynamic</em>, so a reload is enough; no deploy needed.</td>
+      </tr>
+    </table>
+
+    <h2>What's not testable yet</h2>
+    <p>
+      Phase 10 only covers <strong>generating</strong> stickers. Bulk-printing N sheets at once,
+      re-printing a subset of labels from an existing sheet, voiding a sheet that got damaged, and
+      integrating a real Rollo driver (vs the browser print dialog) are all future work. The
+      sheet-number space is also deliberately small (1000–9999) for the pilot — the next revision
+      will likely switch to a monotonically increasing counter once we have more than a few
+      hundred sheets in play. For now, Tia just clicks Generate whenever operators need more
+      stickers, prints, and hands the physical sheets to the route.
+    </p>
+
+    <div class="footer">
+      We Buy Clean Trash · Phase 10 testing guide · Pilot April 2026
+    </div>
+  </body>
+</html>

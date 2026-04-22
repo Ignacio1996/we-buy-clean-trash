@@ -92,6 +92,7 @@ export async function POST(request: Request) {
       if (!bagSnap.exists) throw new Error('bag_not_found');
       const bag = bagSnap.data() as BagDoc;
       if (bag.status !== 'picked_up') throw new Error('bag_not_processable');
+      if (!bag.residentId) throw new Error('bag_not_assigned');
 
       const priceSnapshot = {} as Record<MaterialId, MaterialPricing>;
       materialSnaps.forEach((snap, i) => {
