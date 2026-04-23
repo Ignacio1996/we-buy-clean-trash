@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a> &nbsp;·&nbsp; <a href="index.html#test-users">🔑 Test users</a> &nbsp;·&nbsp; <a href="glossary.html">📖 Glossary</a></p>
     <header>
       <h1>Test Accounts &amp; Ground Rules</h1>
       <p class="lead">
@@ -155,6 +155,26 @@
       This is a pilot build running against test data. You can create as many bags, orders, and
       routes as you want; nothing is going to real customers or real mail. If something seems
       stuck, reload the page. If it stays stuck, that's a bug — write it down.
+    </div>
+
+    <h2>What's stubbed in the pilot (not bugs)</h2>
+    <p>
+      A handful of features intentionally don't fully fire during the pilot. Each role guide
+      repeats the subset that applies to it, but here's the full picture up front so you know
+      what to expect:
+    </p>
+    <div class="stub-warning">
+      <span class="stub-title">⚠️ Features that look real but are simulated</span>
+      <ul>
+        <li><strong>Paying for bag orders</strong> — checkout ends on a mock "paid" screen. No card is charged.</li>
+        <li><strong>Gift card redemption</strong> — the request lands in an admin queue; an admin emails the card manually. There's no automatic gift-card API fulfillment.</li>
+        <li><strong>"Pay trash bill" and "Donate"</strong> redemption options are disabled placeholders.</li>
+        <li><strong>SMS notifications</strong> (operator en-route, bag-processed receipt) are logged to the server console, not sent by text.</li>
+        <li><strong>Invitation emails</strong> are logged to the console; copy the invite link from the server log to simulate the employee opening it.</li>
+        <li><strong>Compliance notices</strong> — the app generates PDFs; an admin prints, stuffs, mails, and clicks <em>Mark as mailed</em> by hand.</li>
+        <li><strong>Weighing bags</strong> is manual — no Bluetooth/USB scale integration.</li>
+        <li><strong>Driver-on-the-way</strong> is tap-triggered by the operator, not GPS-geofenced.</li>
+      </ul>
     </div>
 
     <div class="footer">

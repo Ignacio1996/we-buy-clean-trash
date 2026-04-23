@@ -16,8 +16,8 @@ import type { Role } from '../src/lib/types/role';
 // custom claims match. The script never touches `pointsBalance`, `transactions`,
 // `inventory`, or any other ledger state for existing residents.
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'inaguirre96@gmail.com';
-const TEST_PASSWORD = process.env.PILOT_TEST_PASSWORD ?? 'Pilot123!';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'tia.admin@wbct-pilot.test';
+const TEST_PASSWORD = process.env.PILOT_TEST_PASSWORD ?? 'webuycleantrash';
 
 const ZONE_ID = 'kirk-pilot';
 const DEPOT_ID = 'kirk-depot';

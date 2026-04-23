@@ -102,3 +102,7 @@ Vercel auto-deploys on push to main once the project is linked. Env vars live in
 ## Feature guides
 
 Whenever a new feature is added (for residents, operators, depot workers, depot managers, or admins), ask the user if they want a guide written for it. Guides live in `planning/user-guides/`. Don't create the guide unless the user confirms.
+
+## App design doc
+
+Whenever a new screen or design change is introduced (new page, new mockup, significant UI rework of an existing screen), ask the user if they want it reflected in `planning/App Design - We Buy Clean Trash - April 16th.html` — either as a new screen card in the appropriate role panel or as a changelog entry at the bottom. Don't modify the design doc unless the user confirms.

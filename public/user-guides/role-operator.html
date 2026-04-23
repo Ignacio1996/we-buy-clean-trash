@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Testing as an Operator</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .role-hero {
+        background: #dbeafe;
+        border: 1px solid #93c5fd;
+        border-radius: 6pt;
+        padding: 16pt 20pt;
+        margin: 14pt 0 20pt;
+      }
+      .role-hero h1 {
+        color: #1e40af;
+        margin-top: 0;
+      }
+      .role-step {
+        display: flex;
+        gap: 14pt;
+        margin: 14pt 0;
+        padding: 12pt 14pt;
+        border: 1px solid #e4e4e4;
+        border-radius: 6pt;
+        background: #fafafa;
+        page-break-inside: avoid;
+      }
+      .role-step .step-badge {
+        flex: 0 0 auto;
+        width: 28pt;
+        height: 28pt;
+        line-height: 28pt;
+        text-align: center;
+        background: #1e40af;
+        color: white;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 12pt;
+      }
+      .role-step .step-body { flex: 1 1 auto; }
+      .role-step h3 { margin: 0 0 2pt; }
+      .role-step p { margin: 2pt 0; font-size: 10.5pt; }
+      .role-step .step-cta { margin-top: 6pt; font-size: 10pt; }
+      .role-step.prereq { background: #fffbeb; border-color: #fcd34d; }
+      .role-step.prereq .step-badge { background: #d97706; }
+    </style>
+  </head>
+  <body>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a> &nbsp;·&nbsp; <a href="index.html#test-users">🔑 Test users</a> &nbsp;·&nbsp; <a href="glossary.html">📖 Glossary</a></p>
+
+    <div class="role-hero">
+      <h1><span class="actor operator">Operator</span> Testing as an operator</h1>
+      <p class="lead" style="color: #1e40af;">
+        The driver's day. Start a route, scan bags at each stop, deliver sticker sheets, close
+        out at the depot. ~25 minutes once the prereqs are in place.
+      </p>
+      <p style="margin: 8pt 0 0; font-size: 10.5pt;">
+        <strong>Device:</strong> 📱 Phone (primary — the app is designed phone-first). 💻 Laptop on the
+        side for Tia, if you need to set up or inspect routes.<br />
+        <strong>Who you'll be:</strong> <em>Aguirre</em> (<code>operator.test@webuyclean.trash</code>).
+      </p>
+    </div>
+
+    <h2>Your testing path</h2>
+    <p>The operator flow has prerequisites that must be done by an admin first. Don't skip step 0.</p>
+
+    <div class="role-step prereq">
+      <div class="step-badge">0</div>
+      <div class="step-body">
+        <h3>Prerequisites (admin must do these first)</h3>
+        <p>
+          Until Tia has built a route for you, the operator home screen just says "No active
+          route." Ask her (or do it yourself on the admin laptop) to:
+        </p>
+        <ul style="font-size: 10.5pt;">
+          <li>Set Yellow Sheet prices — <a href="phase-4-admin.html">Phase 4</a> · Scenario 5.</li>
+          <li>Make sure a resident has a scanned bag ready for pickup — <a href="phase-3-resident.html">Phase 3</a> · Scenario 4.</li>
+          <li>Build today's route and assign it to you — <a href="phase-5-routes.html">Phase 5</a>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="role-step">
+      <div class="step-badge">1</div>
+      <div class="step-body">
+        <h3>Sign in on a phone</h3>
+        <p>Sign in as the operator. You should land at <strong>/operator</strong> and see today's route.</p>
+        <p class="step-cta">→ <a href="accounts-and-signin.html#verify">Accounts &amp; sign-in</a> · Scenario 5 (or just use the seeded operator)</p>
+      </div>
+    </div>
+
+    <div class="role-step">
+      <div class="step-badge">2</div>
+      <div class="step-body">
+        <h3>See today's route, start it, text "on the way"</h3>
+        <p>
+          Confirm you see the correct stops, no one else's. Start the route, then tap the
+          driver-on-the-way button (SMS is stubbed — button just shows a toast).
+        </p>
+        <p class="step-cta">→ <a href="phase-6-operator.html">Operator day</a> · Scenarios 1–2</p>
+      </div>
+    </div>
+
+    <div class="role-step">
+      <div class="step-badge">3</div>
+      <div class="step-body">
+        <h3>Complete a pickup (scan a QR, take a photo)</h3>
+        <p>
+          Scan the resident's bag sticker. If the camera misbehaves, use the manual code entry
+          fallback. Take any photo for the "I was here" record.
+        </p>
+        <p class="step-cta">→ <a href="phase-6-operator.html">Operator day</a> · Scenario 3</p>
+      </div>
+    </div>
+
+    <div class="role-step">
+      <div class="step-badge">4</div>
+      <div class="step-body">
+        <h3>Try Skip vs Not Out vs Issue</h3>
+        <p>
+          Three ways a stop can end badly — confirm each has the expected follow-up (skip = retry
+          later, not-out = marked for next visit, issue = logged for admin).
+        </p>
+        <p class="step-cta">→ <a href="phase-6-operator.html">Operator day</a> · Scenario 4</p>
+      </div>
+    </div>
+
+    <div class="role-step">
+      <div class="step-badge">5</div>
+      <div class="step-body">
+        <h3>Deliver a new sticker sheet</h3>
+        <p>Hand off a sheet to a resident with a pending bag order. Claims 10 bags to them atomically.</p>
+        <p class="step-cta">→ <a href="phase-6-operator.html">Operator day</a> · Scenario 5</p>
+      </div>
+    </div>
+
+    <div class="role-step">
+      <div class="step-badge">6</div>
+      <div class="step-body">
+        <h3>Close out the route</h3>
+        <p>
+          Tap "Deliver to depot" on the summary screen. Once you do, the route shows up under the
+          depot worker's Incoming list — handoff complete.
+        </p>
+        <p class="step-cta">→ <a href="phase-6-operator.html">Operator day</a> · Scenario 6</p>
+      </div>
+    </div>
+
+    <div class="callout tester">
+      <span class="callout-title">When you're done.</span>
+      Tick every <span class="checkbox"></span> checkbox in the Phase 6 guide and report any
+      regressions. The depot worker takes over from here.
+    </div>
+
+    <h2>What you're <em>not</em> testing</h2>
+    <ul>
+      <li>GPS geofencing — driver-on-the-way is a tap, not automatic.</li>
+      <li>Real SMS to residents — all stubbed.</li>
+    </ul>
+
+    <div class="footer">
+      We Buy Clean Trash · Role guide · Operator · Pilot April 2026
+    </div>
+  </body>
+</html>

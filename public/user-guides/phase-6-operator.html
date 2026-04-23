@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a> &nbsp;·&nbsp; <a href="index.html#test-users">🔑 Test users</a> &nbsp;·&nbsp; <a href="glossary.html">📖 Glossary</a></p>
     <header>
       <h1>Phase 6 · Running an Operator Day</h1>
       <p class="lead">
@@ -16,6 +16,16 @@
         <strong>Aguirre</strong> on the side to set things up and verify.
       </p>
     </header>
+
+    <div class="stub-warning">
+      <span class="stub-title">⚠️ What's stubbed in this flow</span>
+      A couple of operator-facing touches don't go all the way through real services during the
+      pilot:
+      <ul>
+        <li><strong>"On my way" texts to residents</strong> are logged to the server console, not sent by SMS. You trigger them from the app; the receiving phone doesn't actually buzz.</li>
+        <li><strong>Driver-on-the-way</strong> is tap-triggered by the operator, not auto-fired from GPS geofence.</li>
+      </ul>
+    </div>
 
     <h2>What you're verifying</h2>
     <ul>
@@ -28,10 +38,13 @@
     </ul>
 
     <div class="callout note">
-      <span class="callout-title">Setup before you start.</span>
-      Make sure Tia has already built today's route using the Phase 5 guide. The route must be
-      assigned to Aguirre and include at least one pickup stop (Aguirre) and one delivery stop (Goode
-      or Aguirre, whichever has a pending bag order).
+      <span class="callout-title">📋 Before you start</span>
+      <p style="margin: 4pt 0 2pt;"><strong>Device:</strong> 📱 Phone (primary, for Aguirre) + 💻 Laptop on the side (Tia, to set things up and verify).</p>
+      <p style="margin: 2pt 0;"><strong>Dependencies — tick each before running Scenario 1:</strong></p>
+      <ul style="margin: 2pt 0 0;">
+        <li><span class="checkbox"></span> <a href="phase-5-routes.html">Phase 5</a> — Tia has built today's route and assigned it to operator Aguirre.</li>
+        <li><span class="checkbox"></span> The route has at least one pickup stop (a resident with a scanned bag) and one delivery stop (a resident with a pending bag order).</li>
+      </ul>
     </div>
 
     <div class="scenario">
@@ -42,15 +55,25 @@
           <li>Open the site on the phone. Sign in as Aguirre.</li>
           <li>Land on the operator home screen.</li>
         </ol>
+        <!-- SCREENSHOT: drop in once captured, see screenshots/README.md
+        <figure class="screenshot phone">
+          <img src="screenshots/operator-today-route.png" alt="Operator home with Ready to roll card and first-stop preview" />
+          <figcaption><strong>Expected:</strong> Operator home — "Ready to roll?" card and first-stop preview.</figcaption>
+        </figure>
+        -->
+
         <div class="expected">
           <strong>Expected:</strong> The screen shows a summary row at the top
           (<em>Stops done / total</em>, <em>Bags</em>, <em>Deliveries</em>), a
           "Ready to roll?" card asking Aguirre to start the route, and a preview of the first
           stop.
         </div>
-        <p><span class="checkbox"></span> The operator home screen loads without needing admin menus</p>
-        <p><span class="checkbox"></span> Aguirre sees Aguirre's and Goode's addresses — not anyone else's</p>
-        <p><span class="checkbox"></span> If no route is scheduled, the screen says "No active route" (not an error)</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> The operator home screen loads without needing admin menus</p>
+          <p><span class="checkbox"></span> Aguirre sees Aguirre's and Goode's addresses — not anyone else's</p>
+          <p><span class="checkbox"></span> If no route is scheduled, the screen says "No active route" (not an error)</p>
+          </div>
       </div>
     </div>
 
@@ -72,8 +95,11 @@
             check Aguirre's phone. The test is just that the button responds.
           </em>
         </div>
-        <p><span class="checkbox"></span> Start Route transitions the screen cleanly</p>
-        <p><span class="checkbox"></span> "On the way" button shows a confirmation toast</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Start Route transitions the screen cleanly</p>
+          <p><span class="checkbox"></span> "On the way" button shows a confirmation toast</p>
+          </div>
       </div>
     </div>
 
@@ -97,14 +123,24 @@
           <li>Take a quick photo (any photo is fine — it's the "I was here" record).</li>
           <li>Tap <strong>Confirm pickup</strong>.</li>
         </ol>
+        <!-- SCREENSHOT: drop in once captured, see screenshots/README.md
+        <figure class="screenshot phone">
+          <img src="screenshots/operator-scan-camera.png" alt="Scan screen with camera viewfinder and manual code entry field" />
+          <figcaption><strong>Expected:</strong> Scan screen — camera viewfinder with manual-entry fallback.</figcaption>
+        </figure>
+        -->
+
         <div class="expected">
           <strong>Expected:</strong> A checkmark flashes. Aguirre is returned to today's route,
           which now shows "1 of 2 stops done" (or similar) and moves the current-stop card to
           the next address.
         </div>
-        <p><span class="checkbox"></span> The wrong QR is rejected — try scanning a random QR code (from anywhere) and it should refuse</p>
-        <p><span class="checkbox"></span> The pickup counter increments on the home screen</p>
-        <p><span class="checkbox"></span> If Aguirre had 3 bags, Aguirre has to repeat this 3 times — one per bag</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> The wrong QR is rejected — try scanning a random QR code (from anywhere) and it should refuse</p>
+          <p><span class="checkbox"></span> The pickup counter increments on the home screen</p>
+          <p><span class="checkbox"></span> If Aguirre had 3 bags, Aguirre has to repeat this 3 times — one per bag</p>
+          </div>
       </div>
     </div>
 
@@ -145,9 +181,12 @@
           <strong>Expected:</strong> The stop is flagged as having an issue with Aguirre's note.
           Tia can see the note later in the route summary / admin view.
         </div>
-        <p><span class="checkbox"></span> Skip is session-only</p>
-        <p><span class="checkbox"></span> Not out persists across reload</p>
-        <p><span class="checkbox"></span> Issue records the note</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Skip is session-only</p>
+          <p><span class="checkbox"></span> Not out persists across reload</p>
+          <p><span class="checkbox"></span> Issue records the note</p>
+          </div>
       </div>
     </div>
 
@@ -170,9 +209,12 @@
           account now has 10 unused bag stickers available. If you sign in as Goode and go to
           <strong>Scan</strong>, he should be able to scan any of those 10 bags.
         </div>
-        <p><span class="checkbox"></span> Scanning the first sticker succeeds</p>
-        <p><span class="checkbox"></span> Scanning a middle sticker (e.g. -05) is rejected with a helpful message</p>
-        <p><span class="checkbox"></span> Goode's unused-bag count goes up by 10</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Scanning the first sticker succeeds</p>
+          <p><span class="checkbox"></span> Scanning a middle sticker (e.g. -05) is rejected with a helpful message</p>
+          <p><span class="checkbox"></span> Goode's unused-bag count goes up by 10</p>
+          </div>
       </div>
     </div>
 
@@ -192,10 +234,13 @@
           Aguirre's home (tomorrow's route will replace it when built). Tia can see the
           completed route with all its outcomes in the admin routes list.
         </div>
-        <p><span class="checkbox"></span> Summary numbers match what Aguirre actually did</p>
-        <p><span class="checkbox"></span> "Deliver to depot" is a one-way confirmation</p>
-        <p><span class="checkbox"></span> After closing, Aguirre cannot edit stops</p>
-
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Summary numbers match what Aguirre actually did</p>
+          <p><span class="checkbox"></span> "Deliver to depot" is a one-way confirmation</p>
+          <p><span class="checkbox"></span> After closing, Aguirre cannot edit stops</p>
+  
+          </div>
         <div class="callout warn">
           <span class="callout-title">Once closed, it's closed.</span>
           Deliberately try to re-open the route after tapping Deliver to depot. Aguirre should not

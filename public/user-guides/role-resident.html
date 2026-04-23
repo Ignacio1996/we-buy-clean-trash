@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Testing as a Resident</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .role-hero {
+        background: #dcfce7;
+        border: 1px solid #86efac;
+        border-radius: 6pt;
+        padding: 16pt 20pt;
+        margin: 14pt 0 20pt;
+      }
+      .role-hero h1 {
+        color: #166534;
+        margin-top: 0;
+      }
+      .role-step {
+        display: flex;
+        gap: 14pt;
+        margin: 14pt 0;
+        padding: 12pt 14pt;
+        border: 1px solid #e4e4e4;
+        border-radius: 6pt;
+        background: #fafafa;
+        page-break-inside: avoid;
+      }
+      .role-step .step-badge {
+        flex: 0 0 auto;
+        width: 28pt;
+        height: 28pt;
+        line-height: 28pt;
+        text-align: center;
+        background: #166534;
+        color: white;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 12pt;
+      }
+      .role-step .step-body {
+        flex: 1 1 auto;
+      }
+      .role-step h3 {
+        margin: 0 0 2pt;
+      }
+      .role-step p {
+        margin: 2pt 0;
+        font-size: 10.5pt;
+      }
+      .role-step .step-cta {
+        margin-top: 6pt;
+        font-size: 10pt;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a> &nbsp;·&nbsp; <a href="index.html#test-users">🔑 Test users</a> &nbsp;·&nbsp; <a href="glossary.html">📖 Glossary</a></p>
+
+    <div class="role-hero">
+      <h1><span class="actor resident">Resident</span> Testing as a resident</h1>
+      <p class="lead" style="color: #166534;">
+        The homeowner path. Sign up, order bags, scan one before pickup, check points, try
+        redeeming. ~20 minutes end-to-end with the seeded accounts.
+      </p>
+      <p style="margin: 8pt 0 0; font-size: 10.5pt;">
+        <strong>Device:</strong> 📱 Phone (primary). 💻 Laptop works too but the resident app is
+        designed phone-first.<br />
+        <strong>Who you'll be:</strong> <em>Casey Pearl</em> (<code>resident1.test@webuyclean.trash</code>) from the
+        <a href="index.html#test-users">Test users card</a>.
+      </p>
+    </div>
+
+    <h2>Your testing path</h2>
+    <p>
+      Work through the steps below in order. Each step links to the relevant phase guide — treat
+      this page as the map; the phase guides are the detail.
+    </p>
+
+    <div class="role-step">
+      <div class="step-badge">1</div>
+      <div class="step-body">
+        <h3>Sign in (or sign up from scratch)</h3>
+        <p>
+          Make sure sign-in works for your resident account. If you want to also experience the
+          signup flow, create a new resident on top of the seeded ones.
+        </p>
+        <p class="step-cta">→ <a href="accounts-and-signin.html#verify">Accounts &amp; sign-in</a> · Scenarios 1–3</p>
+      </div>
+    </div>
+
+    <div class="role-step">
+      <div class="step-badge">2</div>
+      <div class="step-body">
+        <h3>Explore the dashboard</h3>
+        <p>
+          Confirm the points balance, next-pickup card, and bottom nav all load. This is the first
+          screen a real pilot customer will see every day.
+        </p>
+        <p class="step-cta">→ <a href="phase-3-resident.html">Resident app</a> · Scenario 2</p>
+      </div>
+    </div>
+
+    <div class="role-step">
+      <div class="step-badge">3</div>
+      <div class="step-body">
+        <h3>Order a sheet of bags</h3>
+        <p>
+          Place an order. The checkout is <strong>mocked</strong> — no real card is charged.
+          Confirm the shipping rule toggles at $20 and the order shows up in your history.
+        </p>
+        <p class="step-cta">→ <a href="phase-3-resident.html">Resident app</a> · Scenario 3</p>
+      </div>
+    </div>
+
+    <div class="role-step">
+      <div class="step-badge">4</div>
+      <div class="step-body">
+        <h3>Scan a bag before pickup day</h3>
+        <p>
+          Scan one of your sticker QR codes to register the bag as out for pickup. Ask the dev
+          team to pre-issue a sheet if you don't have one yet.
+        </p>
+        <p class="step-cta">→ <a href="phase-3-resident.html">Resident app</a> · Scenario 4</p>
+      </div>
+    </div>
+
+    <div class="role-step">
+      <div class="step-badge">5</div>
+      <div class="step-body">
+        <h3>Try the pre-signup AI scan</h3>
+        <p>
+          Open an incognito window and tap <em>Try the scan</em> on the landing page. Point the
+          camera at a recyclable. Confirm you get an estimate without needing to sign up.
+        </p>
+        <p class="step-cta">→ <a href="phase-3-resident.html">Resident app</a> · Scenario 1</p>
+      </div>
+    </div>
+
+    <div class="role-step">
+      <div class="step-badge">6</div>
+      <div class="step-body">
+        <h3>Check the payout calculator + rewards</h3>
+        <p>
+          Play with the calculator to see how different weights translate to points, then open
+          Rewards to see your signup bonus ledger entry.
+        </p>
+        <p class="step-cta">→ <a href="phase-3-resident.html">Resident app</a> · Scenarios 5–7</p>
+      </div>
+    </div>
+
+    <div class="callout tester">
+      <span class="callout-title">When you're done.</span>
+      Tick every <span class="checkbox"></span> checkbox in the Phase 3 guide, note anything that
+      didn't look right, and send the list back. You don't need to touch any other phase as a
+      resident.
+    </div>
+
+    <h2>What you're <em>not</em> testing</h2>
+    <ul>
+      <li>"Pay trash bill" and "Donate" redemptions — disabled on purpose during the pilot.</li>
+      <li>Real gift-card fulfillment — the request queues for an admin to send manually.</li>
+      <li>Real SMS alerts — all messages log to the server console instead.</li>
+    </ul>
+
+    <div class="footer">
+      We Buy Clean Trash · Role guide · Resident · Pilot April 2026
+    </div>
+  </body>
+</html>

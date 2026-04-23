@@ -616,6 +616,78 @@
       <div class="screen-label" style="color:#3b82f6;">HOME DASHBOARD (UPDATED) <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
+    <!-- Screen 3b: Order History (NEW) -->
+    <div>
+      <div class="phone" style="border-color:rgba(34,197,94,0.3);">
+        <div class="phone-status">WE BUY CLEAN TRASH</div>
+        <div class="phone-header">
+          <h4>📦 Order History</h4>
+          <span style="color:#22c55e;">NEW — Past orders</span>
+        </div>
+        <div class="phone-body">
+          <div style="text-align:center;margin-bottom:12px;">
+            <div style="font-size:0.78rem;color:#ffffff;font-weight:700;">All your bag orders</div>
+            <div style="font-size:0.65rem;color:#6b7280;margin-top:3px;">Newest first · Reached from Home &amp; Order Bags</div>
+          </div>
+
+          <!-- Out for delivery -->
+          <div class="ui-card" style="background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.25);">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-size:0.74rem;color:#ffffff;font-weight:700;">🚐 3 sheets · 30 bags</div>
+              <div style="font-size:0.74rem;color:#d1d5db;">$24.00</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.62rem;">
+              <span style="color:#93c5fd;">Out for delivery</span>
+              <span style="color:#9ca3af;">Arrives Apr 24, 2026</span>
+            </div>
+            <div style="font-size:0.6rem;color:#6b7280;margin-top:2px;">Placed Apr 22, 2026</div>
+          </div>
+
+          <!-- Delivered -->
+          <div class="ui-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-size:0.74rem;color:#ffffff;font-weight:700;">✅ 2 sheets · 20 bags</div>
+              <div style="font-size:0.74rem;color:#d1d5db;">$16.00</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.62rem;">
+              <span style="color:#22c55e;">Delivered</span>
+              <span style="color:#9ca3af;">Delivered Apr 13, 2026</span>
+            </div>
+            <div style="font-size:0.6rem;color:#6b7280;margin-top:2px;">Placed Apr 10, 2026</div>
+          </div>
+
+          <!-- Delivered -->
+          <div class="ui-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-size:0.74rem;color:#ffffff;font-weight:700;">✅ 1 sheet · 10 bags</div>
+              <div style="font-size:0.74rem;color:#d1d5db;">$12.00</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.62rem;">
+              <span style="color:#22c55e;">Delivered</span>
+              <span style="color:#9ca3af;">Delivered Mar 30, 2026</span>
+            </div>
+            <div style="font-size:0.6rem;color:#6b7280;margin-top:2px;">Placed Mar 27, 2026</div>
+          </div>
+
+          <!-- Cancelled -->
+          <div class="ui-card" style="opacity:0.7;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-size:0.74rem;color:#d1d5db;font-weight:700;">✖️ 1 sheet · 10 bags</div>
+              <div style="font-size:0.74rem;color:#9ca3af;">$12.00</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.62rem;">
+              <span style="color:#6b7280;">Cancelled</span>
+              <span></span>
+            </div>
+            <div style="font-size:0.6rem;color:#6b7280;margin-top:2px;">Placed Mar 18, 2026</div>
+          </div>
+
+          <div style="text-align:center;font-size:0.6rem;color:#6b7280;margin-top:6px;">← Home</div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#22c55e;">ORDER HISTORY (NEW) <span class="status-badge built">✅ BUILT</span></div>
+    </div>
+
     <!-- Screen 4: Payout Calculator (UPDATED — 7 categories + bad recycling) -->
     <div>
       <div class="phone" style="border-color:rgba(59,130,246,0.3);">
@@ -1794,6 +1866,9 @@
     </div>
     <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Resident:</strong> Recycling Guide screen — simple good vs. bad examples (empty rinsed bottle vs. half-full bottle, clean box vs. greasy pizza box). Includes prep tips (e.g., how to prepare an oil can).</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Resident:</strong> Order History screen at <code>/resident/order-bags/history</code> — full list of past bag orders (delivered, cancelled, in-flight) with placed/arrives/delivered dates. Linked from Home and Order Bags.</div>
     </div>
     <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Rewards now shows gift card redemption (Amazon, Walmart) with clear points-to-value mapping (100K pts = $10 gift card). Points linked to real rewards immediately.</div>

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import {
   BAG_SHEET_UNIT_PRICE_DOLLARS,
   BAGS_PER_SHEET,
@@ -9,7 +10,15 @@ import { OrderBagsForm } from './OrderBagsForm';
 export default function OrderBagsPage() {
   return (
     <main className="px-4 pt-8">
-      <h1 className="text-xl font-semibold text-white">🛍️ Order bags</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-semibold text-white">🛍️ Order bags</h1>
+        <Link
+          href="/resident/order-bags/history"
+          className="text-xs text-gray-400 underline-offset-2 hover:underline"
+        >
+          Past orders →
+        </Link>
+      </div>
       <p className="mt-1 text-xs text-gray-400">
         Each sheet is {BAGS_PER_SHEET} QR-coded bags — delivered on your next pickup.
       </p>

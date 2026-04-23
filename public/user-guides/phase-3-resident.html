@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a> &nbsp;·&nbsp; <a href="index.html#test-users">🔑 Test users</a> &nbsp;·&nbsp; <a href="glossary.html">📖 Glossary</a></p>
     <header>
       <h1>Phase 3 · Resident App</h1>
       <p class="lead">
@@ -15,6 +15,18 @@
         in this guide are run as <strong>Resident Aguirre</strong> unless noted.
       </p>
     </header>
+
+    <div class="stub-warning">
+      <span class="stub-title">⚠️ What's stubbed in this flow</span>
+      Some features look real but don't fully fire during the pilot. That's by design — please
+      don't file these as bugs:
+      <ul>
+        <li><strong>Ordering bags</strong> — checkout ends on a mock "paid" screen. No real card is charged.</li>
+        <li><strong>Redeeming a gift card</strong> — the request lands in an admin queue; the actual gift card is emailed manually by an admin, not auto-fulfilled.</li>
+        <li><strong>"Pay trash bill" and "Donate"</strong> buttons are disabled on purpose.</li>
+        <li><strong>SMS notifications</strong> are logged to the server console, not sent by text during the pilot.</li>
+      </ul>
+    </div>
 
     <h2>What you're verifying</h2>
     <ul>
@@ -47,10 +59,13 @@
           weight and an estimated dollar value. A total at the bottom shows what the pile would
           earn. A <strong>Sign up to claim</strong> button is below the results.
         </div>
-        <p><span class="checkbox"></span> Camera opens and captures an image</p>
-        <p><span class="checkbox"></span> AI returns a list of items (not an error)</p>
-        <p><span class="checkbox"></span> Closing the tab and reopening shows no saved scan (it's meant to be session-only)</p>
-
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Camera opens and captures an image</p>
+          <p><span class="checkbox"></span> AI returns a list of items (not an error)</p>
+          <p><span class="checkbox"></span> Closing the tab and reopening shows no saved scan (it's meant to be session-only)</p>
+  
+          </div>
         <div class="callout note">
           <span class="callout-title">The estimate won't be perfect.</span>
           The AI is rough on purpose — its job is to show the resident that their trash has real
@@ -76,12 +91,22 @@
           <li>A notification or impact card further down.</li>
           <li>A bottom nav bar: <em>Home · Scan · Calculator · Guide · Rewards</em>.</li>
         </ul>
+        <!-- SCREENSHOT: drop in once captured, see screenshots/README.md
+        <figure class="screenshot phone">
+          <img src="screenshots/resident-dashboard-after-signup.png" alt="Resident home after signup: 10,000 points, next pickup card, bottom nav" />
+          <figcaption><strong>Expected:</strong> Resident home immediately after signup — 10,000 pt balance and bottom nav visible.</figcaption>
+        </figure>
+        -->
+
         <div class="expected">
           <strong>Expected:</strong> Everything loads in one pass, no long spinners. Numbers match
           what you'd expect for a brand-new account (10,000 pts, no pickups yet).
         </div>
-        <p><span class="checkbox"></span> Points balance correct</p>
-        <p><span class="checkbox"></span> Bottom nav switches screens cleanly</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Points balance correct</p>
+          <p><span class="checkbox"></span> Bottom nav switches screens cleanly</p>
+          </div>
       </div>
     </div>
 
@@ -96,15 +121,25 @@
           <li>Bump the quantity to 3. Shipping should drop to <em>Free</em> once the subtotal clears $20.</li>
           <li>Tap <strong>Pay now</strong> (it's a placeholder button; no real payment happens).</li>
         </ol>
+        <!-- SCREENSHOT: drop in once captured, see screenshots/README.md
+        <figure class="screenshot phone">
+          <img src="screenshots/resident-order-confirmation.png" alt="Order confirmation screen with order number and delivery note" />
+          <figcaption><strong>Expected:</strong> Order confirmation — order number and "delivered on next pickup" line.</figcaption>
+        </figure>
+        -->
+
         <div class="expected">
           <strong>Expected:</strong> The checkout succeeds instantly. You land on an order
           confirmation screen with an order number and a "delivered on next pickup" line. The
           order appears in Aguirre's account history.
         </div>
-        <p><span class="checkbox"></span> Shipping rule toggles at the $20 threshold</p>
-        <p><span class="checkbox"></span> "Pay now" doesn't ask for a real card — it just simulates success</p>
-        <p><span class="checkbox"></span> Order appears in Aguirre's order history after checkout</p>
-
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Shipping rule toggles at the $20 threshold</p>
+          <p><span class="checkbox"></span> "Pay now" doesn't ask for a real card — it just simulates success</p>
+          <p><span class="checkbox"></span> Order appears in Aguirre's order history after checkout</p>
+  
+          </div>
         <div class="callout warn">
           <span class="callout-title">No real charges during the pilot.</span>
           The payment button is intentionally a stub. Don't enter a real card number anywhere in
@@ -137,9 +172,12 @@
           <strong>Expected:</strong> Aguirre sees a "Your bag is scheduled for pickup" confirmation
           and the bag now shows up in the <em>Upcoming pickups</em> area of her dashboard.
         </div>
-        <p><span class="checkbox"></span> QR scanner reads the sticker directly</p>
-        <p><span class="checkbox"></span> Manual code entry works as a fallback</p>
-        <p><span class="checkbox"></span> Picking "Separated" vs "Mixed" is saved (visible in the pickup details)</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> QR scanner reads the sticker directly</p>
+          <p><span class="checkbox"></span> Manual code entry works as a fallback</p>
+          <p><span class="checkbox"></span> Picking "Separated" vs "Mixed" is saved (visible in the pickup details)</p>
+          </div>
       </div>
     </div>
 
@@ -157,8 +195,11 @@
           toggle roughly <em>doubles</em> the estimate. Dollar equivalents ($10 per 100,000 pts)
           match the point totals.
         </div>
-        <p><span class="checkbox"></span> Live updates as you type</p>
-        <p><span class="checkbox"></span> Separated multiplier behaves correctly</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Live updates as you type</p>
+          <p><span class="checkbox"></span> Separated multiplier behaves correctly</p>
+          </div>
       </div>
     </div>
 
@@ -175,8 +216,11 @@
           materials looks like, what counts as contamination, and how to prepare each type. No
           broken images, no lorem ipsum.
         </div>
-        <p><span class="checkbox"></span> All images render</p>
-        <p><span class="checkbox"></span> Text is written for a homeowner, not for a developer</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> All images render</p>
+          <p><span class="checkbox"></span> Text is written for a homeowner, not for a developer</p>
+          </div>
       </div>
     </div>
 
@@ -200,9 +244,12 @@
           <strong>Pay trash bill</strong> and <strong>Donate</strong> tiles should be visible but
           disabled (greyed out) with a "Coming soon" label. That's intentional for the pilot.
         </div>
-        <p><span class="checkbox"></span> Balance decreases immediately</p>
-        <p><span class="checkbox"></span> History shows the pending redemption</p>
-        <p><span class="checkbox"></span> Pay trash bill / Donate are disabled, not crash buttons</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Balance decreases immediately</p>
+          <p><span class="checkbox"></span> History shows the pending redemption</p>
+          <p><span class="checkbox"></span> Pay trash bill / Donate are disabled, not crash buttons</p>
+          </div>
       </div>
     </div>
 
@@ -220,8 +267,11 @@
           <strong>Expected:</strong> Editable fields save cleanly. The <em>pickup day</em> field
           is read-only (only admin can change it). Sign-out returns to the public homepage.
         </div>
-        <p><span class="checkbox"></span> Phone saves and persists after reload</p>
-        <p><span class="checkbox"></span> Pickup day is display-only</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Phone saves and persists after reload</p>
+          <p><span class="checkbox"></span> Pickup day is display-only</p>
+          </div>
       </div>
     </div>
 

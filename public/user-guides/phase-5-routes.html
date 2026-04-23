@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a> &nbsp;·&nbsp; <a href="index.html#test-users">🔑 Test users</a> &nbsp;·&nbsp; <a href="glossary.html">📖 Glossary</a></p>
     <header>
       <h1>Phase 5 · Building a Pickup Route</h1>
       <p class="lead">
@@ -25,11 +25,15 @@
     </ul>
 
     <div class="callout note">
-      <span class="callout-title">Before you start.</span>
-      You need at least two residents with either a scanned bag or a pending bag order, otherwise
-      the route will be empty. Use Aguirre (scanned bag from Phase 3, Scenario 4) and Goode (have
-      him order bags as in Phase 3, Scenario 3). An operator account also needs to exist — make
-      sure Aguirre has accepted his invite.
+      <span class="callout-title">📋 Before you start</span>
+      <p style="margin: 4pt 0 2pt;"><strong>Device:</strong> 💻 Laptop (you're Tia for this whole guide).</p>
+      <p style="margin: 2pt 0;"><strong>Dependencies — tick each before running Scenario 1:</strong></p>
+      <ul style="margin: 2pt 0 0;">
+        <li><span class="checkbox"></span> <a href="phase-4-admin.html">Phase 4</a> — Tia has invited an operator (Aguirre) and he has accepted.</li>
+        <li><span class="checkbox"></span> <a href="phase-3-resident.html">Phase 3</a> · Scenario 4 — at least one resident has scanned a bag for pickup (Aguirre).</li>
+        <li><span class="checkbox"></span> <a href="phase-3-resident.html">Phase 3</a> · Scenario 3 — a second resident has a pending bag order (Goode).</li>
+      </ul>
+      <p style="margin: 4pt 0 0; font-size: 10pt; color: #555;">Skipping any of these leaves the route empty — the builder has nothing to schedule.</p>
     </div>
 
     <div class="scenario">
@@ -48,8 +52,11 @@
           pickup (her scanned bag). Goode has a delivery (his bag order). Each stop shows the
           address and what's happening there.
         </div>
-        <p><span class="checkbox"></span> Both residents appear in the stop list</p>
-        <p><span class="checkbox"></span> Pickups and deliveries are visually distinguished</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Both residents appear in the stop list</p>
+          <p><span class="checkbox"></span> Pickups and deliveries are visually distinguished</p>
+          </div>
       </div>
     </div>
 
@@ -66,8 +73,11 @@
           small map preview shows the resulting path. The total estimated drive time and
           distance show at the bottom of the list.
         </div>
-        <p><span class="checkbox"></span> Stop order changes after clicking Optimize</p>
-        <p><span class="checkbox"></span> Map preview matches the new order</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Stop order changes after clicking Optimize</p>
+          <p><span class="checkbox"></span> Map preview matches the new order</p>
+          </div>
       </div>
     </div>
 
@@ -85,8 +95,11 @@
           different device or private window) he should see the route on his operator home
           screen.
         </div>
-        <p><span class="checkbox"></span> Route saves and appears in list</p>
-        <p><span class="checkbox"></span> Aguirre can see the route after the save</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Route saves and appears in list</p>
+          <p><span class="checkbox"></span> Aguirre can see the route after the save</p>
+          </div>
       </div>
     </div>
 
@@ -108,7 +121,10 @@
           one if Goode wasn't already on the route, or the existing stop now shows the additional
           delivery.
         </div>
-        <p><span class="checkbox"></span> New order attaches to the open route without admin action</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> New order attaches to the open route without admin action</p>
+          </div>
       </div>
     </div>
 
@@ -126,8 +142,11 @@
           <strong>Expected:</strong> The edit sticks. If Aguirre was viewing the route at the same
           time he should see it update on the next reload.
         </div>
-        <p><span class="checkbox"></span> Removing a stop works</p>
-        <p><span class="checkbox"></span> Re-optimization doesn't bring the removed stop back</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Removing a stop works</p>
+          <p><span class="checkbox"></span> Re-optimization doesn't bring the removed stop back</p>
+          </div>
       </div>
     </div>
 

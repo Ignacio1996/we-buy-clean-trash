@@ -74,6 +74,98 @@
       .section > header > p.lead {
         margin-top: -6pt;
       }
+      .test-users {
+        background: #fef9c3;
+        border: 1px solid #eab308;
+        border-radius: 6pt;
+        padding: 14pt 18pt;
+        margin: 14pt 0;
+      }
+      .test-users h2 {
+        margin-top: 0;
+        border: none;
+        font-size: 14pt;
+      }
+      .test-users .card-sub {
+        font-size: 10pt;
+        color: #713f12;
+        margin-bottom: 8pt;
+      }
+      .test-users table {
+        margin: 6pt 0 0;
+        background: white;
+      }
+      .test-users td code {
+        font-family: 'SF Mono', Menlo, Consolas, monospace;
+        font-size: 9.5pt;
+        background: #fef3c7;
+        padding: 1pt 4pt;
+        border-radius: 2pt;
+      }
+      .test-users .print-hint {
+        font-size: 9.5pt;
+        color: #713f12;
+        margin-top: 8pt;
+      }
+      .role-chooser {
+        margin: 18pt 0 22pt;
+      }
+      .role-chooser h2 {
+        margin-top: 0;
+        border: none;
+        font-size: 16pt;
+      }
+      .role-chooser .card-sub {
+        font-size: 10.5pt;
+        color: #555;
+        margin-bottom: 10pt;
+      }
+      .role-chooser .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10pt;
+      }
+      .role-chooser a {
+        display: block;
+        padding: 12pt 14pt;
+        border-radius: 6pt;
+        border: 1px solid transparent;
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.1s;
+      }
+      .role-chooser a:hover {
+        transform: translateY(-1pt);
+      }
+      .role-chooser .role-title {
+        font-weight: 700;
+        font-size: 12.5pt;
+        margin-bottom: 2pt;
+      }
+      .role-chooser .role-desc {
+        font-size: 10pt;
+        color: #444;
+      }
+      .role-chooser .role-resident {
+        background: #dcfce7;
+        border-color: #86efac;
+      }
+      .role-chooser .role-resident .role-title { color: #166534; }
+      .role-chooser .role-operator {
+        background: #dbeafe;
+        border-color: #93c5fd;
+      }
+      .role-chooser .role-operator .role-title { color: #1e40af; }
+      .role-chooser .role-depot {
+        background: #fce7f3;
+        border-color: #f9a8d4;
+      }
+      .role-chooser .role-depot .role-title { color: #9d174d; }
+      .role-chooser .role-admin {
+        background: #fef3c7;
+        border-color: #fcd34d;
+      }
+      .role-chooser .role-admin .role-title { color: #92400e; }
       @media print {
         .fallback,
         .toc {
@@ -82,6 +174,16 @@
         .phase-divider {
           break-before: page;
         }
+        .test-users {
+          break-inside: avoid;
+          break-after: page;
+        }
+        .test-users .print-hint {
+          display: none;
+        }
+        .role-chooser {
+          break-inside: avoid;
+        }
       }
     </style>
   </head>
@@ -89,29 +191,131 @@
     <header>
       <h1>We Buy Clean Trash</h1>
       <p class="lead">
-        Full pilot testing guide · Phases 0 through 12 · April 2026
+        Pilot testing guide · April 2026
       </p>
       <p>
-        This document stitches together every individual phase guide into one long read. Each
-        phase is a self-contained chapter — you can work through them in order (recommended for
-        the first time) or jump straight to the phase you're re-testing.
+        Start with your role below — each role has a focused testing path that links into the
+        right phase guides. If you prefer to work through the full phase list in order, it's
+        still available further down the page.
       </p>
     </header>
 
+    <div class="role-chooser">
+      <h2>I'm testing as a…</h2>
+      <p class="card-sub">Pick your role. Each page walks you through the scenarios specific to that role in the right order.</p>
+      <div class="role-grid">
+        <a class="role-resident" href="role-resident.html">
+          <div class="role-title">🏠 Resident</div>
+          <div class="role-desc">Sign up, order bags, scan, earn points, redeem. ~20 min.</div>
+        </a>
+        <a class="role-operator" href="role-operator.html">
+          <div class="role-title">🚚 Operator (driver)</div>
+          <div class="role-desc">Start a route, scan pickups, deliver stickers, close out. ~25 min.</div>
+        </a>
+        <a class="role-depot" href="role-depot.html">
+          <div class="role-title">⚖️ Depot worker</div>
+          <div class="role-desc">Receive routes, weigh the 7 materials, award points. ~15 min.</div>
+        </a>
+        <a class="role-admin" href="role-admin.html">
+          <div class="role-title">🛠 Admin</div>
+          <div class="role-desc">Invites, pricing, routes, sticker sheets, compliance. Split in two sessions.</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="test-users" id="test-users">
+      <h2>Test users — keep this page open</h2>
+      <p class="card-sub">
+        Every account below is created by <code>npm run seed:pilot</code>. All share the same
+        password. The "Guide name" column is the nickname used in every guide — when a guide says
+        <em>sign in as Aguirre the operator</em>, it means the email on that row.
+      </p>
+      <table>
+        <tr>
+          <th>Role</th>
+          <th>Guide name</th>
+          <th>Email</th>
+          <th>Password</th>
+          <th>Device</th>
+        </tr>
+        <tr>
+          <td><span class="actor admin">Admin</span></td>
+          <td>Tia</td>
+          <td><code>tia.admin@wbct-pilot.test</code></td>
+          <td rowspan="8"><code>webuycleantrash</code></td>
+          <td>💻 Laptop</td>
+        </tr>
+        <tr>
+          <td><span class="actor operator">Operator</span></td>
+          <td>Aguirre (operator)</td>
+          <td><code>operator.test@webuyclean.trash</code></td>
+          <td>📱 Phone</td>
+        </tr>
+        <tr>
+          <td><span class="actor depot">Depot</span></td>
+          <td>Goode (depot)</td>
+          <td><code>depot.test@webuyclean.trash</code></td>
+          <td>💻 Laptop / tablet</td>
+        </tr>
+        <tr>
+          <td><span class="actor resident">Resident</span></td>
+          <td>Casey Pearl</td>
+          <td><code>resident1.test@webuyclean.trash</code></td>
+          <td>📱 Phone</td>
+        </tr>
+        <tr>
+          <td><span class="actor resident">Resident</span></td>
+          <td>Devon Broadway</td>
+          <td><code>resident2.test@webuyclean.trash</code></td>
+          <td>📱 Phone</td>
+        </tr>
+        <tr>
+          <td><span class="actor resident">Resident</span></td>
+          <td>Eden Iris</td>
+          <td><code>resident3.test@webuyclean.trash</code></td>
+          <td>📱 Phone</td>
+        </tr>
+        <tr>
+          <td><span class="actor resident">Resident</span></td>
+          <td>Frankie Spruce</td>
+          <td><code>resident4.test@webuyclean.trash</code></td>
+          <td>📱 Phone</td>
+        </tr>
+        <tr>
+          <td><span class="actor resident">Resident</span></td>
+          <td>Greer Folsom</td>
+          <td><code>resident5.test@webuyclean.trash</code></td>
+          <td>📱 Phone</td>
+        </tr>
+      </table>
+      <p class="print-hint">
+        💡 Tip — print this page (⌘P / Ctrl+P) and tape it next to your laptop. Every guide links
+        back here, so you never have to hunt for a login.
+      </p>
+    </div>
+
     <div class="toc">
-      <strong>Contents</strong>
+      <strong>Full phase-by-phase contents</strong>
+      <p style="font-size: 10.5pt; color: #555; margin: 4pt 0 8pt;">
+        The legacy ordered list, grouped by dev phase. Useful if you already know which phase
+        you're re-testing. Most clients should start with the role buttons above instead.
+      </p>
       <ol>
+        <li>
+          <a href="demo-guide.html"><strong>Client demo script</strong></a>
+          <small>— 35-minute narrative walk-through of every feature (for live demos)</small>
+        </li>
         <li>
           <a href="00-test-accounts.html">Test accounts &amp; ground rules</a>
           <small>— meet Tia, Aguirre, Goode, and Aguirre before you start</small>
         </li>
         <li>
-          <a href="generating-users.html">Generating users</a>
-          <small>— how each type of account actually gets created</small>
+          <a href="glossary.html">📖 Glossary</a>
+          <small>— commingled, Yellow Sheet, contamination severity, zone, depot, and every other term the guides use</small>
         </li>
         <li>
-          <a href="phase-1-auth.html">Phase 1 · Sign-up &amp; sign-in</a>
-          <small>— residents self-signup, employees accept invites</small>
+          <a href="accounts-and-signin.html">Accounts &amp; sign-in</a>
+          <small>— create every role (admin / resident / employees) and verify sign-in works. Replaces the old "Generating users" and "Phase 1" guides.</small>
         </li>
         <li>
           <em>Phases 0 &amp; 2 are internal setup (foundation, shared code) — nothing to click through.</em>
@@ -148,8 +352,8 @@
           <small>— pre-print sticker sheets so delivery can claim them</small>
         </li>
         <li>
-          <a href="phase-11-security-deploy.html">Phase 11 · Security &amp; deploy</a>
-          <small>— rules, composite indexes, pilot seed, production deploy</small>
+          <a href="phase-11-security-deploy.html">Phase 11 · Post-deploy smoke test</a>
+          <small>— 5-minute role-by-role check after the dev team ships to production</small>
         </li>
         <li>
           <a href="phase-12-pilot-launch.html">Phase 12 · Pilot launch checklist</a>
@@ -185,8 +389,7 @@
     <script>
       const phases = [
         { file: '00-test-accounts.html', label: 'Start here', title: 'Test accounts &amp; ground rules' },
-        { file: 'generating-users.html', label: 'Setup', title: 'Generating users' },
-        { file: 'phase-1-auth.html', label: 'Phase 1', title: 'Sign-up &amp; sign-in' },
+        { file: 'accounts-and-signin.html', label: 'Setup', title: 'Accounts &amp; sign-in' },
         { file: 'phase-3-resident.html', label: 'Phase 3', title: 'Resident app' },
         { file: 'phase-4-admin.html', label: 'Phase 4', title: 'Admin dashboard' },
         { file: 'phase-5-routes.html', label: 'Phase 5', title: 'Route builder' },
@@ -194,7 +397,7 @@
         { file: 'phase-7-depot.html', label: 'Phase 7', title: 'Depot day' },
         { file: 'phase-9-admin-polish.html', label: 'Phase 9', title: 'Admin polish' },
         { file: 'phase-10-qr-generation.html', label: 'Phase 10', title: 'QR sticker generation' },
-        { file: 'phase-11-security-deploy.html', label: 'Phase 11', title: 'Security &amp; deploy' },
+        { file: 'phase-11-security-deploy.html', label: 'Phase 11', title: 'Post-deploy smoke test' },
         { file: 'phase-12-pilot-launch.html', label: 'Phase 12', title: 'Pilot launch checklist' },
       ];
 

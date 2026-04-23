@@ -2,210 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>We Buy Clean Trash — Generating Users</title>
+    <title>We Buy Clean Trash — Moved</title>
     <link rel="stylesheet" href="styles.css" />
+    <meta http-equiv="refresh" content="4; url=accounts-and-signin.html" />
   </head>
   <body>
-    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a> &nbsp;·&nbsp; <a href="index.html#test-users">🔑 Test users</a> &nbsp;·&nbsp; <a href="glossary.html">📖 Glossary</a></p>
     <header>
-      <h1>Generating Users</h1>
+      <h1>Moved</h1>
       <p class="lead">
-        How every account in the pilot gets created. There are three paths, one per category:
-        an admin is set up once by the dev team, residents sign themselves up from the public
-        site, and everyone else (operators, depot workers, depot managers) joins through an
-        emailed invite sent from the admin dashboard.
+        This guide has been merged into
+        <a href="accounts-and-signin.html"><strong>Accounts &amp; Sign-in</strong></a>. You'll be
+        redirected in a few seconds — or click the link to go now.
       </p>
     </header>
-
-    <h2>At a glance</h2>
-    <table>
-      <tr>
-        <th>Who</th>
-        <th>Created by</th>
-        <th>Where</th>
-      </tr>
-      <tr>
-        <td><span class="actor admin">Admin</span></td>
-        <td>Dev team (one-time)</td>
-        <td>Behind the scenes — you receive the email + password</td>
-      </tr>
-      <tr>
-        <td><span class="actor resident">Resident</span></td>
-        <td>The resident themselves</td>
-        <td>Public homepage → <strong>Sign up</strong></td>
-      </tr>
-      <tr>
-        <td><span class="actor operator">Operator</span></td>
-        <td>Admin sends invite</td>
-        <td><strong>/admin → Users &amp; Invites → Send invite</strong></td>
-      </tr>
-      <tr>
-        <td><span class="actor depot">Depot worker</span></td>
-        <td>Admin sends invite</td>
-        <td>Same place — must also pick the depot</td>
-      </tr>
-      <tr>
-        <td><span class="actor depot">Depot manager</span></td>
-        <td>Admin sends invite</td>
-        <td>Same place — must also pick the depot</td>
-      </tr>
-    </table>
-
-    <h2>1 — The admin account (done once)</h2>
-    <p>
-      The first admin is provisioned by the dev team, because there is no admin to invite them
-      yet. Ask the dev team for the admin email and password before you start testing. From
-      that point on, any additional admins you need can be invited from the dashboard just like
-      employees.
-    </p>
-    <div class="callout note">
-      <span class="callout-title">Keep the admin password somewhere safe.</span>
-      Every invite in the pilot flows from the admin account. If you lose access, nobody else
-      can create operators or depot workers until the dev team resets it.
-    </div>
-
-    <h2>2 — Residents (self-signup)</h2>
-    <ol>
-      <li>Open the public homepage in a private/incognito window.</li>
-      <li>Click <strong>Sign up</strong>.</li>
-      <li>
-        Enter name, email, password (or use <em>Continue with Google</em>), and a real street
-        address in the pilot zone.
-      </li>
-      <li>Submit.</li>
-    </ol>
-    <div class="expected">
-      <strong>Expected:</strong> The resident lands on their home screen with a
-      <strong>10,000-point</strong> signup bonus. No invite or approval is needed.
-    </div>
-    <div class="callout warn">
-      <span class="callout-title">Address must be inside the pilot zone.</span>
-      If sign-up rejects an address with "outside our service area," the zone doesn't include
-      that zip yet — ask the dev team to widen it.
-    </div>
-
-    <h2>3 — Operators, depot workers, depot managers (invite-only)</h2>
-    <p>
-      Employees can't self-sign-up. The admin creates them in two steps — admin sends the
-      invite, the employee opens the link and sets a password.
-    </p>
-
-    <h3>Admin side — send the invite</h3>
-    <ol>
-      <li>Sign in as the admin.</li>
-      <li>In the sidebar, click <strong>Users &amp; Invites</strong>.</li>
-      <li>Click <strong>Send invite</strong>.</li>
-      <li>
-        Enter the employee's email and pick a role:
-        <strong>Operator</strong>, <strong>Depot worker</strong>, or
-        <strong>Depot manager</strong>.
-      </li>
-      <li>
-        For depot worker or depot manager, <strong>pick the depot</strong> they'll be assigned
-        to. That link tells the app which inventory their processed bags should update.
-      </li>
-      <li>Click <strong>Send</strong>.</li>
-    </ol>
-    <div class="expected">
-      <strong>Expected:</strong> The invite shows up in the list below with status
-      <em>pending</em>. You can click it to copy the invite link. (Email delivery is
-      simulated during the pilot — use the copy-link button to forward the link yourself, or
-      ask the dev team to pull it if you closed the dialog.)
-    </div>
-
-    <h3>Employee side — accept the invite</h3>
-    <ol>
-      <li>Open the invite link in a fresh private/incognito window.</li>
-      <li>Click <strong>Accept invitation</strong>.</li>
-      <li>Set a password.</li>
-      <li>Submit.</li>
-    </ol>
-    <div class="expected">
-      <strong>Expected:</strong> The new employee lands on the screen that matches their role —
-      operators see <em>Today's Route</em>, depot workers see the bag-processing queue,
-      managers see their depot dashboard. The invite link, if opened again, reports "already
-      used."
-    </div>
-
-    <h2>Suggested starter set for the pilot</h2>
-    <p>
-      If you want a minimal cast that covers every flow, create these five accounts. The phase
-      guides refer to them by name, so following this list means the rest of the guides read
-      naturally.
-    </p>
-    <table>
-      <tr>
-        <th>Role</th>
-        <th>Suggested name</th>
-        <th>Suggested email</th>
-      </tr>
-      <tr>
-        <td><span class="actor admin">Admin</span></td>
-        <td>Tia Johnson</td>
-        <td>tia.admin@wbct-pilot.test</td>
-      </tr>
-      <tr>
-        <td><span class="actor resident">Resident</span></td>
-        <td>Resident Aguirre</td>
-        <td>resident.aguirre@example.com</td>
-      </tr>
-      <tr>
-        <td><span class="actor resident">Resident</span></td>
-        <td>Resident Goode</td>
-        <td>resident.goode@example.com</td>
-      </tr>
-      <tr>
-        <td><span class="actor operator">Operator</span></td>
-        <td>Operator Aguirre</td>
-        <td>operator.aguirre@wbct-pilot.test</td>
-      </tr>
-      <tr>
-        <td><span class="actor depot">Depot worker</span></td>
-        <td>Depot Goode</td>
-        <td>depot.goode@wbct-pilot.test</td>
-      </tr>
-    </table>
-
-    <h2>Common snags</h2>
-    <table>
-      <tr>
-        <th>What you see</th>
-        <th>Probably because</th>
-        <th>What to do</th>
-      </tr>
-      <tr>
-        <td>"Invalid or expired" on the invite link</td>
-        <td>It was already used or has passed its 7-day window.</td>
-        <td>Send a fresh invite from the admin dashboard.</td>
-      </tr>
-      <tr>
-        <td>Employee lands on the resident home after accepting</td>
-        <td>
-          Their browser session was cached before the role claim applied.
-        </td>
-        <td>Sign out, sign back in, refresh.</td>
-      </tr>
-      <tr>
-        <td>No <em>Depot</em> picker when inviting a depot worker</td>
-        <td>No depots have been created yet.</td>
-        <td>Create one under <strong>Zones &amp; Depots</strong> first.</td>
-      </tr>
-      <tr>
-        <td>Resident sign-up says "outside our service area"</td>
-        <td>The address's zip isn't in any zone.</td>
-        <td>Ask the dev team to add the zip to the pilot zone.</td>
-      </tr>
-    </table>
-
-    <div class="callout tester">
-      <span class="callout-title">Tip — one browser per role.</span>
-      Testing cross-role flows (admin invites, operator accepts, depot worker processes) is
-      much smoother if each role has its own browser or private window. Don't sign in and out
-      of one window — you'll lose your place.
-    </div>
-
     <div class="footer">
-      We Buy Clean Trash · Generating users · Pilot April 2026
+      We Buy Clean Trash · Pilot April 2026
     </div>
   </body>
 </html>

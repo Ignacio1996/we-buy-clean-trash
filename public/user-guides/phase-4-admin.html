@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a> &nbsp;·&nbsp; <a href="index.html#test-users">🔑 Test users</a> &nbsp;·&nbsp; <a href="glossary.html">📖 Glossary</a></p>
     <header>
       <h1>Phase 4 · Admin Dashboard</h1>
       <p class="lead">
@@ -14,6 +14,17 @@
         All scenarios in this guide are run as <strong>Tia Johnson</strong>.
       </p>
     </header>
+
+    <div class="stub-warning">
+      <span class="stub-title">⚠️ What's stubbed in this flow</span>
+      A few admin actions only <em>simulate</em> their external effect during the pilot. Treat
+      these as expected, not bugs:
+      <ul>
+        <li><strong>Invitation emails</strong> — generated and written to Firestore, but the email itself is logged to the server console (no real inbox delivery yet).</li>
+        <li><strong>Gift card redemptions</strong> — approving a request does not auto-send a gift card; an admin emails it manually after approval.</li>
+        <li><strong>Material price changes</strong> are real and do affect live resident calculations — be deliberate when you edit prices during testing.</li>
+      </ul>
+    </div>
 
     <h2>What you're verifying</h2>
     <ul>
@@ -39,12 +50,22 @@
           <li><strong>Material totals</strong> — pounds of aluminum, cardboard, etc.</li>
           <li><strong>Revenue</strong> — rough total value processed.</li>
         </ul>
+        <!-- SCREENSHOT: drop in once captured, see screenshots/README.md
+        <figure class="screenshot">
+          <img src="screenshots/admin-dashboard-kpis.png" alt="Admin dashboard with KPI tiles for residents, bags, materials, revenue" />
+          <figcaption><strong>Expected:</strong> Admin dashboard KPI tiles on /admin.</figcaption>
+        </figure>
+        -->
+
         <div class="expected">
           <strong>Expected:</strong> Numbers are real (zero is fine — it means nothing has been
           processed yet). No "TODO" text, no sample data, no broken charts.
         </div>
-        <p><span class="checkbox"></span> Resident count matches the signups you've done</p>
-        <p><span class="checkbox"></span> Material totals all read 0 before any depot processing</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Resident count matches the signups you've done</p>
+          <p><span class="checkbox"></span> Material totals all read 0 before any depot processing</p>
+          </div>
       </div>
     </div>
 
@@ -62,15 +83,25 @@
           <li>Fill in Aguirre's name, email (<em>operator.aguirre@wbct-pilot.test</em>), and pick role <strong>Operator</strong>.</li>
           <li>Click <strong>Send</strong>.</li>
         </ol>
+        <!-- SCREENSHOT: drop in once captured, see screenshots/README.md
+        <figure class="screenshot">
+          <img src="screenshots/admin-invite-pending.png" alt="Invite list showing a pending operator invite row" />
+          <figcaption><strong>Expected:</strong> Invite list with a pending row after sending.</figcaption>
+        </figure>
+        -->
+
         <div class="expected">
           <strong>Expected:</strong> The invite appears in the list below with status
           <em>pending</em>. Tia can click it to copy the invite link (real email sending is
           simulated during the pilot — the dev team can fetch the link for you if needed).
         </div>
-        <p><span class="checkbox"></span> Invite appears with Aguirre's email</p>
-        <p><span class="checkbox"></span> The invite link can be copied</p>
-        <p><span class="checkbox"></span> Once Aguirre accepts (see Phase 1, Scenario 5), the invite status flips to <em>accepted</em></p>
-
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Invite appears with Aguirre's email</p>
+          <p><span class="checkbox"></span> The invite link can be copied</p>
+          <p><span class="checkbox"></span> Once Aguirre accepts (see Phase 1, Scenario 5), the invite status flips to <em>accepted</em></p>
+  
+          </div>
         <div class="callout note">
           <span class="callout-title">Try the other roles too.</span>
           Repeat the invite flow for a depot worker and a depot manager, even though there's no
@@ -95,8 +126,11 @@
           zone, current points balance, and a history of her transactions (signup bonus,
           pickups, redemptions).
         </div>
-        <p><span class="checkbox"></span> Details match what Aguirre sees in her own profile</p>
-        <p><span class="checkbox"></span> Transaction history is chronological</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Details match what Aguirre sees in her own profile</p>
+          <p><span class="checkbox"></span> Transaction history is chronological</p>
+          </div>
       </div>
     </div>
 
@@ -116,8 +150,11 @@
           <strong>Expected:</strong> Create / edit / delete all work and persist after reload.
           Deleting a zone that still has residents should be blocked with a clear message.
         </div>
-        <p><span class="checkbox"></span> Create / edit / delete all persist across reloads</p>
-        <p><span class="checkbox"></span> Deleting a zone with residents is blocked</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Create / edit / delete all persist across reloads</p>
+          <p><span class="checkbox"></span> Deleting a zone with residents is blocked</p>
+          </div>
       </div>
     </div>
 
@@ -138,9 +175,12 @@
           Double-check by flipping on <em>Separated</em> — points should roughly double to
           6,000.
         </div>
-        <p><span class="checkbox"></span> Price change saves and persists on reload</p>
-        <p><span class="checkbox"></span> Resident calculator reflects the new price within a few seconds</p>
-        <p><span class="checkbox"></span> A history of previous prices is visible (snapshot each time you save)</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Price change saves and persists on reload</p>
+          <p><span class="checkbox"></span> Resident calculator reflects the new price within a few seconds</p>
+          <p><span class="checkbox"></span> A history of previous prices is visible (snapshot each time you save)</p>
+          </div>
       </div>
     </div>
 
@@ -168,8 +208,11 @@
           <em>Fulfilled</em>. In Aguirre's own Rewards history, the entry changes status to
           <em>Fulfilled</em> too.
         </div>
-        <p><span class="checkbox"></span> Status flips on both sides (admin queue and Aguirre's history)</p>
-        <p><span class="checkbox"></span> Points are not refunded when fulfilling (they were already deducted)</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Status flips on both sides (admin queue and Aguirre's history)</p>
+          <p><span class="checkbox"></span> Points are not refunded when fulfilling (they were already deducted)</p>
+          </div>
       </div>
     </div>
 

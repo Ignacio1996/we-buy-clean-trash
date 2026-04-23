@@ -209,6 +209,127 @@ th {
   margin-bottom: 20pt;
   color: #555;
 }
+.stub-warning {
+  background: #fff7ed;
+  border: 1px solid #fb923c;
+  border-left: 4px solid #ea580c;
+  border-radius: 6pt;
+  padding: 10pt 14pt;
+  margin: 14pt 0 20pt;
+  font-size: 10.5pt;
+}
+.stub-warning .stub-title {
+  font-weight: 600;
+  color: #9a3412;
+  display: block;
+  margin-bottom: 4pt;
+}
+.stub-warning ul {
+  margin: 4pt 0 0 0;
+  padding-left: 18pt;
+}
+.stub-warning li {
+  margin: 2pt 0;
+}
+.advanced-divider {
+  margin: 28pt 0 14pt;
+  padding: 12pt 16pt;
+  background: #fef3c7;
+  border-left: 4px solid #d97706;
+  border-radius: 6pt;
+  page-break-inside: avoid;
+}
+.advanced-divider .advanced-badge {
+  display: inline-block;
+  background: #d97706;
+  color: white;
+  font-size: 9pt;
+  font-weight: 600;
+  padding: 2pt 8pt;
+  border-radius: 3pt;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: 8pt;
+  vertical-align: 2pt;
+}
+.advanced-divider h2 {
+  display: inline-block;
+  margin: 0;
+  border: none;
+  padding: 0;
+  font-size: 14pt;
+  color: #92400e;
+}
+.advanced-divider p {
+  margin: 6pt 0 0;
+  font-size: 10.5pt;
+  color: #78350f;
+}
+.scenario-meta {
+  display: block;
+  font-size: 9.5pt;
+  color: #e2e8f0;
+  margin-top: 2pt;
+  font-weight: 400;
+}
+.scenario-meta .device {
+  display: inline-block;
+  margin-right: 10pt;
+}
+.scenario-meta .requires {
+  opacity: 0.9;
+}
+.verify-checklist {
+  margin: 10pt 0 0;
+  padding: 8pt 12pt;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 3px solid #0f172a;
+  border-radius: 4pt;
+  page-break-inside: avoid;
+}
+.verify-checklist h4 {
+  margin: 0 0 4pt;
+  font-size: 10.5pt;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.verify-checklist p {
+  margin: 2pt 0;
+  font-size: 10.5pt;
+}
+figure.screenshot {
+  margin: 12pt 0;
+  padding: 0;
+  border: 1px solid #e4e4e4;
+  border-radius: 6pt;
+  overflow: hidden;
+  background: #fafafa;
+  page-break-inside: avoid;
+}
+figure.screenshot img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-bottom: 1px solid #e4e4e4;
+}
+figure.screenshot figcaption {
+  padding: 6pt 10pt;
+  font-size: 10pt;
+  color: #555;
+  background: #f7f7f7;
+}
+figure.screenshot figcaption strong {
+  color: #0f172a;
+}
+figure.screenshot.phone img {
+  max-width: 360px;
+  margin: 0 auto;
+  display: block;
+  border-bottom: 1px solid #e4e4e4;
+}
 @media print {
   body {
     max-width: none;

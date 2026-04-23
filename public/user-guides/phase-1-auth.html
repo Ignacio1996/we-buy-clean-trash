@@ -2,183 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>We Buy Clean Trash — Sign-up &amp; Sign-in Guide</title>
+    <title>We Buy Clean Trash — Moved</title>
     <link rel="stylesheet" href="styles.css" />
+    <meta http-equiv="refresh" content="4; url=accounts-and-signin.html" />
   </head>
   <body>
-    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a> &nbsp;·&nbsp; <a href="index.html#test-users">🔑 Test users</a> &nbsp;·&nbsp; <a href="glossary.html">📖 Glossary</a></p>
     <header>
-      <h1>Phase 1 · Sign-up &amp; Sign-in</h1>
+      <h1>Moved</h1>
       <p class="lead">
-        How new residents join, and how employees accept invitations. Test this phase first —
-        every later phase assumes Aguirre, Goode, Tia, and Aguirre all have working accounts.
+        Phase 1 sign-up/sign-in testing has been merged into
+        <a href="accounts-and-signin.html"><strong>Accounts &amp; Sign-in</strong></a> — one guide
+        covers both account creation and login verification. You'll be redirected in a few seconds.
       </p>
     </header>
-
-    <h2>What you're verifying</h2>
-    <ul>
-      <li>A resident can sign up from the public homepage with their email or a Google account.</li>
-      <li>A signed-up resident lands on the resident dashboard — not the admin or operator area.</li>
-      <li>An admin can sign in and lands in the admin dashboard.</li>
-      <li>An employee (operator) <em>cannot</em> sign up directly — they need an invite link.</li>
-      <li>Signing out returns everyone to the public homepage.</li>
-    </ul>
-
-    <div class="scenario">
-      <div class="scenario-head">Scenario 1 — Resident signs up with email</div>
-      <div class="scenario-body">
-        <p><span class="actor resident">Resident</span> Signed in as: <strong>Resident Aguirre</strong> · resident.aguirre@example.com</p>
-        <ol>
-          <li>Open the public homepage in a fresh private/incognito window.</li>
-          <li>Click <strong>Sign up</strong>.</li>
-          <li>
-            Enter Aguirre's name, her email, and a password you'll remember. Use a real street
-            address in the pilot zone.
-          </li>
-          <li>Submit the form.</li>
-        </ol>
-        <div class="expected">
-          <strong>Expected:</strong> Aguirre lands on the resident home screen. It greets her by
-          name and shows <strong>10,000 points</strong> as a signup bonus. A short 3-step
-          onboarding card ("Order bags → Schedule → Earn") appears.
-        </div>
-        <p><span class="checkbox"></span> Name appears correctly in the top-right menu</p>
-        <p><span class="checkbox"></span> Points balance shows 10,000</p>
-        <p><span class="checkbox"></span> Address is saved (check the Profile tab)</p>
-      </div>
-    </div>
-
-    <div class="scenario">
-      <div class="scenario-head">Scenario 2 — Second resident signs up with Google</div>
-      <div class="scenario-body">
-        <p><span class="actor resident">Resident</span> Signed in as: <strong>Resident Goode</strong> · resident.goode@example.com</p>
-        <ol>
-          <li>In a different private window, open the homepage.</li>
-          <li>Click <strong>Sign up → Continue with Google</strong>.</li>
-          <li>Pick Goode's Google account.</li>
-          <li>Fill in the remaining form fields (address, phone).</li>
-        </ol>
-        <div class="expected">
-          <strong>Expected:</strong> Same as Aguirre — Goode lands on the resident home screen with
-          10,000 points. No password was required.
-        </div>
-        <p><span class="checkbox"></span> Google sign-in completes without asking for a password</p>
-        <p><span class="checkbox"></span> Goode's name and photo (if his Google account has one) appear in the top-right menu</p>
-      </div>
-    </div>
-
-    <div class="scenario">
-      <div class="scenario-head">Scenario 3 — Admin signs in</div>
-      <div class="scenario-body">
-        <p><span class="actor admin">Admin</span> Signed in as: <strong>Tia Johnson</strong> · tia.admin@wbct-pilot.test</p>
-        <ol>
-          <li>Open the homepage in your main browser.</li>
-          <li>Click <strong>Sign in</strong>.</li>
-          <li>Use Tia's email and the password the dev team gave you.</li>
-        </ol>
-        <div class="expected">
-          <strong>Expected:</strong> Tia is redirected straight to the admin dashboard
-          (<em>not</em> the resident home). She sees KPI tiles and a left sidebar with Users,
-          Zones, Pricing, Redemptions, Routes.
-        </div>
-        <p><span class="checkbox"></span> Landing screen is the admin dashboard, not resident home</p>
-        <p><span class="checkbox"></span> Admin sidebar is visible</p>
-      </div>
-    </div>
-
-    <div class="scenario">
-      <div class="scenario-head">Scenario 4 — Operator cannot self-sign-up</div>
-      <div class="scenario-body">
-        <p><span class="actor tester">Tester</span> You, in a new private window. No one signed in yet.</p>
-        <ol>
-          <li>Open the homepage.</li>
-          <li>Click <strong>Sign up</strong>.</li>
-          <li>
-            Look at the sign-up form. It only creates resident accounts — there's no
-            role picker, no "I'm an operator" option.
-          </li>
-        </ol>
-        <div class="expected">
-          <strong>Expected:</strong> There's no way to self-select the operator, depot, or admin
-          role. The only path to those roles is an emailed invitation from an admin. You'll test
-          that in <em>Scenario 5</em> after Tia sends Aguirre an invite in the Admin Dashboard
-          guide.
-        </div>
-        <p><span class="checkbox"></span> No role selector anywhere on sign-up</p>
-      </div>
-    </div>
-
-    <div class="scenario">
-      <div class="scenario-head">Scenario 5 — Operator accepts an invite</div>
-      <div class="scenario-body">
-        <p>
-          <span class="actor operator">Operator</span> Will be signed in as:
-          <strong>Operator Aguirre</strong> · operator.aguirre@wbct-pilot.test
-        </p>
-        <p>
-          <em>
-            Prerequisite: Tia has already invited Aguirre from the admin dashboard. If you haven't
-            done that yet, do the Admin Dashboard guide first and come back here.
-          </em>
-        </p>
-        <ol>
-          <li>
-            Open the invite email Tia sent to Aguirre. (During the pilot the email is simulated —
-            the dev team will hand you a direct link.)
-          </li>
-          <li>Click <strong>Accept invitation</strong>.</li>
-          <li>Set Aguirre's password when prompted.</li>
-          <li>Submit.</li>
-        </ol>
-        <div class="expected">
-          <strong>Expected:</strong> Aguirre lands on the operator home screen (<em>Today's
-          Route</em>). He sees either "No active route" or, if Tia already built one for him
-          today, a route card.
-        </div>
-        <p><span class="checkbox"></span> Aguirre lands on the operator screen, not resident</p>
-        <p><span class="checkbox"></span> The same invite link, if clicked again, says "already used"</p>
-      </div>
-    </div>
-
-    <h2>Signing out</h2>
-    <p>
-      From any signed-in screen, open the top-right menu and pick <strong>Sign out</strong>. You
-      should return to the public homepage. If you reload the page and still see the logged-in
-      view, that's a bug.
-    </p>
-
-    <div class="callout warn">
-      <span class="callout-title">Gotcha — wrong area after sign-in.</span>
-      If a resident signs in and somehow lands on the admin page, or vice versa, that's a
-      role-routing bug. Write it down with the exact email used.
-    </div>
-
-    <h2>Quick troubleshooting</h2>
-    <table>
-      <tr>
-        <th>What you see</th>
-        <th>Probably because</th>
-        <th>What to do</th>
-      </tr>
-      <tr>
-        <td>"This address is outside our service area"</td>
-        <td>Your test address isn't in the configured pilot zone.</td>
-        <td>Ask the dev team to add the zip code to the zone list.</td>
-      </tr>
-      <tr>
-        <td>Google sign-in popup closes with no result</td>
-        <td>Browser popup blocker or a third-party cookie setting.</td>
-        <td>Allow popups for the site and retry.</td>
-      </tr>
-      <tr>
-        <td>Invite link says "invalid or expired"</td>
-        <td>The invite was already accepted, or Tia revoked it.</td>
-        <td>Ask Tia to send a fresh one.</td>
-      </tr>
-    </table>
-
     <div class="footer">
-      We Buy Clean Trash · Phase 1 testing guide · Pilot April 2026
+      We Buy Clean Trash · Pilot April 2026
     </div>
   </body>
 </html>

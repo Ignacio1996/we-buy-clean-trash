@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a> &nbsp;·&nbsp; <a href="index.html#test-users">🔑 Test users</a> &nbsp;·&nbsp; <a href="glossary.html">📖 Glossary</a></p>
     <header>
       <h1>Phase 10 · QR sticker generation</h1>
       <p class="lead">
@@ -20,6 +20,15 @@
       </p>
     </header>
 
+    <div class="stub-warning">
+      <span class="stub-title">⚠️ Hardware requirement</span>
+      Testing this end-to-end needs a real thermal printer. If you don't have one:
+      <ul>
+        <li><strong>Without a Rollo printer</strong> — you can still generate sheets, inspect the PDF preview, and verify the Firestore records get created. The "Printed" state can also be triggered by clicking <em>Mark as printed</em> in the admin UI.</li>
+        <li><strong>No real money or external services</strong> are involved in this flow.</li>
+      </ul>
+    </div>
+
     <h2>What you're verifying</h2>
     <ul>
       <li>Tia can generate a new sticker sheet with one click — the app picks a unique 4-digit sheet number and writes the <em>stickerSheets</em> + 10 <em>bags</em> records atomically.</li>
@@ -30,11 +39,13 @@
     </ul>
 
     <div class="callout note">
-      <span class="callout-title">Setup before you start.</span>
-      You only need an admin account signed in (Tia) to test most of this guide. To verify the
-      end-to-end delivery handoff in Scenario 5 you'll also need a pending bag order on an
-      in-progress route (same prerequisites as Phase 6). If you just want to sanity-check the
-      print view, skip Scenario 5.
+      <span class="callout-title">📋 Before you start</span>
+      <p style="margin: 4pt 0 2pt;"><strong>Device:</strong> 💻 Laptop (Tia) — Scenarios 1–4 only need this.</p>
+      <p style="margin: 2pt 0;"><strong>Dependencies — only Scenario 5 has prereqs; Scenarios 1–4 are standalone:</strong></p>
+      <ul style="margin: 2pt 0 0;">
+        <li><span class="checkbox"></span> <em>Scenarios 1–4</em>: just Tia signed in. No other setup needed.</li>
+        <li><span class="checkbox"></span> <em>Scenario 5 only</em>: a pending bag order on an in-progress route (same prereqs as <a href="phase-6-operator.html">Phase 6</a>). Skip this scenario if you just want to sanity-check the print view.</li>
+      </ul>
     </div>
 
     <div class="scenario">
@@ -54,9 +65,12 @@
           with <em>residentId: null</em>, and created 10 <em>bags</em> docs each with
           <em>status: "unused"</em> and <em>residentId: null</em>.
         </div>
-        <p><span class="checkbox"></span> QR codes look like machine-readable squares, not a broken image</p>
-        <p><span class="checkbox"></span> The printed number under each QR matches the same format <code>BAG-XXXX-NN</code></p>
-        <p><span class="checkbox"></span> The sheet number across all 10 labels is the same (e.g. all <code>BAG-4237-*</code>), index runs 01 through 10</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> QR codes look like machine-readable squares, not a broken image</p>
+          <p><span class="checkbox"></span> The printed number under each QR matches the same format <code>BAG-XXXX-NN</code></p>
+          <p><span class="checkbox"></span> The sheet number across all 10 labels is the same (e.g. all <code>BAG-4237-*</code>), index runs 01 through 10</p>
+          </div>
       </div>
     </div>
 
@@ -77,10 +91,13 @@
           reads <em>"last printed &lt;timestamp&gt;"</em>. The Firestore <em>stickerSheets</em> doc
           now has a <em>printedAt</em> value.
         </div>
-        <p><span class="checkbox"></span> Each label prints on its own page — no two labels share a sheet</p>
-        <p><span class="checkbox"></span> The QR on each label looks dark and crisp in the saved PDF (not blurry or rasterized)</p>
-        <p><span class="checkbox"></span> The subtitle flips from <em>"not yet printed"</em> to the printed timestamp after the dialog closes</p>
-        <p><span class="checkbox"></span> Reopening the page the next day still shows the printed timestamp (persisted)</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Each label prints on its own page — no two labels share a sheet</p>
+          <p><span class="checkbox"></span> The QR on each label looks dark and crisp in the saved PDF (not blurry or rasterized)</p>
+          <p><span class="checkbox"></span> The subtitle flips from <em>"not yet printed"</em> to the printed timestamp after the dialog closes</p>
+          <p><span class="checkbox"></span> Reopening the page the next day still shows the printed timestamp (persisted)</p>
+          </div>
       </div>
     </div>
 
@@ -98,9 +115,12 @@
           Created and Printed columns. The top status tiles now show 1 in <em>Ready to deliver</em>
           and 0 in <em>Awaiting print</em>.
         </div>
-        <p><span class="checkbox"></span> Generating a second sheet before printing it increments the <em>Awaiting print</em> tile to 1 and drops its badge to the amber <em>Awaiting print</em> pill</p>
-        <p><span class="checkbox"></span> The <strong>Print view</strong> button on each row opens that sheet's print page directly</p>
-        <p><span class="checkbox"></span> Sheets sort newest-first</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Generating a second sheet before printing it increments the <em>Awaiting print</em> tile to 1 and drops its badge to the amber <em>Awaiting print</em> pill</p>
+          <p><span class="checkbox"></span> The <strong>Print view</strong> button on each row opens that sheet's print page directly</p>
+          <p><span class="checkbox"></span> Sheets sort newest-first</p>
+          </div>
       </div>
     </div>
 
@@ -119,8 +139,11 @@
           <em>sheet_number_exhausted</em>, we've run out of the 9000-number space and the reservation
           scheme needs to grow to 5+ digits.
         </div>
-        <p><span class="checkbox"></span> No two rows share the same Sheet #</p>
-        <p><span class="checkbox"></span> Each sheet's 10 bag codes are unique across the whole <em>bags</em> collection</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> No two rows share the same Sheet #</p>
+          <p><span class="checkbox"></span> Each sheet's 10 bag codes are unique across the whole <em>bags</em> collection</p>
+          </div>
       </div>
     </div>
 
@@ -147,9 +170,12 @@
           resident's uid (no new docs, no duplicates). The <em>stickerSheets</em> doc also has
           <em>residentId</em> and <em>bagOrderId</em> set.
         </div>
-        <p><span class="checkbox"></span> Bag count in Firestore's <em>bags</em> collection did not grow by 10 — the existing docs were updated, not recreated</p>
-        <p><span class="checkbox"></span> Trying to re-deliver the same sheet to a different bag order returns <em>sheet_already_issued</em></p>
-        <p><span class="checkbox"></span> Scanning a sheet number that was never generated (e.g. <code>BAG-9999-01</code>) returns <em>sheet_not_pre_issued</em></p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Bag count in Firestore's <em>bags</em> collection did not grow by 10 — the existing docs were updated, not recreated</p>
+          <p><span class="checkbox"></span> Trying to re-deliver the same sheet to a different bag order returns <em>sheet_already_issued</em></p>
+          <p><span class="checkbox"></span> Scanning a sheet number that was never generated (e.g. <code>BAG-9999-01</code>) returns <em>sheet_not_pre_issued</em></p>
+          </div>
       </div>
     </div>
 
@@ -169,8 +195,11 @@
           endpoint created the bag docs on-scan; after Phase 10 it still works, because the same
           docs are claimed instead.
         </div>
-        <p><span class="checkbox"></span> Scanning a sticker from a sheet that was <em>never delivered</em> returns <em>bag_not_yours</em> (the bag has residentId=null; the resident is not null; inequality rejects)</p>
-        <p><span class="checkbox"></span> Scanning a sticker from another resident's delivered sheet still returns <em>bag_not_yours</em></p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Scanning a sticker from a sheet that was <em>never delivered</em> returns <em>bag_not_yours</em> (the bag has residentId=null; the resident is not null; inequality rejects)</p>
+          <p><span class="checkbox"></span> Scanning a sticker from another resident's delivered sheet still returns <em>bag_not_yours</em></p>
+          </div>
       </div>
     </div>
 

@@ -132,7 +132,12 @@ export default async function ResidentHome() {
             <div className="text-sm font-semibold text-white">
               📦 {openOrders.length === 1 ? 'Pending order' : `${openOrders.length} pending orders`}
             </div>
-            <span className="text-[10px] uppercase tracking-wide text-blue-300">In progress</span>
+            <Link
+              href="/resident/order-bags/history"
+              className="text-[10px] uppercase tracking-wide text-blue-300"
+            >
+              View all →
+            </Link>
           </div>
           <ul className="mt-3 space-y-2">
             {openOrders.map((o) => {
@@ -168,6 +173,12 @@ export default async function ResidentHome() {
           <div className="mt-1 text-xs text-gray-400">
             Order bags and your first pickup will be assigned to an upcoming route.
           </div>
+          <Link
+            href="/resident/order-bags/history"
+            className="mt-2 inline-block text-[11px] text-gray-400 underline-offset-2 hover:underline"
+          >
+            View past orders →
+          </Link>
         </section>
       )}
 

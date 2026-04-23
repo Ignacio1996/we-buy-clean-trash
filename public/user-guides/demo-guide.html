@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Client Demo Script</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .act-divider {
+        margin: 30pt 0 14pt;
+        padding: 12pt 16pt;
+        background: #0f172a;
+        color: white;
+        border-radius: 6pt;
+      }
+      .act-divider h2 {
+        color: white;
+        border: none;
+        margin: 0;
+        padding: 0;
+      }
+      .act-divider .act-label {
+        font-size: 10pt;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #94a3b8;
+      }
+      .say {
+        background: #eff6ff;
+        border-left: 3px solid #3b82f6;
+        padding: 8pt 12pt;
+        margin: 6pt 0;
+        font-size: 10.5pt;
+        font-style: italic;
+        border-radius: 3pt;
+      }
+      .say::before {
+        content: 'Say: ';
+        font-style: normal;
+        font-weight: 600;
+        color: #1d4ed8;
+        margin-right: 4pt;
+      }
+      .click {
+        font-size: 10.5pt;
+        margin: 4pt 0;
+      }
+      .click::before {
+        content: '▸ ';
+        color: #475569;
+        font-weight: 700;
+      }
+      .route {
+        display: inline-block;
+        font-family: 'SF Mono', Menlo, Consolas, monospace;
+        font-size: 10pt;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        padding: 1pt 6pt;
+        border-radius: 3pt;
+      }
+      .time {
+        font-size: 9.5pt;
+        color: #64748b;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        margin-left: 8pt;
+      }
+      .kbd {
+        font-family: 'SF Mono', Menlo, Consolas, monospace;
+        font-size: 10pt;
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        border-bottom-width: 2px;
+        padding: 0 5pt;
+        border-radius: 3pt;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a> &nbsp;·&nbsp; <a href="index.html#test-users">🔑 Test users</a> &nbsp;·&nbsp; <a href="glossary.html">📖 Glossary</a></p>
+    <header>
+      <h1>Client Demo Script</h1>
+      <p class="lead">
+        A 30–40 minute narrative walk-through of every feature, in the order that tells the story
+        best. Follow it top-to-bottom and your client will see the whole system — resident,
+        operator, depot, manager, admin — without any "now let me jump over here" whiplash.
+      </p>
+    </header>
+
+    <div class="callout note">
+      <span class="callout-title">How to use this doc.</span>
+      Each step has a click (<span class="kbd">▸</span>) and, where useful, a short line you can
+      read out (<em>Say:</em>). You're not reading it like a teleprompter — use it as a safety net
+      so you don't forget to show a feature. Total run time is roughly 35 minutes at a comfortable
+      pace; skip the optional bits if you need to hit 20.
+    </div>
+
+    <h2>Before the demo — 5-minute prep</h2>
+    <ol>
+      <li>
+        Open <strong>four browser profiles or windows</strong> and sign into each:
+        <ul>
+          <li><span class="actor resident">Resident</span> Resident Aguirre — in your primary window (the one you'll screen-share).</li>
+          <li><span class="actor operator">Operator</span> Operator Aguirre — on your phone, or a second window sized like a phone.</li>
+          <li><span class="actor depot">Depot</span> Depot Goode — in a third window.</li>
+          <li><span class="actor admin">Admin</span> Tia Johnson — in a fourth window; this is the "back office" you'll flip to last.</li>
+        </ul>
+      </li>
+      <li>
+        As admin, pre-seed so the demo has something to show:
+        <ul>
+          <li>Resident Aguirre has a <strong>10-bag sheet issued</strong> and at least one scanned bag queued.</li>
+          <li>A <strong>pickup route for today</strong> exists with Aguirre on it, assigned to Operator Aguirre.</li>
+          <li>Prices in <span class="route">/admin/pricing</span> look current (no zeros).</li>
+          <li>There's at least one <strong>pending redemption</strong> in the queue so you can show the admin fulfilling it.</li>
+        </ul>
+      </li>
+      <li>
+        Zoom your browser to ~110% so the client can read everything.
+      </li>
+      <li>
+        Close extra tabs, silence notifications, and put your phone on Do Not Disturb.
+      </li>
+      <li>
+        Have the <a href="index.html">full testing guide</a> open in a spare tab in case the client asks "can I try it later?" — you'll send them that link.
+      </li>
+    </ol>
+
+    <div class="callout warn">
+      <span class="callout-title">If something breaks mid-demo.</span>
+      Don't panic and don't debug live. Say <em>"Looks like a bug — I'll log it and show you the
+      next piece."</em> and move on. The script is modular; each act stands on its own.
+    </div>
+
+    <!-- ==================================================================== -->
+    <div class="act-divider">
+      <div class="act-label">Opening · 2 min</div>
+      <h2>The pitch in 90 seconds</h2>
+    </div>
+
+    <p>
+      Before clicking anything, frame the product.
+    </p>
+
+    <div class="say">
+      We Buy Clean Trash turns a household's recycling into cash-equivalent rewards. Residents
+      sort into our bags, we pick up on a set day, and points land in their account based on the
+      weight and market value of what they turned in. Points redeem for gift cards. What I'm
+      about to show you is a working pilot — every screen is live, wired to a real database and
+      real pricing.
+    </div>
+
+    <p class="click">Zoom to your landing page (<span class="route">/</span>) and scroll top-to-bottom so they see the home experience before we sign in.</p>
+
+    <!-- ==================================================================== -->
+    <div class="act-divider">
+      <div class="act-label">Act 1 · Resident onboarding · 5 min</div>
+      <h2>A homeowner signs up</h2>
+    </div>
+
+    <p>
+      Stay in the resident window. Walk them through the front door of the app — what a real
+      resident would see on day one.
+    </p>
+
+    <h3>Sign-up & the pre-signup AI scan</h3>
+    <p class="click">Open an incognito window side-by-side. Go to <span class="route">/scan</span>.</p>
+    <div class="say">
+      Before a resident even creates an account, they can scan an item with their phone camera
+      and our AI tells them roughly what it's worth. This is the hook — it's the first "wow"
+      moment that gets someone to sign up.
+    </div>
+    <p class="click">Hold up a soda can, cardboard box, or plastic bottle. Capture it. Show the result — material, estimated weight, estimated reward.</p>
+
+    <p class="click">Click <strong>Sign up</strong> or go to <span class="route">/signup</span>.</p>
+    <div class="say">
+      Residents self-signup with any valid address inside our pilot zone. Employees — operators,
+      depot, managers, admins — cannot sign up; they have to be invited by an admin. I'll show
+      you the other side of that in a few minutes.
+    </div>
+    <p class="click">Either walk through the form to show it, or sign in as Resident Aguirre (who already exists).</p>
+
+    <h3>Welcome & the onboarding walkthrough</h3>
+    <p class="click">If a brand-new account: land on <span class="route">/resident/welcome</span>.</p>
+    <div class="say">
+      New residents get a quick walkthrough and a signup bonus — 10,000 points, the equivalent
+      of a dollar — so their account isn't empty on day one.
+    </div>
+
+    <h3>Resident dashboard</h3>
+    <p class="click">Go to <span class="route">/resident</span>.</p>
+    <div class="say">
+      This is home base for a resident. Their points balance, next pickup date, how many bags
+      they have left, and quick links to order more bags or run the calculator.
+    </div>
+
+    <h3>Ordering bags</h3>
+    <p class="click">Click <strong>Order bags</strong> (<span class="route">/resident/order-bags</span>).</p>
+    <div class="say">
+      Bags are sold in sheets of ten. They're compostable, labelled with a unique QR, and
+      arrive on the next scheduled pickup. In the pilot we stub the payment step — in
+      production this is a real Stripe checkout.
+    </div>
+    <p class="click">Place a test order so the client sees it enqueue onto a route.</p>
+
+    <h3>The points calculator</h3>
+    <p class="click">Open <span class="route">/resident/calculator</span>.</p>
+    <div class="say">
+      Residents who want to understand how they get paid can play with this: pick a material,
+      enter a weight, see what it would earn. It reads the same live pricing the depot uses, so
+      what you see here is exactly what you'd be awarded.
+    </div>
+    <p class="click">Enter 2 lb of aluminum. Then flip <strong>Declared separated</strong> on — point out the multiplier.</p>
+    <div class="say">
+      If the resident pre-sorts into a single-material bag and declares it, they earn 2×. That's
+      the behaviour change we're designing for — separation at the source.
+    </div>
+
+    <h3>The in-app guide</h3>
+    <p class="click">Click <strong>Guide</strong> (<span class="route">/resident/guide</span>).</p>
+    <div class="say">
+      Every resident screen has a help link — the guide is context-aware. It covers how to bag,
+      what counts as contamination, pickup day rules.
+    </div>
+
+    <!-- ==================================================================== -->
+    <div class="act-divider">
+      <div class="act-label">Act 2 · Pickup day (resident side) · 2 min</div>
+      <h2>Scanning a bag the night before pickup</h2>
+    </div>
+
+    <p class="click">Still as the resident, open <span class="route">/resident/scan-bag</span>.</p>
+    <div class="say">
+      On pickup eve, the resident scans each bag they're putting out. Scanning tells us two
+      things: which bags are going out, and whether it's a sorted single-material bag — which
+      is what earns the 2× multiplier.
+    </div>
+    <p class="click">Scan a pre-printed QR (or type in the fallback number). Mark it as <strong>aluminum, separated</strong>.</p>
+
+    <div class="callout">
+      <span class="callout-title">What just happened under the hood.</span>
+      The bag is flagged as "scanned." Tomorrow the operator's route will list it, and the depot
+      worker will see the declared material when they open it — so if it really is single-
+      material and clean, they apply the 2× multiplier.
+    </div>
+
+    <!-- ==================================================================== -->
+    <div class="act-divider">
+      <div class="act-label">Act 3 · Operator day · 6 min</div>
+      <h2>Behind the wheel of the pickup truck</h2>
+    </div>
+
+    <p class="click">Switch to the operator window. Sign in as Operator Aguirre if you aren't already.</p>
+
+    <h3>Today's route</h3>
+    <p class="click">Land on <span class="route">/operator</span>.</p>
+    <div class="say">
+      This is the driver's phone view. One button — Start the route — and then an ordered list
+      of stops. The order is optimized with Google Maps Routes so the driver isn't thinking
+      about directions, just executing.
+    </div>
+    <p class="click">Tap <strong>Start route</strong>.</p>
+
+    <h3>Doing a stop</h3>
+    <p class="click">Tap the first stop to open <span class="route">/operator/stop/...</span>.</p>
+    <div class="say">
+      Each stop shows the resident's name, address, how many bags they scanned last night, and a
+      "Driver on the way" button that sends them an SMS two stops before arrival.
+    </div>
+    <p class="click">Tap <strong>Driver on the way</strong>.</p>
+    <div class="say">
+      In the pilot that SMS is stubbed — we log it in a collection called smsLog so we can
+      verify the content before wiring Twilio for real.
+    </div>
+    <p class="click">Scan the bags at the stop using the phone camera. Mark any missing bags. Hit <strong>Complete stop</strong>.</p>
+
+    <h3>Delivering new bag sheets</h3>
+    <p class="click">If any stop has a pending bag order, the app flags <span class="route">/operator/deliver</span>.</p>
+    <div class="say">
+      When a resident orders new bags, the driver's next route automatically carries them. The
+      driver scans the sticker sheet onto the house — that's the handoff that ties physical bags
+      to the resident account.
+    </div>
+
+    <h3>Closing out at the depot</h3>
+    <p class="click">Finish the last stop, then hit <strong>End route</strong> → <span class="route">/operator/summary</span>.</p>
+    <div class="say">
+      End of day, the driver drops the collected bags at the depot. The summary screen confirms
+      every bag handed off — chain of custody is intact.
+    </div>
+
+    <!-- ==================================================================== -->
+    <div class="act-divider">
+      <div class="act-label">Act 4 · Depot processing · 6 min</div>
+      <h2>Where the bag becomes money</h2>
+    </div>
+
+    <p class="click">Switch to the depot window. Sign in as Depot Goode.</p>
+
+    <h3>Incoming bags</h3>
+    <p class="click">Go to <span class="route">/depot/incoming</span>.</p>
+    <div class="say">
+      Every bag the driver dropped off is sitting in this queue, grouped by resident. The depot
+      worker opens one, pours it onto the sort table, and starts weighing.
+    </div>
+
+    <h3>Processing a bag — the moneyshot screen</h3>
+    <p class="click">Click a bag to open <span class="route">/depot/process/...</span>.</p>
+    <div class="say">
+      Seven weight fields, one per material — aluminum, tin and steel, cardboard, paper, PET,
+      HDPE, mixed plastic. Each weight multiplies by today's market price for that material,
+      times the resident's revenue share, and the total lands in the resident's account the
+      instant this form submits.
+    </div>
+    <p class="click">Enter a few weights. Point at the running total that updates live.</p>
+    <p class="click">Flip <strong>Contamination: Minor</strong>.</p>
+    <div class="say">
+      Contamination knocks points down by 30, 60, or 90 percent depending on severity. It's the
+      stick that matches the separation 2× carrot — so people learn to sort properly.
+    </div>
+    <p class="click">Submit. Watch the success toast.</p>
+
+    <div class="callout">
+      <span class="callout-title">What just happened under the hood.</span>
+      One atomic write — the bagProcessing record, a new row in the resident's ledger, an
+      updated points balance, and the depot's inventory all change together. You can never have
+      "I got paid but the inventory is wrong" or vice versa.
+    </div>
+
+    <h3>Depot inventory</h3>
+    <p class="click">Go to <span class="route">/depot/inventory</span>.</p>
+    <div class="say">
+      Running tally of every pound of every material currently on site. When we sell a load to a
+      processor, the depot worker zeros that material out and logs the sale price — that's how
+      we close the loop on actual realized revenue versus the price we paid residents against.
+    </div>
+
+    <!-- ==================================================================== -->
+    <div class="act-divider">
+      <div class="act-label">Act 5 · Back to the resident · 3 min</div>
+      <h2>"Hey, I just got paid."</h2>
+    </div>
+
+    <p class="click">Flip to the resident window. Refresh <span class="route">/resident</span>.</p>
+    <div class="say">
+      The points balance jumped by exactly what the depot just awarded — live, no batch job.
+    </div>
+
+    <h3>Redeeming</h3>
+    <p class="click">Click <strong>Rewards</strong> (<span class="route">/resident/rewards</span>).</p>
+    <div class="say">
+      100,000 points equals $10. We're launching with Amazon and Walmart gift cards. In the
+      pilot, these are admin-fulfilled — I'll show you that queue in a moment. "Pay trash bill"
+      and "Donate" are live stubs on the screen so residents see the roadmap.
+    </div>
+    <p class="click">Request an Amazon $10 gift card.</p>
+
+    <h3>Profile</h3>
+    <p class="click">Open <span class="route">/resident/profile</span>.</p>
+    <div class="say">
+      Address, pickup day, notification preferences, and lifetime stats — total weight
+      recycled, total points earned, contamination strikes.
+    </div>
+
+    <!-- ==================================================================== -->
+    <div class="act-divider">
+      <div class="act-label">Act 6 · Manager reports · 3 min</div>
+      <h2>Running the depot as a business</h2>
+    </div>
+
+    <p class="click">Open a fifth window or reuse the admin window and sign in as the depot manager (or stay as admin — manager views are a subset).</p>
+
+    <p class="click">Go to <span class="route">/manager</span>.</p>
+    <div class="say">
+      This is for whoever runs a depot day-to-day. Throughput, contamination rates, bags
+      processed per worker, operator on-time rates.
+    </div>
+    <p class="click">Click <strong>Reports</strong> (<span class="route">/manager/reports</span>).</p>
+    <p class="click">Click <strong>Depots</strong> (<span class="route">/manager/depots</span>).</p>
+    <div class="say">
+      If we scale to multiple depots, the manager picks between them here. One login, all their
+      sites.
+    </div>
+
+    <!-- ==================================================================== -->
+    <div class="act-divider">
+      <div class="act-label">Act 7 · Admin back office · 10 min</div>
+      <h2>The whole business on one dashboard</h2>
+    </div>
+
+    <p class="click">Switch to the admin window. Sign in as Tia Johnson.</p>
+    <p class="click">Land on <span class="route">/admin</span>.</p>
+    <div class="say">
+      This is mission control. Live inventory by material across every depot, zone-by-zone
+      performance, contamination alerts, operator leaderboard. Everything else in the sidebar is
+      one of the switches behind this dashboard.
+    </div>
+
+    <h3>Zones</h3>
+    <p class="click">Click <strong>Zones</strong> (<span class="route">/admin/zones</span>).</p>
+    <div class="say">
+      A zone is a polygon on the map plus a pickup day. New service area? Draw a polygon, set
+      the day, and residents with matching addresses can now sign up.
+    </div>
+
+    <h3>Pricing</h3>
+    <p class="click">Click <strong>Pricing</strong> (<span class="route">/admin/pricing</span>).</p>
+    <div class="say">
+      Seven materials, each with a market price and the resident's revenue share. Commodity
+      prices swing weekly, so the admin keeps these current. Every edit snapshots to a price
+      history — so if a resident ever disputes how much they earned on a specific pickup, we
+      know exactly what the price was that day.
+    </div>
+    <p class="click">Open aluminum, bump the price a penny, save.</p>
+
+    <h3>Users & invites</h3>
+    <p class="click">Click <strong>Users</strong> (<span class="route">/admin/users</span>).</p>
+    <p class="click">Then <strong>Invites</strong> (<span class="route">/admin/invites</span>).</p>
+    <div class="say">
+      Here's the asymmetric auth I mentioned. Residents self-signup; employees get invited. Tia
+      picks a role — operator, depot worker, depot manager, or admin — adds an email, and the
+      system sends a one-time invite link that encodes the role. No rogue drivers.
+    </div>
+    <p class="click">Send an invite to a throwaway email to demonstrate.</p>
+
+    <h3>Route builder</h3>
+    <p class="click">Click <strong>Routes</strong> (<span class="route">/admin/routes</span>).</p>
+    <div class="say">
+      Every morning Tia builds tomorrow's routes. Pick the zone, pick the date, and the app
+      pulls every stop that needs service — scheduled pickups, bag deliveries, the works — and
+      orders them with Google Maps. She picks an operator and hits publish. The driver sees it
+      on their phone when they sign in.
+    </div>
+    <p class="click">Open an existing route, show the map and the ordered stops.</p>
+
+    <h3>Bag sheets & QR printing</h3>
+    <p class="click">Click <strong>Bags</strong> (<span class="route">/admin/bags</span>).</p>
+    <div class="say">
+      Every time a resident orders a sheet, ten QR stickers need to exist in the system. The
+      admin generates a printable PDF here, feeds it through a Rollo thermal printer, and the
+      physical stickers tie back to the same bag records the driver will scan. Every sticker has
+      both a QR and a printed number as a fallback if the camera can't read it.
+    </div>
+
+    <h3>Redemptions queue</h3>
+    <p class="click">Click <strong>Redemptions</strong> (<span class="route">/admin/redemptions</span>).</p>
+    <div class="say">
+      Remember the Amazon gift card the resident requested a few minutes ago? It's sitting here.
+      Tia buys the gift card, pastes the code in, and the resident gets it — either by email or
+      in-app. In production this becomes an automatic API call to Amazon's gift-card service.
+    </div>
+    <p class="click">Fulfill the one Resident Aguirre just requested. Flip back to the resident window and show it arrived.</p>
+
+    <h3>Compliance</h3>
+    <p class="click">Click <strong>Compliance</strong> (<span class="route">/admin/compliance</span>).</p>
+    <div class="say">
+      If a resident racks up repeated severe-contamination strikes, the system generates a
+      mailed notice — certified-letter style. The app produces the PDF, Tia prints it and drops
+      it in the mail, then clicks "marked as mailed" so the strike clock resets. That's the
+      compliance loop: it's strict, but it's also fair and documented.
+    </div>
+
+    <!-- ==================================================================== -->
+    <div class="act-divider">
+      <div class="act-label">Closing · 3 min</div>
+      <h2>Wrap, talking points, Q&amp;A</h2>
+    </div>
+
+    <h3>Recap in one breath</h3>
+    <div class="say">
+      We walked a bag from a resident's curb through pickup, through the depot, to a gift card.
+      Every screen is live. Every number is calculated by code that's checked into a repo, not
+      spreadsheets. This is ready to run a pilot with a real zone tomorrow.
+    </div>
+
+    <h3>Questions you'll probably get (and short answers)</h3>
+    <ul>
+      <li>
+        <strong>"How do you handle payments for real?"</strong> — Stripe for bag orders, drop-in
+        swap from the stub you saw. Gift cards auto-fulfilled through Amazon's Incentives API.
+      </li>
+      <li>
+        <strong>"What if the camera can't read the QR?"</strong> — Every sticker has a printed
+        fallback number. The operator app has a manual-entry field for exactly that.
+      </li>
+      <li>
+        <strong>"Can we scale to multiple depots?"</strong> — Data model already has the fields.
+        Today's UI is single-zone for the pilot; multi-zone is a UI change, not a rewrite.
+      </li>
+      <li>
+        <strong>"What happens if a driver calls out sick?"</strong> — Admin reassigns the route
+        in the route builder with one dropdown change.
+      </li>
+      <li>
+        <strong>"How do you prevent people from gaming the 2× multiplier?"</strong> — The depot
+        worker sees the declared material before they open the bag. If it's not what the
+        resident said it was, they flag contamination and the multiplier doesn't apply.
+      </li>
+      <li>
+        <strong>"Where does the data live?"</strong> — Firestore (Google Cloud), backed up,
+        access-controlled at the row level. No resident can read another resident's data.
+      </li>
+      <li>
+        <strong>"What's left to build?"</strong> — Real Stripe, real Twilio, real gift-card
+        API, a few polish passes. Core operations run today.
+      </li>
+    </ul>
+
+    <h3>Leave-behind</h3>
+    <p>
+      Send them the <a href="index.html">full testing guide</a> so they can poke at it after
+      the meeting, and a short summary email with:
+    </p>
+    <ul>
+      <li>A link to the deployed app and a test account.</li>
+      <li>Dates: when a pilot could start, how long it runs, what "success" looks like.</li>
+      <li>Any asks — partner zone, truck, depot space, budget.</li>
+    </ul>
+
+    <div class="callout tester">
+      <span class="callout-title">After the demo.</span>
+      Note what landed, what got a blank stare, and which feature they asked two follow-up
+      questions about — that's the one they actually care about, and it's where the next
+      iteration goes.
+    </div>
+
+    <div class="footer">
+      We Buy Clean Trash · Client demo script · Generated for a live walk-through · Keep on
+      laptop during the demo, don't print it out.
+    </div>
+  </body>
+</html>

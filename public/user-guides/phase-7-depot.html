@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a> &nbsp;·&nbsp; <a href="index.html#test-users">🔑 Test users</a> &nbsp;·&nbsp; <a href="glossary.html">📖 Glossary</a></p>
     <header>
       <h1>Phase 7 · Running a Depot Day</h1>
       <p class="lead">
@@ -17,28 +17,42 @@
       </p>
     </header>
 
-    <h2>What you're verifying</h2>
+    <div class="stub-warning">
+      <span class="stub-title">⚠️ What's stubbed in this flow</span>
+      The depot flow itself is real — points, ledger, and inventory all update for real. The
+      only touches that are stubbed:
+      <ul>
+        <li><strong>Weight entry is manual.</strong> No Bluetooth or USB scale integration — weigh on your scale, type the number in.</li>
+        <li><strong>"Bag processed" SMS to the resident</strong> is logged to the server console, not sent by text.</li>
+      </ul>
+    </div>
+
+    <h2>What you're verifying (happy path, ~15 min)</h2>
     <ul>
-      <li>Goode sees Aguirre's completed routes show up under "Incoming deliveries."</li>
-      <li>She can open a route and see every bag that was actually picked up.</li>
-      <li>Scanning a bag QR — or typing the printed number — jumps her to the process form.</li>
-      <li>The contamination picker and seven weight fields together compute a live points preview.</li>
+      <li>Goode gets invited and lands on her depot's Incoming screen.</li>
+      <li>Aguirre's completed routes show up under "Incoming deliveries."</li>
+      <li>Scanning a bag QR — or typing the printed number — jumps to the process form.</li>
       <li>
         Submitting the form awards points to Aguirre, appends a transaction ledger entry, marks the
         bag processed, and adds weight to the depot inventory — all in one atomic write.
       </li>
-      <li>Re-scanning a processed bag refuses the action (no double-awarding).</li>
-      <li>The Inventory screen reflects what Goode just submitted.</li>
     </ul>
+    <p style="font-size: 10pt; color: #666; margin-top: 4pt;">
+      Scenarios 1–4 below cover the happy path. Everything after is <a href="#advanced">optional
+      advanced testing</a> — edge cases most testers can skip.
+    </p>
 
     <div class="callout note">
-      <span class="callout-title">Setup before you start.</span>
-      Work through the earlier phases first — the depot flow has no shortcut. Tia must have
-      (1) invited and provisioned <strong>Goode</strong> with a depot link, (2) set
-      <strong>Yellow Sheet</strong> prices for all seven materials (Phase 4), (3) built a route
-      for Aguirre that includes Aguirre (Phase 5), and Aguirre must have (4) completed the route and
-      tapped <strong>Deliver to depot</strong> (Phase 6). If any of those are missing, Goode's
-      Incoming screen will be empty.
+      <span class="callout-title">📋 Before you start</span>
+      <p style="margin: 4pt 0 2pt;"><strong>Device:</strong> 💻 Laptop or tablet (Goode) + 📱 Phone (Aguirre, for a prior pickup) + 💻 Laptop on the side (Tia, to verify).</p>
+      <p style="margin: 2pt 0;"><strong>Dependencies — tick each before running Scenario 1:</strong></p>
+      <ul style="margin: 2pt 0 0;">
+        <li><span class="checkbox"></span> <a href="phase-4-admin.html">Phase 4</a> — Yellow Sheet prices set for all 7 materials.</li>
+        <li><span class="checkbox"></span> <a href="phase-4-admin.html">Phase 4</a> — a Depot exists that Tia can link Goode to.</li>
+        <li><span class="checkbox"></span> <a href="phase-5-routes.html">Phase 5</a> — a route built for Aguirre that includes a pickup for Aguirre.</li>
+        <li><span class="checkbox"></span> <a href="phase-6-operator.html">Phase 6</a> · Scenario 6 — Aguirre completed the route and tapped <em>Deliver to depot</em>.</li>
+      </ul>
+      <p style="margin: 4pt 0 0; font-size: 10pt; color: #555;">If any of those are missing, Goode's Incoming screen will be empty.</p>
     </div>
 
     <div class="scenario">
@@ -61,9 +75,12 @@
           record now has both the <em>depot_worker</em> role and the <em>depotId</em> pointing at
           the pilot depot.
         </div>
-        <p><span class="checkbox"></span> The Depot dropdown only appears for depot-worker / depot-manager invites</p>
-        <p><span class="checkbox"></span> Goode lands at <strong>/depot/incoming</strong> after accepting</p>
-        <p><span class="checkbox"></span> The depot name in the header matches the depot Tia picked</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> The Depot dropdown only appears for depot-worker / depot-manager invites</p>
+          <p><span class="checkbox"></span> Goode lands at <strong>/depot/incoming</strong> after accepting</p>
+          <p><span class="checkbox"></span> The depot name in the header matches the depot Tia picked</p>
+          </div>
       </div>
     </div>
 
@@ -79,14 +96,24 @@
           <li>Open the app and sign in as Goode.</li>
           <li>Land on the depot home, which redirects to <strong>/depot/incoming</strong>.</li>
         </ol>
+        <!-- SCREENSHOT: drop in once captured, see screenshots/README.md
+        <figure class="screenshot">
+          <img src="screenshots/depot-incoming-new.png" alt="Depot incoming list with one route labeled NEW" />
+          <figcaption><strong>Expected:</strong> /depot/incoming with a NEW route card.</figcaption>
+        </figure>
+        -->
+
         <div class="expected">
           <strong>Expected:</strong> A single card for Aguirre's route, labelled
           <strong>NEW</strong>. The row shows Aguirre's name, the number of bags he actually picked
           up, and the arrival time (whenever he tapped <em>Deliver to depot</em>).
         </div>
-        <p><span class="checkbox"></span> Missed / issue bags are <em>not</em> counted in the bag total</p>
-        <p><span class="checkbox"></span> Routes from a zone that isn't this depot's don't appear</p>
-        <p><span class="checkbox"></span> If nothing has arrived yet, the screen shows a friendly empty-state, not an error</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Missed / issue bags are <em>not</em> counted in the bag total</p>
+          <p><span class="checkbox"></span> Routes from a zone that isn't this depot's don't appear</p>
+          <p><span class="checkbox"></span> If nothing has arrived yet, the screen shows a friendly empty-state, not an error</p>
+          </div>
       </div>
     </div>
 
@@ -110,9 +137,12 @@
           <strong>/depot/process/[bagId]</strong>. The header shows Aguirre's name, the printed
           number, and the bag's declared type ("Commingled" or "Separated · 2× multiplier").
         </div>
-        <p><span class="checkbox"></span> Scanning a random QR (not from this route) is rejected with a clear message</p>
-        <p><span class="checkbox"></span> Tapping a bag row directly — without scanning — also opens the form</p>
-        <p><span class="checkbox"></span> Canceling the scanner returns to the bag list without errors</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Scanning a random QR (not from this route) is rejected with a clear message</p>
+          <p><span class="checkbox"></span> Tapping a bag row directly — without scanning — also opens the form</p>
+          <p><span class="checkbox"></span> Canceling the scanner returns to the bag list without errors</p>
+          </div>
       </div>
     </div>
 
@@ -138,16 +168,37 @@
           <li>Watch the <strong>Total · X lbs · +Y points</strong> card recompute as you type.</li>
           <li>Tap <strong>✓ Submit &amp; next bag</strong>.</li>
         </ol>
+        <!-- SCREENSHOT: drop in once captured, see screenshots/README.md
+        <figure class="screenshot">
+          <img src="screenshots/depot-process-form.png" alt="7-material process form with live points preview" />
+          <figcaption><strong>Expected:</strong> Process form — 7 material rows and live points preview.</figcaption>
+        </figure>
+        -->
+
         <div class="expected">
           <strong>Expected:</strong> A green "points awarded" flash, then Goode bounces back to
           the route bag list. The bag she just processed now reads <strong>PROCESSED</strong>.
           Sign in as Aguirre in another browser — her points balance has gone up by exactly the
           amount Goode saw on submit.
         </div>
-        <p><span class="checkbox"></span> The preview total matches what Aguirre sees after submit</p>
-        <p><span class="checkbox"></span> Aguirre's latest transaction row (on her rewards / profile screen) shows type <em>pickup</em> with a positive delta</p>
-        <p><span class="checkbox"></span> The bag's status on the route list flipped to <em>Processed</em> on reload</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> The preview total matches what Aguirre sees after submit</p>
+          <p><span class="checkbox"></span> Aguirre's latest transaction row (on her rewards / profile screen) shows type <em>pickup</em> with a positive delta</p>
+          <p><span class="checkbox"></span> The bag's status on the route list flipped to <em>Processed</em> on reload</p>
+          </div>
       </div>
+    </div>
+
+    <div class="advanced-divider" id="advanced">
+      <span class="advanced-badge">Optional</span>
+      <h2>Advanced — edge cases</h2>
+      <p>
+        Skip this section unless you're debugging a specific behavior. The scenarios below cover
+        contamination penalties, the 2× separated-bag multiplier, re-processing guards, SMS stub
+        output, and the Inventory dashboard. None are required to sign off on Phase 7 — the happy
+        path above is the release gate.
+      </p>
     </div>
 
     <div class="scenario">
@@ -171,9 +222,12 @@
           the "None" amount — because the penalties are 0 / 30 / 60 / 90%. The submitted severe
           bag awards Aguirre only ~10% of what the equivalent clean bag did.
         </div>
-        <p><span class="checkbox"></span> The four preview amounts step down correctly</p>
-        <p><span class="checkbox"></span> Submitting a severe bag is allowed (it's not a block — just a big penalty)</p>
-        <p><span class="checkbox"></span> The <em>contaminationSeverity</em> is preserved on the bagProcessing record (admin view, when Phase 9 lands)</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> The four preview amounts step down correctly</p>
+          <p><span class="checkbox"></span> Submitting a severe bag is allowed (it's not a block — just a big penalty)</p>
+          <p><span class="checkbox"></span> The <em>contaminationSeverity</em> is preserved on the bagProcessing record (admin view, when Phase 9 lands)</p>
+          </div>
       </div>
     </div>
 
@@ -200,8 +254,11 @@
           (2× multiplier)". The live points preview is double what the same weights would be for
           a commingled bag at the same contamination level.
         </div>
-        <p><span class="checkbox"></span> Separated bags show the 2× label in the form header</p>
-        <p><span class="checkbox"></span> Preview is roughly 2× the matching commingled bag</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Separated bags show the 2× label in the form header</p>
+          <p><span class="checkbox"></span> Preview is roughly 2× the matching commingled bag</p>
+          </div>
       </div>
     </div>
 
@@ -218,8 +275,11 @@
           shows "Bag #&lt;number&gt; is already processed" and drops back to the list instead of
           opening the form.
         </div>
-        <p><span class="checkbox"></span> Processed rows can't be reopened</p>
-        <p><span class="checkbox"></span> Scanning a processed QR flashes a message, not the form</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Processed rows can't be reopened</p>
+          <p><span class="checkbox"></span> Scanning a processed QR flashes a message, not the form</p>
+          </div>
       </div>
     </div>
 
@@ -237,8 +297,11 @@
           subtitle reads "Processing X/Y". After the last bag is processed, the badge flips to
           <strong>DONE</strong>.
         </div>
-        <p><span class="checkbox"></span> Badge transitions NEW → IN PROGRESS → DONE based on bag status</p>
-        <p><span class="checkbox"></span> Progress bar width matches the X/Y</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Badge transitions NEW → IN PROGRESS → DONE based on bag status</p>
+          <p><span class="checkbox"></span> Progress bar width matches the X/Y</p>
+          </div>
       </div>
     </div>
 
@@ -269,9 +332,12 @@
             </li>
           </ul>
         </div>
-        <p><span class="checkbox"></span> Stock numbers match Goode's submissions</p>
-        <p><span class="checkbox"></span> Bars visibly change color at the amber and red thresholds</p>
-        <p><span class="checkbox"></span> Yellow sheet values match what Tia set in <strong>/admin/pricing</strong></p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Stock numbers match Goode's submissions</p>
+          <p><span class="checkbox"></span> Bars visibly change color at the amber and red thresholds</p>
+          <p><span class="checkbox"></span> Yellow sheet values match what Tia set in <strong>/admin/pricing</strong></p>
+          </div>
       </div>
     </div>
 
@@ -295,8 +361,11 @@
           plus a new <em>smsLog</em> document with the same purpose and a
           <em>relatedDocId</em> pointing at the <em>bagProcessing</em> record just created.
         </div>
-        <p><span class="checkbox"></span> One stub log per successful submit</p>
-        <p><span class="checkbox"></span> Failed submits (e.g., network error) do <em>not</em> leave a stub log behind</p>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> One stub log per successful submit</p>
+          <p><span class="checkbox"></span> Failed submits (e.g., network error) do <em>not</em> leave a stub log behind</p>
+          </div>
       </div>
     </div>
 

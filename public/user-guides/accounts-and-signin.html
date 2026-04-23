@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Accounts &amp; Sign-in</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a> &nbsp;·&nbsp; <a href="index.html#test-users">🔑 Test users</a> &nbsp;·&nbsp; <a href="glossary.html">📖 Glossary</a></p>
+    <header>
+      <h1>Accounts &amp; Sign-in</h1>
+      <p class="lead">
+        The single guide for creating every kind of account and verifying sign-in works. Do this
+        before any other phase — every later guide assumes these accounts exist.
+      </p>
+    </header>
+
+    <div class="callout note">
+      <span class="callout-title">📋 Before you start</span>
+      <p style="margin: 4pt 0 2pt;"><strong>Device:</strong> 💻 Laptop for admin + signing up. 📱 Phone for operator once you've invited him.</p>
+      <p style="margin: 2pt 0;"><strong>Two paths — pick one:</strong></p>
+      <ul style="margin: 2pt 0 0;">
+        <li><strong>Fast path (recommended):</strong> the dev team has already run <code>npm run seed:pilot</code>, which creates every account on the <a href="index.html#test-users">Test users</a> card. Skip to <a href="#verify">§ Verify the sign-in flows</a>.</li>
+        <li><strong>From scratch:</strong> if you want to walk through account creation yourself (e.g. to demo onboarding), follow <a href="#manual">§ Manual account creation</a>.</li>
+      </ul>
+    </div>
+
+    <h2 id="roles">How each role is created</h2>
+    <p>
+      Three paths, depending on the role. This is just reference — you'll actually execute the
+      scenarios below.
+    </p>
+    <table>
+      <tr>
+        <th>Role</th>
+        <th>How they're created</th>
+        <th>Why</th>
+      </tr>
+      <tr>
+        <td><span class="actor admin">Admin</span></td>
+        <td>Dev team (one-time) via <code>npm run seed:pilot</code>.</td>
+        <td>No admin exists yet to invite them.</td>
+      </tr>
+      <tr>
+        <td><span class="actor resident">Resident</span></td>
+        <td>Self-signup from the public homepage.</td>
+        <td>Residents are general public — anyone with a valid address in the pilot zone can join.</td>
+      </tr>
+      <tr>
+        <td><span class="actor operator">Operator</span></td>
+        <td>Admin sends an invite; employee accepts at a one-time link.</td>
+        <td rowspan="3">Employees — no self-signup, so random people can't give themselves driver access.</td>
+      </tr>
+      <tr>
+        <td><span class="actor depot">Depot worker</span></td>
+        <td>Same invite flow, plus admin picks the depot.</td>
+      </tr>
+      <tr>
+        <td><span class="actor depot">Depot manager</span></td>
+        <td>Same invite flow, plus admin picks the depot.</td>
+      </tr>
+    </table>
+
+    <h2 id="verify">Verify the sign-in flows</h2>
+    <p>
+      Work through these five scenarios in order. If the pilot seed has already run, accounts
+      are ready — you're just checking that each one logs in to the right area of the app.
+    </p>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 1 — Admin signs in</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Tia · <code>tia.admin@wbct-pilot.test</code>.</p>
+        <ol>
+          <li>Open the homepage in your main browser.</li>
+          <li>Click <strong>Sign in</strong>.</li>
+          <li>Enter Tia's email and the password from the <a href="index.html#test-users">Test users card</a>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Tia is redirected straight to the admin dashboard (not the
+          resident home). She sees KPI tiles and a left sidebar with Users, Zones, Pricing,
+          Redemptions, Routes.
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Landing screen is the admin dashboard, not resident home</p>
+          <p><span class="checkbox"></span> Admin sidebar is visible</p>
+          </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 2 — Resident self-signup (email + password)</div>
+      <div class="scenario-body">
+        <p><span class="actor resident">Resident</span> In a private/incognito window.</p>
+        <p>
+          This is the only scenario where you create a <em>new</em> resident on top of the seeded
+          ones — useful for confirming the welcome bonus fires for a brand-new account.
+        </p>
+        <ol>
+          <li>Open the public homepage in a fresh private/incognito window.</li>
+          <li>Click <strong>Sign up</strong>.</li>
+          <li>Enter a name, an email you control, a password, and a real street address in the pilot zone.</li>
+          <li>Submit.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The new resident lands on the resident home screen with a
+          <strong>10,000-point</strong> signup bonus and a short 3-step onboarding card.
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Name appears correctly in the top-right menu</p>
+          <p><span class="checkbox"></span> Points balance shows 10,000</p>
+          <p><span class="checkbox"></span> Address is saved (check the Profile tab)</p>
+          </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 3 — Resident sign-up with Google</div>
+      <div class="scenario-body">
+        <p><span class="actor resident">Resident</span> A different private window.</p>
+        <ol>
+          <li>Open the homepage.</li>
+          <li>Click <strong>Sign up → Continue with Google</strong>.</li>
+          <li>Pick a Google account.</li>
+          <li>Fill in the remaining form fields (address, phone).</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Same as Scenario 2 — lands on the resident home screen with
+          10,000 points. No password prompt.
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Google sign-in completes without asking for a password</p>
+          <p><span class="checkbox"></span> Name (and photo, if the Google account has one) appear in the top-right menu</p>
+          </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 4 — Operator cannot self-sign-up</div>
+      <div class="scenario-body">
+        <p><span class="actor tester">Tester</span> In a fresh private window, no one signed in.</p>
+        <ol>
+          <li>Open the homepage.</li>
+          <li>Click <strong>Sign up</strong>.</li>
+          <li>Look at the form. There should be <em>no</em> role picker or "I'm an operator" option.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> No self-select for operator, depot, or admin. The only path
+          to those roles is an invitation — tested in Scenario 5.
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> No role selector anywhere on sign-up</p>
+          </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 5 — Admin invites an operator, operator accepts</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> + <span class="actor operator">Operator</span> Two browsers (one for Tia, one private for the invitee).</p>
+        <p style="font-size: 10pt; color: #555;">
+          This scenario creates a brand-new operator alongside the seeded one — useful to confirm
+          the invite flow end to end.
+        </p>
+        <h4>Admin side — send the invite</h4>
+        <ol>
+          <li>Signed in as Tia, open <strong>/admin/invites</strong> (sidebar → <em>Users &amp; Invites</em>).</li>
+          <li>Click <strong>Send invite</strong>.</li>
+          <li>Enter a throwaway email (one you control), pick role <strong>Operator</strong>.</li>
+          <li>Click <strong>Send</strong>.</li>
+          <li>
+            The invite appears in the list with status <em>pending</em>. Click it to copy the
+            invite link (email delivery is stubbed — you'll forward the link yourself).
+          </li>
+        </ol>
+        <h4>Operator side — accept the invite</h4>
+        <ol>
+          <li>Paste the link into a fresh private/incognito window.</li>
+          <li>Click <strong>Accept invitation</strong>.</li>
+          <li>Set a password and submit.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The new operator lands on the operator home screen
+          (<em>Today's Route</em>), <em>not</em> the resident home. Opening the same invite link
+          a second time reports "already used."
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> The invite appears in Tia's list with status <em>pending</em></p>
+          <p><span class="checkbox"></span> New operator lands on the operator screen, not resident</p>
+          <p><span class="checkbox"></span> Same link reused → "already used"</p>
+          <p><span class="checkbox"></span> For depot-worker / depot-manager invites, a <strong>Depot</strong> dropdown appears (try it with a second invite)</p>
+          </div>
+      </div>
+    </div>
+
+    <h2>Signing out</h2>
+    <p>
+      From any signed-in screen, open the top-right menu and pick <strong>Sign out</strong>. You
+      should return to the public homepage. If you reload and still see the logged-in view,
+      that's a bug.
+    </p>
+
+    <div class="callout tester">
+      <span class="callout-title">Tip — one browser per role.</span>
+      Testing cross-role flows (admin invites → operator accepts → depot processes) is much
+      smoother with one browser or private window per role. Don't sign in and out of a single
+      window — you'll lose your place in the flow.
+    </div>
+
+    <h2 id="manual">Manual account creation (optional)</h2>
+    <p>
+      Only follow this section if you're onboarding a client who wants to see the signup
+      experience from scratch, or if the pilot seed hasn't been run. Otherwise skip it.
+    </p>
+    <h3>The first admin</h3>
+    <p>
+      The dev team creates the first admin via the pilot seed script. Ask for the email and
+      password — nothing self-serve here, because there's no admin to invite them.
+    </p>
+    <div class="callout note">
+      <span class="callout-title">Keep the admin password somewhere safe.</span>
+      Every invite in the pilot flows from the admin account. Lose access and nobody else can
+      create operators or depot workers until the dev team resets it.
+    </div>
+    <h3>A new resident (self-signup)</h3>
+    <p>Same as Scenario 2 above. No invite required — just a real address in the pilot zone.</p>
+    <h3>A new employee (operator / depot / manager)</h3>
+    <p>Same two-step flow as Scenario 5. The <strong>Depot</strong> dropdown appears only for depot-worker and depot-manager roles.</p>
+
+    <h2>Quick troubleshooting</h2>
+    <table>
+      <tr>
+        <th>What you see</th>
+        <th>Probably because</th>
+        <th>What to try</th>
+      </tr>
+      <tr>
+        <td>"This address is outside our service area" on sign-up</td>
+        <td>The address's zip isn't in any pilot zone.</td>
+        <td>Ask the dev team to add the zip to the zone list.</td>
+      </tr>
+      <tr>
+        <td>Google sign-in popup closes with no result</td>
+        <td>Browser popup blocker or a third-party cookie setting.</td>
+        <td>Allow popups for the site and retry.</td>
+      </tr>
+      <tr>
+        <td>Invite link says "invalid or expired"</td>
+        <td>Already accepted, or past the 7-day window, or revoked.</td>
+        <td>Ask Tia to send a fresh one.</td>
+      </tr>
+      <tr>
+        <td>Employee lands on the resident home after accepting</td>
+        <td>Browser session cached before the role claim applied.</td>
+        <td>Sign out, sign back in, refresh.</td>
+      </tr>
+      <tr>
+        <td>No <strong>Depot</strong> dropdown when inviting a depot worker</td>
+        <td>No depots exist yet.</td>
+        <td>Create one under <strong>Zones &amp; Depots</strong> first.</td>
+      </tr>
+      <tr>
+        <td>Resident signs in and lands on the admin page (or vice versa)</td>
+        <td>Role-routing bug.</td>
+        <td>Write it down with the exact email used and send to the dev team.</td>
+      </tr>
+    </table>
+
+    <div class="footer">
+      We Buy Clean Trash · Accounts &amp; Sign-in · Pilot April 2026
+    </div>
+  </body>
+</html>
