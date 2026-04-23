@@ -66,9 +66,20 @@
       <p style="margin: 8pt 0 0; font-size: 10.5pt;">
         <strong>Device:</strong> 📱 Phone (primary). 💻 Laptop works too but the resident app is
         designed phone-first.<br />
-        <strong>Who you'll be:</strong> <em>Casey Pearl</em> (<code>resident1.test@webuyclean.trash</code>) from the
+        <strong>Who you'll be:</strong> <em>Resident Aguirre</em> (<code>resident.aguirre@example.com</code>) from the
         <a href="index.html#test-users">Test users card</a>.
       </p>
+    </div>
+
+    <div class="stub-warning">
+      <span class="stub-title">⚠️ What's stubbed in this flow</span>
+      A few things look real but don't fully fire during the pilot. Please don't file these as bugs:
+      <ul>
+        <li><strong>Ordering bags</strong> — checkout ends on a mock "paid" screen. No real card is charged.</li>
+        <li><strong>Redeeming a gift card</strong> — the request lands in Tia's admin queue; she fulfills it manually, not auto.</li>
+        <li><strong>"Pay trash bill" and "Donate"</strong> buttons are disabled on purpose.</li>
+        <li><strong>SMS notifications</strong> are logged to the server console, not sent as real texts.</li>
+      </ul>
     </div>
 
     <h2>Your testing path</h2>
@@ -107,9 +118,10 @@
         <h3>Order a sheet of bags</h3>
         <p>
           Place an order. The checkout is <strong>mocked</strong> — no real card is charged.
-          Confirm the shipping rule toggles at $20 and the order shows up in your history.
+          Confirm the shipping rule toggles at $20, then open the history page to confirm the
+          order (and any earlier orders) appear there.
         </p>
-        <p class="step-cta">→ <a href="phase-3-resident.html">Resident app</a> · Scenario 3</p>
+        <p class="step-cta">→ <a href="phase-3-resident.html">Resident app</a> · Scenarios 3 &amp; 3b</p>
       </div>
     </div>
 
@@ -162,6 +174,17 @@
       <li>Real gift-card fulfillment — the request queues for an admin to send manually.</li>
       <li>Real SMS alerts — all messages log to the server console instead.</li>
     </ul>
+
+    <nav class="roadmap-nav">
+      <a class="prev" href="role-admin.html">
+        <span class="rn-label">← Previous · Step 5</span>
+        <span class="rn-title">Admin — your main path</span>
+      </a>
+      <a class="next" href="role-operator.html">
+        <span class="rn-label">Next · Step 7</span>
+        <span class="rn-title">Operator flow →</span>
+      </a>
+    </nav>
 
     <div class="footer">
       We Buy Clean Trash · Role guide · Resident · Pilot April 2026

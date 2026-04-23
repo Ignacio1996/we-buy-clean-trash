@@ -58,8 +58,16 @@
       <p style="margin: 8pt 0 0; font-size: 10.5pt;">
         <strong>Device:</strong> 📱 Phone (primary — the app is designed phone-first). 💻 Laptop on the
         side for Tia, if you need to set up or inspect routes.<br />
-        <strong>Who you'll be:</strong> <em>Aguirre</em> (<code>operator.test@webuyclean.trash</code>).
+        <strong>Who you'll be:</strong> <em>Operator Aguirre</em> (<code>operator.aguirre@wbct-pilot.test</code>).
       </p>
+    </div>
+
+    <div class="stub-warning">
+      <span class="stub-title">⚠️ What's stubbed in this flow</span>
+      <ul>
+        <li><strong>SMS to residents</strong> (driver-on-the-way, pickup complete) is logged to the server console, not sent as a real text.</li>
+        <li><strong>"Driver on the way"</strong> is tap-triggered by you, not auto-fired from GPS geofencing.</li>
+      </ul>
     </div>
 
     <h2>Your testing path</h2>
@@ -158,6 +166,17 @@
       <li>GPS geofencing — driver-on-the-way is a tap, not automatic.</li>
       <li>Real SMS to residents — all stubbed.</li>
     </ul>
+
+    <nav class="roadmap-nav">
+      <a class="prev" href="role-resident.html">
+        <span class="rn-label">← Previous · Step 6</span>
+        <span class="rn-title">Resident flow</span>
+      </a>
+      <a class="next" href="role-depot.html">
+        <span class="rn-label">Next · Step 8</span>
+        <span class="rn-title">Depot flow →</span>
+      </a>
+    </nav>
 
     <div class="footer">
       We Buy Clean Trash · Role guide · Operator · Pilot April 2026

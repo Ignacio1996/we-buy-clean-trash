@@ -16,6 +16,11 @@
       </p>
     </header>
 
+    <div class="stub-warning">
+      <span class="stub-title">⚠️ Heads up</span>
+      This smoke test is <strong>sign-in + page-load only</strong>. You're not exercising the stubs (Stripe, SMS, gift cards, compliance mailings). If a mock screen appears (e.g. the Stripe "paid" mock), that's expected — treat it as "page loaded" and move on.
+    </div>
+
     <div class="callout note">
       <span class="callout-title">Before you start.</span>
       The dev team will tell you <em>"the production deploy is live — please smoke-test."</em>
@@ -52,9 +57,9 @@
     </div>
 
     <div class="scenario">
-      <div class="scenario-head"><span class="actor resident">Resident</span> Casey Pearl — 📱 phone</div>
+      <div class="scenario-head"><span class="actor resident">Resident</span> Resident Aguirre — 📱 phone</div>
       <div class="scenario-body">
-        <p>Sign in as <code>resident1.test@webuyclean.trash</code>. Open each page:</p>
+        <p>Sign in as <code>resident.aguirre@example.com</code>. Open each page:</p>
         <ul>
           <li><strong>/resident</strong> — dashboard with points balance</li>
           <li><strong>/resident/order-bags</strong> — order form loads</li>
@@ -70,9 +75,9 @@
     </div>
 
     <div class="scenario">
-      <div class="scenario-head"><span class="actor operator">Operator</span> Aguirre — 📱 phone</div>
+      <div class="scenario-head"><span class="actor operator">Operator</span> Operator Aguirre — 📱 phone</div>
       <div class="scenario-body">
-        <p>Sign in as <code>operator.test@webuyclean.trash</code>. Open:</p>
+        <p>Sign in as <code>operator.aguirre@wbct-pilot.test</code>. Open:</p>
         <ul>
           <li><strong>/operator</strong> — today's routes (may be empty, that's fine)</li>
         </ul>
@@ -84,9 +89,9 @@
     </div>
 
     <div class="scenario">
-      <div class="scenario-head"><span class="actor depot">Depot</span> Goode — 💻 laptop</div>
+      <div class="scenario-head"><span class="actor depot">Depot</span> Depot Goode — 💻 laptop</div>
       <div class="scenario-body">
-        <p>Sign in as <code>depot.test@webuyclean.trash</code>. Open each page:</p>
+        <p>Sign in as <code>depot.goode@wbct-pilot.test</code>. Open each page:</p>
         <ul>
           <li><strong>/depot</strong> — depot home</li>
           <li><strong>/depot/incoming</strong> — incoming deliveries list</li>
@@ -135,6 +140,17 @@
       rules playground, Vercel env config) lives in
       <a href="phase-11-security-deploy.DEV.html">phase-11-security-deploy.DEV.html</a>.</em>
     </p>
+
+    <nav class="roadmap-nav">
+      <a class="prev" href="role-depot.html">
+        <span class="rn-label">← Previous · Step 8</span>
+        <span class="rn-title">Depot flow</span>
+      </a>
+      <a class="next" href="phase-12-pilot-launch.html">
+        <span class="rn-label">Next · Step 10</span>
+        <span class="rn-title">Pilot launch checklist →</span>
+      </a>
+    </nav>
 
     <div class="footer">
       We Buy Clean Trash · Phase 11 smoke test · Pilot April 2026

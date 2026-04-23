@@ -27,18 +27,18 @@ Add a printable table at the top of `index.html` so testers stop hunting for cre
 
 ---
 
-## Step 2 — "What's stubbed" warning box (20 min)
+## Step 2 — "What's stubbed" warning box (20 min) ✅
 
 Prevent mid-test confusion about features that don't fully work.
 
-- [ ] Add a reusable `<div class="stub-warning">` style to `styles.css`.
-- [ ] Drop a ⚠️ box at the top of each guide listing the stubs relevant to *that* guide:
+- [x] Add a reusable `<div class="stub-warning">` style to `styles.css`.
+- [x] Drop a ⚠️ box at the top of each guide listing the stubs relevant to *that* guide:
   - Resident guides → Stripe checkout is mocked, gift-card redemption is manual, "Pay trash bill" / "Donate" are disabled.
   - Operator guides → SMS is console-logged, not sent.
   - Depot guides → SMS stub, manual weight entry only.
   - Admin guides → gift-card fulfillment is a queue, compliance notices are "mark as mailed."
 
-**Done when:** every guide tells the tester upfront what won't work and why.
+**Done.** All four role pages, `accounts-and-signin`, `phase-5-routes`, `phase-11`, and `phase-12` now have stub-warning blocks. Phase guides 3/4/6/7/9/10 already had them.
 
 ---
 

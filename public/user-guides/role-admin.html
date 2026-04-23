@@ -67,6 +67,18 @@
       </p>
     </div>
 
+    <div class="stub-warning">
+      <span class="stub-title">⚠️ What's stubbed in this flow</span>
+      As admin you see the back-end of every stub — expect:
+      <ul>
+        <li><strong>Bag orders</strong> — residents never actually pay. Stripe is mocked, so every order lands as paid.</li>
+        <li><strong>Gift card redemptions</strong> — requests pile into your queue for manual fulfillment. No auto-issue.</li>
+        <li><strong>Compliance notices</strong> — the app generates a PDF; you print + mail it, then click "Mark as mailed."</li>
+        <li><strong>SMS</strong> — all outbound texts are written to a Firestore <code>smsLog</code> collection (and the server console), not actually sent.</li>
+        <li><strong>Invite emails</strong> — not sent. Copy the invite link from the admin UI and forward it yourself.</li>
+      </ul>
+    </div>
+
     <h2>Your testing path</h2>
 
     <div class="section-label">Session 1 — foundation (~30 min)</div>
@@ -200,6 +212,17 @@
       <li>Automated compliance mailings — generate + mark-as-mailed only.</li>
       <li>Real email delivery of invites — logged to console during the pilot.</li>
     </ul>
+
+    <nav class="roadmap-nav">
+      <a class="prev" href="accounts-and-signin.html">
+        <span class="rn-label">← Previous · Step 4</span>
+        <span class="rn-title">Accounts &amp; sign-in</span>
+      </a>
+      <a class="next" href="role-resident.html">
+        <span class="rn-label">Next · Step 6</span>
+        <span class="rn-title">Resident flow →</span>
+      </a>
+    </nav>
 
     <div class="footer">
       We Buy Clean Trash · Role guide · Admin · Pilot April 2026

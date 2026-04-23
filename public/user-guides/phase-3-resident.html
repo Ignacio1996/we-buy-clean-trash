@@ -149,6 +149,37 @@
     </div>
 
     <div class="scenario">
+      <div class="scenario-head">Scenario 3b — Viewing order history</div>
+      <div class="scenario-body">
+        <p><span class="actor resident">Resident</span> Signed in as Aguirre.</p>
+        <p>
+          Once an order has been placed, Aguirre should be able to see it in her history —
+          including delivered and cancelled orders that no longer show on the home dashboard.
+        </p>
+        <ol>
+          <li>From the home screen, tap <strong>View all →</strong> on the pending-orders card. (If there are no pending orders, use the <strong>View past orders →</strong> link in the empty-state card instead.)</li>
+          <li>You should land on <code>/resident/order-bags/history</code> with a list of every bag order, newest first.</li>
+          <li>Go back to <strong>Order bags</strong> and tap <strong>Past orders →</strong> in the top-right of that screen — it should take you to the same history page.</li>
+          <li>If Aguirre has no orders yet, the page should show an empty state with an <strong>Order bags →</strong> call-to-action.</li>
+        </ol>
+
+        <div class="expected">
+          <strong>Expected:</strong> Each row shows the sheet/bag count, total charged, current
+          status (Delivered / Queued / Out for delivery / Cancelled), the placed date, and either
+          the delivered date (if delivered) or the upcoming route date.
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Home dashboard &rarr; <em>View all</em> link opens the history page</p>
+          <p><span class="checkbox"></span> Order Bags screen &rarr; <em>Past orders</em> link opens the history page</p>
+          <p><span class="checkbox"></span> Orders are sorted newest-first</p>
+          <p><span class="checkbox"></span> Delivered orders show a delivered date; pending/queued orders show an ETA or <em>Delivery date TBD</em></p>
+          <p><span class="checkbox"></span> A resident with no orders sees the empty state (not a blank list)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario">
       <div class="scenario-head">Scenario 4 — Scanning a bag before pickup day</div>
       <div class="scenario-body">
         <p><span class="actor resident">Resident</span> Signed in as Aguirre on her phone.</p>
