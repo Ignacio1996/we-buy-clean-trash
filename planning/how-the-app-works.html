@@ -189,6 +189,69 @@
     font-style: italic;
   }
 
+  /* ── ACCOUNTS TO SET UP ── */
+  .accounts-section {
+    max-width: 900px;
+    margin: 0 auto 40px;
+    padding: 0 30px;
+  }
+  .accounts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .account-card {
+    background: rgba(234,179,8,0.04);
+    border: 1px solid rgba(234,179,8,0.18);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  .account-card .account-head {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 8px;
+  }
+  .account-card .account-icon { font-size: 1.3rem; }
+  .account-card h4 { color: #ffffff; font-size: 0.98rem; font-weight: 700; }
+  .account-card p {
+    color: #a0a0a0;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    margin-bottom: 10px;
+    flex: 1;
+  }
+  .account-card .account-price {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(234,179,8,0.12);
+  }
+  .account-card .account-price .price-main {
+    color: #eab308;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+  .account-card .account-price .price-note {
+    color: #777;
+    font-size: 0.72rem;
+    font-style: italic;
+  }
+  .account-card .account-purpose {
+    display: inline-block;
+    margin-bottom: 8px;
+    padding: 2px 8px;
+    background: rgba(234,179,8,0.1);
+    border: 1px solid rgba(234,179,8,0.2);
+    border-radius: 10px;
+    font-size: 0.65rem;
+    color: #eab308;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    align-self: flex-start;
+  }
+
   /* ── USERS SECTION ── */
   .section-title {
     text-align: center;
@@ -411,7 +474,8 @@
       <div class="step-icon">📸</div>
       <h3>Try Before You Sign Up</h3>
       <p>Before creating an account, anyone can scan a few recyclables and see how much they'd earn. Scan a water bottle, a Coke can — the app shows points and dollar value instantly. Lowest time-to-value first screen.</p>
-      <span class="change-tag tag-built">✅ BUILT · Gemini 2.5 Flash vision</span>
+      <span class="change-tag tag-built">✅ BUILT · Scan UI + item flow live</span>
+      <span class="change-tag tag-stub">⚠️ Gemini 2.5 Flash not yet integrated — results mocked for pilot</span>
     </div>
     <div class="step-number">1</div>
   </div>
@@ -465,7 +529,8 @@
       <div class="step-icon">🚐</div>
       <h3>Operator Picks Up</h3>
       <p>Driver follows the app route, stop by stop. At each address: one tap on the big "Complete" button to confirm pickup. Skip or flag issues with secondary buttons. Fast — no typing, no stopping. QR scan + manual number entry for detailed logging. Also delivers new bags and QR sticker sheets to residents who reordered.</p>
-      <span class="change-tag tag-built">✅ BUILT · Google Maps route optimization + operator app live</span>
+      <span class="change-tag tag-built">✅ BUILT · Operator app + route stepper live</span>
+      <span class="change-tag tag-stub">⚠️ Google Maps Routes API not yet integrated — stop order manual for pilot</span>
     </div>
   </div>
 
@@ -741,6 +806,128 @@
       <div class="next-head"><span class="next-icon">📬</span><h4>Automated compliance mailing</h4></div>
       <p>Admin generates compliance notice PDFs today and clicks "mark as mailed." Next step: integrate a direct-mail API (Lob or similar) to actually send them.</p>
       <span class="why">Volume is too low pre-pilot to justify integration.</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── ACCOUNTS TO SET UP ── -->
+<h2 class="section-title">Accounts to Set Up</h2>
+<p style="text-align:center; color:#888; font-size:0.9rem; max-width:700px; margin:-20px auto 30px; padding:0 20px; line-height:1.55;">
+  Third-party services needed to swap out the pilot stubs and keep the app running. Pricing estimates assume ~100 pilot residents; costs scale roughly linearly from there.
+</p>
+
+<div class="accounts-section">
+  <div class="accounts-grid">
+
+    <div class="account-card">
+      <span class="account-purpose">REPLACES STRIPE STUB</span>
+      <div class="account-head"><span class="account-icon">💳</span><h4>Stripe</h4></div>
+      <p>Live payments for bag orders and QR sticker-sheet reorders. Create a standard account, add business details, drop in API keys.</p>
+      <div class="account-price">
+        <span class="price-main">2.9% + $0.30 per transaction</span>
+        <span class="price-note">No monthly fee · ~$1 fee on a $25 bag order</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">REPLACES TWILIO STUB</span>
+      <div class="account-head"><span class="account-icon">📱</span><h4>Twilio</h4></div>
+      <p>SMS for "put your bags out," "driver on the way," and points-earned notifications. Needs one provisioned phone number + A2P 10DLC registration for US.</p>
+      <div class="account-price">
+        <span class="price-main">~$10–15/mo at pilot scale</span>
+        <span class="price-note">$1.15/mo per number + $0.0083/SMS + one-time ~$15 A2P registration</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">NEW — NEEDED FOR INVITES</span>
+      <div class="account-head"><span class="account-icon">📧</span><h4>MailerSend (or Resend)</h4></div>
+      <p>Transactional email: operator/depot/admin invite links, redemption receipts, password resets. Needs a verified sending domain (DKIM/SPF).</p>
+      <div class="account-price">
+        <span class="price-main">Free up to 3,000 emails/mo</span>
+        <span class="price-note">Paid tier ~$28/mo for 50k — pilot fits in free tier</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">ALREADY SET UP</span>
+      <div class="account-head"><span class="account-icon">🔥</span><h4>Firebase (Blaze plan)</h4></div>
+      <p>Auth, Firestore, Storage. Blaze is required because the app calls external APIs (Gemini, Maps) from server routes. Pay-as-you-go beyond generous free quotas.</p>
+      <div class="account-price">
+        <span class="price-main">~$0–5/mo at pilot scale</span>
+        <span class="price-note">Effectively free until ~thousands of users</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">ALREADY SET UP</span>
+      <div class="account-head"><span class="account-icon">🤖</span><h4>Google AI — Gemini 2.5 Flash</h4></div>
+      <p>Vision model for the pre-signup scan feature. Billed per token; images are counted as input tokens.</p>
+      <div class="account-price">
+        <span class="price-main">~$20–50/mo at pilot scale</span>
+        <span class="price-note">$0.075 / 1M input tokens · $0.30 / 1M output · ~1¢ per scan</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">ALREADY SET UP</span>
+      <div class="account-head"><span class="account-icon">🗺️</span><h4>Google Maps — Routes API</h4></div>
+      <p>Optimized pickup routes for the operator app (<code style="color:#eab308;font-size:0.75rem;">computeRoutes</code> with waypoint optimization). Billed per request.</p>
+      <div class="account-price">
+        <span class="price-main">~$1–10/mo at pilot scale</span>
+        <span class="price-note">$10 per 1,000 optimized route requests · one route/day = ~$0.30/mo</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">HOSTING</span>
+      <div class="account-head"><span class="account-icon">▲</span><h4>Vercel</h4></div>
+      <p>Hosts the Next.js app + API routes. Free Hobby tier works for the pilot, but commercial use technically requires Pro.</p>
+      <div class="account-price">
+        <span class="price-main">$0 (Hobby) or $20/mo (Pro)</span>
+        <span class="price-note">Upgrade to Pro before taking real payments</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">REPLACES GIFT CARD STUB</span>
+      <div class="account-head"><span class="account-icon">🛒</span><h4>Amazon Incentives API</h4></div>
+      <p>Automated Amazon gift card fulfillment instead of admin-manual sending. Requires business application + prepaid balance.</p>
+      <div class="account-price">
+        <span class="price-main">0% fee — cards at face value</span>
+        <span class="price-note">~$500+ minimum deposit · approval takes ~2–4 weeks</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">REPLACES GIFT CARD STUB</span>
+      <div class="account-head"><span class="account-icon">🏪</span><h4>Walmart Gift Card Program</h4></div>
+      <p>Automated Walmart gift card fulfillment. Typically accessed through a reseller (Tango, Blackhawk) since Walmart has no public direct API.</p>
+      <div class="account-price">
+        <span class="price-main">~0–4% markup via reseller</span>
+        <span class="price-note">Tango / Blackhawk bundles Amazon, Walmart, Target, etc. in one API</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">FUTURE — COMPLIANCE</span>
+      <div class="account-head"><span class="account-icon">✉️</span><h4>Lob (direct mail)</h4></div>
+      <p>Automates mailing compliance notices that are currently generated as PDFs and marked "mailed" by admin. Skip until volume justifies.</p>
+      <div class="account-price">
+        <span class="price-main">~$1–2 per letter</span>
+        <span class="price-note">Certified mail +$4–5 · no monthly minimums</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">ONE-TIME HARDWARE</span>
+      <div class="account-head"><span class="account-icon">🖨️</span><h4>Rollo thermal printer + labels</h4></div>
+      <p>Prints QR sticker sheets for residents. One per depot. Uses cheap thermal label rolls — no ink, no toner.</p>
+      <div class="account-price">
+        <span class="price-main">~$180 printer + ~$30/roll</span>
+        <span class="price-note">5,000 labels per roll = ~$0.006 per sticker</span>
+      </div>
     </div>
 
   </div>

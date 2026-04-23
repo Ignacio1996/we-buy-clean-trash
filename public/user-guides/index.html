@@ -166,6 +166,41 @@
         border-color: #fcd34d;
       }
       .role-chooser .role-admin .role-title { color: #92400e; }
+      .product-docs {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10pt;
+        margin: 14pt 0 22pt;
+      }
+      .product-docs a {
+        display: block;
+        padding: 12pt 14pt;
+        border-radius: 6pt;
+        border: 1px solid #e4e4e4;
+        background: #f7f7f7;
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.1s;
+      }
+      .product-docs a:hover {
+        transform: translateY(-1pt);
+        border-color: #9ca3af;
+      }
+      .product-docs .doc-title {
+        font-weight: 700;
+        font-size: 12pt;
+        margin-bottom: 2pt;
+        color: #0f172a;
+      }
+      .product-docs .doc-desc {
+        font-size: 10pt;
+        color: #555;
+      }
+      @media (max-width: 600px) {
+        .product-docs {
+          grid-template-columns: 1fr;
+        }
+      }
       @media print {
         .fallback,
         .toc {
@@ -200,6 +235,21 @@
         at the bottom of the page for quick reference.
       </p>
     </header>
+
+    <div class="product-docs">
+      <a href="how-the-app-works.html">
+        <div class="doc-title">📘 How The App Works</div>
+        <div class="doc-desc">
+          Product overview — the 10-step lifecycle, money flow, points system, and what's built vs. still to come. Share with clients.
+        </div>
+      </a>
+      <a href="app-designs.html">
+        <div class="doc-title">🎨 App Designs</div>
+        <div class="doc-desc">
+          Screen-by-screen mockups for every role — resident, operator, depot worker, depot manager, admin.
+        </div>
+      </a>
+    </div>
 
     <div class="toc" id="roadmap">
       <strong>Testing roadmap — do these in order</strong>

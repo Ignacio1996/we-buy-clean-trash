@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>We Buy Clean Trash - How It Works</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0e0e0e;
+    color: #e0e0e0;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .header {
+    text-align: center;
+    padding: 50px 20px 30px;
+  }
+  .header h1 {
+    font-size: 2.4rem;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .header p {
+    font-size: 1.05rem;
+    color: #888888;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* ── FLOW SECTION ── */
+  .flow-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 30px 60px;
+    position: relative;
+  }
+
+  /* vertical line */
+  .flow-container::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 80px;
+    bottom: 120px;
+    width: 3px;
+    background: linear-gradient(to bottom, #ffffff 0%, #d0d0d0 40%, #a0a0a0 70%, #666666 100%);
+    transform: translateX(-50%);
+    border-radius: 2px;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .step:last-child { margin-bottom: 0; }
+
+  .step-left, .step-right {
+    width: 45%;
+    padding: 20px 24px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    backdrop-filter: blur(8px);
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .step-left:hover, .step-right:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,0.25);
+  }
+  .step-left { margin-right: auto; text-align: right; }
+  .step-right { margin-left: auto; text-align: left; }
+
+  .step-number {
+    position: absolute;
+    left: 50%;
+    top: 20px;
+    transform: translateX(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #222222;
+    border: 3px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+    color: #ffffff;
+    z-index: 2;
+  }
+
+  .step-icon {
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+  }
+  .step h3 {
+    font-size: 1.1rem;
+    color: #ffffff;
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .step p {
+    font-size: 0.9rem;
+    color: #a0a0a0;
+    line-height: 1.55;
+  }
+
+  .money-tag {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 3px 10px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  .change-tag {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .tag-new { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .tag-updated { background: rgba(59,130,246,0.15); color: #3b82f6; }
+  .tag-built { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .tag-stub { background: rgba(234,179,8,0.15); color: #eab308; }
+  .tag-next { background: rgba(168,85,247,0.15); color: #a855f7; }
+
+  .status-banner {
+    max-width: 900px;
+    margin: 0 auto 20px;
+    padding: 16px 24px;
+    background: linear-gradient(90deg, rgba(34,197,94,0.08), rgba(34,197,94,0.03));
+    border: 1px solid rgba(34,197,94,0.25);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .status-banner .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #22c55e; box-shadow: 0 0 12px rgba(34,197,94,0.6);
+    flex-shrink: 0;
+  }
+  .status-banner .text { color: #d1d5db; font-size: 0.92rem; line-height: 1.5; }
+  .status-banner .text strong { color: #22c55e; }
+
+  /* ── NEXT UP SECTION ── */
+  .next-section {
+    max-width: 900px;
+    margin: 0 auto 40px;
+    padding: 0 30px;
+  }
+  .next-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .next-card {
+    background: rgba(168,85,247,0.04);
+    border: 1px solid rgba(168,85,247,0.18);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .next-card .next-head {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 8px;
+  }
+  .next-card .next-icon { font-size: 1.3rem; }
+  .next-card h4 { color: #ffffff; font-size: 0.98rem; font-weight: 700; }
+  .next-card p { color: #a0a0a0; font-size: 0.82rem; line-height: 1.55; }
+  .next-card .why {
+    display: block;
+    margin-top: 8px;
+    color: #777;
+    font-size: 0.74rem;
+    font-style: italic;
+  }
+
+  /* ── ACCOUNTS TO SET UP ── */
+  .accounts-section {
+    max-width: 900px;
+    margin: 0 auto 40px;
+    padding: 0 30px;
+  }
+  .accounts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .account-card {
+    background: rgba(234,179,8,0.04);
+    border: 1px solid rgba(234,179,8,0.18);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  .account-card .account-head {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 8px;
+  }
+  .account-card .account-icon { font-size: 1.3rem; }
+  .account-card h4 { color: #ffffff; font-size: 0.98rem; font-weight: 700; }
+  .account-card p {
+    color: #a0a0a0;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    margin-bottom: 10px;
+    flex: 1;
+  }
+  .account-card .account-price {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(234,179,8,0.12);
+  }
+  .account-card .account-price .price-main {
+    color: #eab308;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+  .account-card .account-price .price-note {
+    color: #777;
+    font-size: 0.72rem;
+    font-style: italic;
+  }
+  .account-card .account-purpose {
+    display: inline-block;
+    margin-bottom: 8px;
+    padding: 2px 8px;
+    background: rgba(234,179,8,0.1);
+    border: 1px solid rgba(234,179,8,0.2);
+    border-radius: 10px;
+    font-size: 0.65rem;
+    color: #eab308;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    align-self: flex-start;
+  }
+
+  /* ── USERS SECTION ── */
+  .section-title {
+    text-align: center;
+    font-size: 1.6rem;
+    color: #ffffff;
+    margin: 60px 0 30px;
+  }
+
+  .users-grid {
+    max-width: 900px;
+    margin: 0 auto 60px;
+    padding: 0 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+    gap: 16px;
+  }
+  .user-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 22px 16px;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .user-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,255,255,0.25);
+  }
+  .user-card .icon { font-size: 2rem; margin-bottom: 10px; }
+  .user-card h4 { color: #ffffff; font-size: 0.95rem; margin-bottom: 6px; }
+  .user-card p { color: #888888; font-size: 0.78rem; line-height: 1.5; }
+
+  /* ── MONEY FLOW ── */
+  .money-section {
+    max-width: 750px;
+    margin: 0 auto 60px;
+    padding: 0 30px;
+  }
+  .money-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .money-row .num {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #222222; color: #ffffff; display: flex;
+    align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.85rem; flex-shrink: 0;
+  }
+  .money-row .label { color: #d1d5db; font-size: 0.92rem; flex: 1; }
+  .money-row .tag {
+    padding: 3px 10px; border-radius: 20px; font-size: 0.72rem;
+    font-weight: 600; flex-shrink: 0;
+  }
+  .tag-in { background: rgba(255,255,255,0.1); color: #ffffff; }
+  .tag-out { background: rgba(255,255,255,0.06); color: #a0a0a0; }
+
+  /* ── POINTS ── */
+  .points-box {
+    max-width: 600px;
+    margin: 0 auto 40px;
+    padding: 30px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    text-align: center;
+  }
+  .points-box h3 { color: #ffffff; margin-bottom: 16px; font-size: 1.15rem; }
+  .points-eq {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .points-eq .big {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #ffffff;
+  }
+  .points-eq .eq { font-size: 1.6rem; color: #666666; }
+  .redeem-options {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .redeem-pill {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  .pill-1 { background: rgba(255,255,255,0.1); color: #ffffff; }
+  .pill-2 { background: rgba(255,255,255,0.07); color: #a0a0a0; }
+  .pill-3 { background: rgba(255,255,255,0.05); color: #888888; }
+
+  /* ── QR STICKER INFO BOX ── */
+  .info-box {
+    max-width: 600px;
+    margin: 0 auto 40px;
+    padding: 24px 28px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+  }
+  .info-box h3 { color: #ffffff; font-size: 1.05rem; margin-bottom: 12px; text-align: center; }
+  .info-box p { color: #a0a0a0; font-size: 0.85rem; line-height: 1.6; margin-bottom: 10px; }
+  .info-box .phase {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .info-box .phase-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(255,255,255,0.08); color: #ffffff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.75rem; flex-shrink: 0;
+  }
+  .info-box .phase-text { flex: 1; }
+  .info-box .phase-text strong { color: #d1d5db; font-size: 0.85rem; }
+  .info-box .phase-text span { display: block; color: #888; font-size: 0.75rem; margin-top: 2px; }
+
+  /* ── CATEGORIES ── */
+  .cat-grid {
+    max-width: 600px;
+    margin: 0 auto 40px;
+    padding: 0 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+  }
+  .cat-pill {
+    padding: 12px 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    text-align: center;
+    font-size: 0.82rem;
+    color: #d1d5db;
+  }
+  .cat-pill .cat-icon { font-size: 1.2rem; margin-bottom: 4px; }
+  .cat-pill .cat-name { font-weight: 600; }
+
+  /* ── PILOT BOX ── */
+  .pilot-box {
+    max-width: 600px;
+    margin: 0 auto 60px;
+    padding: 28px;
+    background: rgba(34,197,94,0.04);
+    border: 1px solid rgba(34,197,94,0.15);
+    border-radius: 18px;
+    text-align: center;
+  }
+  .pilot-box h3 { color: #22c55e; margin-bottom: 14px; font-size: 1.1rem; }
+  .pilot-stats {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .pilot-stat {
+    text-align: center;
+  }
+  .pilot-stat .val { font-size: 1.6rem; font-weight: 800; color: #ffffff; }
+  .pilot-stat .lbl { font-size: 0.72rem; color: #9ca3af; margin-top: 2px; }
+
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: #444444;
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 700px) {
+    .flow-container::before { left: 28px; }
+    .step { flex-direction: column; }
+    .step-left, .step-right {
+      width: 100%;
+      margin-left: 56px !important;
+      margin-right: 0 !important;
+      text-align: left !important;
+    }
+    .step-number { left: 28px; }
+    .header h1 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>We Buy Clean Trash</h1>
+  <p>The full lifecycle — from doorstep to recycling mill</p>
+</div>
+
+<!-- ── LIVE STATUS BANNER ── -->
+<div class="status-banner">
+  <div class="dot"></div>
+  <div class="text">
+    <strong>Status: Pilot app is built and live.</strong> All 10 steps below are implemented end-to-end — resident, operator, depot worker, depot manager, and admin roles all have working apps. A few integrations are running on stubs for the pilot (flagged below) and will be swapped for real vendors before scale.
+  </div>
+</div>
+
+<!-- ── MAIN FLOW ── -->
+<div class="flow-container">
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-icon">📸</div>
+      <h3>Try Before You Sign Up</h3>
+      <p>Before creating an account, anyone can scan a few recyclables and see how much they'd earn. Scan a water bottle, a Coke can — the app shows points and dollar value instantly. Lowest time-to-value first screen.</p>
+      <span class="change-tag tag-built">✅ BUILT · Scan UI + item flow live</span>
+      <span class="change-tag tag-stub">⚠️ Gemini 2.5 Flash not yet integrated — results mocked for pilot</span>
+    </div>
+    <div class="step-number">1</div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-right">
+      <div class="step-icon">✍️</div>
+      <h3>Sign Up &amp; Order Bags</h3>
+      <p>Customer creates an account and orders recycling bags. Bags come with a sheet of QR code stickers — each sticker has a unique QR code plus a printed number as backup. Customer sticks one label on each bag before filling it.</p>
+      <span class="money-tag">💰 Revenue: bag sales (primary)</span>
+      <span class="change-tag tag-built">✅ BUILT</span>
+      <span class="change-tag tag-stub">⚠️ Stripe stubbed — mock checkout for pilot</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-icon">♻️</div>
+      <h3>Fill &amp; Separate</h3>
+      <p>Two bag types: <strong>Cardboard &amp; Paper</strong> in one bag, <strong>Commingled</strong> (plastic, aluminum, tin, glass) in another. Separated earns 2x points. A quick recycling guide in the app shows good vs. bad examples — empty rinsed bottles vs. half-full ones, clean boxes vs. greasy pizza boxes.</p>
+      <span class="change-tag tag-built">✅ BUILT · In-app recycling guide live</span>
+    </div>
+    <div class="step-number">3</div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">4</div>
+    <div class="step-right">
+      <div class="step-icon">📱</div>
+      <h3>Scan QR &amp; Schedule</h3>
+      <p>Customer scans the QR sticker on the bag in the app, selects the bag type, takes a photo, and places it at the door. The app confirms their next scheduled pickup. If the QR is damaged, they type the printed number instead.</p>
+      <span class="change-tag tag-built">✅ BUILT · jsQR scan + manual fallback + photo upload</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-icon">🔔</div>
+      <h3>Text Notifications</h3>
+      <p>Resident gets a text 30 minutes before pickup: "Put your bags out!" Then a real-time alert when the driver is on the way: "Your trashman is heading to you now." Extra time to grab one more bag if needed.</p>
+      <span class="change-tag tag-built">✅ BUILT · Trigger logic + message log live</span>
+      <span class="change-tag tag-stub">⚠️ Twilio stubbed — messages log to DB for pilot</span>
+    </div>
+    <div class="step-number">5</div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">6</div>
+    <div class="step-right">
+      <div class="step-icon">🚐</div>
+      <h3>Operator Picks Up</h3>
+      <p>Driver follows the app route, stop by stop. At each address: one tap on the big "Complete" button to confirm pickup. Skip or flag issues with secondary buttons. Fast — no typing, no stopping. QR scan + manual number entry for detailed logging. Also delivers new bags and QR sticker sheets to residents who reordered.</p>
+      <span class="change-tag tag-built">✅ BUILT · Operator app + route stepper live</span>
+      <span class="change-tag tag-stub">⚠️ Google Maps Routes API not yet integrated — stop order manual for pilot</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-icon">⚖️</div>
+      <h3>Depot: Open, Sort &amp; Weigh</h3>
+      <p>At the depot, worker scans the bag QR. Opens it on a table and separates materials. Each commodity is weighed individually — PET plastic, aluminum, tin, cardboard, paper — and entered into the app. Replaces the old paper-and-Excel process. No AI here yet; keep it simple and functional.</p>
+      <span class="change-tag tag-built">✅ BUILT · 7-commodity weigh-in + contamination severity + live inventory</span>
+    </div>
+    <div class="step-number">7</div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">8</div>
+    <div class="step-right">
+      <div class="step-icon">⭐</div>
+      <h3>Points Awarded</h3>
+      <p>Points are auto-calculated based on each material's weight and current market price. The customer receives a text notification with their points earned. Contaminated or poorly recycled bags earn up to 90% less.</p>
+      <span class="change-tag tag-built">✅ BUILT · Atomic ledger writes + balance updates on every bag</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-icon">🎁</div>
+      <h3>Redeem Gift Cards</h3>
+      <p>100,000 points = $10 gift card. Redeem for Amazon, Walmart, or local store gift cards. Can also apply credit toward their trash bill or donate to a nonprofit. Points are linked to real rewards from day one — no abstract numbers.</p>
+      <span class="change-tag tag-built">✅ BUILT · Redemption requests + admin fulfillment queue</span>
+      <span class="change-tag tag-stub">⚠️ Cards sent manually by admin during pilot; Pay Trash Bill + Donate are disabled</span>
+    </div>
+    <div class="step-number">9</div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">10</div>
+    <div class="step-right">
+      <div class="step-icon">📦</div>
+      <h3>Sell to Mills</h3>
+      <p>Sorted materials are palletized and sold to domestic and international recycling mills at market rates (the "yellow sheet"). 7 commodity categories tracked: aluminum, tin, cardboard, paper, PET, HDPE, and mixed plastic.</p>
+      <span class="money-tag">💰 Revenue: ~70% margin on sales</span>
+      <span class="change-tag tag-built">✅ BUILT · Mill shipments + admin yellow-sheet price editor</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── QR STICKER STRATEGY ── -->
+<div class="info-box">
+  <h3>🏷️ QR Sticker Strategy</h3>
+  <div class="phase">
+    <div class="phase-num">1</div>
+    <div class="phase-text">
+      <strong>Pilot: Plain bags + sticker sheets</strong>
+      <span>Buy generic bags. Print QR sticker sheets with a Rollo thermal printer. Each sticker has a unique QR code + printed number. Residents stick one label per bag. Cheapest way to start.</span>
+    </div>
+  </div>
+  <div class="phase">
+    <div class="phase-num">2</div>
+    <div class="phase-text">
+      <strong>Scale: Manufacturer-printed bags</strong>
+      <span>Once revenue proves the model, work with a bag manufacturer to print QR codes directly on each bag. Eliminate the sticker step entirely.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── 7 MATERIAL CATEGORIES ── -->
+<h2 class="section-title">7 Accepted Materials</h2>
+<div class="cat-grid">
+  <div class="cat-pill">
+    <div class="cat-icon">🥫</div>
+    <div class="cat-name">Aluminum</div>
+  </div>
+  <div class="cat-pill">
+    <div class="cat-icon">🥫</div>
+    <div class="cat-name">Tin / Steel</div>
+  </div>
+  <div class="cat-pill">
+    <div class="cat-icon">📦</div>
+    <div class="cat-name">Cardboard</div>
+  </div>
+  <div class="cat-pill">
+    <div class="cat-icon">📰</div>
+    <div class="cat-name">Paper</div>
+  </div>
+  <div class="cat-pill">
+    <div class="cat-icon">🧴</div>
+    <div class="cat-name">PET Plastic</div>
+  </div>
+  <div class="cat-pill">
+    <div class="cat-icon">🥛</div>
+    <div class="cat-name">HDPE</div>
+  </div>
+  <div class="cat-pill">
+    <div class="cat-icon">🧴</div>
+    <div class="cat-name">Mixed Plastic</div>
+  </div>
+</div>
+
+<!-- ── WHO USES THE APP ── -->
+<h2 class="section-title">Who Uses the App</h2>
+<div class="users-grid">
+  <div class="user-card">
+    <div class="icon">🏠</div>
+    <h4>Resident</h4>
+    <p>Scans items to see value, orders bags, sticks QR labels on them, fills &amp; separates, earns points, redeems gift cards</p>
+  </div>
+  <div class="user-card">
+    <div class="icon">🚐</div>
+    <h4>Operator</h4>
+    <p>Follows route, taps "Complete" at each stop, scans QR codes, delivers new bags + sticker sheets to residents</p>
+  </div>
+  <div class="user-card">
+    <div class="icon">⚖️</div>
+    <h4>Depot Worker</h4>
+    <p>Scans bags, opens &amp; sorts on table, weighs each material separately, enters data — replaces paper &amp; Excel</p>
+  </div>
+  <div class="user-card">
+    <div class="icon">🏢</div>
+    <h4>Depot Manager</h4>
+    <p>Monitors depot inventory across locations, schedules mill pickups, reviews throughput reports</p>
+  </div>
+  <div class="user-card">
+    <div class="icon">📊</div>
+    <h4>Admin</h4>
+    <p>Command center — all zones, all users, revenue, contamination alerts, commodity pricing, compliance notices</p>
+  </div>
+</div>
+
+<!-- ── HOW MONEY FLOWS ── -->
+<h2 class="section-title">How the Money Flows</h2>
+<div class="money-section">
+  <div class="money-row">
+    <div class="num">1</div>
+    <div class="label">Customer buys recycling bags + QR sticker sheets</div>
+    <span class="tag tag-in">$ In (Primary)</span>
+  </div>
+  <div class="money-row">
+    <div class="num">2</div>
+    <div class="label">Sorted materials sold to recycling mills at market rate</div>
+    <span class="tag tag-in">$ In</span>
+  </div>
+  <div class="money-row">
+    <div class="num">3</div>
+    <div class="label">Customers redeem ~30% of material value as gift cards</div>
+    <span class="tag tag-out">$ Out</span>
+  </div>
+  <div class="money-row">
+    <div class="num">4</div>
+    <div class="label">~70% margin kept on every material transaction</div>
+    <span class="tag tag-in">$ Profit</span>
+  </div>
+  <div class="money-row">
+    <div class="num">5</div>
+    <div class="label">Long-term: franchise fees from new depot territories</div>
+    <span class="tag tag-in">$ Scale</span>
+  </div>
+</div>
+
+<!-- ── POINTS SYSTEM ── -->
+<div class="points-box">
+  <h3>Points &amp; Rewards System</h3>
+  <div class="points-eq">
+    <span class="big">100,000 pts</span>
+    <span class="eq">=</span>
+    <span class="big">$10 gift card</span>
+  </div>
+  <p style="color:#a0a0a0; font-size:0.85rem; margin-bottom:16px;">Signup bonus: 10,000 pts &nbsp;·&nbsp; ~500 pts per bag &nbsp;·&nbsp; Separated = 2x points &nbsp;·&nbsp; Commingled = base points &nbsp;·&nbsp; Contaminated = up to 90% reduction</p>
+  <p style="color:#888; font-size:0.8rem; margin-bottom:16px;">Points linked to real rewards from day one — no abstract numbers. Bonus points and multiplier weeks to build the habit early.</p>
+  <div class="redeem-options">
+    <span class="redeem-pill pill-1">🛒 Amazon Gift Card</span>
+    <span class="redeem-pill pill-1">🏪 Walmart Gift Card</span>
+    <span class="redeem-pill pill-2">🧾 Pay Trash Bill</span>
+    <span class="redeem-pill pill-3">❤️ Donate to Nonprofit</span>
+  </div>
+</div>
+
+<!-- ── RECYCLING EDUCATION ── -->
+<div class="points-box">
+  <h3>♻️ Recycling Education</h3>
+  <p style="color:#a0a0a0; font-size:0.9rem; margin-bottom:14px;">Simple good-vs-bad examples in the app help residents recycle correctly. Correct recycling = more points. Contamination = lost earnings.</p>
+  <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;">
+    <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:12px;padding:14px 18px;text-align:center;min-width:140px;">
+      <div style="font-size:0.7rem;color:#22c55e;font-weight:700;margin-bottom:6px;">GOOD</div>
+      <div style="font-size:0.8rem;color:#d1d5db;">Empty rinsed bottle</div>
+      <div style="font-size:0.8rem;color:#d1d5db;">Flattened dry box</div>
+    </div>
+    <div style="background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);border-radius:12px;padding:14px 18px;text-align:center;min-width:140px;">
+      <div style="font-size:0.7rem;color:#f87171;font-weight:700;margin-bottom:6px;">BAD</div>
+      <div style="font-size:0.8rem;color:#d1d5db;">Half-full soda bottle</div>
+      <div style="font-size:0.8rem;color:#d1d5db;">Greasy pizza box</div>
+    </div>
+  </div>
+  <p style="color:#888; font-size:0.8rem;">More tutorials and prep tips coming as we collect real user data. AI-powered scanning to be added after the pilot to help identify items.</p>
+</div>
+
+<!-- ── WHAT'S NEXT ── -->
+<h2 class="section-title">What's Next</h2>
+<p style="text-align:center; color:#888; font-size:0.9rem; max-width:700px; margin:-20px auto 30px; padding:0 20px; line-height:1.55;">
+  The pilot app is complete and ready to run. Everything below is intentionally deferred — we want real pilot data before spending money or engineering effort on these pieces.
+</p>
+
+<div class="next-section">
+  <div class="next-grid">
+
+    <div class="next-card">
+      <div class="next-head"><span class="next-icon">💳</span><h4>Real Stripe checkout</h4></div>
+      <p>Swap the mock bag-order checkout for live Stripe payments. Interface is already abstracted — one adapter file to change.</p>
+      <span class="why">Waiting on pilot pricing validation before going live.</span>
+    </div>
+
+    <div class="next-card">
+      <div class="next-head"><span class="next-icon">📱</span><h4>Real Twilio SMS</h4></div>
+      <p>Drop in Twilio credentials so "put your bags out" and "driver on the way" actually text residents. All trigger points are already wired.</p>
+      <span class="why">Currently logs every outgoing message to Firestore for QA.</span>
+    </div>
+
+    <div class="next-card">
+      <div class="next-head"><span class="next-icon">🎁</span><h4>Automated gift card fulfillment</h4></div>
+      <p>Replace admin-manual gift card sending with Amazon Incentives API + Walmart API. Admin queue is already built.</p>
+      <span class="why">Manual fulfillment is fine at 100 pilot residents; automate when redemption volume justifies it.</span>
+    </div>
+
+    <div class="next-card">
+      <div class="next-head"><span class="next-icon">🧾</span><h4>Pay Trash Bill + Donate</h4></div>
+      <p>Enable the two disabled redemption options. Requires billing-provider integration and nonprofit partner selection.</p>
+      <span class="why">Amazon/Walmart covers 90% of pilot demand.</span>
+    </div>
+
+    <div class="next-card">
+      <div class="next-head"><span class="next-icon">🤖</span><h4>AI contamination detection at depot</h4></div>
+      <p>Photo-based auto-suggest of contamination severity when the depot worker opens a bag — speeds up processing and reduces subjective calls.</p>
+      <span class="why">Need pilot photos to train/validate first.</span>
+    </div>
+
+    <div class="next-card">
+      <div class="next-head"><span class="next-icon">🏷️</span><h4>Manufacturer-printed QR bags</h4></div>
+      <p>Move from Rollo sticker sheets to bags with QR codes printed directly by the manufacturer. Eliminates the sticker-application step for residents.</p>
+      <span class="why">Sticker model keeps pilot cheap; switch once unit economics justify MOQ.</span>
+    </div>
+
+    <div class="next-card">
+      <div class="next-head"><span class="next-icon">📲</span><h4>Native mobile app</h4></div>
+      <p>The current app is a mobile-optimized web app that works great on phones. A native iOS/Android version (separate repo) can come later for push notifications and camera polish.</p>
+      <span class="why">Web app covers the full resident + operator flow today.</span>
+    </div>
+
+    <div class="next-card">
+      <div class="next-head"><span class="next-icon">🗺️</span><h4>Multi-zone rollout UI</h4></div>
+      <p>Data model already supports multiple zones and depots. Admin UI currently focuses on the single pilot zone — expand to multi-zone dashboards when we grow beyond one HOA.</p>
+      <span class="why">Single-zone UI = simpler pilot experience.</span>
+    </div>
+
+    <div class="next-card">
+      <div class="next-head"><span class="next-icon">📡</span><h4>GPS driver-on-the-way</h4></div>
+      <p>Today the operator taps a button when heading to a stop. A GPS geofence could auto-trigger the resident text when the truck gets close.</p>
+      <span class="why">Tap is reliable and zero-battery; upgrade after we validate operator behavior.</span>
+    </div>
+
+    <div class="next-card">
+      <div class="next-head"><span class="next-icon">⚖️</span><h4>Bluetooth/USB scale integration</h4></div>
+      <p>Depot workers currently type weights manually. Auto-capture from a connected scale speeds up processing and removes typos.</p>
+      <span class="why">Manual entry is fast enough at pilot volume.</span>
+    </div>
+
+    <div class="next-card">
+      <div class="next-head"><span class="next-icon">🏪</span><h4>Franchise / multi-depot operations</h4></div>
+      <p>Tools for onboarding new depot territories — franchise agreements, per-depot KPIs, cross-depot logistics. All revenue model #5 on the diagram above.</p>
+      <span class="why">Post-pilot milestone.</span>
+    </div>
+
+    <div class="next-card">
+      <div class="next-head"><span class="next-icon">📬</span><h4>Automated compliance mailing</h4></div>
+      <p>Admin generates compliance notice PDFs today and clicks "mark as mailed." Next step: integrate a direct-mail API (Lob or similar) to actually send them.</p>
+      <span class="why">Volume is too low pre-pilot to justify integration.</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── ACCOUNTS TO SET UP ── -->
+<h2 class="section-title">Accounts to Set Up</h2>
+<p style="text-align:center; color:#888; font-size:0.9rem; max-width:700px; margin:-20px auto 30px; padding:0 20px; line-height:1.55;">
+  Third-party services needed to swap out the pilot stubs and keep the app running. Pricing estimates assume ~100 pilot residents; costs scale roughly linearly from there.
+</p>
+
+<div class="accounts-section">
+  <div class="accounts-grid">
+
+    <div class="account-card">
+      <span class="account-purpose">REPLACES STRIPE STUB</span>
+      <div class="account-head"><span class="account-icon">💳</span><h4>Stripe</h4></div>
+      <p>Live payments for bag orders and QR sticker-sheet reorders. Create a standard account, add business details, drop in API keys.</p>
+      <div class="account-price">
+        <span class="price-main">2.9% + $0.30 per transaction</span>
+        <span class="price-note">No monthly fee · ~$1 fee on a $25 bag order</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">REPLACES TWILIO STUB</span>
+      <div class="account-head"><span class="account-icon">📱</span><h4>Twilio</h4></div>
+      <p>SMS for "put your bags out," "driver on the way," and points-earned notifications. Needs one provisioned phone number + A2P 10DLC registration for US.</p>
+      <div class="account-price">
+        <span class="price-main">~$10–15/mo at pilot scale</span>
+        <span class="price-note">$1.15/mo per number + $0.0083/SMS + one-time ~$15 A2P registration</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">NEW — NEEDED FOR INVITES</span>
+      <div class="account-head"><span class="account-icon">📧</span><h4>MailerSend (or Resend)</h4></div>
+      <p>Transactional email: operator/depot/admin invite links, redemption receipts, password resets. Needs a verified sending domain (DKIM/SPF).</p>
+      <div class="account-price">
+        <span class="price-main">Free up to 3,000 emails/mo</span>
+        <span class="price-note">Paid tier ~$28/mo for 50k — pilot fits in free tier</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">ALREADY SET UP</span>
+      <div class="account-head"><span class="account-icon">🔥</span><h4>Firebase (Blaze plan)</h4></div>
+      <p>Auth, Firestore, Storage. Blaze is required because the app calls external APIs (Gemini, Maps) from server routes. Pay-as-you-go beyond generous free quotas.</p>
+      <div class="account-price">
+        <span class="price-main">~$0–5/mo at pilot scale</span>
+        <span class="price-note">Effectively free until ~thousands of users</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">ALREADY SET UP</span>
+      <div class="account-head"><span class="account-icon">🤖</span><h4>Google AI — Gemini 2.5 Flash</h4></div>
+      <p>Vision model for the pre-signup scan feature. Billed per token; images are counted as input tokens.</p>
+      <div class="account-price">
+        <span class="price-main">~$20–50/mo at pilot scale</span>
+        <span class="price-note">$0.075 / 1M input tokens · $0.30 / 1M output · ~1¢ per scan</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">ALREADY SET UP</span>
+      <div class="account-head"><span class="account-icon">🗺️</span><h4>Google Maps — Routes API</h4></div>
+      <p>Optimized pickup routes for the operator app (<code style="color:#eab308;font-size:0.75rem;">computeRoutes</code> with waypoint optimization). Billed per request.</p>
+      <div class="account-price">
+        <span class="price-main">~$1–10/mo at pilot scale</span>
+        <span class="price-note">$10 per 1,000 optimized route requests · one route/day = ~$0.30/mo</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">HOSTING</span>
+      <div class="account-head"><span class="account-icon">▲</span><h4>Vercel</h4></div>
+      <p>Hosts the Next.js app + API routes. Free Hobby tier works for the pilot, but commercial use technically requires Pro.</p>
+      <div class="account-price">
+        <span class="price-main">$0 (Hobby) or $20/mo (Pro)</span>
+        <span class="price-note">Upgrade to Pro before taking real payments</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">REPLACES GIFT CARD STUB</span>
+      <div class="account-head"><span class="account-icon">🛒</span><h4>Amazon Incentives API</h4></div>
+      <p>Automated Amazon gift card fulfillment instead of admin-manual sending. Requires business application + prepaid balance.</p>
+      <div class="account-price">
+        <span class="price-main">0% fee — cards at face value</span>
+        <span class="price-note">~$500+ minimum deposit · approval takes ~2–4 weeks</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">REPLACES GIFT CARD STUB</span>
+      <div class="account-head"><span class="account-icon">🏪</span><h4>Walmart Gift Card Program</h4></div>
+      <p>Automated Walmart gift card fulfillment. Typically accessed through a reseller (Tango, Blackhawk) since Walmart has no public direct API.</p>
+      <div class="account-price">
+        <span class="price-main">~0–4% markup via reseller</span>
+        <span class="price-note">Tango / Blackhawk bundles Amazon, Walmart, Target, etc. in one API</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">FUTURE — COMPLIANCE</span>
+      <div class="account-head"><span class="account-icon">✉️</span><h4>Lob (direct mail)</h4></div>
+      <p>Automates mailing compliance notices that are currently generated as PDFs and marked "mailed" by admin. Skip until volume justifies.</p>
+      <div class="account-price">
+        <span class="price-main">~$1–2 per letter</span>
+        <span class="price-note">Certified mail +$4–5 · no monthly minimums</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <span class="account-purpose">ONE-TIME HARDWARE</span>
+      <div class="account-head"><span class="account-icon">🖨️</span><h4>Rollo thermal printer + labels</h4></div>
+      <p>Prints QR sticker sheets for residents. One per depot. Uses cheap thermal label rolls — no ink, no toner.</p>
+      <div class="account-price">
+        <span class="price-main">~$180 printer + ~$30/roll</span>
+        <span class="price-note">5,000 labels per roll = ~$0.006 per sticker</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── PILOT PLAN ── -->
+<div class="pilot-box">
+  <h3>Pilot Plan</h3>
+  <div class="pilot-stats">
+    <div class="pilot-stat">
+      <div class="val">~100</div>
+      <div class="lbl">Residents</div>
+    </div>
+    <div class="pilot-stat">
+      <div class="val">1</div>
+      <div class="lbl">Local HOA</div>
+    </div>
+    <div class="pilot-stat">
+      <div class="val">$1K</div>
+      <div class="lbl">Gift Card Budget</div>
+    </div>
+    <div class="pilot-stat">
+      <div class="val">~2 wks</div>
+      <div class="lbl">To Customers</div>
+    </div>
+  </div>
+  <p style="color:#9ca3af;font-size:0.82rem;line-height:1.6;">Target a single HOA near Kirk. Deliver bags and QR stickers in person. Collect feedback face-to-face. Iterate based on real usage data. Train AI models later once volume justifies cost.</p>
+</div>
+
+<div class="footer">We Buy Clean Trash — Pilot v1.2 · Build complete · Updated April 23, 2026</div>
+
+</body>
+</html>
