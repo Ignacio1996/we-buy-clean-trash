@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Phase 12 Pilot Launch Checklist</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <header>
+      <h1>Phase 12 · Pilot launch</h1>
+      <p class="lead">
+        The code is shipped — this phase is physical. Print stickers, hand-deliver the first
+        bags, sign up ~5 neighbors in person, and watch them try the app. Everything below is
+        a real-world checklist, not a test plan. Cross items off as you go; re-open the guide
+        the next time you grow the pilot to another block.
+      </p>
+    </header>
+
+    <h2>Before day one</h2>
+
+    <div class="scenario">
+      <div class="scenario-head">Buy the hardware</div>
+      <div class="scenario-body">
+        <p><strong>Rollo thermal printer</strong> — X1038 model or equivalent USB direct-thermal.
+        $180-ish. You do not need the Rollo Ship cloud software; the app talks to it via the
+        browser print dialog with a custom <em>2.25 × 1.25</em> page size.</p>
+        <p><strong>Rollo-compatible labels</strong> — 2.25″×1.25″ direct thermal, 1000/roll. Buy
+        two rolls; one resident chews through ~5 sheets per year.</p>
+        <p><strong>Postal scale</strong> — a $20 digital kitchen scale is fine for pilot. Depot
+        processing is manual weight entry; precision to the ounce is enough.</p>
+        <p><strong>Bags</strong> — the physical recycling bag. Clear contractor bags (42-gal) are
+        the pilot default; order 100 to start. Stickers apply to the bag, not to a box.</p>
+        <p class="checklist">
+          <span class="checkbox"></span> Rollo + USB cable<br />
+          <span class="checkbox"></span> 2 rolls of 2.25×1.25 labels<br />
+          <span class="checkbox"></span> Digital scale (grams or ounces both work)<br />
+          <span class="checkbox"></span> 100 clear 42-gal bags<br />
+          <span class="checkbox"></span> Permanent marker (for writing the printed-number fallback if a QR smudges)
+        </p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Lock the pilot footprint</div>
+      <div class="scenario-body">
+        <p>The seed script (<code>npm run seed:pilot</code>) creates <em>one</em> zone
+        (<strong>Kirk pilot</strong>, ZIP 80301, Wednesday pickup) and <em>one</em> depot
+        (<strong>Kirk Depot</strong>). Before onboarding residents:</p>
+        <ol>
+          <li>Open <strong>/admin/zones</strong> and confirm the ZIP list actually matches the
+          block you're piloting. If you're piloting a different ZIP, edit the zone in the
+          admin UI (or edit <code>scripts/seed-pilot.ts</code> and re-seed).</li>
+          <li>Confirm the depot address on the zone matches where you physically process bags
+          (your garage, a friend's warehouse, etc.). This address appears on the compliance
+          letters.</li>
+          <li>Set pricing once at <strong>/admin/pricing</strong>. The seed defaults
+          (aluminum $0.92, cardboard $0.08, etc.) are reasonable spring-2026 numbers but
+          commodity prices move — check ScrapMonster the morning you launch.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Print enough stickers for week one</div>
+      <div class="scenario-body">
+        <p>At <strong>/admin/bags</strong>, click <em>Generate new sheet</em> five times. Each
+        sheet = 10 stickers = one resident's starter set. Five residents → five sheets. Print
+        each sheet (<em>Print + mark</em>) and keep them labeled by sheet number in a folder.</p>
+        <p>Don't print all 50 at once on the first run — a jammed roll or misaligned template
+        can eat a bunch of label stock. Print one, inspect the output (QR scans cleanly? number
+        legible?), then print the rest.</p>
+        <p class="checklist">
+          <span class="checkbox"></span> One test sheet printed and physically verified (scan a sticker with your phone)<br />
+          <span class="checkbox"></span> 4 more sheets printed after the test passes<br />
+          <span class="checkbox"></span> Sheets sorted by sheet number and stored separately from the bag pile
+        </p>
+      </div>
+    </div>
+
+    <h2>Day one — onboarding the first 5 residents</h2>
+
+    <div class="scenario">
+      <div class="scenario-head">Pre-walk the block</div>
+      <div class="scenario-body">
+        <p>Before knocking, have Tia generate <em>Initial Service Notice</em> compliance letters
+        for the zone at <strong>/admin/compliance</strong> and drop them in the recipients'
+        mailboxes 2–3 days ahead. The letter explains the service and sets expectations so the
+        doorstep conversation is shorter.</p>
+        <p><em>Legally</em> the letter is what gets you past some municipalities' residential
+        service rules — don't skip it even if you know the resident.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">The doorstep pitch (~90 seconds)</div>
+      <div class="scenario-body">
+        <p>Say this, roughly:</p>
+        <blockquote>
+          "Hi — I'm Nicolas, I sent the notice on Tuesday. We're running a weekly recycling
+          pickup for this block. I take your separated recyclables on Wednesday, weigh them at
+          my depot, and you get points worth ~30% of market value. No cost, no contract. I need
+          90 seconds to set you up and hand you your first bags — can I?"
+        </blockquote>
+        <p>Then, on your phone (or theirs):</p>
+        <ol>
+          <li>Open <strong>/signup</strong> on the resident's phone. Help them create an email
+          + password (Google works too). Enter their address and phone.</li>
+          <li>Wait for the welcome screen — they should see <em>10,000 welcome points</em>
+          (worth $1).</li>
+          <li>Hand them <strong>one pre-printed sticker sheet</strong> plus <strong>10 clear
+          bags</strong>. Write their last name on the sheet with the marker (you reference this
+          on delivery).</li>
+          <li>Walk them through the Phase 3 loop on their phone: <em>tap a sticker → open
+          Scan Bag → declare sorted/mixed → take doorstep photo → submit</em>. Do the first
+          bag with them so they don't stall on Wednesday.</li>
+          <li>Point at the <em>Rewards</em> tab so they know where points accumulate.</li>
+        </ol>
+        <p>Set expectations out loud: <em>"Bags out by 7am Wednesday. I'll text you when I'm
+        on my way. Points land within an hour of pickup."</em></p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Mark the stickers claimed</div>
+      <div class="scenario-body">
+        <p>You physically handed the sheet to the resident, but the app doesn't know yet —
+        stickers are in the <em>Printed · unassigned</em> state until the operator (you) scans
+        one at delivery. Two options:</p>
+        <ul>
+          <li><strong>Clean option</strong>: create a route for tomorrow with a single "deliver
+          bag order" stop per resident, start the route in <em>/operator</em>, and scan the
+          first sticker on each sheet to claim it. This is the production flow.</li>
+          <li><strong>Pilot shortcut</strong>: use <code>npm run dev:issue-bags -- &lt;resident-email&gt;</code>
+          from your laptop. This issues a sheet in a single command — faster for the first 5
+          residents but bypasses the operator flow, so you won't test it until week two.</li>
+        </ul>
+        <p>Pick one and use it consistently — mixing the two makes the sheet numbers hard to
+        reconcile.</p>
+      </div>
+    </div>
+
+    <h2>Week one — first pickup cycle</h2>
+
+    <div class="scenario">
+      <div class="scenario-head">Tuesday evening</div>
+      <div class="scenario-body">
+        <p>Build tomorrow's route at <strong>/admin/routes</strong>:</p>
+        <ol>
+          <li>Click <em>New route</em>, pick the zone + tomorrow's date.</li>
+          <li>Click <em>Optimize order</em>. The route runs through Google Maps and returns a
+          waypoint order starting from the depot.</li>
+          <li>Assign the operator (yourself). Click <em>Save</em>.</li>
+          <li>Text the residents manually the first week: <em>"Pickup tomorrow — bag out
+          before 7am, sticker facing the street."</em></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Wednesday morning</div>
+      <div class="scenario-body">
+        <p>On your phone:</p>
+        <ol>
+          <li>Open <strong>/operator</strong>, tap today's route, hit <em>Start route</em>.</li>
+          <li>Drive to the first stop. Tap <em>Driver on the way</em> if you want the SMS stub
+          to fire (shows up in <code>smsLog</code>; real Twilio is still post-pilot).</li>
+          <li>At the curb: scan the QR on the bag, confirm the declaration/photo match, tap
+          <em>Complete</em>. If the bag is not out, tap <em>Not out</em>.</li>
+          <li>After the last stop, tap <em>Deliver to Depot</em>. The route is now ready for
+          processing.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Wednesday afternoon — processing</div>
+      <div class="scenario-body">
+        <p>At the depot (garage), open <strong>/depot</strong> on a laptop:</p>
+        <ol>
+          <li><em>Incoming</em> shows today's returned route. Tap into it.</li>
+          <li>For each bag: scan the QR, weigh each of the 7 material piles on the scale,
+          enter weights, pick contamination severity (be honest — even low levels), submit.</li>
+          <li>Watch the resident get their SMS stub + points ledger entry. On their end, the
+          Rewards page updates.</li>
+        </ol>
+        <p>Aim for under 5 minutes per bag the first time. You'll get faster. Keep notes on
+        paper for anything that felt awkward — that's Phase 13.</p>
+      </div>
+    </div>
+
+    <h2>What to watch for</h2>
+    <table>
+      <tr>
+        <th>Signal</th>
+        <th>What it means</th>
+        <th>Fix</th>
+      </tr>
+      <tr>
+        <td>Resident can't find the Scan button</td>
+        <td>Nav hierarchy or icon isn't obvious enough.</td>
+        <td>Patch <code>src/app/resident/page.tsx</code> — probably surface Scan as a primary CTA.</td>
+      </tr>
+      <tr>
+        <td>QR scans fail in low light (porch at 7am)</td>
+        <td>Camera auto-exposure / QR contrast.</td>
+        <td>Increase QR error-correction level in <code>/api/qr-sheet</code> (currently M — try Q or H). Reprint affected sheets.</td>
+      </tr>
+      <tr>
+        <td>Resident forgets the bag</td>
+        <td>Reminder cadence is wrong.</td>
+        <td>Note frequency; next iteration wires up a Tuesday-evening SMS reminder (Twilio un-stub).</td>
+      </tr>
+      <tr>
+        <td>Weigh-in takes &gt;5 min/bag</td>
+        <td>The 7-material form is slow when the bag only has 2 material types.</td>
+        <td>Future patch: collapse empty rows, add a "skip rest of form" shortcut.</td>
+      </tr>
+      <tr>
+        <td>Points feel abstract — resident asks "what's this worth?"</td>
+        <td>Rewards page doesn't translate points-to-dollars prominently enough.</td>
+        <td>Check <code>src/app/resident/rewards/page.tsx</code>; expand the conversion label.</td>
+      </tr>
+      <tr>
+        <td>Stripe/Twilio/gift cards stubbed out</td>
+        <td>Known — pilot ships without payments + SMS + real rewards.</td>
+        <td>Un-stub in this order post-pilot: Twilio SMS → Stripe bag orders → gift card fulfillment. Each lives behind its adapter file in <code>src/lib/*</code>.</td>
+      </tr>
+    </table>
+
+    <h2>End of week one — retro</h2>
+    <p>
+      Sit down Wednesday night and write:
+    </p>
+    <ul>
+      <li><strong>Friction moments</strong> — each place a resident (or you) hesitated, fumbled, or had to be talked through something. Raw — one line each.</li>
+      <li><strong>Data sanity</strong> — spot-check Firestore: do all 5 residents have a <em>signup_bonus</em> transaction plus a <em>pickup</em> transaction for this week? Does <em>pointsBalance</em> match the sum of their transactions? Any orphan docs?</li>
+      <li><strong>Unit economics</strong> — total weight collected × customer price × customerPct. Subtract Rollo labels, bag cost, gas. Is the unit economics roughly sane at 5 residents? Extrapolate to 50.</li>
+      <li><strong>Decision</strong> — grow the zone by another 5 next week, or tighten the existing flow first.</li>
+    </ul>
+
+    <h2>Growing past the first block</h2>
+    <p>
+      When the pilot zone is working, add residents, not zones. 20–30 residents in one Kirk zone
+      stresses the app more than 5 residents across 3 zones. The real multi-zone work is
+      separate — it touches route optimization, operator assignment, and the admin-per-zone
+      compliance cadence, and it's deliberately out of scope until the single zone is stable.
+    </p>
+    <p>
+      When you do grow, re-run <code>npm run seed:pilot</code> is a no-op — use the admin UI to
+      add zones/depots, not the seed script. The seed is only for bootstrapping empty state.
+    </p>
+
+    <div class="footer">
+      We Buy Clean Trash · Phase 12 pilot launch checklist · Kirk pilot · April 2026
+    </div>
+  </body>
+</html>

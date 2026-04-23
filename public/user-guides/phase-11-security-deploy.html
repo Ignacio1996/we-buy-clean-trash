@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Phase 11 Security &amp; Deploy Guide</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a></p>
+    <header>
+      <h1>Phase 11 · Security &amp; deploy</h1>
+      <p class="lead">
+        The invisible phase. No new screens, no new buttons — Phase 11 locks down Firestore
+        and Storage with real rules, ships a reproducible pilot seed, adds the composite indexes
+        the existing queries need, and pushes everything to production. You're mostly verifying
+        that nothing <em>broke</em> after the rules flipped from <em>default-deny</em> to
+        <em>per-role access</em>, not that a new feature works.
+      </p>
+    </header>
+
+    <h2>What you're verifying</h2>
+    <ul>
+      <li>Every authenticated page that worked in Phases 3–10 still loads after rules deploy — resident, operator, depot, manager, admin.</li>
+      <li>Direct Firestore access from an unauthenticated client is <strong>denied</strong> for every collection.</li>
+      <li>Direct Firestore access from a <em>wrong-role</em> authenticated client is denied (e.g. a resident cannot read another resident's <em>users</em> doc).</li>
+      <li>Storage reads for doorstep photos are gated to the owning resident + staff; writes are impossible from a client.</li>
+      <li>The pilot seed script produces the full baseline fixture (1 zone, 1 depot, admin, operator, depot worker, 5 residents) and is safe to re-run.</li>
+      <li>Composite indexes for <em>redemptions</em>, <em>millShipments</em>, and the second <em>routes</em> index are built and used by the admin/manager pages.</li>
+    </ul>
+
+    <div class="callout note">
+      <span class="callout-title">Setup before you start.</span>
+      Run <code>npm run seed:materials</code> then <code>npm run seed:pilot</code> to populate
+      a known baseline. Then run
+      <code>firebase deploy --only firestore:rules,firestore:indexes,storage</code> to push
+      the rules + composite indexes. The index build is asynchronous — if you see a
+      <em>failed-precondition: index not ready</em> error on a manager/admin page right after
+      deploying, wait 1–3 minutes and retry. Once indexes are green you can finish with
+      <code>vercel --prod</code> (or a push to main for auto-deploy).
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 1 — Pilot seed from scratch</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Terminal + admin browser tab.</p>
+        <ol>
+          <li>In a terminal at the repo root: <code>npm run seed:materials</code>. If materials already exist it says <em>skipping</em>; that's fine.</li>
+          <li>Then: <code>npm run seed:pilot</code>. Watch the log — it reports every doc it creates or already found.</li>
+          <li>In a browser, sign in as Tia and open <strong>/admin/zones</strong>. The <em>Kirk pilot</em> zone should appear with <em>Kirk Depot</em> linked to it.</li>
+          <li>Open <strong>/admin/users</strong>. You should see the admin, 1 operator (<em>Aguirre Operator</em>), 1 depot worker (<em>Goode Depot</em>), and 5 residents with addresses in Boulder.</li>
+          <li>Re-run <code>npm run seed:pilot</code> a second time. Every line should now say <em>exists</em> or <em>already wired</em> — no duplicates created.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The seed is fully idempotent. Test users can sign in at
+          <strong>/login</strong> with password <code>Pilot123!</code> (or whatever you set
+          <em>PILOT_TEST_PASSWORD</em> to). Each resident's doc has
+          <em>pointsBalance = 10000</em> and a matching <em>signup_bonus</em> transaction.
+        </div>
+        <p><span class="checkbox"></span> Second run prints only <em>exists</em> / <em>already wired</em> lines — no "✓ created"</p>
+        <p><span class="checkbox"></span> A fresh resident-test account can log in and sees the 10,000-point welcome balance</p>
+        <p><span class="checkbox"></span> The operator and depot worker route to <strong>/operator</strong> and <strong>/depot</strong> respectively after login</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 2 — Deploy rules + indexes</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Terminal.</p>
+        <ol>
+          <li>Run <code>firebase deploy --only firestore:rules,firestore:indexes,storage</code>.</li>
+          <li>Watch the output: rules should deploy instantly; each new composite index will be reported as <em>building</em>.</li>
+          <li>Open the Firebase Console → Firestore → Indexes. Confirm all 5 composite indexes are present: <em>transactions(userId, createdAt)</em>, <em>routes(status, zoneId, returnedToDepotAt)</em>, <em>redemptions(status, createdAt)</em>, <em>millShipments(depotId, createdAt)</em>, <em>routes(zoneId, status, date)</em>.</li>
+          <li>Wait for all 5 to flip from <em>Building</em> to <em>Enabled</em>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The deploy completes cleanly. Post-deploy, the rules
+          playground (Firebase Console → Firestore → Rules → Playground) should show a GET from
+          an <em>unauthenticated</em> request to <em>/users/anything</em> returning
+          <em>denied</em>.
+        </div>
+        <p><span class="checkbox"></span> No <em>deploy failed</em> errors in the terminal</p>
+        <p><span class="checkbox"></span> All 5 composite indexes show as <em>Enabled</em> in the console</p>
+        <p><span class="checkbox"></span> Storage → Rules tab reflects the new <em>pickups/{residentUid}</em> match block</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 3 — Smoke-test every role</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> + <span class="actor resident">Resident</span> + <span class="actor operator">Operator</span> + <span class="actor depot">Depot</span> One browser per role, or log in/out in the same tab.</p>
+        <ol>
+          <li>Sign in as Tia and walk through <strong>/admin</strong>, <strong>/admin/users</strong>, <strong>/admin/zones</strong>, <strong>/admin/routes</strong>, <strong>/admin/bags</strong>, <strong>/admin/pricing</strong>, <strong>/admin/compliance</strong>, <strong>/admin/redemptions</strong>. Each page should render without a rules error.</li>
+          <li>Sign in as <em>resident1.test@webuyclean.trash</em> and open <strong>/resident</strong>, <strong>/resident/order-bags</strong>, <strong>/resident/rewards</strong>, <strong>/resident/profile</strong>, <strong>/resident/calculator</strong>.</li>
+          <li>Sign in as the operator test account and open <strong>/operator</strong> (list of today's routes).</li>
+          <li>Sign in as the depot worker and open <strong>/depot</strong>, <strong>/depot/incoming</strong>, <strong>/depot/inventory</strong>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Every page loads as before — the rules change is invisible
+          at the app level because every read already goes through an Admin SDK API route on
+          the server. If <em>any</em> page errors with <em>PERMISSION_DENIED</em> it means a
+          query snuck through the browser Firestore SDK somewhere — file a bug with the page
+          name and the console stack trace.
+        </div>
+        <p><span class="checkbox"></span> No red console errors on any of the listed pages</p>
+        <p><span class="checkbox"></span> Admin dashboard KPIs still show the same numbers as before the deploy</p>
+        <p><span class="checkbox"></span> Resident rewards page still renders the welcome bonus entry</p>
+        <p><span class="checkbox"></span> Depot inventory page still lists the 7 materials</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 4 — End-to-end pickup + process + points</div>
+      <div class="scenario-body">
+        <p>Walk the full pilot happy path on the live deploy to confirm nothing regressed.</p>
+        <ol>
+          <li>As Tia, generate a sticker sheet at <strong>/admin/bags</strong> and save the PDF (Phase 10).</li>
+          <li>As Tia, create a route for tomorrow in the Kirk zone and assign it to the operator (Phase 5).</li>
+          <li>As the operator, start the route and mark the delivery step using the first sticker code (Phase 6).</li>
+          <li>As resident 1, scan one of the delivered bags and submit a pickup with a test photo (Phase 3).</li>
+          <li>Back as the operator, complete the pickup stop.</li>
+          <li>As the operator, close the route → "Deliver to Depot".</li>
+          <li>As the depot worker, process the bag with a small weight on cardboard and contamination <em>None</em> (Phase 7).</li>
+          <li>As resident 1, reload <strong>/resident/rewards</strong>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The full chain produces the expected ledger entries:
+          <em>signup_bonus</em>, then <em>pickup</em> with the newly awarded points. The
+          resident's balance increases by the calculated amount. The doorstep photo is viewable
+          by the admin from the pickup detail view (if wired). No errors in the server logs
+          from rules denying anything.
+        </div>
+        <p><span class="checkbox"></span> Bag sticker assignment, pickup, processing, and point award all work end-to-end</p>
+        <p><span class="checkbox"></span> Doorstep photo uploads succeed (written by server; client never attempts direct upload)</p>
+        <p><span class="checkbox"></span> SMS log (Firestore <em>smsLog</em>) records the processed-bag stub notification</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 5 — Rules playground: deny checks</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> In the Firebase Console.</p>
+        <ol>
+          <li>Open Firebase Console → Firestore → <strong>Rules</strong> → <strong>Rules Playground</strong>.</li>
+          <li>For each test below, configure the playground (path, operation, authenticated/unauthenticated, token claims) and click <em>Run</em>.</li>
+        </ol>
+        <table>
+          <tr>
+            <th>Test</th>
+            <th>Expected</th>
+          </tr>
+          <tr>
+            <td><em>get</em> <code>/users/&lt;resident1-uid&gt;</code> — <strong>unauthenticated</strong></td>
+            <td>Denied</td>
+          </tr>
+          <tr>
+            <td><em>get</em> <code>/users/&lt;resident1-uid&gt;</code> — auth as resident1</td>
+            <td>Allowed</td>
+          </tr>
+          <tr>
+            <td><em>get</em> <code>/users/&lt;resident2-uid&gt;</code> — auth as resident1</td>
+            <td>Denied</td>
+          </tr>
+          <tr>
+            <td><em>get</em> <code>/transactions/&lt;anyTxnId&gt;</code> — auth as resident1 where <em>userId</em> is resident2</td>
+            <td>Denied</td>
+          </tr>
+          <tr>
+            <td><em>update</em> <code>/users/&lt;anything&gt;</code> — auth as admin</td>
+            <td>Denied (all writes are Admin-SDK only, even admin role)</td>
+          </tr>
+          <tr>
+            <td><em>get</em> <code>/zones/kirk-pilot</code> — auth as any signed-in user</td>
+            <td>Allowed</td>
+          </tr>
+          <tr>
+            <td><em>get</em> <code>/invites/someToken</code> — any auth</td>
+            <td>Denied (invites are server-only)</td>
+          </tr>
+          <tr>
+            <td><em>get</em> <code>/smsLog/anything</code> — any auth including admin</td>
+            <td>Denied</td>
+          </tr>
+        </table>
+        <div class="expected">
+          <strong>Expected:</strong> Every "Denied" row returns a red <em>Simulation denied</em>
+          result. Every "Allowed" row returns green <em>Simulation allowed</em>. If any client
+          write row comes back allowed, a rule is wrong — file a bug with the path.
+        </div>
+        <p><span class="checkbox"></span> All deny-rows deny</p>
+        <p><span class="checkbox"></span> All allow-rows allow</p>
+        <p><span class="checkbox"></span> Admin <em>write</em> attempts are denied too (Admin SDK bypasses rules at runtime, but the rule itself is deny)</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 6 — Storage rules: doorstep photo access</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> In the Firebase Console.</p>
+        <ol>
+          <li>Storage → <strong>Rules Playground</strong>.</li>
+          <li>Simulate <em>get</em> on <code>/pickups/&lt;resident1-uid&gt;/some.jpg</code> as resident1 → expect <em>allowed</em>.</li>
+          <li>Simulate the same read as resident2 → expect <em>denied</em>.</li>
+          <li>Simulate as the operator test account → expect <em>allowed</em> (staff read).</li>
+          <li>Simulate <em>create</em> on any path from any client identity → expect <em>denied</em>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Residents see only their own photos; staff can see any
+          pickup's photo; clients can never write directly. Writes only succeed via the
+          <code>/api/pickups</code> and <code>/api/pickups/[id]/complete</code> routes, which
+          upload through the Admin SDK.
+        </div>
+        <p><span class="checkbox"></span> Resident reads own photo — allowed</p>
+        <p><span class="checkbox"></span> Resident reads another resident's photo — denied</p>
+        <p><span class="checkbox"></span> Any client write — denied</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 7 — Vercel production deploy</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Terminal + Vercel dashboard.</p>
+        <ol>
+          <li>Confirm every env var in <code>.env.local.example</code> is also set in the Vercel project for the <em>Production</em> environment. Missing vars cause a 500 at runtime, not a build error.</li>
+          <li>Either push to <em>main</em> (auto-deploy) or run <code>vercel --prod</code> from the repo root.</li>
+          <li>Once the deploy finishes, open the production URL and walk Scenario 3 again (every role loads) on the live deployment.</li>
+          <li>Watch the Vercel function logs for any <em>PERMISSION_DENIED</em> or <em>failed-precondition</em> errors during the smoke test.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Production matches local behavior. Index-build delay is
+          the most common transient issue; if a manager/admin page throws once and then works,
+          that's an index still settling.
+        </div>
+        <p><span class="checkbox"></span> Production homepage loads</p>
+        <p><span class="checkbox"></span> At least one full signup flow completes on the production URL</p>
+        <p><span class="checkbox"></span> No 500s in the Vercel function logs during the role smoke test</p>
+      </div>
+    </div>
+
+    <h2>Quick troubleshooting</h2>
+    <table>
+      <tr>
+        <th>What you see</th>
+        <th>Likely cause</th>
+        <th>What to try</th>
+      </tr>
+      <tr>
+        <td><em>PERMISSION_DENIED</em> on an admin/depot/manager page</td>
+        <td>A page is reading Firestore directly from the browser (client SDK) instead of through an API route. Rules correctly deny it.</td>
+        <td>Search for <code>@/lib/firebase/client</code> imports in the offending page — it should only appear in auth files. Move the read to a server component or API route using <code>@/lib/firebase/admin</code>.</td>
+      </tr>
+      <tr>
+        <td><em>failed-precondition: index not ready</em> on a fresh deploy</td>
+        <td>Composite index is still building in Firebase.</td>
+        <td>Firebase Console → Firestore → Indexes. Wait for <em>Enabled</em> (usually 1–3 minutes). Retry the page.</td>
+      </tr>
+      <tr>
+        <td><code>npm run seed:pilot</code> fails with <em>FIREBASE_ADMIN_SA not set</em></td>
+        <td>The env file wasn't picked up.</td>
+        <td>Confirm <code>.env.local</code> exists at the repo root and contains the full service-account JSON on a single line in <em>FIREBASE_ADMIN_SA</em>.</td>
+      </tr>
+      <tr>
+        <td>Seed says the admin email isn't in Firebase Auth</td>
+        <td>Nicolas has not signed in yet on the target Firebase project.</td>
+        <td>Sign in once via <strong>/login</strong> using the admin email, then re-run the seed. The script will pick up the existing Auth user and set the claim.</td>
+      </tr>
+      <tr>
+        <td>Test resident login fails with <em>wrong password</em></td>
+        <td>Someone already created the account with a different password.</td>
+        <td>Either reset the password in Firebase Auth → Users, or delete the test account + re-run the seed.</td>
+      </tr>
+      <tr>
+        <td>Production deploy succeeds but pages 500 with "Firebase Admin not initialized"</td>
+        <td><em>FIREBASE_ADMIN_SA</em> is missing from the Vercel production env vars.</td>
+        <td>Vercel → Project → Settings → Environment Variables. Add <em>FIREBASE_ADMIN_SA</em> (same value as <code>.env.local</code>). Redeploy.</td>
+      </tr>
+      <tr>
+        <td>Storage uploads still reach the bucket after the rules deploy</td>
+        <td>That's fine — the app uploads through the Admin SDK server-side, which bypasses rules. The rules only gate client direct access.</td>
+        <td>Verify the client isn't uploading directly by grepping for <code>uploadBytes</code> / <code>ref(storage, ...)</code> in <code>src/</code>. Expected count: zero.</td>
+      </tr>
+    </table>
+
+    <h2>What's not testable yet</h2>
+    <p>
+      Real account deletion, session-revocation on role change, multi-tenancy (multiple zones
+      with non-overlapping staff), and App Check are all future work. The pilot deliberately
+      keeps the security surface small — five roles, one zone, one depot, seed-issued staff
+      accounts. Rotation of the Firebase service account and Vercel tokens is also manual for
+      the pilot; the next hardening pass moves those into a secrets manager.
+    </p>
+
+    <div class="footer">
+      We Buy Clean Trash · Phase 11 testing guide · Pilot April 2026
+    </div>
+  </body>
+</html>

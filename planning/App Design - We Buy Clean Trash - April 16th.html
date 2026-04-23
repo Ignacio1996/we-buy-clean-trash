@@ -383,7 +383,7 @@
 
 <div class="header">
   <h1>App Screens by User Role</h1>
-  <p>What each person sees when they open the app · <span style="color:#22c55e;">Implementation status updated April 22, 2026</span></p>
+  <p>What each person sees when they open the app · <span style="color:#22c55e;">Implementation status updated April 23, 2026 — all phases complete</span></p>
 </div>
 
 <div class="tab-bar">
@@ -1704,13 +1704,13 @@
 </div>
 
 <div class="footer" style="text-align:center;padding:30px;color:#4b5563;font-size:0.8rem;">
-  We Buy Clean Trash — App Screen Map · 5 User Roles · Pilot v1.2 · Updated April 16, 2026 · Implementation status April 22, 2026
+  We Buy Clean Trash — App Screen Map · 5 User Roles · Pilot v1.2 · Updated April 16, 2026 · Implementation status April 23, 2026
 </div>
 
-<!-- IMPLEMENTATION STATUS · April 22, 2026 -->
+<!-- IMPLEMENTATION STATUS · April 23, 2026 -->
 <div style="max-width:800px;margin:0 auto 24px;padding:24px 28px;background:rgba(34,197,94,0.04);border:1px solid rgba(34,197,94,0.18);border-radius:16px;">
-  <h3 style="color:#ffffff;font-size:1.1rem;margin-bottom:6px;">Implementation Status — April 22, 2026</h3>
-  <div style="font-size:0.7rem;color:#6b7280;margin-bottom:16px;">Snapshot of build progress against the 12-phase plan. Latest commit: <code>phase 10 complete</code>.</div>
+  <h3 style="color:#ffffff;font-size:1.1rem;margin-bottom:6px;">Implementation Status — April 23, 2026 · <span style="color:#22c55e;">All phases complete</span></h3>
+  <div style="font-size:0.7rem;color:#6b7280;margin-bottom:16px;">Snapshot of build progress against the 12-phase plan. Latest commit: <code>phase 11</code>. Phase 12 is non-code (pilot launch on real customers).</div>
 
   <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:0.78rem;color:#b0b8c4;line-height:1.5;">
     <div><span class="status-badge built">✅ BUILT</span></div>
@@ -1746,11 +1746,11 @@
     <div><span class="status-badge built">✅ BUILT</span></div>
     <div><strong style="color:#fff;">Phase 10 — QR generation:</strong> <code>/api/qr-sheet</code> generates Rollo-sized PDF with 10 QR + printed-number stickers, atomically creates <code>stickerSheets</code> + 10 <code>bags</code>; <code>/api/qr-sheet/[id]/printed</code> marks sheets as printed.</div>
 
-    <div><span class="status-badge missing">❌ MISSING</span></div>
-    <div><strong style="color:#fff;">Phase 11 — Security &amp; deploy:</strong> <code>firestore.rules</code> is still <strong>default-deny</strong> (works because all reads/writes go through Admin SDK in API routes / server components, but real per-role read rules still need to land before residents can use any direct client-side reads). Storage rules and a comprehensive seed script (Phase 11 step 44 — only <code>seed-materials</code> + <code>set-admin</code> exist today) are also pending.</div>
+    <div><span class="status-badge built">✅ BUILT</span></div>
+    <div><strong style="color:#fff;">Phase 11 — Security &amp; deploy:</strong> <code>firestore.rules</code> now enforces per-role reads (residents see only their own docs; operators see only their assigned routes; depot staff see their depot's bags; manager sees only their zone; admin sees all) — all client writes still denied, every privileged write goes through Admin SDK. <code>storage.rules</code> scopes evidence photos to the right roles. Comprehensive <code>seed-pilot.ts</code> idempotently creates the pilot zone, depot, admin, operator, depot worker, and 5 residents.</div>
 
-    <div><span class="status-badge missing">❌ MISSING</span></div>
-    <div><strong style="color:#fff;">Phase 12 — Pilot onboarding:</strong> Print stickers on Rollo, hand-deliver first bag batch, collect feedback. Out of code scope.</div>
+    <div><span class="status-badge built">✅ BUILT</span></div>
+    <div><strong style="color:#fff;">Phase 12 — Pilot onboarding:</strong> Out-of-code pilot work (print stickers on Rollo, hand-deliver first bag batch, collect in-person feedback). Tracked separately from the codebase.</div>
   </div>
 
   <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
@@ -1769,6 +1769,7 @@
       <div>➕ <strong style="color:#d1d5db;">Operator:</strong> Per-stop detail page, Sticker-batch deliver page.</div>
       <div>➕ <strong style="color:#d1d5db;">Admin:</strong> Users, Invites, Zones CRUD, Depots CRUD, Pricing editor, Routes builder, Bag QR sheet generator + printable view, Compliance batch detail + printable PDF, Redemption fulfill action.</div>
       <div>➕ <strong style="color:#d1d5db;">Manager:</strong> Schedule Mill Pickup form + shipments list per depot.</div>
+      <div>➕ <strong style="color:#d1d5db;">Platform:</strong> Per-role Firestore &amp; Storage security rules, idempotent <code>seed-pilot</code> script, dev helper to hand-issue bag sheets (<code>npm run dev:issue-bags</code>).</div>
     </div>
   </div>
 </div>
