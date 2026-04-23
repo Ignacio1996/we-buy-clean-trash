@@ -1,8 +1,35 @@
 rules_version = '2';
 
+// All uploads happen server-side through the Next.js API routes using the
+// Firebase Admin SDK, which bypasses these rules. Client uploads are denied.
+// Reads are scoped so a resident can see their own doorstep photo and operators
+// / depot staff can view the evidence attached to pickups they work.
+
 service firebase.storage {
   match /b/{bucket}/o {
-    // Default-deny. Real rules land in Phase 11 (doorstep photos, etc).
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function role() {
+      return isSignedIn() ? request.auth.token.role : '';
+    }
+    function hasAnyRole(rs) {
+      return role() in rs;
+    }
+
+    // Doorstep + operator confirmation photos. Path shape is
+    //   pickups/{residentUid}/{pickupId}{-op}.jpg
+    // written by /api/pickups and /api/pickups/[id]/complete.
+    match /pickups/{residentUid}/{file=**} {
+      allow read: if isSignedIn() && (
+        request.auth.uid == residentUid ||
+        hasAnyRole(['admin', 'operator', 'depot_worker', 'depot_manager'])
+      );
+      allow write: if false;
+    }
+
+    // Default deny everything else.
     match /{allPaths=**} {
       allow read, write: if false;
     }

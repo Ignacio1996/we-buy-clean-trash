@@ -92,7 +92,10 @@ Follow the ordered phases in `planning/Build Plan.txt` (Phase 0 → 12). Don't s
 - `npm run lint` — ESLint (Next + TS + Prettier-compatible)
 - `npm run format` / `npm run format:check` — Prettier write / check
 - `firebase emulators:start` — local Auth + Firestore + Storage emulators (ports 9099/8080/9199, UI on 4000)
-- `firebase deploy --only firestore:rules,storage` — push security rules
+- `firebase deploy --only firestore:rules,firestore:indexes,storage` — push rules + composite indexes
+- `npm run seed:materials` — seed the 7 commodity docs
+- `npm run seed:pilot` — idempotent pilot seed (zone, depot, admin, operator, depot worker, 5 residents)
+- `npm run dev:issue-bags -- <email>` — hand-issue a 10-bag sheet to a resident (dev only)
 
 Vercel auto-deploys on push to main once the project is linked. Env vars live in `.env.local` (see `.env.local.example`) and must also be set in the Vercel dashboard for deploys.
 

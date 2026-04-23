@@ -383,7 +383,7 @@
 
 <div class="header">
   <h1>App Screens by User Role</h1>
-  <p>What each person sees when they open the app</p>
+  <p>What each person sees when they open the app · <span style="color:#22c55e;">Implementation status updated April 22, 2026</span></p>
 </div>
 
 <div class="tab-bar">
@@ -392,6 +392,14 @@
   <div class="tab-btn" onclick="showPanel('depot')">⚖️ Depot</div>
   <div class="tab-btn" onclick="showPanel('pm')">🏢 Depot Mgr</div>
   <div class="tab-btn" onclick="showPanel('admin')">📊 Admin</div>
+</div>
+
+<div class="status-legend">
+  <strong>Status legend:</strong>
+  <span><span class="status-badge built">✅ BUILT</span> shipped & wired end-to-end</span>
+  <span><span class="status-badge partial">🟡 PARTIAL</span> built but diverges from mock or skips a detail</span>
+  <span><span class="status-badge missing">❌ MISSING</span> not yet implemented</span>
+  <span><span class="status-badge extra">➕ EXTRA</span> built but not in this design doc</span>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
@@ -414,6 +422,14 @@
       <span class="flow-chip">Schedule pickup</span>
       <span class="flow-arrow">→</span>
       <span class="flow-chip">Earn &amp; redeem</span>
+    </div>
+    <div class="impl-note">
+      <span class="impl-tag">PARTIAL · ONBOARDING</span>
+      Step 2 in the mock reads "Schedule pickup day". Pickup day is admin-assigned per zone (locked decision), so the built copy is "Fill &amp; put out bags · Scan each bag the night before your pickup".
+    </div>
+    <div class="impl-note extra">
+      <span class="impl-tag">EXTRA · SHIPPED</span>
+      Built but not in this design doc: <strong>Order Bags</strong> (quantity stepper + free-ship rule + Stripe stub) at <code>/resident/order-bags</code>, <strong>Order Bags Success</strong> page, <strong>Profile</strong> at <code>/resident/profile</code> (address, phone, sign-out). Login / signup / invite-acceptance pages also exist.
     </div>
   </div>
 
@@ -459,7 +475,7 @@
           <div style="text-align:center;font-size:0.65rem;color:#6b7280;margin-top:2px;">Scan more items or sign up to get started</div>
         </div>
       </div>
-      <div class="screen-label" style="color:#22c55e;">PRE-SIGNUP VALUE HOOK (UPDATED)</div>
+      <div class="screen-label" style="color:#22c55e;">PRE-SIGNUP VALUE HOOK (UPDATED) <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
     <!-- Screen 2: Onboarding (after signup) -->
@@ -505,7 +521,7 @@
           <div class="ui-btn btn-primary">Let's Go →</div>
         </div>
       </div>
-      <div class="screen-label" style="color:#22c55e;">ONBOARDING (UPDATED)</div>
+      <div class="screen-label" style="color:#22c55e;">ONBOARDING (UPDATED) <span class="status-badge partial">🟡 PARTIAL</span></div>
     </div>
 
     <!-- Screen 3: Home / Dashboard (UPDATED - bags moved up) -->
@@ -597,7 +613,7 @@
           </div>
         </div>
       </div>
-      <div class="screen-label" style="color:#3b82f6;">HOME DASHBOARD (UPDATED)</div>
+      <div class="screen-label" style="color:#3b82f6;">HOME DASHBOARD (UPDATED) <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
     <!-- Screen 4: Payout Calculator (UPDATED — 7 categories + bad recycling) -->
@@ -666,7 +682,7 @@
           <div class="ui-btn btn-primary">Schedule Pickup →</div>
         </div>
       </div>
-      <div class="screen-label" style="color:#3b82f6;">PAYOUT CALCULATOR (UPDATED)</div>
+      <div class="screen-label" style="color:#3b82f6;">PAYOUT CALCULATOR (UPDATED) <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
     <!-- Screen 5: Recycling Education (NEW) -->
@@ -737,7 +753,7 @@
           <div style="text-align:center;font-size:0.65rem;color:#6b7280;">More guides coming soon</div>
         </div>
       </div>
-      <div class="screen-label" style="color:#22c55e;">RECYCLING GUIDE (NEW)</div>
+      <div class="screen-label" style="color:#22c55e;">RECYCLING GUIDE (NEW) <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
     <!-- Screen 6: Scan & Schedule -->
@@ -767,7 +783,7 @@
           <div class="ui-btn btn-primary" style="margin-top:8px;">Next: Take photo →</div>
         </div>
       </div>
-      <div class="screen-label">SCAN &amp; CATEGORIZE</div>
+      <div class="screen-label">SCAN &amp; CATEGORIZE <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
     <!-- Screen 7: Rewards (UPDATED — gift cards) -->
@@ -838,7 +854,7 @@
           </div>
         </div>
       </div>
-      <div class="screen-label" style="color:#3b82f6;">REWARDS (UPDATED)</div>
+      <div class="screen-label" style="color:#3b82f6;">REWARDS (UPDATED) <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
   </div>
@@ -864,6 +880,10 @@
       <span class="flow-chip">Deliver bags + stickers</span>
       <span class="flow-arrow">→</span>
       <span class="flow-chip">Deliver to depot</span>
+    </div>
+    <div class="impl-note extra">
+      <span class="impl-tag">EXTRA · SHIPPED</span>
+      The mock implies a single Stop view; the build also has dedicated routes <code>/operator/stop/[pickupId]</code> (per-stop scan/photo/issue actions) and <code>/operator/deliver/[bagOrderId]</code> (sticker-batch confirm). "Driver on the way" SMS is wired through the Twilio stub.
     </div>
   </div>
 
@@ -939,7 +959,7 @@
           </div>
         </div>
       </div>
-      <div class="screen-label" style="color:#3b82f6;">ROUTE &amp; QUICK COMPLETE (UPDATED)</div>
+      <div class="screen-label" style="color:#3b82f6;">ROUTE &amp; QUICK COMPLETE (UPDATED) <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
     <!-- Screen 2: Scan & Confirm (UPDATED — QR code + number fallback) -->
@@ -989,7 +1009,7 @@
           <div class="ui-btn btn-secondary" style="color:#f87171;">⚠️ Report Issue</div>
         </div>
       </div>
-      <div class="screen-label" style="color:#3b82f6;">SCAN &amp; CONFIRM (UPDATED)</div>
+      <div class="screen-label" style="color:#3b82f6;">SCAN &amp; CONFIRM (UPDATED) <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
     <!-- Screen 3: Bag + Sticker Delivery (NEW) -->
@@ -1037,7 +1057,7 @@
           <div class="ui-btn btn-primary">✓ Confirm Delivery</div>
         </div>
       </div>
-      <div class="screen-label" style="color:#22c55e;">BAG + STICKER DELIVERY (NEW)</div>
+      <div class="screen-label" style="color:#22c55e;">BAG + STICKER DELIVERY (NEW) <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
     <!-- Screen 4: End of route -->
@@ -1094,7 +1114,7 @@
           <div class="ui-btn btn-primary">Deliver to Depot →</div>
         </div>
       </div>
-      <div class="screen-label">ROUTE SUMMARY</div>
+      <div class="screen-label">ROUTE SUMMARY <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
   </div>
@@ -1118,6 +1138,10 @@
       <span class="flow-chip">Weigh each material</span>
       <span class="flow-arrow">→</span>
       <span class="flow-chip">Submit &amp; next</span>
+    </div>
+    <div class="impl-note">
+      <span class="impl-tag">NOTE</span>
+      Process Bag is wired end-to-end: <code>POST /api/process-bag</code> runs <code>calculatePoints</code> from <code>src/lib/logic</code>, then in one Admin SDK transaction writes <code>bagProcessing</code> + <code>transactions</code> ledger entry, increments <code>users.pointsBalance</code>, updates <code>inventory</code>, and fires the SMS stub.
     </div>
   </div>
 
@@ -1165,7 +1189,7 @@
           </div>
         </div>
       </div>
-      <div class="screen-label">INCOMING DELIVERIES</div>
+      <div class="screen-label">INCOMING DELIVERIES <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
     <!-- Screen 2: Process Bag (UPDATED — per-commodity weighing) -->
@@ -1242,7 +1266,7 @@
           <div class="ui-btn btn-primary">✓ Submit &amp; Next Bag</div>
         </div>
       </div>
-      <div class="screen-label" style="color:#3b82f6;">PROCESS BAG (UPDATED)</div>
+      <div class="screen-label" style="color:#3b82f6;">PROCESS BAG (UPDATED) <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
     <!-- Screen 3: Inventory -->
@@ -1300,7 +1324,7 @@
           </div>
         </div>
       </div>
-      <div class="screen-label">INVENTORY &amp; PRICING</div>
+      <div class="screen-label">INVENTORY &amp; PRICING <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
   </div>
@@ -1322,6 +1346,10 @@
       <span class="flow-chip">Schedule mill pickups</span>
       <span class="flow-arrow">→</span>
       <span class="flow-chip">Review reports</span>
+    </div>
+    <div class="impl-note">
+      <span class="impl-tag">NOTE</span>
+      Mill-pickup form on <code>/manager/depots/[depotId]</code> creates <code>millShipments</code> and decrements depot <code>inventory</code> in one transaction. Monthly Report exports a printable PDF.
     </div>
   </div>
 
@@ -1378,7 +1406,7 @@
           </div>
         </div>
       </div>
-      <div class="screen-label">DEPOTS OVERVIEW</div>
+      <div class="screen-label">DEPOTS OVERVIEW <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
     <!-- Screen 2: Depot Detail / Inventory -->
@@ -1421,7 +1449,7 @@
           <div class="ui-btn btn-primary">🚛 Schedule Mill Pickup</div>
         </div>
       </div>
-      <div class="screen-label">DEPOT INVENTORY</div>
+      <div class="screen-label">DEPOT INVENTORY <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
     <!-- Screen 3: Monthly Report -->
@@ -1453,7 +1481,7 @@
           <div class="ui-btn btn-primary">📄 Download Full Report</div>
         </div>
       </div>
-      <div class="screen-label">MONTHLY REPORT</div>
+      <div class="screen-label">MONTHLY REPORT <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
   </div>
@@ -1478,6 +1506,16 @@
       <span class="flow-arrow">→</span>
       <span class="flow-chip">Export reports</span>
     </div>
+    <div class="impl-note extra">
+      <span class="impl-tag">EXTRA · SHIPPED</span>
+      Beyond the dashboard mocked here, the admin app has full CRUD for: <strong>Users</strong>, <strong>Invites</strong> (operator/depot/manager/admin invite-only), <strong>Zones</strong>, <strong>Depots</strong>, <strong>Yellow-sheet pricing</strong> (writes to <code>materials</code> + <code>priceHistory</code>), <strong>Routes builder</strong> (Google Maps <code>computeRoutes</code> with waypoint optimization), <strong>Redemption queue</strong> (Mark fulfilled), <strong>Bag QR sheets</strong> (PDF for Rollo + atomic <code>stickerSheets</code>/<code>bags</code> creation), and <strong>Compliance batches</strong> (PDF generate + Mark as mailed).
+    </div>
+  </div>
+
+  <!-- Implementation status for each dashboard section -->
+  <div class="impl-note" style="background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.25);color:#86efac;margin-bottom:24px;">
+    <span class="impl-tag" style="color:#22c55e;">✅ BUILT</span>
+    Dashboard sections below — KPIs, Zone Performance, Contamination Alerts (rolling 6-month strike window), Operator Leaderboard, Compliance Notices, Yellow Sheet pricing — are all live and pull from Firestore via the Admin SDK.
   </div>
 
   <!-- Wide dashboard view -->
@@ -1666,7 +1704,73 @@
 </div>
 
 <div class="footer" style="text-align:center;padding:30px;color:#4b5563;font-size:0.8rem;">
-  We Buy Clean Trash — App Screen Map · 5 User Roles · Pilot v1.2 · Updated April 16, 2026
+  We Buy Clean Trash — App Screen Map · 5 User Roles · Pilot v1.2 · Updated April 16, 2026 · Implementation status April 22, 2026
+</div>
+
+<!-- IMPLEMENTATION STATUS · April 22, 2026 -->
+<div style="max-width:800px;margin:0 auto 24px;padding:24px 28px;background:rgba(34,197,94,0.04);border:1px solid rgba(34,197,94,0.18);border-radius:16px;">
+  <h3 style="color:#ffffff;font-size:1.1rem;margin-bottom:6px;">Implementation Status — April 22, 2026</h3>
+  <div style="font-size:0.7rem;color:#6b7280;margin-bottom:16px;">Snapshot of build progress against the 12-phase plan. Latest commit: <code>phase 10 complete</code>.</div>
+
+  <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:0.78rem;color:#b0b8c4;line-height:1.5;">
+    <div><span class="status-badge built">✅ BUILT</span></div>
+    <div><strong style="color:#fff;">Phase 0 — Foundation:</strong> Next.js 15 + TS + Tailwind, <code>src/lib/firebase</code> client + admin, Firebase project linked, env wired, Vercel deploys.</div>
+
+    <div><span class="status-badge built">✅ BUILT</span></div>
+    <div><strong style="color:#fff;">Phase 1 — Auth &amp; role routing:</strong> Email/Google signup, <code>/api/signup</code> sets resident claim, <code>middleware.ts</code> gates by role, full invite flow (<code>/api/invites</code>, <code>/invite/[token]</code>, <code>/api/accept-invite</code>) for operator / depot / manager / admin.</div>
+
+    <div><span class="status-badge built">✅ BUILT</span></div>
+    <div><strong style="color:#fff;">Phase 2 — Shared types + logic:</strong> 17 Firestore doc types under <code>src/lib/types</code>, pure functions in <code>src/lib/logic</code> (<code>calculatePoints</code>, <code>calculateBagOrderTotal</code>, <code>pointsToDollars</code>).</div>
+
+    <div><span class="status-badge built">✅ BUILT</span></div>
+    <div><strong style="color:#fff;">Phase 3 — Resident flow:</strong> Pre-signup scan (Gemini 2.5 Flash, session-only), signup w/ address + zone assignment, 3-step onboarding, home dashboard, order bags (Stripe stub), scan-bag (jsQR + manual fallback + photo), payout calculator, recycling guide, rewards (Amazon/Walmart redeem; Pay Bill + Donate are disabled stubs as planned), profile.</div>
+
+    <div><span class="status-badge built">✅ BUILT</span></div>
+    <div><strong style="color:#fff;">Phase 4 — Admin core:</strong> KPI dashboard, users + invites pages, zones &amp; depots CRUD, yellow-sheet pricing editor (snapshots to <code>priceHistory</code>), redemption queue (Mark fulfilled).</div>
+
+    <div><span class="status-badge built">✅ BUILT</span></div>
+    <div><strong style="color:#fff;">Phase 5 — Routes:</strong> Admin route builder, <code>/api/route-optimize</code> (Google Maps <code>computeRoutes</code> + waypoint optimization), <code>/api/bag-orders</code> atomically enqueues onto next pending route for that zone.</div>
+
+    <div><span class="status-badge built">✅ BUILT</span></div>
+    <div><strong style="color:#fff;">Phase 6 — Operator flow:</strong> Today's Route w/ stat row + big Complete button, per-stop scan/photo/issue page, sticker-batch deliver page, "Driver on the way" SMS stub trigger, end-of-route summary.</div>
+
+    <div><span class="status-badge built">✅ BUILT</span></div>
+    <div><strong style="color:#fff;">Phase 7 — Depot flow:</strong> Incoming deliveries list, per-route detail, Process Bag form (7 weight fields + contamination picker → <code>/api/process-bag</code> writes <code>bagProcessing</code> + <code>transactions</code> + bumps <code>users.pointsBalance</code> + updates <code>inventory</code> + SMS stub in one transaction), inventory page.</div>
+
+    <div><span class="status-badge built">✅ BUILT</span></div>
+    <div><strong style="color:#fff;">Phase 8 — Depot Manager:</strong> Depots overview, depot detail, Schedule Mill Pickup form (<code>/api/mill-shipments</code>), Monthly Report PDF export.</div>
+
+    <div><span class="status-badge built">✅ BUILT</span></div>
+    <div><strong style="color:#fff;">Phase 9 — Admin polish:</strong> Zone Performance table, Contamination Alerts w/ rolling 6-month strike logic (1st warning → 2nd strike → 3rd action), Operator Leaderboard, Compliance Notices (PDF generate + Mark as mailed).</div>
+
+    <div><span class="status-badge built">✅ BUILT</span></div>
+    <div><strong style="color:#fff;">Phase 10 — QR generation:</strong> <code>/api/qr-sheet</code> generates Rollo-sized PDF with 10 QR + printed-number stickers, atomically creates <code>stickerSheets</code> + 10 <code>bags</code>; <code>/api/qr-sheet/[id]/printed</code> marks sheets as printed.</div>
+
+    <div><span class="status-badge missing">❌ MISSING</span></div>
+    <div><strong style="color:#fff;">Phase 11 — Security &amp; deploy:</strong> <code>firestore.rules</code> is still <strong>default-deny</strong> (works because all reads/writes go through Admin SDK in API routes / server components, but real per-role read rules still need to land before residents can use any direct client-side reads). Storage rules and a comprehensive seed script (Phase 11 step 44 — only <code>seed-materials</code> + <code>set-admin</code> exist today) are also pending.</div>
+
+    <div><span class="status-badge missing">❌ MISSING</span></div>
+    <div><strong style="color:#fff;">Phase 12 — Pilot onboarding:</strong> Print stickers on Rollo, hand-deliver first bag batch, collect feedback. Out of code scope.</div>
+  </div>
+
+  <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
+    <div style="font-size:0.78rem;color:#fbbf24;font-weight:700;margin-bottom:8px;">Known divergences from this design doc</div>
+    <div style="font-size:0.75rem;color:#9ca3af;line-height:1.7;">
+      <div>🟡 <strong style="color:#d1d5db;">Onboarding step 2</strong> reads "Fill &amp; put out bags" instead of "Schedule pickup day" — pickup day is admin-assigned per zone (locked decision).</div>
+      <div>🟡 <strong style="color:#d1d5db;">Stripe</strong>, <strong style="color:#d1d5db;">Twilio SMS</strong>, <strong style="color:#d1d5db;">Amazon/Walmart fulfillment</strong>, and <strong style="color:#d1d5db;">"Pay Trash Bill" / "Donate"</strong> are all stubbed exactly as planned (mock checkout, console+<code>smsLog</code> writes, manual admin fulfillment queue, disabled buttons).</div>
+      <div>🟡 <strong style="color:#d1d5db;">Mockup numbers</strong> (1,024 residents, 8.4k bags, etc.) are illustrative — the live admin dashboard pulls real counts from Firestore.</div>
+    </div>
+  </div>
+
+  <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
+    <div style="font-size:0.78rem;color:#60a5fa;font-weight:700;margin-bottom:8px;">Built but not in this design doc</div>
+    <div style="font-size:0.75rem;color:#9ca3af;line-height:1.7;">
+      <div>➕ <strong style="color:#d1d5db;">Resident:</strong> Order Bags (+ success page), Profile (address / phone / sign out), Login, Signup, Invite-acceptance.</div>
+      <div>➕ <strong style="color:#d1d5db;">Operator:</strong> Per-stop detail page, Sticker-batch deliver page.</div>
+      <div>➕ <strong style="color:#d1d5db;">Admin:</strong> Users, Invites, Zones CRUD, Depots CRUD, Pricing editor, Routes builder, Bag QR sheet generator + printable view, Compliance batch detail + printable PDF, Redemption fulfill action.</div>
+      <div>➕ <strong style="color:#d1d5db;">Manager:</strong> Schedule Mill Pickup form + shipments list per depot.</div>
+    </div>
+  </div>
 </div>
 
 <!-- CHANGELOG -->

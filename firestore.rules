@@ -1,11 +1,159 @@
 rules_version = '2';
 
+// All privileged writes (transactions, users.pointsBalance, users.role, inventory,
+// bagProcessing, custom claims, etc.) must go through the Next.js API routes using
+// the Admin SDK, which bypasses these rules. Client writes are universally denied;
+// the rules here only gate *reads* so a future direct-read client (e.g. the mobile
+// app in a separate repo) stays correct by construction.
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Default-deny. Real per-collection rules land in Phase 11.
-    // Privileged writes (transactions, users.pointsBalance, inventory,
-    // bagProcessing, role claims) must always go through an API route
-    // using the Admin SDK — never direct client writes.
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function role() {
+      return isSignedIn() ? request.auth.token.role : '';
+    }
+    function hasRole(r) {
+      return role() == r;
+    }
+    function hasAnyRole(rs) {
+      return role() in rs;
+    }
+    function isSelf(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+    function isStaff() {
+      return hasAnyRole(['admin', 'depot_manager', 'depot_worker', 'operator']);
+    }
+
+    // ---- Users ----
+    // A resident reads their own doc. Staff can read any user doc (admin pages
+    // and the depot processing flow need to resolve resident names / phones).
+    match /users/{uid} {
+      allow read: if isSelf(uid) || isStaff();
+      allow write: if false;
+    }
+
+    // ---- Addresses ----
+    // Resident owner + staff. Needed so residents can display their saved address.
+    match /addresses/{id} {
+      allow read: if isSignedIn() &&
+        (resource.data.residentId == request.auth.uid || isStaff());
+      allow write: if false;
+    }
+
+    // ---- Zones, materials, depots ----
+    // Read-only references shared across the app. Zones and materials are
+    // effectively public to any signed-in user. Depots are staff-only.
+    match /zones/{id} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+    match /materials/{id} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+    match /depots/{id} {
+      allow read: if isStaff();
+      allow write: if false;
+    }
+
+    // ---- Bag ordering + stickers ----
+    match /bagOrders/{id} {
+      allow read: if isSignedIn() &&
+        (resource.data.residentId == request.auth.uid ||
+         hasAnyRole(['admin', 'operator']));
+      allow write: if false;
+    }
+    match /stickerSheets/{id} {
+      allow read: if isSignedIn() &&
+        (resource.data.residentId == request.auth.uid ||
+         hasAnyRole(['admin', 'operator', 'depot_worker']));
+      allow write: if false;
+    }
+    match /bags/{id} {
+      allow read: if isSignedIn() &&
+        (resource.data.residentId == request.auth.uid ||
+         hasAnyRole(['admin', 'operator', 'depot_worker']));
+      allow write: if false;
+    }
+
+    // ---- Pickups + routes ----
+    // Residents see their own pickups. Operators see anything assigned to them.
+    // Depot staff can read pickups to work the processing queue.
+    match /pickups/{id} {
+      allow read: if isSignedIn() && (
+        resource.data.residentId == request.auth.uid ||
+        resource.data.operatorId == request.auth.uid ||
+        hasAnyRole(['admin', 'depot_worker', 'depot_manager'])
+      );
+      allow write: if false;
+    }
+    match /routes/{id} {
+      allow read: if isSignedIn() && (
+        resource.data.operatorId == request.auth.uid ||
+        hasAnyRole(['admin', 'depot_worker', 'depot_manager'])
+      );
+      allow write: if false;
+    }
+
+    // ---- Depot operations ----
+    match /inventory/{id} {
+      allow read: if hasAnyRole(['admin', 'depot_manager', 'depot_worker']);
+      allow write: if false;
+    }
+    match /bagProcessing/{id} {
+      allow read: if isSignedIn() && (
+        resource.data.residentId == request.auth.uid ||
+        hasAnyRole(['admin', 'depot_manager', 'depot_worker'])
+      );
+      allow write: if false;
+    }
+    match /millShipments/{id} {
+      allow read: if hasAnyRole(['admin', 'depot_manager']);
+      allow write: if false;
+    }
+
+    // ---- Points ledger ----
+    // Transactions are immutable. A user reads their own; admin reads all.
+    match /transactions/{id} {
+      allow read: if isSignedIn() &&
+        (resource.data.userId == request.auth.uid || hasRole('admin'));
+      allow write: if false;
+    }
+
+    // ---- Redemptions ----
+    match /redemptions/{id} {
+      allow read: if isSignedIn() &&
+        (resource.data.userId == request.auth.uid || hasRole('admin'));
+      allow write: if false;
+    }
+
+    // ---- Compliance + flags ----
+    match /complianceBatches/{id} {
+      allow read: if hasRole('admin');
+      allow write: if false;
+    }
+    match /contaminationFlags/{id} {
+      allow read: if hasRole('admin');
+      allow write: if false;
+    }
+
+    // ---- Admin-only internal collections ----
+    // smsLog is an opaque audit trail; no client reads it. Invites are handled
+    // entirely server-side (the accept flow reads via Admin SDK, not the client).
+    match /smsLog/{id} {
+      allow read, write: if false;
+    }
+    match /invites/{token} {
+      allow read, write: if false;
+    }
+
+    // ---- Default deny ----
+    // Any collection not explicitly allowed above is denied. New collections
+    // must be added here before the client can read them.
     match /{document=**} {
       allow read, write: if false;
     }

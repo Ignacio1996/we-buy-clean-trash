@@ -12,6 +12,7 @@
     "set-admin": "tsx --env-file=.env.local scripts/set-admin.ts",
     "whoami": "tsx --env-file=.env.local scripts/whoami.ts",
     "seed:materials": "tsx --env-file=.env.local scripts/seed-materials.ts",
+    "seed:pilot": "tsx --env-file=.env.local scripts/seed-pilot.ts",
     "dev:issue-bags": "tsx --env-file=.env.local scripts/dev-issue-bags.ts"
   },
   "dependencies": {
