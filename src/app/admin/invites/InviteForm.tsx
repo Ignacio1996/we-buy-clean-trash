@@ -7,7 +7,7 @@ import type { ZoneDoc } from '@/lib/types/zone';
 import type { DepotDoc } from '@/lib/types/depot';
 
 type ZoneView = Omit<ZoneDoc, 'createdAt'>;
-type DepotView = Omit<DepotDoc, 'createdAt'>;
+type DepotView = Omit<DepotDoc, 'createdAt' | 'updatedAt'>;
 
 const ROLE_LABELS: Record<InvitableRole, string> = {
   operator: 'Operator',

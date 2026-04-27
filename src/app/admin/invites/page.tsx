@@ -37,7 +37,7 @@ async function loadInvitesData() {
     return rest;
   });
   const depots = depotsSnap.docs.map((d) => {
-    const { createdAt: _c, ...rest } = d.data() as DepotDoc;
+    const { createdAt: _c, updatedAt: _u, ...rest } = d.data() as DepotDoc;
     return rest;
   });
   return { invites, zones, depots };
