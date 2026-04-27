@@ -431,6 +431,13 @@
       <span class="impl-tag">EXTRA · SHIPPED</span>
       Built but not in this design doc: <strong>Order Bags</strong> (quantity stepper + free-ship rule + Stripe stub) at <code>/resident/order-bags</code>, <strong>Order Bags Success</strong> page, <strong>Profile</strong> at <code>/resident/profile</code> (address, phone, sign-out). Login / signup / invite-acceptance pages also exist.
     </div>
+    <div class="impl-note extra">
+      <span class="impl-tag">FRIDAY MEETING · APR 27</span>
+      <strong>Signup-bonus modal</strong> pops once on first dashboard load, explaining the 10,000-pt bonus (= $1).
+      <strong>Redemption progress card</strong> (points balance → "$X to a $10 gift card") with a thin progress bar; links to /rewards.
+      First-time users see <em>"Order your first batch"</em> CTA instead of "Order more bags."
+      Calculator inputs now show a <code>lbs</code> suffix. Resident dashboard surfaces a <strong>🔥 Bonus running now</strong> banner whenever a pricing campaign is live for any material; the calculator preview reflects the multiplier per row.
+    </div>
   </div>
 
   <div class="screens-row">
@@ -614,6 +621,95 @@
         </div>
       </div>
       <div class="screen-label" style="color:#3b82f6;">HOME DASHBOARD (UPDATED) <span class="status-badge built">✅ BUILT</span></div>
+    </div>
+
+    <!-- Screen 3a-FRI: Signup Bonus Modal (Friday meeting) -->
+    <div>
+      <div class="phone" style="border-color:rgba(34,197,94,0.3);">
+        <div class="phone-status">WE BUY CLEAN TRASH</div>
+        <div class="phone-header">
+          <h4>🎉 You earned 10,000 points</h4>
+          <span style="color:#22c55e;">NEW — First-visit modal (Apr 27)</span>
+        </div>
+        <div class="phone-body" style="background:rgba(0,0,0,0.55);">
+          <div style="background:#0b1d12;border:1px solid rgba(34,197,94,0.4);border-radius:18px;padding:22px 18px;text-align:center;">
+            <div style="font-size:2.4rem;line-height:1;">🎉</div>
+            <div style="font-size:0.95rem;font-weight:800;color:#fff;margin-top:8px;">You earned 10,000 points</div>
+            <div style="font-size:0.75rem;color:#d1d5db;margin-top:6px;">That&rsquo;s your signup bonus — worth <strong style="color:#fff;">$1</strong> toward your first reward.</div>
+            <div style="font-size:0.65rem;color:#9ca3af;margin-top:6px;">Earn 100,000 pts to redeem a $10 gift card. Order bags to start collecting more.</div>
+            <div class="ui-btn btn-primary" style="margin-top:14px;">Let&rsquo;s go</div>
+          </div>
+          <div style="text-align:center;font-size:0.6rem;color:#6b7280;margin-top:8px;">Tap outside or press the button to dismiss · shown once per resident</div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#22c55e;">SIGNUP BONUS MODAL (NEW) <span class="status-badge built">✅ BUILT</span></div>
+    </div>
+
+    <!-- Screen 3a2-FRI: Dashboard with bonus banner + redemption progress (Friday meeting) -->
+    <div>
+      <div class="phone" style="border-color:rgba(251,191,36,0.35);">
+        <div class="phone-status">WE BUY CLEAN TRASH</div>
+        <div class="phone-header">
+          <h4>Hi, Aguirre 👋</h4>
+          <span style="color:#fbbf24;">UPDATED — Campaign banner + progress (Apr 27)</span>
+        </div>
+        <div class="phone-body">
+          <div class="stat-row">
+            <div class="stat-box">
+              <div class="num">54,320</div>
+              <div class="label">Points</div>
+            </div>
+            <div class="stat-box">
+              <div class="num">$5.43</div>
+              <div class="label">Value</div>
+            </div>
+          </div>
+
+          <!-- Redemption progress card (NEW) -->
+          <div class="ui-card" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.62rem;color:#9ca3af;">
+              <span>45,680 pts to a $10 gift card</span>
+              <span style="color:#6b7280;">→</span>
+            </div>
+            <div style="height:5px;border-radius:6px;background:rgba(255,255,255,0.1);margin-top:8px;overflow:hidden;">
+              <div style="height:100%;width:54%;background:#22c55e;"></div>
+            </div>
+          </div>
+
+          <!-- 🔥 Bonus running now banner (NEW) -->
+          <div class="ui-card" style="background:rgba(251,191,36,0.1);border-color:rgba(251,191,36,0.35);">
+            <div style="font-size:0.62rem;font-weight:700;color:#fbbf24;letter-spacing:0.06em;">🔥 BONUS RUNNING NOW</div>
+            <div style="font-size:0.7rem;color:#fde68a;margin-top:4px;">
+              <strong>×2</strong> on Aluminum · <em style="opacity:0.85;">Aluminum 2× week</em>
+            </div>
+          </div>
+
+          <!-- First-time CTA (UPDATED copy) -->
+          <div class="ui-card" style="background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.25);">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div>
+                <div style="font-size:0.78rem;color:#ffffff;font-weight:700;">🛍️ Order your first batch</div>
+                <div style="font-size:0.62rem;color:#9ca3af;margin-top:2px;">10 bags / sheet — operator drops at your door</div>
+              </div>
+              <div class="ui-btn btn-primary" style="width:auto;padding:8px 12px;margin:0;font-size:0.7rem;">Get started →</div>
+            </div>
+          </div>
+
+          <div class="ui-card" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);text-align:center;">
+            <div style="font-size:0.74rem;color:#ffffff;font-weight:700;">🚐 No pickup scheduled yet</div>
+            <div style="font-size:0.6rem;color:#6b7280;margin-top:2px;">Order bags and your first pickup will be assigned to a route.</div>
+          </div>
+
+          <div class="ui-nav">
+            <div class="ui-nav-item active"><div class="ico">🏠</div>Home</div>
+            <div class="ui-nav-item"><div class="ico">📷</div>Scan</div>
+            <div class="ui-nav-item"><div class="ico">🛍️</div>Bags</div>
+            <div class="ui-nav-item"><div class="ico">🎁</div>Rewards</div>
+            <div class="ui-nav-item"><div class="ico">👤</div>Profile</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#fbbf24;">DASHBOARD W/ CAMPAIGN BANNER &amp; PROGRESS (NEW) <span class="status-badge built">✅ BUILT</span></div>
     </div>
 
     <!-- Screen 3b: Order History (NEW) -->
@@ -1215,6 +1311,12 @@
       <span class="impl-tag">NOTE</span>
       Process Bag is wired end-to-end: <code>POST /api/process-bag</code> runs <code>calculatePoints</code> from <code>src/lib/logic</code>, then in one Admin SDK transaction writes <code>bagProcessing</code> + <code>transactions</code> ledger entry, increments <code>users.pointsBalance</code>, updates <code>inventory</code>, and fires the SMS stub.
     </div>
+    <div class="impl-note extra">
+      <span class="impl-tag">FRIDAY MEETING · APR 27</span>
+      The process form now <strong>only renders material rows the depot is configured to accept</strong> (set per-depot from admin Zones &amp; Depots). The server rejects weights for unaccepted materials.
+      A <strong>🔥 Active campaign banner</strong> appears above contamination when global multipliers are running, and the points preview / submit reflect the multiplier. The applied campaigns are snapshotted onto each <code>bagProcessing</code> doc for audit.
+      The depot Inventory page now lists <em>any</em> material the depot has actually processed (including custom ones like compost / textile / electronics), not just the canonical 7.
+    </div>
   </div>
 
   <div class="screens-row">
@@ -1582,6 +1684,12 @@
       <span class="impl-tag">EXTRA · SHIPPED</span>
       Beyond the dashboard mocked here, the admin app has full CRUD for: <strong>Users</strong>, <strong>Invites</strong> (operator/depot/manager/admin invite-only), <strong>Zones</strong>, <strong>Depots</strong>, <strong>Yellow-sheet pricing</strong> (writes to <code>materials</code> + <code>priceHistory</code>), <strong>Routes builder</strong> (Google Maps <code>computeRoutes</code> with waypoint optimization), <strong>Redemption queue</strong> (Mark fulfilled), <strong>Bag QR sheets</strong> (PDF for Rollo + atomic <code>stickerSheets</code>/<code>bags</code> creation), and <strong>Compliance batches</strong> (PDF generate + Mark as mailed).
     </div>
+    <div class="impl-note extra">
+      <span class="impl-tag">FRIDAY MEETING · APR 27</span>
+      Pricing screen now lets admins <strong>add new materials</strong> (e.g. Compost, Textile, Electronics) and <strong>toggle existing ones active/inactive</strong> when a commodity market shifts — soft-delete only, history is preserved. A new <strong>Pricing Campaigns</strong> manager schedules global ×N multipliers for selected materials over a date range; live campaigns surface on the resident dashboard, calculator, and depot processing form.
+      Zones &amp; Depots now has a per-depot <strong>accepted-materials chip toggle</strong> (Tocco Hills can refuse glass, etc.).
+      Compliance &gt; Initial Service notices automatically <strong>skip residents whose service has already started</strong> (any completed pickup); the batch row shows the skipped-active count for transparency.
+    </div>
   </div>
 
   <!-- Implementation status for each dashboard section -->
@@ -1773,6 +1881,186 @@
     </div>
   </div>
 
+  <!-- Friday Meeting · Apr 27 — Pricing Campaigns Manager -->
+  <div class="dash-wide" style="border-color:rgba(251,191,36,0.25);">
+    <h4 style="color:#fbbf24;">Pricing Campaigns <span style="font-weight:400;color:#9ca3af;font-size:0.7rem;">(NEW · Apr 27)</span></h4>
+    <p style="font-size:0.72rem;color:#9ca3af;margin-bottom:12px;line-height:1.5;">
+      Time-bounded ×N multipliers for selected materials. Apply globally (every resident, every depot) for the date window. Surfaces as a 🔥 banner on resident dashboard, calculator preview, and depot processing form. Snapshotted onto each <code>bagProcessing</code> doc.
+    </p>
+    <div style="display:grid;grid-template-columns:1fr 100px 110px 110px auto;gap:8px;align-items:end;padding:10px;border:1px dashed rgba(255,255,255,0.15);border-radius:8px;background:rgba(0,0,0,0.2);margin-bottom:10px;">
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;color:#6b7280;">Campaign name</div>
+        <div style="margin-top:3px;padding:5px 8px;border:1px solid rgba(255,255,255,0.1);border-radius:5px;font-size:0.72rem;color:#fff;background:rgba(0,0,0,0.4);">Aluminum 2× week</div>
+      </div>
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;color:#6b7280;">Multiplier</div>
+        <div style="margin-top:3px;padding:5px 8px;border:1px solid rgba(255,255,255,0.1);border-radius:5px;font-size:0.72rem;color:#fff;background:rgba(0,0,0,0.4);">2</div>
+      </div>
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;color:#6b7280;">Starts</div>
+        <div style="margin-top:3px;padding:5px 8px;border:1px solid rgba(255,255,255,0.1);border-radius:5px;font-size:0.72rem;color:#fff;background:rgba(0,0,0,0.4);">Apr 27</div>
+      </div>
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;color:#6b7280;">Ends</div>
+        <div style="margin-top:3px;padding:5px 8px;border:1px solid rgba(255,255,255,0.1);border-radius:5px;font-size:0.72rem;color:#fff;background:rgba(0,0,0,0.4);">May 4</div>
+      </div>
+      <div style="padding:6px 12px;background:#fbbf24;color:#000;font-weight:700;border-radius:6px;font-size:0.7rem;">Start campaign</div>
+    </div>
+    <div style="margin-bottom:8px;font-size:0.62rem;text-transform:uppercase;color:#6b7280;">Materials (1/7)</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+      <span style="padding:3px 9px;border:1px solid rgba(251,191,36,0.4);background:rgba(251,191,36,0.15);color:#fde68a;border-radius:14px;font-size:0.68rem;">Aluminum</span>
+      <span style="padding:3px 9px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.3);color:#9ca3af;border-radius:14px;font-size:0.68rem;">Tin / Steel</span>
+      <span style="padding:3px 9px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.3);color:#9ca3af;border-radius:14px;font-size:0.68rem;">Cardboard</span>
+      <span style="padding:3px 9px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.3);color:#9ca3af;border-radius:14px;font-size:0.68rem;">Paper</span>
+      <span style="padding:3px 9px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.3);color:#9ca3af;border-radius:14px;font-size:0.68rem;">PET</span>
+      <span style="padding:3px 9px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.3);color:#9ca3af;border-radius:14px;font-size:0.68rem;">HDPE</span>
+      <span style="padding:3px 9px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.3);color:#9ca3af;border-radius:14px;font-size:0.68rem;">Mixed Plastic</span>
+    </div>
+    <div style="font-size:0.62rem;text-transform:uppercase;color:#6b7280;margin-bottom:6px;">Active &amp; upcoming</div>
+    <div class="table-row head">
+      <div class="cell">Campaign</div>
+      <div class="cell">Multiplier</div>
+      <div class="cell">Window</div>
+      <div class="cell">Status</div>
+      <div class="cell"></div>
+    </div>
+    <div class="table-row">
+      <div class="cell">Aluminum 2× week</div>
+      <div class="cell" style="color:#fbbf24;">×2</div>
+      <div class="cell">Apr 27 → May 4</div>
+      <div class="cell"><span style="padding:2px 6px;border:1px solid rgba(251,191,36,0.4);background:rgba(251,191,36,0.1);color:#fde68a;border-radius:4px;font-size:0.62rem;font-weight:700;">LIVE</span></div>
+      <div class="cell" style="color:#f87171;font-size:0.68rem;">End now</div>
+    </div>
+    <div class="table-row">
+      <div class="cell">Cardboard +50% Earth Day</div>
+      <div class="cell" style="color:#fbbf24;">×1.5</div>
+      <div class="cell">May 5 → May 12</div>
+      <div class="cell"><span style="padding:2px 6px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#9ca3af;border-radius:4px;font-size:0.62rem;font-weight:700;">SCHEDULED</span></div>
+      <div class="cell" style="color:#f87171;font-size:0.68rem;">End now</div>
+    </div>
+  </div>
+
+  <!-- Friday Meeting · Apr 27 — Pricing Add Material + Active Toggle -->
+  <div class="dash-wide" style="border-color:rgba(34,197,94,0.2);">
+    <h4 style="color:#86efac;">Yellow Sheet — Add &amp; Hide Materials <span style="font-weight:400;color:#9ca3af;font-size:0.7rem;">(NEW · Apr 27)</span></h4>
+    <p style="font-size:0.72rem;color:#9ca3af;margin-bottom:12px;line-height:1.5;">
+      Each row now has an <strong>Active</strong> checkbox — uncheck to hide a material from the calculator, processing form, and depot inventory (history is preserved). The "+ Add to yellow sheet" composer below creates a new material doc with an auto-slugged id (e.g. <code>compost</code>, <code>textile</code>, <code>electronics</code>).
+    </p>
+    <div class="table-row head">
+      <div class="cell">Material</div>
+      <div class="cell">Market $/lb</div>
+      <div class="cell">Payout %</div>
+      <div class="cell">Resident $/lb</div>
+      <div class="cell">Active</div>
+    </div>
+    <div class="table-row">
+      <div class="cell">Aluminum <span style="color:#6b7280;font-size:0.6rem;">aluminum</span></div>
+      <div class="cell">$0.92</div>
+      <div class="cell">30%</div>
+      <div class="cell">$0.276</div>
+      <div class="cell">☑ on</div>
+    </div>
+    <div class="table-row" style="opacity:0.6;">
+      <div class="cell">Mixed Plastic <span style="color:#6b7280;font-size:0.6rem;">mixed_plastic</span></div>
+      <div class="cell">$0.06</div>
+      <div class="cell">30%</div>
+      <div class="cell">$0.018</div>
+      <div class="cell">☐ hidden</div>
+    </div>
+    <div class="table-row" style="background:rgba(34,197,94,0.06);">
+      <div class="cell">Compost <span style="color:#22c55e;font-size:0.6rem;">compost · NEW</span></div>
+      <div class="cell">$0.00</div>
+      <div class="cell">0%</div>
+      <div class="cell">$0.000</div>
+      <div class="cell">☑ on</div>
+    </div>
+    <div class="table-row" style="background:rgba(34,197,94,0.06);">
+      <div class="cell">Electronics <span style="color:#22c55e;font-size:0.6rem;">electronics · NEW</span></div>
+      <div class="cell">$0.00</div>
+      <div class="cell">0%</div>
+      <div class="cell">$0.000</div>
+      <div class="cell">☑ on</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 100px 100px auto;gap:10px;align-items:end;margin-top:14px;padding:10px;border:1px dashed rgba(34,197,94,0.25);border-radius:8px;background:rgba(0,0,0,0.2);">
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;color:#6b7280;">New material name</div>
+        <div style="margin-top:3px;padding:5px 8px;border:1px solid rgba(255,255,255,0.1);border-radius:5px;font-size:0.72rem;color:#9ca3af;background:rgba(0,0,0,0.4);">e.g. Compost, Textile, Electronics</div>
+      </div>
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;color:#6b7280;">$/lb</div>
+        <div style="margin-top:3px;padding:5px 8px;border:1px solid rgba(255,255,255,0.1);border-radius:5px;font-size:0.72rem;color:#fff;background:rgba(0,0,0,0.4);">0.00</div>
+      </div>
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;color:#6b7280;">Payout %</div>
+        <div style="margin-top:3px;padding:5px 8px;border:1px solid rgba(255,255,255,0.1);border-radius:5px;font-size:0.72rem;color:#fff;background:rgba(0,0,0,0.4);">30</div>
+      </div>
+      <div style="padding:6px 12px;background:rgba(34,197,94,0.18);border:1px solid rgba(34,197,94,0.4);color:#86efac;font-weight:700;border-radius:6px;font-size:0.7rem;">+ Add to yellow sheet</div>
+    </div>
+    <p style="font-size:0.65rem;color:#6b7280;margin-top:10px;">
+      Tracked-only materials (compost / textile / electronics): set payout to 0 — landfill diversion is logged without paying points.
+    </p>
+  </div>
+
+  <!-- Friday Meeting · Apr 27 — Zones & Depots Accepted Materials -->
+  <div class="dash-wide" style="border-color:rgba(168,85,247,0.25);">
+    <h4 style="color:#c4b5fd;">Zones &amp; Depots — Accepted Materials per Depot <span style="font-weight:400;color:#9ca3af;font-size:0.7rem;">(NEW · Apr 27)</span></h4>
+    <p style="font-size:0.72rem;color:#9ca3af;margin-bottom:12px;line-height:1.5;">
+      Each depot can be configured to refuse specific materials (Tocco Hills won't take glass, etc.). The depot processing form filters its weight-input list by this set, and the API rejects weights for unaccepted materials.
+    </p>
+    <div style="border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.2);border-radius:10px;padding:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+        <div>
+          <div style="font-size:0.85rem;color:#fff;font-weight:700;">Tocco Hills Depot</div>
+          <div style="font-size:0.65rem;color:#6b7280;">Capitol Heights, MD 20774</div>
+        </div>
+        <div style="font-size:0.62rem;color:#f87171;border:1px solid rgba(248,113,113,0.3);padding:2px 8px;border-radius:4px;">Delete</div>
+      </div>
+      <div style="font-size:0.6rem;text-transform:uppercase;color:#6b7280;margin-bottom:6px;">Accepted materials (5/7)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <span style="padding:3px 9px;border:1px solid rgba(34,197,94,0.4);background:rgba(34,197,94,0.15);color:#86efac;border-radius:14px;font-size:0.68rem;">Aluminum</span>
+        <span style="padding:3px 9px;border:1px solid rgba(34,197,94,0.4);background:rgba(34,197,94,0.15);color:#86efac;border-radius:14px;font-size:0.68rem;">Tin / Steel</span>
+        <span style="padding:3px 9px;border:1px solid rgba(34,197,94,0.4);background:rgba(34,197,94,0.15);color:#86efac;border-radius:14px;font-size:0.68rem;">Cardboard</span>
+        <span style="padding:3px 9px;border:1px solid rgba(34,197,94,0.4);background:rgba(34,197,94,0.15);color:#86efac;border-radius:14px;font-size:0.68rem;">Paper</span>
+        <span style="padding:3px 9px;border:1px solid rgba(34,197,94,0.4);background:rgba(34,197,94,0.15);color:#86efac;border-radius:14px;font-size:0.68rem;">PET</span>
+        <span style="padding:3px 9px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.3);color:#6b7280;border-radius:14px;font-size:0.68rem;text-decoration:line-through;">HDPE</span>
+        <span style="padding:3px 9px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.3);color:#6b7280;border-radius:14px;font-size:0.68rem;text-decoration:line-through;">Mixed Plastic</span>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px;">
+        <span style="padding:4px 10px;background:#fff;color:#000;border-radius:5px;font-size:0.66rem;font-weight:700;">Save</span>
+        <span style="font-size:0.66rem;color:#9ca3af;text-decoration:underline;align-self:center;">Reset</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Friday Meeting · Apr 27 — Compliance gating note -->
+  <div class="dash-wide" style="border-color:rgba(248,189,42,0.25);">
+    <h4 style="color:#fde68a;">Compliance — Initial Service Gating <span style="font-weight:400;color:#9ca3af;font-size:0.7rem;">(UPDATED · Apr 27)</span></h4>
+    <p style="font-size:0.72rem;color:#9ca3af;margin-bottom:12px;line-height:1.5;">
+      <strong>Initial Service Notices</strong> now skip residents whose service has already started (any completed pickup). <strong>Semi-Annual Updates</strong> still go to every resident. The skipped count is shown on the batch row for transparency, and the included resident UIDs are snapshotted onto the batch doc so reprints are reproducible.
+    </p>
+    <div class="table-row head">
+      <div class="cell">Type</div>
+      <div class="cell">Zone</div>
+      <div class="cell">Letters</div>
+      <div class="cell">Skipped</div>
+      <div class="cell">Status</div>
+    </div>
+    <div class="table-row">
+      <div class="cell">Initial Service Notice</div>
+      <div class="cell">Capitol Heights</div>
+      <div class="cell">12 letters</div>
+      <div class="cell" style="color:#fde68a;">3 active residents skipped</div>
+      <div class="cell"><span style="padding:2px 6px;border:1px solid rgba(251,191,36,0.4);background:rgba(251,191,36,0.1);color:#fde68a;border-radius:4px;font-size:0.62rem;font-weight:700;">GENERATED</span></div>
+    </div>
+    <div class="table-row">
+      <div class="cell">Semi-Annual Update</div>
+      <div class="cell">Capitol Heights</div>
+      <div class="cell">15 letters</div>
+      <div class="cell" style="color:#6b7280;">— (sent to all)</div>
+      <div class="cell"><span style="padding:2px 6px;border:1px solid rgba(34,197,94,0.4);background:rgba(34,197,94,0.1);color:#86efac;border-radius:4px;font-size:0.62rem;font-weight:700;">MAILED</span></div>
+    </div>
+  </div>
+
 </div>
 
 <div class="footer" style="text-align:center;padding:30px;color:#4b5563;font-size:0.8rem;">
@@ -1893,6 +2181,70 @@
     </div>
     <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Admin:</strong> Yellow Sheet now reflects all 7 commodity categories.</div>
+    </div>
+
+    <!-- ── Friday Meeting · Apr 27, 2026 ── -->
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
+      <div style="font-size:0.78rem;color:#fbbf24;font-weight:700;margin-bottom:8px;">Friday Meeting Updates · April 27, 2026</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Resident:</strong> Signup-bonus modal pops once on the first dashboard visit (localStorage-keyed) explaining the 10,000-pt = $1 bonus and the 100K = $10 ladder.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Resident:</strong> Redemption-progress card under the points/value tiles: <em>"X pts to a $10 gift card"</em> with a thin progress bar; links to /resident/rewards.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> "Order more bags" CTA reads <em>"Order your first batch"</em> until the resident has placed at least one bag order.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Calculator weight inputs now show a <code>lbs</code> suffix per row.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Resident:</strong> 🔥 Bonus-running-now banner on dashboard + calculator whenever a global pricing campaign is live (e.g. ×2 on Aluminum). Calculator row tags show the multiplier.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Admin:</strong> Per-depot <strong>accepted-materials chip toggle</strong> on Zones &amp; Depots. Depot processing form filters by this set; <code>POST /api/process-bag</code> rejects weights for unaccepted materials.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Admin:</strong> Pricing UI now lets admin <strong>add new materials</strong> (auto-slugged ids — compost, textile, electronics, etc.) and <strong>toggle existing ones active/inactive</strong>. Soft-delete only — historical bagProcessing/inventory/millShipment records stay valid.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Admin:</strong> <strong>Pricing Campaigns Manager</strong> on the Pricing page — schedule global ×N multipliers for selected materials over a date range. Compounds when multiple campaigns target the same material. Snapshotted onto each <code>bagProcessing</code> doc.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Admin:</strong> Compliance &gt; Initial Service Notices skip residents whose service has already started (any completed pickup). Batch row shows the skipped-active count; resident UIDs are snapshotted onto the batch for reproducible reprints. Semi-Annual Updates unchanged (still mail to all).</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Depot:</strong> Process-bag form only renders rows for materials this depot accepts (intersected with active materials). 🔥 Active-campaign banner appears above contamination when multipliers are live, and the live points preview applies them. Inventory page lists any material the depot has actually processed (including custom ones).</div>
+    </div>
+
+    <!-- ── Compost Foundation · Apr 27, 2026 (afternoon) ── -->
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
+      <div style="font-size:0.78rem;color:#34d399;font-weight:700;margin-bottom:8px;">Compost Foundation · April 27, 2026</div>
+      <div style="font-size:0.72rem;color:#6b7280;margin-bottom:10px;line-height:1.5;">
+        Foundation work for Tia's Compost Clubhouse integration. Tia's drivers measure pickups by bin count + fullness per bin instead of by weight at scale; bins are reusable (persistent QR), customers are commercial sites (no public signup), and the reward is access to free compost rather than cash. Phase A below is the cross-cutting plumbing — equally useful for Kirk's request to track textiles / electronics / commingled bags as "diverted but not paid." See <code>planning/Compost Integration - Phase A.md</code> for the full plan including Phase B + C.
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Admin:</strong> Materials now have a <code>payoutMode</code>: <strong>Cash</strong> (pays points, existing behavior) or <strong>Diversion-only</strong> (weight tracked for landfill-diversion reports, no points). Diversion-only rows show a blue badge, hide price fields, and are excluded from the pricing-campaigns picker.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Admin:</strong> Materials now have a <code>measurementMode</code>: <strong>Bag weight</strong> (lbs at scale, existing) or <strong>Bin fullness</strong> (driver picks fullness bucket, weight derived from a lookup). New-material composer surfaces both as selects.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Admin:</strong> Per-depot accepted-materials chip list now iterates the live materials collection — newly added custom materials (compost, commingled, textiles…) appear and can be toggled per depot. Depot PATCH validates against the live set.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Depot:</strong> Process-bag form has a <strong>Commingled</strong> toggle (pre-checked when the bag was declared <code>mixed</code>). When checked: weight is recorded for diversion reporting, but <code>pointsAwarded</code> is forced to 0. Matches Kirk's "you get the weight but no points" scenario for jumbled plastic + glass.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> <code>src/lib/logic/binWeightTable.ts</code> seeds the exact 32 / 48 / 64 gallon ↔ fullness ↔ lbs lookup from Dominique's <em>Static Values</em> sheet (verified by 9/21/23 on-site weighing at City of Columbus). Not yet wired to UI — Phase B uses it.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> Two new seeded materials — <code>commingled</code> (diversion-only / bag weight) and <code>food_scrap</code> (diversion-only / bin fullness). Run <code>npm run seed:materials -- --force</code> to backfill modes on the canonical 7 and add the new ones.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#fbbf24;font-weight:700;">FIXED</span> <strong style="color:#fff;">Admin:</strong> Editing per-depot accepted materials no longer crashes the Zones page — the depot loader now strips the <code>updatedAt</code> Firestore <code>Timestamp</code> before passing the doc to the client component (Timestamps don't serialize across the RSC boundary).</div>
     </div>
   </div>
 

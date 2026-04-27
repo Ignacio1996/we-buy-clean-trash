@@ -15,6 +15,7 @@ interface Batch {
   zoneName: string;
   type: ComplianceNoticeType;
   residentCount: number;
+  excludedActiveResidents: number;
   status: ComplianceBatchStatus;
   generatedAt: string | null;
   mailedAt: string | null;
@@ -76,7 +77,12 @@ export function BatchList({ batches }: { batches: Batch[] }) {
                   {COMPLIANCE_NOTICE_LABELS[b.type]} — {b.zoneName}
                 </div>
                 <div className="truncate text-[11px] text-gray-500">
-                  {b.residentCount} unit{b.residentCount === 1 ? '' : 's'} · Generated{' '}
+                  {b.residentCount} unit{b.residentCount === 1 ? '' : 's'}
+                  {b.type === 'initial_service' && b.excludedActiveResidents > 0 && (
+                    <> · {b.excludedActiveResidents} active resident
+                      {b.excludedActiveResidents === 1 ? '' : 's'} skipped</>
+                  )}
+                  {' · Generated '}
                   {formatDate(b.generatedAt)}
                   {b.status === 'mailed' && b.mailedAt && (
                     <> · Mailed {formatDate(b.mailedAt)}</>

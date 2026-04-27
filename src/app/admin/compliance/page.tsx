@@ -43,6 +43,8 @@ async function loadData() {
       zoneName: b.zoneName,
       type: b.type,
       residentCount: b.residentCount,
+      excludedActiveResidents:
+        typeof b.excludedActiveResidents === 'number' ? b.excludedActiveResidents : 0,
       status: b.status,
       generatedAt: b.generatedAt?.toDate?.().toISOString() ?? null,
       mailedAt: b.mailedAt?.toDate?.().toISOString() ?? null,

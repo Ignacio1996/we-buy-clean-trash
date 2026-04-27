@@ -727,6 +727,73 @@
   <p style="color:#888; font-size:0.8rem;">More tutorials and prep tips coming as we collect real user data. AI-powered scanning to be added after the pilot to help identify items.</p>
 </div>
 
+<!-- ── COMPOST CLUBHOUSE INTEGRATION ── -->
+<h2 class="section-title">Compost Clubhouse Integration</h2>
+<p style="text-align:center; color:#888; font-size:0.9rem; max-width:780px; margin:-20px auto 24px; padding:0 20px; line-height:1.55;">
+  Tia's Compost Clubhouse — commercial food-scrap collection serving 19 active sites in Columbus — is being migrated off Linktree + Google Sheets into the same WBCT platform. Same code, same admin, same data model, same login. Different material, different measurement, different reward. Phase A foundation has shipped; Phase B + C is the compost-specific layer on top.
+</p>
+
+<div style="max-width:1100px;margin:0 auto 30px;padding:0 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;">
+
+  <div style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.25);border-radius:14px;padding:18px 20px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <span style="background:rgba(34,197,94,0.18);color:#86efac;font-size:0.65rem;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:0.05em;">✅ PHASE A · SHIPPED</span>
+    </div>
+    <h4 style="color:#fff;font-size:0.95rem;margin:0 0 8px;">Foundation primitives</h4>
+    <ul style="color:#cbd5e1;font-size:0.78rem;line-height:1.6;padding-left:18px;margin:0;">
+      <li>Materials can be <strong>cash</strong> (pays points) or <strong>diversion-only</strong> (records weight, no points). Compost, textiles, electronics, donations all use diversion-only.</li>
+      <li>Materials declare a <strong>measurement mode</strong>: bag-weight (existing) or bin-fullness (new). Bin-fullness lookup table seeded from Tia's spreadsheet.</li>
+      <li>Per-depot accepted-materials chip list iterates the live materials collection — custom materials appear and toggle per depot.</li>
+      <li>Depot worker can flag a bag <strong>commingled</strong> at processing — weight recorded for diversion, points forced to 0.</li>
+      <li>Two new seeded materials: <code style="font-size:0.75rem;color:#fbbf24;">commingled</code> and <code style="font-size:0.75rem;color:#fbbf24;">food_scrap</code>.</li>
+    </ul>
+    <div style="margin-top:12px;font-size:0.7rem;color:#6b7280;line-height:1.5;">
+      <strong style="color:#9ca3af;">Kirk benefits too:</strong> add/remove materials anytime, track diverted-only items (textiles, electronics donations), commingled bags handled exactly per his Apr 27 ask.
+    </div>
+  </div>
+
+  <div style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.25);border-radius:14px;padding:18px 20px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <span style="background:rgba(59,130,246,0.2);color:#93c5fd;font-size:0.65rem;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:0.05em;">🔜 PHASE B · COMPOST INTAKE</span>
+    </div>
+    <h4 style="color:#fff;font-size:0.95rem;margin:0 0 8px;">Driver-side flow + commercial accounts</h4>
+    <ul style="color:#cbd5e1;font-size:0.78rem;line-height:1.6;padding-left:18px;margin:0;">
+      <li><strong>Reusable bin containers</strong> — QR sticker stays on the bin permanently; pickup empties the bin instead of retiring it.</li>
+      <li><strong>Operator-only intake flow</strong> — driver scans the bin at the site, picks bin count + fullness per bin (Empty / Quarter / Half / Three-Quarter / Full).</li>
+      <li><strong>Commercial accounts</strong> — admin-onboarded only (no public signup). Mirrors Dominique's Directory sheet: business name, address, contact, default bin size, # bins, pickups/week, collection day.</li>
+      <li><strong>Affiliation tag</strong> — Compost Clubhouse vs City of Columbus — drives report filtering. Independent of zone/depot.</li>
+    </ul>
+    <div style="margin-top:12px;font-size:0.7rem;color:#6b7280;line-height:1.5;">
+      Unblocks Tia's drivers actually using the app instead of Linktree.
+    </div>
+  </div>
+
+  <div style="background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.25);border-radius:14px;padding:18px 20px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <span style="background:rgba(139,92,246,0.2);color:#c4b5fd;font-size:0.65rem;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:0.05em;">🔜 PHASE C · REPORTING</span>
+    </div>
+    <h4 style="color:#fff;font-size:0.95rem;margin:0 0 8px;">City compliance reports + roles</h4>
+    <ul style="color:#cbd5e1;font-size:0.78rem;line-height:1.6;padding-left:18px;margin:0;">
+      <li><strong>Diversion report export</strong> — admin filters by zone + date range → CSV/PDF in Dominique's Columbus monthly format. Replaces her manual Sheet pull.</li>
+      <li><strong>Program manager role</strong> for Dominique — zone-scoped read+admin on commercial accounts, pickups, reports.</li>
+      <li><strong>City viewer role</strong> for Ari (City of Columbus) — read-only on diversion reports for the CoC affiliation.</li>
+      <li><strong>Cars-equivalent + CO2eq impact stats</strong> on commercial-account dashboards (ReFED constants: 1 lb = 0.00245 t CO2eq).</li>
+      <li><em>Optional:</em> compost-voucher redemption queue once the Columbus facility is producing. Skip until then.</li>
+    </ul>
+    <div style="margin-top:12px;font-size:0.7rem;color:#6b7280;line-height:1.5;">
+      Unblocks the city contract reporting Tia owes monthly.
+    </div>
+  </div>
+
+</div>
+
+<div style="max-width:780px;margin:0 auto 40px;padding:14px 20px;background:rgba(255,255,255,0.03);border-left:3px solid #34d399;border-radius:8px;">
+  <div style="font-size:0.72rem;color:#34d399;font-weight:700;letter-spacing:0.06em;margin-bottom:6px;">WHAT CHANGES FOR EXISTING WBCT</div>
+  <div style="font-size:0.82rem;color:#cbd5e1;line-height:1.6;">
+    <strong>Behavior for residents and operators: nothing changes.</strong> All seven cash commodities still pay points exactly the same way. The compost track is additive — admin gains material CRUD, per-depot acceptance, and the diversion-only mode; depot gains the commingled toggle. Full plan in <code style="color:#fbbf24;">planning/Compost Integration - Phase A.md</code>.
+  </div>
+</div>
+
 <!-- ── WHAT'S NEXT ── -->
 <h2 class="section-title">What's Next</h2>
 <p style="text-align:center; color:#888; font-size:0.9rem; max-width:700px; margin:-20px auto 30px; padding:0 20px; line-height:1.55;">

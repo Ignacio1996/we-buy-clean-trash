@@ -4,8 +4,13 @@ import { getSession } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
 import { pointsToDollars } from '@/lib/logic/pointsToDollars';
 import { LogoutButton } from '@/components/LogoutButton';
+import { SignupBonusModal } from '@/components/resident/SignupBonusModal';
+import { loadActiveCampaigns } from '@/lib/admin/loadActiveCampaigns';
+import { loadActiveMaterials } from '@/lib/admin/loadActiveMaterials';
 import type { BagOrderDoc, BagOrderStatus } from '@/lib/types/bagOrder';
 import type { RouteDoc } from '@/lib/types/route';
+
+const GIFT_CARD_POINTS = 100_000;
 
 function formatPoints(points: number): string {
   return points.toLocaleString('en-US');
@@ -65,6 +70,7 @@ export default async function ResidentHome() {
     .collection('bagOrders')
     .where('residentId', '==', uid)
     .get();
+  const hasEverOrdered = ordersSnap.size > 0;
   const openOrders = ordersSnap.docs
     .map((d) => d.data() as BagOrderDoc)
     .filter((o) => OPEN_ORDER_STATUSES.includes(o.status))
@@ -73,6 +79,13 @@ export default async function ResidentHome() {
       const bm = b.createdAt?.toMillis?.() ?? 0;
       return bm - am;
     });
+
+  const [activeCampaigns, allMaterials] = await Promise.all([
+    loadActiveCampaigns(),
+    loadActiveMaterials(),
+  ]);
+  const liveCampaigns = activeCampaigns.filter((c) => c.startsAt <= new Date());
+  const materialNameById = new Map(allMaterials.map((m) => [m.id, m.name]));
 
   const routeIds = Array.from(
     new Set(openOrders.map((o) => o.deliveryRouteId).filter((id): id is string => !!id)),
@@ -92,6 +105,7 @@ export default async function ResidentHome() {
 
   return (
     <main className="px-4 pt-8">
+      <SignupBonusModal uid={uid} />
       <header className="flex items-center justify-between pb-4">
         <div>
           <p className="text-xs uppercase tracking-widest text-gray-500">We Buy Clean Trash</p>
@@ -112,17 +126,65 @@ export default async function ResidentHome() {
       </section>
 
       <Link
+        href="/resident/rewards"
+        className="mt-3 block rounded-xl border border-white/10 bg-white/5 p-3"
+      >
+        <div className="flex items-center justify-between text-[11px] text-gray-400">
+          <span>
+            {pointsBalance >= GIFT_CARD_POINTS
+              ? '🎉 Ready to redeem a $10 gift card'
+              : `${formatPoints(Math.max(0, GIFT_CARD_POINTS - pointsBalance))} pts to a $10 gift card`}
+          </span>
+          <span className="text-gray-500">→</span>
+        </div>
+        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
+          <div
+            className="h-full bg-green-500"
+            style={{
+              width: `${(Math.min(1, pointsBalance / GIFT_CARD_POINTS) * 100).toFixed(1)}%`,
+            }}
+          />
+        </div>
+      </Link>
+
+      {liveCampaigns.length > 0 && (
+        <Link
+          href="/resident/calculator"
+          className="mt-3 block rounded-xl border border-amber-400/30 bg-amber-400/10 p-3"
+        >
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-amber-200">
+            🔥 Bonus running now
+          </div>
+          <ul className="mt-1 space-y-0.5 text-xs text-amber-100">
+            {liveCampaigns.slice(0, 2).map((c) => (
+              <li key={c.id}>
+                <span className="font-semibold">×{c.multiplier}</span> on{' '}
+                {c.materialIds.map((id) => materialNameById.get(id) ?? id).join(', ')}
+              </li>
+            ))}
+            {liveCampaigns.length > 2 && (
+              <li className="opacity-80">+{liveCampaigns.length - 2} more</li>
+            )}
+          </ul>
+        </Link>
+      )}
+
+      <Link
         href="/resident/order-bags"
         className="mt-4 flex items-center justify-between rounded-xl border border-green-500/25 bg-green-500/10 p-4"
       >
         <div>
-          <div className="font-semibold text-white">🛍️ Order more bags</div>
+          <div className="font-semibold text-white">
+            {hasEverOrdered ? '🛍️ Order more bags' : '🛍️ Order your first batch'}
+          </div>
           <div className="mt-0.5 text-xs text-gray-400">
-            10 bags per sheet · Free shipping over $20
+            {hasEverOrdered
+              ? '10 bags per sheet · Free shipping over $20'
+              : '10 bags per sheet — your operator drops them at your door'}
           </div>
         </div>
         <span className="rounded-full bg-green-500 px-3 py-1 text-xs font-semibold text-black">
-          Order →
+          {hasEverOrdered ? 'Order →' : 'Get started →'}
         </span>
       </Link>
 

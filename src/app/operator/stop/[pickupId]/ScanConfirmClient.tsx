@@ -5,6 +5,8 @@ import jsQR from 'jsqr';
 import { useRouter } from 'next/navigation';
 
 const MAX_PHOTO_EDGE = 1024;
+const STORAGE_MOCKED =
+  (process.env.NEXT_PUBLIC_STORAGE_MODE ?? 'mock').toLowerCase() !== 'firebase';
 
 type Step = 'scan' | 'details' | 'submitting' | 'done';
 
@@ -261,7 +263,14 @@ export function ScanConfirmClient({
           </div>
 
           <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-            <div className="text-[11px] uppercase tracking-wide text-gray-400">Doorstep photo</div>
+            <div className="flex items-center justify-between">
+              <div className="text-[11px] uppercase tracking-wide text-gray-400">Doorstep photo</div>
+              {STORAGE_MOCKED && (
+                <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[10px] font-medium text-amber-300">
+                  Demo mode · upload simulated
+                </span>
+              )}
+            </div>
             {photo ? (
               <div className="mt-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}

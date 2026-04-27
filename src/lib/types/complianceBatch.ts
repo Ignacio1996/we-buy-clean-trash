@@ -10,6 +10,10 @@ export interface ComplianceBatchDoc {
   zoneName: string;
   type: ComplianceNoticeType;
   residentCount: number;
+  /** Resident UIDs included in this batch (snapshot at generation time). Empty array allowed. */
+  residentIds: string[];
+  /** Number of residents in the zone who were excluded because service had already started. */
+  excludedActiveResidents: number;
   status: ComplianceBatchStatus;
   generatedAt: Timestamp;
   generatedBy: string;

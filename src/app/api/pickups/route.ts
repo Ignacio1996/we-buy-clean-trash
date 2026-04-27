@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { FieldValue } from 'firebase-admin/firestore';
-import { adminDb, adminStorage } from '@/lib/firebase/admin';
+import { adminDb } from '@/lib/firebase/admin';
+import { uploadPhoto } from '@/lib/storage/uploadPhoto';
 import { getSession } from '@/lib/auth/session';
 import type { BagDoc, DeclaredBagType } from '@/lib/types/bag';
 import type { PickupDoc } from '@/lib/types/pickup';
@@ -73,12 +74,12 @@ export async function POST(request: Request) {
 
   const pickupRef = adminDb.collection('pickups').doc();
   const storagePath = `pickups/${session.uid}/${pickupRef.id}.jpg`;
-  const bucket = adminStorage.bucket();
-  const file = bucket.file(storagePath);
-  const buffer = Buffer.from(payload.photoBase64, 'base64');
-  await file.save(buffer, { contentType: payload.photoMime, resumable: false });
-
-  const doorstepPhotoUrl = `gs://${bucket.name}/${storagePath}`;
+  const upload = await uploadPhoto({
+    path: storagePath,
+    base64: payload.photoBase64,
+    contentType: payload.photoMime,
+  });
+  const doorstepPhotoUrl = upload.url;
 
   await adminDb.runTransaction(async (tx) => {
     const freshBag = await tx.get(bagSnap.ref);

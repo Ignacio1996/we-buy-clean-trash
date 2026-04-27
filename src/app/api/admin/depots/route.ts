@@ -3,6 +3,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
 import { geocodeAddress } from '@/lib/maps/geocode';
+import { MATERIAL_IDS } from '@/lib/types/material';
 
 export const runtime = 'nodejs';
 
@@ -47,6 +48,7 @@ export async function POST(request: Request) {
     geo,
     managerId: null,
     zoneIds: [],
+    acceptedMaterials: [...MATERIAL_IDS],
     createdAt: FieldValue.serverTimestamp(),
   });
 

@@ -159,6 +159,39 @@
     </div>
 
     <div class="scenario">
+      <div class="scenario-head">Scenario 4b — Per-depot accepted materials <span style="color:#fbbf24;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Apr 27</span></div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
+        <p>
+          Each depot can be configured to accept only a subset of materials (Kirk's example:
+          a Tocco Hills depot that doesn't take HDPE or mixed plastic).
+        </p>
+        <ol>
+          <li>Open <strong>Zones &amp; Depots</strong> and find the pilot depot.</li>
+          <li>Below the address, locate the <strong>Accepted materials (X/7)</strong> chip row.</li>
+          <li>Click the <em>HDPE</em> chip to deselect it. The chip dims; a <strong>Save</strong> button appears.</li>
+          <li>Click <strong>Save</strong>. The page refreshes and the chip stays dim.</li>
+          <li>Now sign in as <em>Depot Goode</em> in another browser and open a pending bag in <strong>/depot/process</strong>.</li>
+          <li>Confirm the HDPE row is gone from the weight inputs.</li>
+          <li>Try to submit a bag with an HDPE weight via the API directly — it should return <code>400 material_not_accepted_hdpe</code>.</li>
+          <li>Back as Tia, re-enable HDPE, save, and confirm Goode sees the row again.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Depots that pre-date this feature (no <code>acceptedMaterials</code>
+          field) behave as if they accept everything — that's the legacy fallback.
+          The depot Inventory page also keeps showing materials that have been processed historically
+          even if they were later removed from the accepted set.
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Saving requires at least one material — empty selection is blocked</p>
+          <p><span class="checkbox"></span> Toggling a chip without saving doesn't persist (Reset link clears edits)</p>
+          <p><span class="checkbox"></span> Worker's process form rerenders without HDPE within seconds of save</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario">
       <div class="scenario-head">Scenario 5 — Yellow-sheet pricing editor</div>
       <div class="scenario-body">
         <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
@@ -181,6 +214,75 @@
           <p><span class="checkbox"></span> Resident calculator reflects the new price within a few seconds</p>
           <p><span class="checkbox"></span> A history of previous prices is visible (snapshot each time you save)</p>
           </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 5b — Add a custom material (Compost / Textile / Electronics) <span style="color:#22c55e;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Apr 27</span></div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
+        <p>
+          The seed yellow sheet ships with 7 materials. Admins can extend it on the fly when a
+          new commodity comes online (e.g. compost), or hide an existing one when its market
+          crashes. New materials are <strong>soft-deleted</strong> only — historical records
+          stay intact.
+        </p>
+        <ol>
+          <li>Open <strong>Pricing</strong>. Scroll to the dashed <em>+ Add to yellow sheet</em> composer below the table.</li>
+          <li>Type <em>Compost</em> for the name, leave $/lb at <em>0.00</em>, payout at <em>0</em>.</li>
+          <li>Click <strong>+ Add to yellow sheet</strong>. A new row appears with id <code>compost</code> and a green <em>new</em> badge.</li>
+          <li>Click <strong>Save pricing</strong>. The badge clears; a <em>priceHistory</em> snapshot is written.</li>
+          <li>Now uncheck the <strong>Active</strong> box on the <em>Mixed Plastic</em> row to simulate a market crash. Save.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Compost shows up on the resident calculator and on Goode's
+          process form (assuming the depot has it in its accepted set — see Scenario 4b).
+          Mixed Plastic disappears from both the calculator and the process form. Historical
+          mixed-plastic inventory and bagProcessing rows are still readable in admin reports.
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Names slugify correctly: "Mixed Glass" → <code>mixed_glass</code>, "E-Waste" → <code>e_waste</code></p>
+          <p><span class="checkbox"></span> Trying to add a duplicate id is blocked client-side</p>
+          <p><span class="checkbox"></span> Re-checking Active on Mixed Plastic restores it without re-entering pricing</p>
+          <p><span class="checkbox"></span> Tracked-only materials (compost / textile) with payout=0 award zero points but log inventory + landfill diversion</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 5c — Pricing campaign (×2 on Aluminum) <span style="color:#fbbf24;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Apr 27</span></div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
+        <p>
+          From the meeting: "if we know the price of aluminum is real high, can we send out alerts
+          like, aluminum is three times the points today?" — yes. Pricing Campaigns apply a global
+          ×N multiplier to selected materials over a date range. Multipliers compound when multiple
+          campaigns overlap on the same material.
+        </p>
+        <ol>
+          <li>On the <strong>Pricing</strong> page, scroll past the yellow sheet to the <strong>Pricing campaigns</strong> section.</li>
+          <li>Name: <em>Aluminum 2× week</em>. Multiplier: <em>2</em>. Starts: today. Ends: 7 days out.</li>
+          <li>Toggle the <strong>Aluminum</strong> material chip on. Click <strong>Start campaign</strong>.</li>
+          <li>The new campaign appears in <em>Active &amp; upcoming</em> with a <strong>LIVE</strong> badge.</li>
+          <li>In another browser, sign in as Aguirre. The dashboard now shows a <strong>🔥 BONUS RUNNING NOW</strong> banner; the calculator's Aluminum row has a <code>×2</code> tag.</li>
+          <li>Sign in as Goode and open a pending bag — a <strong>🔥 Active campaign</strong> banner appears above contamination, and the points preview applies the multiplier.</li>
+          <li>Submit a bag with 1 lb aluminum. Compare the awarded points against a control bag with no campaign — should be ~2× higher.</li>
+          <li>Click <strong>End now</strong> on the campaign row. Confirm the banners disappear in both browsers within seconds.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Multiplier compounds correctly: schedule a ×1.5 on aluminum
+          on top of the live ×2 — preview should reflect ×3. The applied campaign array is
+          snapshotted onto the <code>bagProcessing</code> doc (<code>appliedCampaigns</code> field)
+          so historical points are auditable even after the campaign ends.
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> "End now" sets <code>active: false</code> and pulls <code>endsAt</code> to now</p>
+          <p><span class="checkbox"></span> Scheduling a campaign with end ≤ start is blocked</p>
+          <p><span class="checkbox"></span> Campaign with no materials selected is blocked</p>
+          <p><span class="checkbox"></span> Resident dashboard banner only shows live campaigns (not future ones)</p>
+        </div>
       </div>
     </div>
 
@@ -236,7 +338,7 @@
       </tr>
       <tr>
         <td>Pricing</td>
-        <td>Edit the 7 material prices and payout percentages.</td>
+        <td>Edit material prices + payout %, add new materials, hide retired ones, and schedule global ×N pricing campaigns.</td>
       </tr>
       <tr>
         <td>Redemptions</td>

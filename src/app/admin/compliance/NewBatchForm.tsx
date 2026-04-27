@@ -101,6 +101,12 @@ export function NewBatchForm({ zones }: { zones: ZoneOption[] }) {
             className="mt-1 block w-full rounded border border-white/15 bg-black/40 px-2 py-2 text-sm text-white placeholder:text-gray-600"
           />
         </label>
+        {type === 'initial_service' && (
+          <p className="rounded border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-200 sm:col-span-2">
+            Initial Service notices skip residents whose service has already started (any
+            completed pickup). Semi-Annual updates go to every resident in the zone.
+          </p>
+        )}
         {error && (
           <p className="rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-300 sm:col-span-2">
             {error}

@@ -112,18 +112,31 @@
     <div class="role-step">
       <div class="step-badge">3</div>
       <div class="step-body">
-        <h3>Create zones and a depot</h3>
+        <h3>Create zones and a depot, configure accepted materials</h3>
         <p>Check existing pilot zone, add a test one, edit, delete. Create a depot and tie it to the zone.</p>
-        <p class="step-cta">→ <a href="phase-4-admin.html">Admin dashboard</a> · Scenario 4</p>
+        <p>
+          <strong style="color:#92400e;">Apr 27 addition:</strong> on each depot card, toggle the
+          <em>accepted materials</em> chips so the depot only processes the commodities it
+          actually handles. The depot worker's process form will hide the rest.
+        </p>
+        <p class="step-cta">→ <a href="phase-4-admin.html">Admin dashboard</a> · Scenarios 4 &amp; 4b</p>
       </div>
     </div>
 
     <div class="role-step">
       <div class="step-badge">4</div>
       <div class="step-body">
-        <h3>Set Yellow Sheet prices for all 7 materials</h3>
-        <p>Without this, the resident calculator and depot processing both show zero points.</p>
-        <p class="step-cta">→ <a href="phase-4-admin.html">Admin dashboard</a> · Scenario 5</p>
+        <h3>Set Yellow Sheet prices, add custom materials, schedule campaigns</h3>
+        <p>Without prices, the resident calculator and depot processing both show zero points.</p>
+        <p>
+          <strong style="color:#92400e;">Apr 27 additions:</strong>
+          add new materials (compost / textile / electronics) via the
+          <em>+ Add to yellow sheet</em> composer; toggle the <em>Active</em> checkbox to hide a
+          retired commodity (soft-delete only). In the new <em>Pricing campaigns</em> section
+          below the table, schedule a global <code>×N</code> multiplier for selected materials
+          over a date range — Aguirre and Goode both see it live.
+        </p>
+        <p class="step-cta">→ <a href="phase-4-admin.html">Admin dashboard</a> · Scenarios 5 / 5b / 5c</p>
       </div>
     </div>
 
@@ -177,6 +190,12 @@
         <p>
           Initial Service Notice or Semi-Annual Update — app generates the PDF, you click "Mark
           as mailed" after sending. No postage automation during the pilot.
+        </p>
+        <p>
+          <strong style="color:#92400e;">Apr 27 addition:</strong> Initial Service batches now
+          skip residents whose service has already started (any completed pickup) and the batch
+          row shows a "<em>N active residents skipped</em>" count. Semi-Annual still goes to
+          everyone in the zone.
         </p>
         <p class="step-cta">→ <a href="phase-9-admin-polish.html">Admin polish</a> · Scenario 5</p>
       </div>

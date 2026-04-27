@@ -3,16 +3,15 @@ import { notFound } from 'next/navigation';
 import { requireRole } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
 import { loadDepotContext } from '@/lib/auth/depotAccess';
+import { loadActiveMaterials } from '@/lib/admin/loadActiveMaterials';
+import { loadActiveCampaigns } from '@/lib/admin/loadActiveCampaigns';
+import { buildMaterialMultipliers } from '@/lib/types/pricingCampaign';
 import type { BagDoc } from '@/lib/types/bag';
 import type { PickupDoc } from '@/lib/types/pickup';
 import type { RouteDoc } from '@/lib/types/route';
 import type { UserDoc } from '@/lib/types/user';
-import {
-  MATERIAL_IDS,
-  type MaterialDoc,
-  type MaterialId,
-  type MaterialPricing,
-} from '@/lib/types/material';
+import type { MaterialId, MaterialPricing } from '@/lib/types/material';
+import { resolveAcceptedMaterials } from '@/lib/types/depot';
 import { ProcessBagForm, type ProcessBagFormProps } from './ProcessBagForm';
 
 export const dynamic = 'force-dynamic';
@@ -55,7 +54,6 @@ export default async function ProcessBagPage({
     notFound();
   }
 
-  // Find the pickup that carries this bag on a completed route in the depot's zones.
   const pickupSnap = await adminDb
     .collection('pickups')
     .where('bagId', '==', bag.id)
@@ -72,25 +70,29 @@ export default async function ProcessBagPage({
   if (!depotRes.context.depot.zoneIds.includes(route.zoneId)) notFound();
 
   if (!bag.residentId) notFound();
-  const [residentSnap, materialSnaps] = await Promise.all([
+  const [residentSnap, allMaterials, activeCampaigns] = await Promise.all([
     adminDb.collection('users').doc(bag.residentId).get(),
-    adminDb.getAll(...MATERIAL_IDS.map((id) => adminDb.collection('materials').doc(id))),
+    loadActiveMaterials(),
+    loadActiveCampaigns(),
   ]);
   if (!residentSnap.exists) notFound();
   const resident = residentSnap.data() as UserDoc;
 
-  const materials = {} as Record<MaterialId, MaterialPricing>;
-  materialSnaps.forEach((snap, i) => {
-    if (!snap.exists) return;
-    const doc = snap.data() as MaterialDoc;
-    materials[MATERIAL_IDS[i]] = {
-      marketPrice: doc.marketPrice,
-      customerPct: doc.customerPct,
-    };
-  });
-  for (const id of MATERIAL_IDS) {
-    if (!materials[id]) notFound();
+  // Restrict to materials the depot is configured to accept.
+  const allMaterialIds = allMaterials.map((m) => m.id);
+  const accepted = new Set(
+    resolveAcceptedMaterials(depotRes.context.depot, allMaterialIds),
+  );
+  const visibleMaterials = allMaterials.filter((m) => accepted.has(m.id));
+  if (visibleMaterials.length === 0) notFound();
+
+  const materials: Record<MaterialId, MaterialPricing> = {};
+  for (const m of visibleMaterials) {
+    materials[m.id] = { marketPrice: m.marketPrice, customerPct: m.customerPct };
   }
+
+  const liveCampaigns = activeCampaigns.filter((c) => c.startsAt <= new Date());
+  const materialMultipliers = buildMaterialMultipliers(liveCampaigns);
 
   const props: ProcessBagFormProps = {
     bagId: bag.id,
@@ -99,6 +101,15 @@ export default async function ProcessBagPage({
     declaredType: bag.declaredType,
     separated: bag.declaredType === 'separated',
     materials,
+    materialList: visibleMaterials.map((m) => ({ id: m.id, name: m.name })),
+    materialMultipliers,
+    activeCampaignNotices: liveCampaigns.map((c) => ({
+      id: c.id,
+      name: c.name,
+      multiplier: c.multiplier,
+      materialNames: c.materialIds
+        .map((id) => visibleMaterials.find((m) => m.id === id)?.name ?? id),
+    })),
     returnHref: `/depot/incoming/${route.id}`,
   };
 

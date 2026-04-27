@@ -5,13 +5,23 @@ import { useMemo, useState } from 'react';
 import { calculatePoints } from '@/lib/logic/calculatePoints';
 import {
   CONTAMINATION_SEVERITIES,
-  MATERIAL_DISPLAY_NAMES,
-  MATERIAL_IDS,
   type ContaminationSeverity,
   type MaterialId,
   type MaterialPricing,
 } from '@/lib/types/material';
 import type { DeclaredBagType } from '@/lib/types/bag';
+
+export interface MaterialDescriptor {
+  id: MaterialId;
+  name: string;
+}
+
+export interface CampaignNotice {
+  id: string;
+  name: string;
+  multiplier: number;
+  materialNames: string[];
+}
 
 export interface ProcessBagFormProps {
   bagId: string;
@@ -20,10 +30,16 @@ export interface ProcessBagFormProps {
   declaredType: DeclaredBagType | null;
   separated: boolean;
   materials: Record<MaterialId, MaterialPricing>;
+  /** Ordered list of materials to render in the weight table — already filtered to depot's accepted + active set. */
+  materialList: MaterialDescriptor[];
+  /** Per-material campaign multipliers (e.g. { aluminum: 2 }). */
+  materialMultipliers: Record<MaterialId, number>;
+  /** Live campaigns to surface in the form so the worker knows why points are higher. */
+  activeCampaignNotices: CampaignNotice[];
   returnHref: string;
 }
 
-const MATERIAL_EMOJI: Record<MaterialId, string> = {
+const SEED_EMOJI: Record<string, string> = {
   aluminum: '🥫',
   tin_steel: '🥫',
   cardboard: '📦',
@@ -31,7 +47,15 @@ const MATERIAL_EMOJI: Record<MaterialId, string> = {
   pet: '🧴',
   hdpe: '🧴',
   mixed_plastic: '🛍️',
+  compost: '🌱',
+  textile: '👕',
+  electronics: '🔌',
+  glass: '🍾',
 };
+
+function emojiFor(id: MaterialId): string {
+  return SEED_EMOJI[id] ?? '♻️';
+}
 
 const CONTAMINATION_LABEL: Record<ContaminationSeverity, string> = {
   none: 'None',
@@ -51,39 +75,51 @@ type Step = 'form' | 'submitting' | 'done';
 
 export function ProcessBagForm(props: ProcessBagFormProps) {
   const router = useRouter();
+  const visibleIds = useMemo(() => props.materialList.map((m) => m.id), [props.materialList]);
+
   const [weights, setWeights] = useState<Record<MaterialId, string>>(() => {
-    const init = {} as Record<MaterialId, string>;
-    for (const id of MATERIAL_IDS) init[id] = '';
+    const init: Record<string, string> = {};
+    for (const id of visibleIds) init[id] = '';
     return init;
   });
   const [contamination, setContamination] = useState<ContaminationSeverity>('none');
+  const [commingled, setCommingled] = useState<boolean>(props.declaredType === 'mixed');
   const [step, setStep] = useState<Step>('form');
   const [error, setError] = useState<string | null>(null);
   const [awarded, setAwarded] = useState<number | null>(null);
 
   const numericWeights = useMemo(() => {
-    const out = {} as Record<MaterialId, number>;
-    for (const id of MATERIAL_IDS) {
+    const out: Record<string, number> = {};
+    for (const id of visibleIds) {
       const n = Number(weights[id]);
       out[id] = Number.isFinite(n) && n > 0 ? n : 0;
     }
     return out;
-  }, [weights]);
+  }, [weights, visibleIds]);
 
   const totalWeight = useMemo(
-    () => MATERIAL_IDS.reduce((sum, id) => sum + numericWeights[id], 0),
-    [numericWeights],
+    () => visibleIds.reduce((sum, id) => sum + (numericWeights[id] ?? 0), 0),
+    [numericWeights, visibleIds],
   );
 
   const previewPoints = useMemo(() => {
-    if (totalWeight <= 0) return 0;
+    if (totalWeight <= 0 || commingled) return 0;
     return calculatePoints({
       weights: numericWeights,
       materials: props.materials,
       separated: props.separated,
       contaminationSeverity: contamination,
+      materialMultipliers: props.materialMultipliers,
     }).pointsAwarded;
-  }, [numericWeights, totalWeight, props.materials, props.separated, contamination]);
+  }, [
+    numericWeights,
+    totalWeight,
+    props.materials,
+    props.separated,
+    contamination,
+    commingled,
+    props.materialMultipliers,
+  ]);
 
   async function handleSubmit() {
     if (totalWeight <= 0) return;
@@ -93,16 +129,22 @@ export function ProcessBagForm(props: ProcessBagFormProps) {
       const payload: Record<string, unknown> = {
         bagId: props.bagId,
         weights: Object.fromEntries(
-          MATERIAL_IDS.filter((id) => numericWeights[id] > 0).map((id) => [id, numericWeights[id]]),
+          visibleIds
+            .filter((id) => (numericWeights[id] ?? 0) > 0)
+            .map((id) => [id, numericWeights[id]]),
         ),
         contaminationSeverity: contamination,
+        commingled,
       };
       const res = await fetch('/api/process-bag', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const body = (await res.json().catch(() => ({}))) as { error?: string; pointsAwarded?: number };
+      const body = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        pointsAwarded?: number;
+      };
       if (!res.ok) throw new Error(body.error ?? 'submit_failed');
       setAwarded(body.pointsAwarded ?? previewPoints);
       setStep('done');
@@ -145,6 +187,44 @@ export function ProcessBagForm(props: ProcessBagFormProps) {
         />
       </div>
 
+      <label
+        className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors ${
+          commingled
+            ? 'border-blue-400/40 bg-blue-500/10'
+            : 'border-white/10 bg-white/5'
+        }`}
+      >
+        <input
+          type="checkbox"
+          checked={commingled}
+          onChange={(e) => setCommingled(e.target.checked)}
+          className="mt-0.5 h-4 w-4 rounded border-white/20 bg-black/40"
+        />
+        <div className="text-xs">
+          <div className="font-semibold text-white">Commingled bag</div>
+          <div className="mt-0.5 text-gray-400">
+            Contents can&apos;t be sorted (mixed plastic + glass, etc.). Weights are still
+            recorded for landfill-diversion reporting, but no points are paid.
+          </div>
+        </div>
+      </label>
+
+      {props.activeCampaignNotices.length > 0 && (
+        <div className="rounded-xl border border-amber-400/30 bg-amber-400/10 p-3">
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-amber-200">
+            🔥 Active campaign{props.activeCampaignNotices.length === 1 ? '' : 's'}
+          </div>
+          <ul className="mt-1 space-y-0.5 text-[11px] text-amber-100">
+            {props.activeCampaignNotices.map((c) => (
+              <li key={c.id}>
+                <span className="font-semibold">×{c.multiplier}</span> on{' '}
+                {c.materialNames.join(', ')} · {c.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div className="rounded-xl border border-white/10 bg-white/5 p-4">
         <div className="text-[11px] uppercase tracking-wide text-gray-400">Contamination</div>
         <div className="mt-2 grid grid-cols-4 gap-2">
@@ -179,19 +259,22 @@ export function ProcessBagForm(props: ProcessBagFormProps) {
           Open bag, sort on the table, weigh separately.
         </div>
         <div className="mt-3 divide-y divide-white/5">
-          {MATERIAL_IDS.map((id) => (
-            <div key={id} className="flex items-center justify-between py-2">
+          {props.materialList.map((m) => (
+            <div key={m.id} className="flex items-center justify-between py-2">
               <span className="text-sm text-gray-200">
-                <span className="mr-1">{MATERIAL_EMOJI[id]}</span>
-                {MATERIAL_DISPLAY_NAMES[id]}
+                <span className="mr-1">{emojiFor(m.id)}</span>
+                {m.name}
               </span>
               <div className="flex items-center gap-2">
                 <input
                   inputMode="decimal"
                   type="text"
-                  value={weights[id]}
+                  value={weights[m.id] ?? ''}
                   onChange={(e) =>
-                    setWeights((prev) => ({ ...prev, [id]: e.target.value.replace(/[^0-9.]/g, '') }))
+                    setWeights((prev) => ({
+                      ...prev,
+                      [m.id]: e.target.value.replace(/[^0-9.]/g, ''),
+                    }))
                   }
                   placeholder="0.0"
                   className="w-16 rounded border border-white/15 bg-black/40 px-2 py-1 text-right text-sm text-white"
@@ -208,7 +291,9 @@ export function ProcessBagForm(props: ProcessBagFormProps) {
           Total {totalWeight.toFixed(1)} lbs
         </div>
         <div className="mt-1 text-base font-semibold text-white">
-          Auto-calculated: +{previewPoints.toLocaleString()} points
+          {commingled
+            ? 'Diversion-only — 0 points (commingled)'
+            : `Auto-calculated: +${previewPoints.toLocaleString()} points`}
         </div>
       </div>
 

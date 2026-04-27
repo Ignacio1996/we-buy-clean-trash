@@ -166,11 +166,27 @@
           with the zone name, type, resident count, an amber <strong>GENERATED</strong> badge,
           and today's date. No letters have been printed or mailed yet — that's still Tia's call.
         </div>
+        <div class="callout note">
+          <span class="callout-title">📩 Initial Service gating <span style="color:#fbbf24;">(NEW · Apr 27)</span></span>
+          <p style="margin: 4pt 0;">
+            Initial Service Notices skip residents whose service has already started — anyone with at
+            least one <em>completed</em> pickup. The form says so, and the generated batch row reads
+            something like <em>"12 units · 3 active residents skipped"</em>. <strong>Semi-Annual</strong>
+            updates still go to every resident in the zone (no gating).
+          </p>
+          <p style="margin: 4pt 0;">
+            The included resident UIDs are snapshotted onto the batch doc (<code>residentIds</code>
+            field), so reprints later — even after more residents start service — produce the same
+            letters. Pre-gating batches without that field fall back to "all residents in zone."
+          </p>
+        </div>
         <div class="verify-checklist">
           <h4>Verify:</h4>
           <p><span class="checkbox"></span> The resident count on the row matches the one the form offered before clicking</p>
           <p><span class="checkbox"></span> The note (if entered) shows up in the row subtitle</p>
           <p><span class="checkbox"></span> An empty zone (0 residents) still generates a batch but its print view shows the empty-state</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> After processing a bag for one resident in the zone, generating a fresh Initial Service batch shows that resident as "skipped" — Semi-Annual still includes them</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> Re-printing the original batch still produces letters for the same N residents (snapshot is immutable)</p>
           </div>
       </div>
     </div>

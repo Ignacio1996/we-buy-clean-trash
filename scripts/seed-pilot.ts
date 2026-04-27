@@ -2,6 +2,7 @@ import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import type { UserRecord } from 'firebase-admin/auth';
 import { adminAuth, adminDb } from './_admin';
 import type { Role } from '../src/lib/types/role';
+import { MATERIAL_IDS } from '../src/lib/types/material';
 
 // Idempotent pilot seed — safe to re-run. Creates the reference state the
 // build plan calls for:
@@ -40,6 +41,7 @@ const DEPOT = {
   postalCode: '80301',
   geo: { lat: 40.0435, lng: -105.2467 },
   zoneIds: [ZONE_ID],
+  acceptedMaterials: [...MATERIAL_IDS],
 };
 
 interface TestUser {

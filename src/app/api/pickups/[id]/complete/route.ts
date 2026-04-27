@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { FieldValue } from 'firebase-admin/firestore';
-import { adminDb, adminStorage } from '@/lib/firebase/admin';
+import { adminDb } from '@/lib/firebase/admin';
+import { uploadPhoto } from '@/lib/storage/uploadPhoto';
 import { getSession } from '@/lib/auth/session';
 import { loadOperatorRoute } from '@/lib/auth/operatorAccess';
 import type { PickupDoc } from '@/lib/types/pickup';
@@ -64,11 +65,12 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
 
   // Upload operator photo to its own path — keep doorstep photo untouched.
   const storagePath = `pickups/${pickup.residentId}/${pickup.id}-op.jpg`;
-  const bucket = adminStorage.bucket();
-  const file = bucket.file(storagePath);
-  const buffer = Buffer.from(payload.photoBase64, 'base64');
-  await file.save(buffer, { contentType: payload.photoMime, resumable: false });
-  const operatorPhotoUrl = `gs://${bucket.name}/${storagePath}`;
+  const upload = await uploadPhoto({
+    path: storagePath,
+    base64: payload.photoBase64,
+    contentType: payload.photoMime,
+  });
+  const operatorPhotoUrl = upload.url;
 
   await adminDb.runTransaction(async (tx) => {
     const fresh = await tx.get(pickupRef);

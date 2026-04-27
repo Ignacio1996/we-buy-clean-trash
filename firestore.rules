@@ -55,6 +55,12 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if false;
     }
+    // Pricing campaigns: any signed-in user can read so the resident dashboard
+    // can surface live multipliers. Writes go through the admin API only.
+    match /pricingCampaigns/{id} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
     match /depots/{id} {
       allow read: if isStaff();
       allow write: if false;

@@ -181,12 +181,52 @@
           Sign in as Aguirre in another browser — her points balance has gone up by exactly the
           amount Goode saw on submit.
         </div>
+        <div class="callout note">
+          <span class="callout-title">⚙️ Dynamic accepted materials <span style="color:#fbbf24;">(NEW · Apr 27)</span></span>
+          <p style="margin: 4pt 0;">
+            The 7 material rows you see on this form are <strong>not hardcoded</strong> anymore.
+            They come from the <em>materials</em> Firestore collection (active=true) intersected
+            with this depot's <em>acceptedMaterials</em> set (configured by admin in Zones &amp;
+            Depots — see Phase 4 Scenario 4b). If admin adds a new material like
+            <em>Compost</em> and toggles it on for this depot, a new weight row appears here.
+          </p>
+        </div>
         <div class="verify-checklist">
           <h4>Verify:</h4>
           <p><span class="checkbox"></span> The preview total matches what Aguirre sees after submit</p>
           <p><span class="checkbox"></span> Aguirre's latest transaction row (on her rewards / profile screen) shows type <em>pickup</em> with a positive delta</p>
           <p><span class="checkbox"></span> The bag's status on the route list flipped to <em>Processed</em> on reload</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> If admin removes a material from this depot's accepted set (Phase 4 · 4b), the row disappears here within seconds</p>
           </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 4b — Active pricing campaign banner <span style="color:#fbbf24;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Apr 27</span></div>
+      <div class="scenario-body">
+        <p><span class="actor depot">Depot</span> Signed in as Goode, with admin Tia having scheduled a campaign.</p>
+        <p>
+          When admin runs a global pricing campaign (e.g. <em>Aluminum 2× week</em>, see
+          <a href="phase-4-admin.html">Phase 4 · Scenario 5c</a>), the worker sees a
+          <strong>🔥 Active campaign</strong> banner above the contamination row, and the live
+          points preview reflects the multiplier.
+        </p>
+        <ol>
+          <li>Have Tia start a campaign: ×2 on Aluminum for the next 7 days.</li>
+          <li>As Goode, refresh the process form for any pending bag. Confirm the orange banner reads <em>×2 on Aluminum · Aluminum 2× week</em>.</li>
+          <li>Type 1.0 lb of aluminum. The preview points should be roughly double what the same input gave before the campaign.</li>
+          <li>Submit. Open the resulting <code>bagProcessing</code> doc in Firebase console and confirm <code>appliedCampaigns</code> contains the campaign id, name, multiplier, and material ids.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Multipliers compound when more than one campaign overlaps —
+          schedule a second ×1.5 campaign on aluminum and the preview should reflect ×3.
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Banner only shows campaigns whose start date has passed (scheduled-for-future ones don't appear here)</p>
+          <p><span class="checkbox"></span> The preview multiplier applies <em>per material</em> — non-aluminum rows are unaffected</p>
+          <p><span class="checkbox"></span> When admin clicks "End now" on the campaign, refreshing the form clears the banner and the preview reverts</p>
+        </div>
       </div>
     </div>
 

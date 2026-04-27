@@ -40,19 +40,28 @@ export async function POST(request: Request) {
   const parsed = parseGenerate(json);
   if ('error' in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
-  const [zoneSnap, residentCountSnap] = await Promise.all([
+  const [zoneSnap, residentsSnap] = await Promise.all([
     adminDb.collection('zones').doc(parsed.zoneId).get(),
     adminDb
       .collection('users')
       .where('role', '==', 'resident')
       .where('zoneId', '==', parsed.zoneId)
-      .count()
       .get(),
   ]);
   if (!zoneSnap.exists) return NextResponse.json({ error: 'zone_not_found' }, { status: 404 });
 
   const zone = zoneSnap.data() as ZoneDoc;
-  const residentCount = residentCountSnap.data().count;
+  const allResidentIds = residentsSnap.docs.map((d) => d.id);
+
+  // Initial-service notices skip residents whose service has already started
+  // (i.e. they have at least one completed pickup). Semi-annual goes to everyone.
+  const startedIds =
+    parsed.type === 'initial_service' && allResidentIds.length > 0
+      ? await loadResidentsWithStartedService(allResidentIds)
+      : new Set<string>();
+
+  const residentIds = allResidentIds.filter((id) => !startedIds.has(id));
+  const excludedActiveResidents = allResidentIds.length - residentIds.length;
 
   const ref = adminDb.collection('complianceBatches').doc();
   await ref.set({
@@ -60,7 +69,9 @@ export async function POST(request: Request) {
     zoneId: parsed.zoneId,
     zoneName: zone.name,
     type: parsed.type,
-    residentCount,
+    residentCount: residentIds.length,
+    residentIds,
+    excludedActiveResidents,
     status: 'generated',
     generatedAt: FieldValue.serverTimestamp(),
     generatedBy: session.uid,
@@ -69,7 +80,33 @@ export async function POST(request: Request) {
     notes: parsed.notes,
   });
 
-  return NextResponse.json({ ok: true, id: ref.id });
+  return NextResponse.json({ ok: true, id: ref.id, residentCount: residentIds.length });
+}
+
+async function loadResidentsWithStartedService(
+  residentIds: string[],
+): Promise<Set<string>> {
+  // Firestore `in` queries cap at 30 values; chunk and run in parallel.
+  const CHUNK = 30;
+  const chunks: string[][] = [];
+  for (let i = 0; i < residentIds.length; i += CHUNK) {
+    chunks.push(residentIds.slice(i, i + CHUNK));
+  }
+  const started = new Set<string>();
+  await Promise.all(
+    chunks.map(async (ids) => {
+      const snap = await adminDb
+        .collection('pickups')
+        .where('residentId', 'in', ids)
+        .where('status', '==', 'completed')
+        .get();
+      snap.docs.forEach((d) => {
+        const rid = d.get('residentId');
+        if (typeof rid === 'string') started.add(rid);
+      });
+    }),
+  );
+  return started;
 }
 
 interface PatchPayload {

@@ -2,22 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import { calculatePoints } from '@/lib/logic/calculatePoints';
-import {
-  MATERIAL_DISPLAY_NAMES,
-  MATERIAL_IDS,
-  type MaterialId,
-  type MaterialPricing,
-} from '@/lib/types/material';
-
-const DEFAULT_WEIGHTS: Record<MaterialId, number> = {
-  aluminum: 1,
-  tin_steel: 0,
-  cardboard: 5,
-  paper: 0,
-  pet: 0.5,
-  hdpe: 0,
-  mixed_plastic: 0,
-};
+import type { ActiveMaterial } from '@/lib/admin/loadActiveMaterials';
+import type { MaterialId, MaterialPricing } from '@/lib/types/material';
 
 function formatDollars(n: number) {
   return n.toLocaleString('en-US', {
@@ -31,17 +17,54 @@ function formatPoints(n: number) {
   return n.toLocaleString('en-US');
 }
 
-export function CalculatorForm({ materials }: { materials: Record<MaterialId, MaterialPricing> }) {
-  const [weights, setWeights] = useState<Record<MaterialId, number>>(DEFAULT_WEIGHTS);
+const DEFAULT_DEMO_WEIGHTS: Record<string, number> = {
+  aluminum: 1,
+  cardboard: 5,
+  pet: 0.5,
+};
+
+export function CalculatorForm({
+  materials,
+  multipliers,
+}: {
+  materials: ActiveMaterial[];
+  multipliers?: Record<MaterialId, number>;
+}) {
+  const pricingMap = useMemo<Record<MaterialId, MaterialPricing>>(() => {
+    const out: Record<string, MaterialPricing> = {};
+    for (const m of materials) {
+      out[m.id] = { marketPrice: m.marketPrice, customerPct: m.customerPct };
+    }
+    return out;
+  }, [materials]);
+
+  const [weights, setWeights] = useState<Record<MaterialId, number>>(() => {
+    const init: Record<string, number> = {};
+    for (const m of materials) init[m.id] = DEFAULT_DEMO_WEIGHTS[m.id] ?? 0;
+    return init;
+  });
 
   const good = useMemo(
-    () => calculatePoints({ weights, materials, separated: true, contaminationSeverity: 'none' }),
-    [weights, materials],
+    () =>
+      calculatePoints({
+        weights,
+        materials: pricingMap,
+        separated: true,
+        contaminationSeverity: 'none',
+        materialMultipliers: multipliers,
+      }),
+    [weights, pricingMap, multipliers],
   );
   const bad = useMemo(
     () =>
-      calculatePoints({ weights, materials, separated: false, contaminationSeverity: 'severe' }),
-    [weights, materials],
+      calculatePoints({
+        weights,
+        materials: pricingMap,
+        separated: false,
+        contaminationSeverity: 'severe',
+        materialMultipliers: multipliers,
+      }),
+    [weights, pricingMap, multipliers],
   );
 
   function updateWeight(id: MaterialId, value: string) {
@@ -54,17 +77,22 @@ export function CalculatorForm({ materials }: { materials: Record<MaterialId, Ma
       <div className="rounded-xl border border-white/10 bg-white/5 p-4">
         <div className="text-xs uppercase tracking-wide text-gray-400">Try it — enter lbs</div>
         <div className="mt-3 grid grid-cols-2 gap-3">
-          {MATERIAL_IDS.map((id) => (
-            <label key={id} className="flex flex-col gap-1 text-xs text-gray-300">
-              {MATERIAL_DISPLAY_NAMES[id]}
-              <input
-                type="number"
-                min={0}
-                step={0.1}
-                value={weights[id]}
-                onChange={(e) => updateWeight(id, e.target.value)}
-                className="rounded border border-white/15 bg-black/40 px-2 py-1 text-sm text-white"
-              />
+          {materials.map((m) => (
+            <label key={m.id} className="flex flex-col gap-1 text-xs text-gray-300">
+              {m.name}
+              <div className="relative">
+                <input
+                  type="number"
+                  min={0}
+                  step={0.1}
+                  value={weights[m.id] ?? 0}
+                  onChange={(e) => updateWeight(m.id, e.target.value)}
+                  className="w-full rounded border border-white/15 bg-black/40 px-2 py-1 pr-9 text-sm text-white"
+                />
+                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-wide text-gray-500">
+                  lbs
+                </span>
+              </div>
             </label>
           ))}
         </div>

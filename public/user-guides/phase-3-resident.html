@@ -85,9 +85,11 @@
         </ol>
         <p>You should see:</p>
         <ul>
-          <li>A <strong>points balance</strong> tile (10,000 right after signup).</li>
+          <li>A <strong>points balance</strong> tile (10,000 right after signup) and a value tile.</li>
+          <li><strong>NEW (Apr 27):</strong> A redemption-progress card just below the tiles — <em>"X pts to a $10 gift card"</em> with a thin progress bar. Tap it to jump to /resident/rewards.</li>
           <li>A <strong>next pickup</strong> card with either a date or "Pickup day not assigned yet."</li>
-          <li>An <strong>Order more bags</strong> button near the top.</li>
+          <li><strong>NEW (Apr 27):</strong> If a pricing campaign is live (admin set one in Phase 4 · Scenario 5c), a <strong>🔥 BONUS RUNNING NOW</strong> card lists the active multipliers.</li>
+          <li>An <strong>Order more bags</strong> CTA — or <strong>Order your first batch</strong> until at least one bag order has been placed (Apr 27 copy change).</li>
           <li>A notification or impact card further down.</li>
           <li>A bottom nav bar: <em>Home · Scan · Calculator · Guide · Rewards</em>.</li>
         </ul>
@@ -102,10 +104,24 @@
           <strong>Expected:</strong> Everything loads in one pass, no long spinners. Numbers match
           what you'd expect for a brand-new account (10,000 pts, no pickups yet).
         </div>
+        <div class="callout note">
+          <span class="callout-title">🎉 Signup-bonus modal <span style="color:#22c55e;">(NEW · Apr 27)</span></span>
+          <p style="margin: 4pt 0;">
+            On the very first dashboard visit after signup, a modal pops over the screen explaining
+            <em>"You earned 10,000 points — that's your signup bonus, worth $1 toward your first
+            reward."</em> Tap <strong>Let's go</strong> or click outside to dismiss. The modal is
+            keyed by uid in <code>localStorage</code> (<code>wbct.signupBonusAcked.&lt;uid&gt;</code>) —
+            it never reappears for the same browser. Clear that key in DevTools to re-test.
+          </p>
+        </div>
         <div class="verify-checklist">
           <h4>Verify:</h4>
           <p><span class="checkbox"></span> Points balance correct</p>
           <p><span class="checkbox"></span> Bottom nav switches screens cleanly</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> Signup-bonus modal shows once and never again on the same browser/account</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> Redemption progress bar reads correctly — at 10,000 pts it shows "90,000 pts to a $10 gift card" and a 10% bar</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> Order CTA reads "Order your first batch" until you've placed an order, then flips to "Order more bags"</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> If admin started a campaign (Phase 4 · Scenario 5c), the 🔥 banner is visible above the order CTA</p>
           </div>
       </div>
     </div>
@@ -218,18 +234,24 @@
         <p><span class="actor resident">Resident</span> Signed in as Aguirre.</p>
         <ol>
           <li>Tap <strong>Calculator</strong> on the bottom nav.</li>
-          <li>Type weights into each of the seven material fields (try 1 lb aluminum, 2 lb cardboard, etc.).</li>
+          <li>Type weights into each material field (try 1 lb aluminum, 2 lb cardboard, etc.). Each input now shows a <code>lbs</code> suffix on the right (Apr 27 update).</li>
           <li>Toggle <strong>Clean &amp; separated</strong> on and off.</li>
+          <li>If admin has added a custom material (Phase 4 · Scenario 5b), confirm it appears in the input list with its custom name.</li>
+          <li>If admin has scheduled a pricing campaign (Phase 4 · Scenario 5c), confirm a <strong>🔥 Bonus running now</strong> banner appears at the top of the page, and the affected material's row in <em>Accepted materials</em> shows a <code>×N</code> tag with the boosted "you get" amount.</li>
         </ol>
         <div class="expected">
           <strong>Expected:</strong> The estimated points update live. Flipping the "separated"
           toggle roughly <em>doubles</em> the estimate. Dollar equivalents ($10 per 100,000 pts)
-          match the point totals.
+          match the point totals. With a ×2 campaign on aluminum, the same 1 lb of aluminum should
+          award double the points it did before.
         </div>
         <div class="verify-checklist">
           <h4>Verify:</h4>
           <p><span class="checkbox"></span> Live updates as you type</p>
           <p><span class="checkbox"></span> Separated multiplier behaves correctly</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> Each input row shows the <code>lbs</code> suffix</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> Custom materials added by admin appear here within seconds (no redeploy required)</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> Live campaign multiplier compounds with the separated 2× — a 1 lb aluminum bag with separated + ×2 campaign earns ~4× the no-campaign mixed amount</p>
           </div>
       </div>
     </div>

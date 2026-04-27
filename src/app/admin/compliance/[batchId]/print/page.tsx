@@ -52,7 +52,12 @@ async function loadBatchContext(batchId: string) {
   ]);
   const depot = depotSnap.exists ? (depotSnap.data() as DepotDoc) : null;
 
-  const residents = residentsSnap.docs.map((d) => d.data() as UserDoc);
+  // Honor the immutable resident snapshot stored on the batch when present.
+  // (Pre-gating batches won't have residentIds — fall back to all zone residents.)
+  const snapshotIds = Array.isArray(batch.residentIds) ? new Set(batch.residentIds) : null;
+  const residents = residentsSnap.docs
+    .map((d) => d.data() as UserDoc)
+    .filter((r) => (snapshotIds ? snapshotIds.has(r.uid) : true));
   const addressIds = residents
     .map((r) => r.addressId)
     .filter((id): id is string => !!id);
