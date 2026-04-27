@@ -1,3 +1,5 @@
+import { getSession } from '@/lib/auth/session';
+import { requireConsumerResident } from '@/lib/auth/residentAccount';
 import { loadActiveMaterials } from '@/lib/admin/loadActiveMaterials';
 import { loadActiveCampaigns } from '@/lib/admin/loadActiveCampaigns';
 import { buildMaterialMultipliers } from '@/lib/types/pricingCampaign';
@@ -8,6 +10,8 @@ function formatDollars(n: number) {
 }
 
 export default async function CalculatorPage() {
+  const session = await getSession();
+  await requireConsumerResident(session!.uid);
   const [materials, activeCampaigns] = await Promise.all([
     loadActiveMaterials(),
     loadActiveCampaigns(),

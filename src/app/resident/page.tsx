@@ -9,6 +9,8 @@ import { loadActiveCampaigns } from '@/lib/admin/loadActiveCampaigns';
 import { loadActiveMaterials } from '@/lib/admin/loadActiveMaterials';
 import type { BagOrderDoc, BagOrderStatus } from '@/lib/types/bagOrder';
 import type { RouteDoc } from '@/lib/types/route';
+import { resolveAccountType } from '@/lib/types/user';
+import { CommercialResidentHome } from './CommercialResidentHome';
 
 const GIFT_CARD_POINTS = 100_000;
 
@@ -62,6 +64,16 @@ export default async function ResidentHome() {
   const userSnap = await adminDb.collection('users').doc(uid).get();
   const user = userSnap.data() ?? {};
   if (!user.onboardingCompletedAt) redirect('/resident/welcome');
+  if (resolveAccountType(user) === 'commercial_site') {
+    return (
+      <CommercialResidentHome
+        commercialAccountId={
+          typeof user.commercialAccountId === 'string' ? user.commercialAccountId : null
+        }
+        userName={typeof user.name === 'string' ? user.name : null}
+      />
+    );
+  }
   const pointsBalance = typeof user.pointsBalance === 'number' ? user.pointsBalance : 0;
   const name = typeof user.name === 'string' ? user.name.split(' ')[0] : 'there';
   const dollarValue = pointsToDollars(pointsBalance);

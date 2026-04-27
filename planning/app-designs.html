@@ -2246,6 +2246,35 @@
     <div style="margin-bottom:14px;">
       <div><span style="color:#fbbf24;font-weight:700;">FIXED</span> <strong style="color:#fff;">Admin:</strong> Editing per-depot accepted materials no longer crashes the Zones page — the depot loader now strips the <code>updatedAt</code> Firestore <code>Timestamp</code> before passing the doc to the client component (Timestamps don't serialize across the RSC boundary).</div>
     </div>
+
+    <!-- ── Compost Phase B · Apr 27, 2026 (evening) ── -->
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
+      <div style="font-size:0.78rem;color:#34d399;font-weight:700;margin-bottom:8px;">Compost Phase B · April 27, 2026</div>
+      <div style="font-size:0.72rem;color:#6b7280;margin-bottom:10px;line-height:1.5;">
+        Compost-specific intake on top of Phase A primitives. Tia's drivers can now use the operator app instead of Linktree + Google Sheets: scan a site, enter fullness per bin, submit. Admin can onboard commercial sites and provision reusable bins. Resident UI gates so commercial portals don't show consumer CTAs. Full notes in <code>planning/Compost Integration - Phase B.md</code>.
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Admin:</strong> <code>/admin/commercial-accounts</code> — full CRUD for compost / bulk-collection sites. Fields mirror Dominique's Directory sheet: business name, contact, address, zone, default bin size, pickups/week, collection days, affiliation tag, materials, driver notes. Soft-delete (archive) preserves history.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Admin:</strong> <strong>Provision bins</strong> on each commercial site — mints N reusable <code>BIN-NNNN</code> QR-coded BagDocs in one transaction (up to 50/req). Bins stay <code>unused</code> across pickups instead of retiring. Each bin is attached to the site via <code>commercialAccountId</code>.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Operator:</strong> <code>/operator/compost</code> — today's commercial sites in the operator's zone, with a "TODAY" badge on sites whose <code>collectionDays</code> includes the current weekday. Banner on <code>/operator</code> links here when sites exist.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Operator:</strong> Site stop screen with one row per provisioned bin (or manual rows for unprovisioned), 5-bucket fullness picker (0/25/50/75/100%) with large touch targets, live <strong>total weight</strong> from the bin-weight table, and an "(estimated)" flag on interpolated 48-gal intermediates. Submit hits <code>POST /api/process-bin-pickup</code>.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> <code>binPickups</code> collection — one doc per pickup event, holds <code>bins[]</code> with computed lbs, total weight, contamination, optional photo. Inventory rolls up by zone × material in a <code>commercial_</code>-namespaced doc so it doesn't collide with depot inventory.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Bottom nav and routes now respect <code>accountType</code>. Commercial-site portals see only Home + Profile; calculator / order-bags / scan-bag bounce back via <code>requireConsumerResident()</code>. Home renders a commercial dashboard (site directory + 30-day diversion total + recent pickups) instead of the points/orders view.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> <code>BagDoc</code> gains optional <code>containerType</code> + <code>reusable</code> + <code>commercialAccountId</code>. <code>UserDoc</code> gains optional <code>accountType</code> + <code>commercialAccountId</code>. All back-compat — legacy bags resolve to <code>'bag'</code>, legacy users to <code>'resident'</code>.</div>
+    </div>
   </div>
 
   <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">

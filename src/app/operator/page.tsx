@@ -1,4 +1,5 @@
 import { Timestamp } from 'firebase-admin/firestore';
+import Link from 'next/link';
 import { requireRole } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
 import { LogoutButton } from '@/components/LogoutButton';
@@ -218,9 +219,21 @@ function ensureStop(
   return stop;
 }
 
+async function loadCompostSiteCount(operatorUid: string): Promise<number> {
+  const operatorSnap = await adminDb.collection('users').doc(operatorUid).get();
+  const zoneId = operatorSnap.exists ? (operatorSnap.get('zoneId') as string | undefined) : undefined;
+  let q = adminDb.collection('commercialAccounts').where('active', '==', true);
+  if (zoneId) q = q.where('zoneId', '==', zoneId);
+  const snap = await q.count().get();
+  return snap.data().count;
+}
+
 export default async function OperatorHome() {
   const session = await requireRole('operator');
-  const route = await loadTodaysRoute(session.uid);
+  const [route, compostSiteCount] = await Promise.all([
+    loadTodaysRoute(session.uid),
+    loadCompostSiteCount(session.uid),
+  ]);
 
   return (
     <main className="mx-auto min-h-dvh max-w-md bg-neutral-950 px-4 pb-16 pt-6 text-gray-100">
@@ -234,6 +247,18 @@ export default async function OperatorHome() {
         </div>
         <LogoutButton />
       </header>
+
+      {compostSiteCount > 0 && (
+        <Link
+          href="/operator/compost"
+          className="mt-3 flex items-center justify-between rounded-lg border border-blue-400/40 bg-blue-500/10 px-3 py-2 text-xs text-blue-100 hover:bg-blue-500/15"
+        >
+          <span>
+            🥬 Compost route — {compostSiteCount} site{compostSiteCount === 1 ? '' : 's'} in zone
+          </span>
+          <span className="text-blue-300">→</span>
+        </Link>
+      )}
 
       {!route ? (
         <section className="mt-10 rounded-xl border border-white/10 bg-white/5 p-5 text-sm text-gray-400">

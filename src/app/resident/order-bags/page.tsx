@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { getSession } from '@/lib/auth/session';
+import { requireConsumerResident } from '@/lib/auth/residentAccount';
 import {
   BAG_SHEET_UNIT_PRICE_DOLLARS,
   BAGS_PER_SHEET,
@@ -7,7 +9,9 @@ import {
 } from '@/lib/logic/calculateBagOrderTotal';
 import { OrderBagsForm } from './OrderBagsForm';
 
-export default function OrderBagsPage() {
+export default async function OrderBagsPage() {
+  const session = await getSession();
+  await requireConsumerResident(session!.uid);
   return (
     <main className="px-4 pt-8">
       <div className="flex items-center justify-between">

@@ -1,6 +1,23 @@
 import type { Timestamp } from 'firebase-admin/firestore';
 import type { Role } from './role';
 
+/**
+ * Resident accounts are humans who self-signed up; commercial_site accounts are
+ * businesses (e.g. a restaurant on Tia's compost route). Commercial sites can
+ * exist as commercialAccount docs without a UserDoc — `accountType` here only
+ * matters when the site has been granted portal access.
+ */
+export const ACCOUNT_TYPES = ['resident', 'commercial_site'] as const;
+export type AccountType = (typeof ACCOUNT_TYPES)[number];
+
+export function isAccountType(v: unknown): v is AccountType {
+  return typeof v === 'string' && (ACCOUNT_TYPES as readonly string[]).includes(v);
+}
+
+export function resolveAccountType(user: { accountType?: unknown }): AccountType {
+  return isAccountType(user.accountType) ? user.accountType : 'resident';
+}
+
 export interface UserDoc {
   uid: string;
   email: string;
@@ -11,6 +28,10 @@ export interface UserDoc {
   addressId: string | null;
   depotId: string | null;
   pointsBalance: number;
+  /** Defaults to 'resident' for legacy docs — see resolveAccountType. */
+  accountType?: AccountType;
+  /** When set, this user is the portal contact for a commercialAccount. */
+  commercialAccountId?: string | null;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }

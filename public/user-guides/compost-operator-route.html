@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Compost · Operator route</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a> &nbsp;·&nbsp; <a href="index.html#test-users">🔑 Test users</a> &nbsp;·&nbsp; <a href="glossary.html">📖 Glossary</a></p>
+    <header>
+      <h1>Compost · Operator — Bin-fullness route</h1>
+      <p class="lead">
+        How a compost driver records a pickup at a commercial site. The driver opens the
+        compost route, taps the site, picks fullness per bin, submits. No scale needed — the
+        server runs the bin-weight lookup. Run as <strong>Operator Aguirre</strong>.
+      </p>
+    </header>
+
+    <div class="stub-warning">
+      <span class="stub-title">⚠️ Prerequisites</span>
+      <ul>
+        <li>An admin onboarded at least one commercial site in the operator's zone — see <a href="compost-admin-commercial-accounts.html">Compost · Admin: Commercial accounts</a>.</li>
+        <li>That site has at least one bin provisioned (or the operator uses the manual-entry row).</li>
+        <li>Today is one of the site's <strong>collection days</strong>, or you're testing an off-day pickup (still allowed — sites just won't show the TODAY badge).</li>
+      </ul>
+    </div>
+
+    <h2>What you're verifying</h2>
+    <ul>
+      <li>The compost-route banner appears on <code>/operator</code> when commercial sites exist in the operator's zone.</li>
+      <li>Today's sites surface above the rest with a TODAY badge.</li>
+      <li>The site stop screen shows one row per provisioned bin.</li>
+      <li>Picking a fullness bucket updates the per-row weight estimate live.</li>
+      <li>Total weight = sum across all rows with content.</li>
+      <li>Submitting writes a <code>binPickups</code> doc and increments commercial inventory.</li>
+    </ul>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 1 — Open the compost route</div>
+      <div class="scenario-body">
+        <p><span class="actor operator">Operator</span> Signed in as Operator Aguirre, on a phone.</p>
+        <ol>
+          <li>Land on <strong>/operator</strong>.</li>
+          <li>Look for the blue banner: <strong>🥬 Compost route — N sites in zone</strong>.</li>
+          <li>Tap it. You land on <strong>/operator/compost</strong>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Today's sites bubble to the top with a TODAY badge in the
+          top-right corner of the card. The other sites (different collection days) sort
+          alphabetically below. Each card shows zone, bin count, pickups/week, and the days
+          the site is collected.
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 2 — Record a pickup at Comune (3 × 32-gal bins)</div>
+      <div class="scenario-body">
+        <p>Comune was onboarded with three 32-gal bins. Today the driver finds the bins at
+          ¾, ½, and full.</p>
+        <ol>
+          <li>Tap the Comune card. You land on <strong>/operator/compost/[id]</strong>.</li>
+          <li>Read the driver-notes amber banner if present (gate code, bin location).</li>
+          <li><strong>Material</strong> defaults to <code>Food scrap</code>. Leave it.</li>
+          <li>Three rows are pre-rendered, one per provisioned bin. For each row tap the
+            fullness bucket:
+            <ul>
+              <li>Bin 1 → <strong>75% / Three-Quarter</strong> → reads <code>≈ 90 lbs</code></li>
+              <li>Bin 2 → <strong>50% / Half</strong> → reads <code>≈ 60 lbs</code></li>
+              <li>Bin 3 → <strong>100% / Full</strong> → reads <code>≈ 130 lbs</code></li>
+            </ul>
+          </li>
+          <li>Watch the blue <strong>Total weight</strong> panel at the bottom — it should
+            update live to <code>280 lbs</code> across <code>3 of 3 bins with content</code>.</li>
+          <li>Leave contamination on <strong>None</strong>.</li>
+          <li>Add a note like "Hot day, lid was open" (optional).</li>
+          <li>Tap the green <strong>✓ Record pickup</strong> CTA.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> You bounce back to <code>/operator/compost</code>. The
+          card for Comune still shows TODAY (you might pick up again later). In Firestore:
+          a new <code>binPickups</code> doc with <code>totalWeightLbs: 280</code>; the
+          inventory doc <code>commercial_&lt;zoneId&gt;_food_scrap</code> incremented by 280.
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Total updates instantly when fullness changes</p>
+          <p><span class="checkbox"></span> Submit is disabled when no row has fullness &gt; 0</p>
+          <p><span class="checkbox"></span> A site with zero bins falls back to a single manual-entry row that lets you pick a size and fullness ad-hoc</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 3 — 48-gallon estimates</div>
+      <div class="scenario-body">
+        <p>The bin-weight table is verified by on-site weighing for 32-gal and 64-gal at every
+          fullness bucket. For 48-gal, only the <em>full</em> reading (195 lbs) was measured;
+          the intermediate buckets are linear interpolations.</p>
+        <ol>
+          <li>Provision a 48-gal bin for any site (Compost · Admin scenario 2).</li>
+          <li>On the operator stop screen, pick <strong>50%</strong> on that row.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The row reads <code>≈ 97.5 lbs (estimated)</code> in
+          amber. The total-weight panel notes "<em>contains interpolated 48-gal estimates</em>"
+          when any row uses an interpolated bucket. Phase C reports footnote these.
+        </div>
+      </div>
+    </div>
+
+    <h2>Edge cases worth poking</h2>
+    <ul>
+      <li><strong>Material not accepted:</strong> Server rejects with <code>material_not_accepted</code> if the operator submits a material that isn't on the site's <code>materialIds</code> list.</li>
+      <li><strong>Bin / size mismatch:</strong> If you somehow submit a bagId pointing at a 32-gal bin while the row says 64-gal, the server rejects with <code>bin_size_mismatch</code>.</li>
+      <li><strong>Operator without a zone:</strong> If the operator's <code>zoneId</code> is unset, all active commercial sites show — useful for admin testing, not for production.</li>
+      <li><strong>Photo capture:</strong> The form accepts an optional photo (wired but UI-deferred). Add it in a follow-up if drivers want to document overflow / contamination.</li>
+    </ul>
+  </body>
+</html>

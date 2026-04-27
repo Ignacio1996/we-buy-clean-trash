@@ -3,19 +3,34 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const ITEMS = [
+export interface BottomNavItem {
+  href: string;
+  label: string;
+  icon: string;
+}
+
+const CONSUMER_ITEMS: readonly BottomNavItem[] = [
   { href: '/resident', label: 'Home', icon: '🏠' },
   { href: '/resident/scan-bag', label: 'Scan', icon: '📷' },
   { href: '/resident/order-bags', label: 'Bags', icon: '🛍️' },
   { href: '/resident/rewards', label: 'Rewards', icon: '🎁' },
   { href: '/resident/profile', label: 'Profile', icon: '👤' },
-] as const;
+];
 
-export function BottomNav() {
+const COMMERCIAL_ITEMS: readonly BottomNavItem[] = [
+  { href: '/resident', label: 'Home', icon: '🏠' },
+  { href: '/resident/profile', label: 'Profile', icon: '👤' },
+];
+
+export function BottomNav({ items }: { items?: readonly BottomNavItem[] }) {
   const pathname = usePathname();
+  const list = items ?? CONSUMER_ITEMS;
   return (
-    <nav className="sticky bottom-0 z-10 mx-auto grid max-w-md grid-cols-5 border-t border-white/10 bg-black/90 px-2 py-2 backdrop-blur">
-      {ITEMS.map((item) => {
+    <nav
+      className="sticky bottom-0 z-10 mx-auto grid max-w-md border-t border-white/10 bg-black/90 px-2 py-2 backdrop-blur"
+      style={{ gridTemplateColumns: `repeat(${list.length}, minmax(0, 1fr))` }}
+    >
+      {list.map((item) => {
         const active =
           pathname === item.href || (item.href !== '/resident' && pathname.startsWith(item.href));
         return (
@@ -34,3 +49,5 @@ export function BottomNav() {
     </nav>
   );
 }
+
+export { CONSUMER_ITEMS, COMMERCIAL_ITEMS };

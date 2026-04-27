@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Compost · Admin: Commercial accounts</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a> &nbsp;·&nbsp; <a href="index.html#test-users">🔑 Test users</a> &nbsp;·&nbsp; <a href="glossary.html">📖 Glossary</a></p>
+    <header>
+      <h1>Compost · Admin — Commercial accounts</h1>
+      <p class="lead">
+        Onboarding compost-collection sites and provisioning their reusable bins. Replaces
+        Tia's Linktree + Google Sheet "Directory" tab. Run as <strong>Tia Johnson</strong>.
+      </p>
+    </header>
+
+    <div class="stub-warning">
+      <span class="stub-title">⚠️ Where this fits</span>
+      Phase B of the compost integration. Sites onboarded here become the operator's compost
+      route in <a href="compost-operator-route.html">Compost · Operator route</a>. City-format
+      reports across these sites land in Phase C.
+    </div>
+
+    <h2>What you're verifying</h2>
+    <ul>
+      <li>Tia can add a commercial site (business name, contact, address, schedule, materials).</li>
+      <li>The site picks a default bin size and a list of pickup days.</li>
+      <li>An <strong>affiliation tag</strong> (Compost Clubhouse vs City of Columbus) can be set free-form.</li>
+      <li>Tia can <strong>provision N bins</strong> for the site — each gets a <code>BIN-NNNN</code> QR code that the driver scans on-site.</li>
+      <li>Archiving a site preserves its bins and historical pickups.</li>
+    </ul>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 1 — Add a Compost Clubhouse site</div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
+        <ol>
+          <li>From the side nav, open <strong>🏢 Commercial sites</strong>. (Sits between Bag stickers and Pricing.)</li>
+          <li>Click <strong>+ Add commercial site</strong>.</li>
+          <li>Fill out:
+            <ul>
+              <li><strong>Business name:</strong> <code>Comune</code></li>
+              <li><strong>Contact name:</strong> <code>Joe Galarraga</code></li>
+              <li><strong>Contact phone / email:</strong> optional</li>
+              <li><strong>Street / unit / city / state / ZIP</strong></li>
+              <li><strong>Zone:</strong> the zone you set up in the admin Zones page</li>
+              <li><strong>Default bin:</strong> <code>32 Gallon</code></li>
+              <li><strong>Pickups / week:</strong> <code>2</code></li>
+              <li><strong>Affiliation tag:</strong> <code>compost_clubhouse</code></li>
+              <li><strong>Collection days:</strong> click <strong>Mon</strong> and <strong>Thu</strong></li>
+              <li><strong>Materials:</strong> <code>Food scrap</code> should be pre-selected (it's the only bin-fullness material seeded by Phase A). Leave it on.</li>
+              <li><strong>Driver notes:</strong> "Bin is in the alley behind the kitchen — gate code 4321."</li>
+            </ul>
+          </li>
+          <li>Click <strong>Create site</strong>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The form closes and a card for Comune appears under
+          <em>Active sites</em>. Bins counter shows <code>0</code>. The amber affiliation chip
+          reads <code>compost_clubhouse</code>.
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 2 — Provision 3 bins for the site</div>
+      <div class="scenario-body">
+        <ol>
+          <li>On the Comune card, click <strong>Provision bins</strong> (top-right of the bin section).</li>
+          <li>Pick size <code>32 Gallon</code>, count <code>3</code>.</li>
+          <li>Click <strong>Add bins</strong>.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The counter jumps from <code>0</code> to <code>3 bins
+          provisioned</code>. Three new <code>BIN-NNNN</code>-coded BagDocs now exist in
+          Firestore, each tagged <code>reusable: true</code> and <code>commercialAccountId</code>
+          pointing at Comune. (Print labels for these in a future Phase B.5 — for the pilot,
+          taping a printed number sticker on the bin is fine.)
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Bins counter on the site card increments to 3</p>
+          <p><span class="checkbox"></span> Trying <code>count: 100</code> is rejected (cap is 50/req)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 3 — Edit and archive</div>
+      <div class="scenario-body">
+        <p>Archiving must <em>not</em> destroy historical pickups or detach the bins.</p>
+        <ol>
+          <li>On any active site card, click <strong>Archive</strong>.</li>
+          <li>Confirm.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The site moves into the <em>Archived</em> section at the
+          bottom. Its bins still exist in Firestore (verify by querying <code>bags</code>
+          where <code>commercialAccountId == &lt;archived-id&gt;</code>). Past <code>binPickups</code>
+          docs continue to reference the site by id.
+        </div>
+      </div>
+    </div>
+
+    <h2>Edge cases worth poking</h2>
+    <ul>
+      <li><strong>Zone required:</strong> The "+ Add commercial site" button is disabled until at least one zone exists.</li>
+      <li><strong>Material picker:</strong> Only materials with <code>measurementMode: 'bin_fullness'</code> default-on. Cash recyclables (aluminum, etc.) can be selected too — it just means the operator could record those at this site if you ever want to.</li>
+      <li><strong>Collection days mismatch:</strong> The form lets you pick fewer days than <code>pickupsPerWeek</code> says. That's intentional — drivers might double up on a single day.</li>
+    </ul>
+  </body>
+</html>
