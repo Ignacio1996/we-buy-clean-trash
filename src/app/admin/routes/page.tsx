@@ -48,13 +48,16 @@ async function loadData() {
   const zoneNameById = new Map(zones.map((z) => [z.id, z.name]));
   const opNameById = new Map(operators.map((o) => [o.id, o.name]));
 
-  // Group by (zoneId|operatorId|date-key) so the table can flag duplicates the
-  // admin needs to clean up. The route-optimize guard prevents new duplicates;
-  // this surfaces existing ones from before the guard landed.
+  // Group non-completed routes by (zoneId|operatorId|date-key) so the table can
+  // flag duplicates the admin needs to clean up. The route-optimize guard
+  // prevents new duplicates; this surfaces existing ones from before the guard
+  // landed. Completed routes are excluded — re-assigning a finished operator
+  // the same day is intentional, not a duplicate.
   const dupeKeyCounts = new Map<string, number>();
   const dupeKeyById = new Map<string, string>();
   for (const d of routesSnap.docs) {
     const r = d.data() as RouteDoc;
+    if (r.status === 'completed') continue;
     const dateKey = r.date?.toMillis?.() ?? 0;
     const key = `${r.zoneId}|${r.operatorId ?? ''}|${dateKey}`;
     dupeKeyById.set(r.id, key);
@@ -63,7 +66,7 @@ async function loadData() {
 
   const routes: RouteRow[] = routesSnap.docs.map((d) => {
     const r = d.data() as RouteDoc;
-    const key = dupeKeyById.get(r.id) ?? '';
+    const key = dupeKeyById.get(r.id);
     return {
       id: r.id,
       date: formatDate(r.date),
@@ -72,7 +75,7 @@ async function loadData() {
       status: r.status,
       stopCount: r.orderedStops.length,
       bagOrderCount: r.bagOrdersToDeliver.length,
-      duplicate: (dupeKeyCounts.get(key) ?? 0) > 1,
+      duplicate: key ? (dupeKeyCounts.get(key) ?? 0) > 1 : false,
     };
   });
 

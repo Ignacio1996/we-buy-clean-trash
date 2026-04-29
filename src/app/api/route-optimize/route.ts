@@ -80,23 +80,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'invalid_operator' }, { status: 400 });
   }
 
-  // One route per operator/zone/day. Catching this here avoids burning a Maps
-  // API call and prevents the orphan-bag-order bug where a duplicate route
-  // ends up with empty bagOrdersToDeliver because the orders are still pinned
-  // to the original route.
+  // One *active* route per operator/zone/day. Completed routes don't conflict —
+  // an operator who finishes early can be assigned a fresh route the same day.
+  // Catching this here avoids burning a Maps API call and prevents the
+  // orphan-bag-order bug where a duplicate route ends up with empty
+  // bagOrdersToDeliver because the orders are still pinned to the original.
   const routeDate = Timestamp.fromDate(date);
   const dupeSnap = await adminDb
     .collection('routes')
     .where('zoneId', '==', zoneId)
     .where('operatorId', '==', operatorId)
     .where('date', '==', routeDate)
-    .limit(1)
     .get();
-  if (!dupeSnap.empty) {
+  const activeDupe = dupeSnap.docs.find(
+    (d) => (d.data() as RouteDoc).status !== 'completed',
+  );
+  if (activeDupe) {
     return NextResponse.json(
       {
         error: 'route_already_exists',
-        existingRouteId: dupeSnap.docs[0].id,
+        existingRouteId: activeDupe.id,
       },
       { status: 409 },
     );

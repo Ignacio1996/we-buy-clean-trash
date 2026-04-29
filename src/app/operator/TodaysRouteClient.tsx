@@ -111,11 +111,30 @@ export function TodaysRouteClient({
 
   return (
     <>
-      <section className="mt-4 grid grid-cols-3 gap-2">
-        <Stat label="Stops" value={`${route.stats.stopsDone}/${route.stats.stopsTotal}`} />
-        <Stat label="Bags" value={`${route.stats.bagsDone}/${route.stats.bagsTotal}`} />
-        <Stat label="Deliver" value={`${route.stats.deliveriesPending}`} />
-      </section>
+      {(() => {
+        const showStops = route.stats.stopsTotal > 0;
+        const showBags = route.stats.bagsTotal > 0;
+        const showDeliver = route.stats.deliveriesTotal > 0;
+        const visible = [showStops, showBags, showDeliver].filter(Boolean).length;
+        if (visible === 0) return null;
+        const cols = visible === 1 ? 'grid-cols-1' : visible === 2 ? 'grid-cols-2' : 'grid-cols-3';
+        return (
+          <section className={`mt-4 grid ${cols} gap-2`}>
+            {showStops && (
+              <Stat label="Stops" value={`${route.stats.stopsDone}/${route.stats.stopsTotal}`} />
+            )}
+            {showBags && (
+              <Stat label="Bags" value={`${route.stats.bagsDone}/${route.stats.bagsTotal}`} />
+            )}
+            {showDeliver && (
+              <Stat
+                label="Deliver"
+                value={`${route.stats.deliveriesDone}/${route.stats.deliveriesTotal}`}
+              />
+            )}
+          </section>
+        );
+      })()}
 
       {route.status === 'assigned' && (
         <section className="mt-4 rounded-xl border border-blue-500/30 bg-blue-500/10 p-4 text-sm">

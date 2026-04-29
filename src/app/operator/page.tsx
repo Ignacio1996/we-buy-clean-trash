@@ -50,6 +50,8 @@ export interface RouteView {
     stopsDone: number;
     bagsTotal: number;
     bagsDone: number;
+    deliveriesTotal: number;
+    deliveriesDone: number;
     deliveriesPending: number;
   };
 }
@@ -181,14 +183,24 @@ async function loadTodaysRoute(operatorUid: string): Promise<RouteView | null> {
   const stopsDone = stops.filter((s) => s.allDone).length;
   const bagsTotal = pickups.length;
   const bagsDone = pickups.filter((p) => p.status !== 'pending').length;
-  const deliveriesPending = bagOrders.filter((o) => o.status !== 'delivered').length;
+  const deliveriesTotal = bagOrders.length;
+  const deliveriesDone = bagOrders.filter((o) => o.status === 'delivered').length;
+  const deliveriesPending = deliveriesTotal - deliveriesDone;
 
   return {
     id: route.id,
     status: route.status,
     dateLabel: formatDate(route.date),
     stops,
-    stats: { stopsTotal, stopsDone, bagsTotal, bagsDone, deliveriesPending },
+    stats: {
+      stopsTotal,
+      stopsDone,
+      bagsTotal,
+      bagsDone,
+      deliveriesTotal,
+      deliveriesDone,
+      deliveriesPending,
+    },
   };
 }
 

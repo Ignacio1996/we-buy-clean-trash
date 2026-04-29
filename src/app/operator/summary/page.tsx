@@ -20,13 +20,27 @@ async function loadRouteForSummary(operatorUid: string) {
   const snap = await adminDb
     .collection('routes')
     .where('operatorId', '==', operatorUid)
-    .where('status', 'in', ['in_progress', 'completed'])
     .where('date', '>=', startOfToday())
-    .orderBy('date', 'asc')
-    .limit(1)
     .get();
   if (snap.empty) return null;
-  return snap.docs[0].data() as RouteDoc;
+  // When the operator gets a second route the same day (after finishing the
+  // first), there are multiple matches. Prefer the active one — that's the one
+  // they need to close out — over a completed route from earlier today.
+  const priority: Record<RouteDoc['status'], number> = {
+    in_progress: 0,
+    assigned: 1,
+    completed: 2,
+    draft: 3,
+  };
+  const routes = snap.docs.map((d) => d.data() as RouteDoc);
+  routes.sort((a, b) => {
+    const p = priority[a.status] - priority[b.status];
+    if (p !== 0) return p;
+    const aMs = a.createdAt?.toMillis?.() ?? 0;
+    const bMs = b.createdAt?.toMillis?.() ?? 0;
+    return bMs - aMs;
+  });
+  return routes[0];
 }
 
 export default async function OperatorSummaryPage() {
@@ -92,20 +106,28 @@ export default async function OperatorSummaryPage() {
         </h1>
       </header>
 
-      <section className="mt-4 grid grid-cols-4 gap-2">
-        <Stat label="Stops" value={String(stopsTotal)} />
-        <Stat label="Bags" value={String(completed)} />
-        <Stat label="Missed" value={String(missed)} tone={missed > 0 ? 'warn' : 'default'} />
-        <Stat label="Issues" value={String(issues.length)} tone={issues.length > 0 ? 'danger' : 'default'} />
-      </section>
+      {pickups.length > 0 && (
+        <section className="mt-4 grid grid-cols-4 gap-2">
+          <Stat label="Stops" value={String(stopsTotal)} />
+          <Stat label="Bags" value={String(completed)} />
+          <Stat label="Missed" value={String(missed)} tone={missed > 0 ? 'warn' : 'default'} />
+          <Stat
+            label="Issues"
+            value={String(issues.length)}
+            tone={issues.length > 0 ? 'danger' : 'default'}
+          />
+        </section>
+      )}
 
-      <section className="mt-4 rounded-xl border border-white/10 bg-white/5 p-4 text-sm">
-        <div className="text-[11px] uppercase tracking-wide text-gray-400">Deliveries</div>
-        <div className="mt-1 text-white">
-          {bagsDelivered} of {route.bagOrdersToDeliver.length} bag order
-          {route.bagOrdersToDeliver.length === 1 ? '' : 's'} fulfilled
-        </div>
-      </section>
+      {route.bagOrdersToDeliver.length > 0 && (
+        <section className="mt-4 rounded-xl border border-white/10 bg-white/5 p-4 text-sm">
+          <div className="text-[11px] uppercase tracking-wide text-gray-400">Deliveries</div>
+          <div className="mt-1 text-white">
+            {bagsDelivered} of {route.bagOrdersToDeliver.length} bag order
+            {route.bagOrdersToDeliver.length === 1 ? '' : 's'} fulfilled
+          </div>
+        </section>
+      )}
 
       {issues.length > 0 && (
         <section className="mt-3 rounded-xl border border-red-500/25 bg-red-500/10 p-4 text-sm">
@@ -130,7 +152,7 @@ export default async function OperatorSummaryPage() {
       )}
 
       {!alreadyDone ? (
-        <CompleteRouteButton routeId={route.id} />
+        <CompleteRouteButton routeId={route.id} hasPickups={pickups.length > 0} />
       ) : (
         <p className="mt-6 text-center text-xs text-gray-500">
           Route was closed on{' '}
