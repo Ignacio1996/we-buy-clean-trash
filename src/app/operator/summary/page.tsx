@@ -58,7 +58,9 @@ export default async function OperatorSummaryPage() {
     );
   }
 
-  const pickupIds = route.orderedStops.map((s) => s.pickupId);
+  const pickupIds = route.orderedStops
+    .map((s) => s.pickupId)
+    .filter((id): id is string => id !== null);
   const [pickupSnaps, bagOrderSnaps] = await Promise.all([
     pickupIds.length
       ? adminDb.getAll(...pickupIds.map((id) => adminDb.collection('pickups').doc(id)))

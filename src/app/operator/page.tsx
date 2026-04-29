@@ -88,7 +88,9 @@ async function loadTodaysRoute(operatorUid: string): Promise<RouteView | null> {
   if (snap.empty) return null;
 
   const route = snap.docs[0].data() as RouteDoc;
-  const pickupIds = route.orderedStops.map((s) => s.pickupId);
+  const pickupIds = route.orderedStops
+    .map((s) => s.pickupId)
+    .filter((id): id is string => id !== null);
   const bagOrderIds = route.bagOrdersToDeliver;
 
   const [pickupSnaps, bagOrderSnaps] = await Promise.all([
@@ -107,7 +109,12 @@ async function loadTodaysRoute(operatorUid: string): Promise<RouteView | null> {
     .filter((s) => s.exists)
     .map((s) => s.data() as BagOrderDoc);
 
-  const orderByPickupId = new Map(route.orderedStops.map((s) => [s.pickupId, s.order]));
+  const orderByPickupId = new Map(
+    route.orderedStops
+      .filter((s): s is typeof s & { pickupId: string } => s.pickupId !== null)
+      .map((s) => [s.pickupId, s.order]),
+  );
+  const orderByAddressId = new Map(route.orderedStops.map((s) => [s.addressId, s.order]));
   const addressIds = new Set<string>();
   const residentIds = new Set<string>();
   const bagIds = new Set<string>();
@@ -173,7 +180,9 @@ async function loadTodaysRoute(operatorUid: string): Promise<RouteView | null> {
     const deliveriesDone = stop.bagOrdersToDeliver.length === 0;
     return {
       ...stop,
-      order: stop.pickups.length ? stop.pickups[0].order : 9999,
+      order: stop.pickups.length
+        ? stop.pickups[0].order
+        : (orderByAddressId.get(stop.addressId) ?? 9999),
       allDone: pickupsDone && deliveriesDone,
     };
   });

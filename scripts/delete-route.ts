@@ -18,11 +18,14 @@ async function deleteOne(routeId: string, apply: boolean): Promise<void> {
     return;
   }
   const route = routeSnap.data() as Record<string, unknown>;
-  const stops = (route.orderedStops as { pickupId: string }[] | undefined) ?? [];
+  const stops = (route.orderedStops as { pickupId: string | null }[] | undefined) ?? [];
   const bagOrders = (route.bagOrdersToDeliver as string[] | undefined) ?? [];
   const status = route.status as string;
 
-  const pickupRefs = stops.map((s) => adminDb.collection('pickups').doc(s.pickupId));
+  const pickupRefs = stops
+    .map((s) => s.pickupId)
+    .filter((id): id is string => id !== null)
+    .map((id) => adminDb.collection('pickups').doc(id));
   const bagOrderRefs = bagOrders.map((id) => adminDb.collection('bagOrders').doc(id));
 
   const [pickupSnaps, bagOrderSnaps] = await Promise.all([

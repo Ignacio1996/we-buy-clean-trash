@@ -61,7 +61,9 @@ async function loadIncoming(depotZoneIds: string[]): Promise<RouteRow[]> {
 
   const rows: RouteRow[] = [];
   for (const route of routes) {
-    const pickupIds = route.orderedStops.map((s) => s.pickupId);
+    const pickupIds = route.orderedStops
+      .map((s) => s.pickupId)
+      .filter((id): id is string => id !== null);
     const pickupSnaps = pickupIds.length
       ? await adminDb.getAll(...pickupIds.map((id) => adminDb.collection('pickups').doc(id)))
       : [];

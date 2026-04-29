@@ -4,7 +4,8 @@ export const ROUTE_STATUSES = ['draft', 'assigned', 'in_progress', 'completed'] 
 export type RouteStatus = (typeof ROUTE_STATUSES)[number];
 
 export interface RouteStop {
-  pickupId: string;
+  // Null when the stop is a bag-order-only delivery (no pending pickup to scan).
+  pickupId: string | null;
   addressId: string;
   residentId: string;
   order: number;

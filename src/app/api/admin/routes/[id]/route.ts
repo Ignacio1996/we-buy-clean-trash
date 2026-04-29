@@ -22,7 +22,10 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
   }
   const route = routeSnap.data() as RouteDoc;
 
-  const pickupRefs = route.orderedStops.map((s) => adminDb.collection('pickups').doc(s.pickupId));
+  const pickupRefs = route.orderedStops
+    .map((s) => s.pickupId)
+    .filter((id): id is string => id !== null)
+    .map((id) => adminDb.collection('pickups').doc(id));
   const bagOrderRefs = route.bagOrdersToDeliver.map((bid) =>
     adminDb.collection('bagOrders').doc(bid),
   );

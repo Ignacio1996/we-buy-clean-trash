@@ -9,14 +9,16 @@ import type { AddressDoc } from '@/lib/types/user';
 import type { DepotDoc } from '@/lib/types/depot';
 import type { ZoneDoc } from '@/lib/types/zone';
 import type { PickupDoc } from '@/lib/types/pickup';
+import type { BagOrderDoc } from '@/lib/types/bagOrder';
 
 export const runtime = 'nodejs';
 
-interface StopPlan {
-  pickupId: string;
-  residentId: string;
+interface AddressStop {
   addressId: string;
+  residentId: string;
   location: LatLng;
+  pickups: { pickupId: string; residentId: string }[];
+  bagOrderResidentId: string | null;
 }
 
 function parseDate(value: unknown): Date | null {
@@ -112,31 +114,6 @@ export async function POST(request: Request) {
     .where('routeId', '==', null)
     .get();
 
-  const addressIds = [...new Set(pickupsSnap.docs.map((d) => d.get('addressId') as string))];
-  const addressMap = new Map<string, AddressDoc>();
-  if (addressIds.length > 0) {
-    const refs = addressIds.map((id) => adminDb.collection('addresses').doc(id));
-    const snaps = await adminDb.getAll(...refs);
-    snaps.forEach((snap) => {
-      if (snap.exists) addressMap.set(snap.id, snap.data() as AddressDoc);
-    });
-  }
-
-  const stops: StopPlan[] = [];
-  for (const doc of pickupsSnap.docs) {
-    const pickup = doc.data() as PickupDoc;
-    const addr = addressMap.get(pickup.addressId);
-    if (!addr || addr.zoneId !== zoneId) continue;
-    if (!addr.geo) continue; // skip un-geocoded addresses; they'll be picked up once the admin
-                             // re-saves the resident's address. Alternative: geocode here lazily.
-    stops.push({
-      pickupId: pickup.id,
-      residentId: pickup.residentId,
-      addressId: pickup.addressId,
-      location: { lat: addr.geo.lat, lng: addr.geo.lng },
-    });
-  }
-
   // Pending bag orders for this zone not already on a route.
   const bagOrdersSnap = await adminDb
     .collection('bagOrders')
@@ -144,28 +121,90 @@ export async function POST(request: Request) {
     .where('deliveryRouteId', '==', null)
     .where('status', '==', 'queued')
     .get();
-  const bagOrderIds = bagOrdersSnap.docs.map((d) => d.id);
+  const bagOrders = bagOrdersSnap.docs.map((d) => d.data() as BagOrderDoc);
+  const bagOrderIds = bagOrders.map((o) => o.id);
 
-  const waypoints: RouteWaypoint[] = stops.map((s) => ({ id: s.pickupId, location: s.location }));
+  const addressIds = new Set<string>();
+  pickupsSnap.docs.forEach((d) => addressIds.add(d.get('addressId') as string));
+  bagOrders.forEach((o) => addressIds.add(o.addressId));
+  const addressMap = new Map<string, AddressDoc>();
+  if (addressIds.size > 0) {
+    const refs = [...addressIds].map((id) => adminDb.collection('addresses').doc(id));
+    const snaps = await adminDb.getAll(...refs);
+    snaps.forEach((snap) => {
+      if (snap.exists) addressMap.set(snap.id, snap.data() as AddressDoc);
+    });
+  }
+
+  // One AddressStop per physical address — pickups and bag-order deliveries at
+  // the same address share a single waypoint so the operator visits it once.
+  const stopByAddress = new Map<string, AddressStop>();
+
+  function ensureStop(addressId: string, residentId: string): AddressStop | null {
+    const existing = stopByAddress.get(addressId);
+    if (existing) return existing;
+    const addr = addressMap.get(addressId);
+    if (!addr || addr.zoneId !== zoneId) return null;
+    if (!addr.geo) return null; // skip un-geocoded; admin can re-save the address to backfill geo
+    const stop: AddressStop = {
+      addressId,
+      residentId,
+      location: { lat: addr.geo.lat, lng: addr.geo.lng },
+      pickups: [],
+      bagOrderResidentId: null,
+    };
+    stopByAddress.set(addressId, stop);
+    return stop;
+  }
+
+  for (const doc of pickupsSnap.docs) {
+    const pickup = doc.data() as PickupDoc;
+    const stop = ensureStop(pickup.addressId, pickup.residentId);
+    if (!stop) continue;
+    stop.pickups.push({ pickupId: pickup.id, residentId: pickup.residentId });
+  }
+  for (const order of bagOrders) {
+    const stop = ensureStop(order.addressId, order.residentId);
+    if (!stop) continue;
+    if (stop.pickups.length === 0) stop.bagOrderResidentId = order.residentId;
+  }
+
+  const uniqueStops = [...stopByAddress.values()];
+  const waypoints: RouteWaypoint[] = uniqueStops.map((s) => ({
+    id: s.addressId,
+    location: s.location,
+  }));
   const optimized = await optimizeRoute({
     origin: depotGeo,
     destination: depotGeo,
     waypoints,
   });
 
-  const pickupById = new Map(stops.map((s) => [s.pickupId, s]));
-  const orderedStops: RouteStop[] = optimized.orderedWaypointIds
-    .map((pickupId, idx) => {
-      const plan = pickupById.get(pickupId);
-      if (!plan) return null;
-      return {
-        pickupId,
-        addressId: plan.addressId,
-        residentId: plan.residentId,
-        order: idx,
-      } satisfies RouteStop;
-    })
-    .filter((s): s is RouteStop => s !== null);
+  const orderByAddress = new Map(optimized.orderedWaypointIds.map((id, idx) => [id, idx]));
+  const orderedStops: RouteStop[] = [];
+  for (const stop of uniqueStops) {
+    const order = orderByAddress.get(stop.addressId) ?? orderedStops.length;
+    if (stop.pickups.length > 0) {
+      // Multiple pickups at the same address each get their own RouteStop entry
+      // (so each pickupId stays linkable), sharing the optimized address order.
+      for (const p of stop.pickups) {
+        orderedStops.push({
+          pickupId: p.pickupId,
+          addressId: stop.addressId,
+          residentId: p.residentId,
+          order,
+        });
+      }
+    } else if (stop.bagOrderResidentId) {
+      orderedStops.push({
+        pickupId: null,
+        addressId: stop.addressId,
+        residentId: stop.bagOrderResidentId,
+        order,
+      });
+    }
+  }
+  orderedStops.sort((a, b) => a.order - b.order);
 
   const routeRef = adminDb.collection('routes').doc();
 
@@ -186,6 +225,7 @@ export async function POST(request: Request) {
     };
     tx.set(routeRef, routeDoc);
     for (const stop of orderedStops) {
+      if (!stop.pickupId) continue;
       tx.update(adminDb.collection('pickups').doc(stop.pickupId), {
         routeId: routeRef.id,
         operatorId,
@@ -201,7 +241,7 @@ export async function POST(request: Request) {
   return NextResponse.json({
     ok: true,
     routeId: routeRef.id,
-    stops: orderedStops.length,
+    stops: uniqueStops.length,
     bagOrders: bagOrderIds.length,
     mocked: optimized.mocked,
   });

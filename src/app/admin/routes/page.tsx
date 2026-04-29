@@ -73,7 +73,7 @@ async function loadData() {
       zoneName: zoneNameById.get(r.zoneId) ?? r.zoneId,
       operatorName: r.operatorId ? (opNameById.get(r.operatorId) ?? r.operatorId) : '—',
       status: r.status,
-      stopCount: r.orderedStops.length,
+      stopCount: new Set(r.orderedStops.map((s) => s.addressId)).size,
       bagOrderCount: r.bagOrdersToDeliver.length,
       duplicate: key ? (dupeKeyCounts.get(key) ?? 0) > 1 : false,
     };

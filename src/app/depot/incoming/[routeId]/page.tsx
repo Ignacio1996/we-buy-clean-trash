@@ -29,7 +29,9 @@ export default async function RouteDetailPage({
   if (!depotRes.context.depot.zoneIds.includes(route.zoneId)) notFound();
   if (route.status !== 'completed') notFound();
 
-  const pickupIds = route.orderedStops.map((s) => s.pickupId);
+  const pickupIds = route.orderedStops
+    .map((s) => s.pickupId)
+    .filter((id): id is string => id !== null);
   const pickupSnaps = pickupIds.length
     ? await adminDb.getAll(...pickupIds.map((id) => adminDb.collection('pickups').doc(id)))
     : [];
