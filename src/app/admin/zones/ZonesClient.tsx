@@ -315,20 +315,18 @@ function ZoneCard({
   const [editing, setEditing] = useState(false);
   const [zipsInput, setZipsInput] = useState(zone.zipCodes.join(', '));
   const [error, setError] = useState<string | null>(null);
+  const [flash, setFlash] = useState<string | null>(null);
 
   async function handleDelete() {
-    if (!confirm('Delete this zone?')) return;
+    if (!confirm('Delete this zone? Any assigned residents will be unassigned.')) return;
     setBusy(true);
     setError(null);
+    setFlash(null);
     const res = await fetch(`/api/admin/zones/${zone.id}`, { method: 'DELETE' });
     const json = await res.json().catch(() => ({}));
     setBusy(false);
     if (!res.ok) {
-      setError(
-        json.error === 'zone_has_residents'
-          ? 'Cannot delete: residents are still assigned to this zone.'
-          : 'Delete failed.',
-      );
+      setError(typeof json.error === 'string' ? json.error : 'Delete failed.');
       return;
     }
     router.refresh();
@@ -337,16 +335,27 @@ function ZoneCard({
   async function handleSaveZips() {
     setBusy(true);
     setError(null);
+    setFlash(null);
     const res = await fetch(`/api/admin/zones/${zone.id}`, {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ zipCodes: zipsInput }),
     });
+    const json = await res.json().catch(() => ({}));
     setBusy(false);
     if (!res.ok) {
-      const json = await res.json().catch(() => ({}));
       setError(typeof json.error === 'string' ? json.error : 'Save failed.');
       return;
+    }
+    const assigned = Number(json.residentsAssigned ?? 0);
+    const unassigned = Number(json.residentsUnassigned ?? 0);
+    if (assigned || unassigned) {
+      const parts: string[] = [];
+      if (assigned) parts.push(`${assigned} assigned`);
+      if (unassigned) parts.push(`${unassigned} unassigned`);
+      setFlash(`Saved · ${parts.join(', ')}.`);
+    } else {
+      setFlash('Saved.');
     }
     setEditing(false);
     router.refresh();
@@ -427,6 +436,7 @@ function ZoneCard({
           </div>
         )}
         {error && <p className="mt-1 text-[11px] text-red-400">{error}</p>}
+        {flash && <p className="mt-1 text-[11px] text-green-400">{flash}</p>}
       </div>
     </div>
   );

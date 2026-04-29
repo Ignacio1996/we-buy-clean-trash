@@ -80,6 +80,28 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'invalid_operator' }, { status: 400 });
   }
 
+  // One route per operator/zone/day. Catching this here avoids burning a Maps
+  // API call and prevents the orphan-bag-order bug where a duplicate route
+  // ends up with empty bagOrdersToDeliver because the orders are still pinned
+  // to the original route.
+  const routeDate = Timestamp.fromDate(date);
+  const dupeSnap = await adminDb
+    .collection('routes')
+    .where('zoneId', '==', zoneId)
+    .where('operatorId', '==', operatorId)
+    .where('date', '==', routeDate)
+    .limit(1)
+    .get();
+  if (!dupeSnap.empty) {
+    return NextResponse.json(
+      {
+        error: 'route_already_exists',
+        existingRouteId: dupeSnap.docs[0].id,
+      },
+      { status: 409 },
+    );
+  }
+
   // Pending pickups that aren't on a route yet; filter to this zone via address lookup.
   const pickupsSnap = await adminDb
     .collection('pickups')
@@ -143,7 +165,6 @@ export async function POST(request: Request) {
     .filter((s): s is RouteStop => s !== null);
 
   const routeRef = adminDb.collection('routes').doc();
-  const routeDate = Timestamp.fromDate(date);
 
   await adminDb.runTransaction(async (tx) => {
     const routeDoc: RouteDoc = {

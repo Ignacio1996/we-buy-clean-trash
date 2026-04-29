@@ -13,7 +13,9 @@
     "whoami": "tsx --env-file=.env.local scripts/whoami.ts",
     "seed:materials": "tsx --env-file=.env.local scripts/seed-materials.ts",
     "seed:pilot": "tsx --env-file=.env.local scripts/seed-pilot.ts",
-    "dev:issue-bags": "tsx --env-file=.env.local scripts/dev-issue-bags.ts"
+    "dev:issue-bags": "tsx --env-file=.env.local scripts/dev-issue-bags.ts",
+    "repair:bag-order-route": "tsx --env-file=.env.local scripts/repair-bag-order-route.ts",
+    "delete-route": "tsx --env-file=.env.local scripts/delete-route.ts"
   },
   "dependencies": {
     "@types/qrcode": "^1.5.6",

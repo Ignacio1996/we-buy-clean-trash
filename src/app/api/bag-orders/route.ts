@@ -90,17 +90,21 @@ export async function POST(request: Request) {
   };
 
   await adminDb.runTransaction(async (tx) => {
-    tx.set(orderRef, doc);
+    // Firestore transactions require all reads before any writes — re-read the
+    // route first to confirm it's still enqueueable, then perform writes.
+    let enqueueable = false;
     if (routeRef) {
-      // Re-read inside the txn to confirm the route is still enqueueable — if it
-      // started or completed between our query and the txn, skip the enqueue.
       const freshRoute = await tx.get(routeRef);
       const status = freshRoute.get('status');
-      if (status === 'draft' || status === 'assigned') {
-        tx.update(routeRef, { bagOrdersToDeliver: FieldValue.arrayUnion(orderRef.id) });
-      } else {
-        tx.update(orderRef, { deliveryRouteId: null });
-      }
+      enqueueable = status === 'draft' || status === 'assigned';
+    }
+
+    if (routeRef && !enqueueable) {
+      doc.deliveryRouteId = null;
+    }
+    tx.set(orderRef, doc);
+    if (routeRef && enqueueable) {
+      tx.update(routeRef, { bagOrdersToDeliver: FieldValue.arrayUnion(orderRef.id) });
     }
   });
 

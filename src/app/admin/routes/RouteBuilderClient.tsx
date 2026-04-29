@@ -52,7 +52,8 @@ export function RouteBuilderClient({
     setBusy(false);
     const json = await res.json().catch(() => ({}));
     if (!res.ok) {
-      setError(typeof json.error === 'string' ? json.error : 'Build failed.');
+      const code = typeof json.error === 'string' ? json.error : 'build_failed';
+      setError(friendlyBuildError(code));
       return;
     }
     setResult({
@@ -143,4 +144,19 @@ export function RouteBuilderClient({
       </div>
     </form>
   );
+}
+
+function friendlyBuildError(code: string): string {
+  switch (code) {
+    case 'route_already_exists':
+      return 'A route already exists for this operator/zone/day. Delete it from the table below to rebuild.';
+    case 'invalid_payload':
+      return 'Pick a date, zone, and operator.';
+    case 'invalid_operator':
+      return 'That user isn’t an operator.';
+    case 'depot_geocode_failed':
+      return 'Couldn’t geocode the depot address.';
+    default:
+      return code;
+  }
 }
