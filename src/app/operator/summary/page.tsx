@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { Timestamp } from 'firebase-admin/firestore';
 import { requireRole } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
@@ -7,6 +6,16 @@ import type { PickupDoc } from '@/lib/types/pickup';
 import type { BagOrderDoc } from '@/lib/types/bagOrder';
 import type { AddressDoc } from '@/lib/types/user';
 import { CompleteRouteButton } from './CompleteRouteButton';
+import {
+  OP_TOK,
+  OpBackRow,
+  OpEyebrow,
+  OpDisplay,
+  OpPage,
+  OpPaper,
+  SummaryStat,
+} from '@/components/operator/Op';
+import { IconBag } from '@/components/icons/EcoIcons';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,9 +32,6 @@ async function loadRouteForSummary(operatorUid: string) {
     .where('date', '>=', startOfToday())
     .get();
   if (snap.empty) return null;
-  // When the operator gets a second route the same day (after finishing the
-  // first), there are multiple matches. Prefer the active one — that's the one
-  // they need to close out — over a completed route from earlier today.
   const priority: Record<RouteDoc['status'], number> = {
     in_progress: 0,
     assigned: 1,
@@ -43,18 +49,32 @@ async function loadRouteForSummary(operatorUid: string) {
   return routes[0];
 }
 
+function formatDateLabel(ts: RouteDoc['date']): string {
+  try {
+    const d = ts.toDate();
+    const weekday = d.toLocaleDateString('en-US', { weekday: 'long' });
+    const month = d.toLocaleDateString('en-US', { month: 'short' });
+    return `${weekday} · ${month} ${d.getDate()}`;
+  } catch {
+    return '—';
+  }
+}
+
 export default async function OperatorSummaryPage() {
   const session = await requireRole('operator');
   const route = await loadRouteForSummary(session.uid);
 
   if (!route) {
     return (
-      <main className="mx-auto min-h-dvh max-w-md bg-neutral-950 px-4 pb-16 pt-6 text-gray-100">
-        <Link href="/operator" className="text-xs text-gray-400 underline">
-          ← Back
-        </Link>
-        <p className="mt-6 text-sm text-gray-400">No route to summarize.</p>
-      </main>
+      <OpPage>
+        <OpBackRow label="Back" href="/operator" />
+        <p
+          className="mt-6 italic"
+          style={{ fontFamily: OP_TOK.serif, fontSize: 14, color: OP_TOK.inkSoft }}
+        >
+          No route to summarize.
+        </p>
+      </OpPage>
     );
   }
 
@@ -84,7 +104,6 @@ export default async function OperatorSummaryPage() {
   const bagsDelivered = bagOrders.filter((o) => o.status === 'delivered').length;
   const stopsTotal = new Set(pickups.map((p) => p.addressId)).size;
 
-  // Look up addresses for issues to render human labels.
   const addressIds = [...new Set(issues.map((i) => i.addressId))];
   const addressSnaps = addressIds.length
     ? await adminDb.getAll(...addressIds.map((id) => adminDb.collection('addresses').doc(id)))
@@ -95,68 +114,163 @@ export default async function OperatorSummaryPage() {
   });
 
   const alreadyDone = route.status === 'completed';
+  const dateLabel = formatDateLabel(route.date);
+  const routeIdShort = route.id.slice(-6);
 
   return (
-    <main className="mx-auto min-h-dvh max-w-md bg-neutral-950 px-4 pb-16 pt-6 text-gray-100">
-      <Link href="/operator" className="text-xs text-gray-400 underline">
-        ← Back to route
-      </Link>
-      <header className="mt-3">
-        <div className="text-[10px] uppercase tracking-[0.2em] text-gray-500">End of route</div>
-        <h1 className="mt-1 text-lg font-semibold text-white">
-          Route {alreadyDone ? 'summary' : 'complete 🎉'}
-        </h1>
+    <OpPage>
+      <OpBackRow label="Back to route" href="/operator" />
+
+      <header className="mb-5">
+        <OpEyebrow>End of route</OpEyebrow>
+        <OpDisplay className="mt-1.5">
+          A clean <em style={{ color: OP_TOK.green, fontStyle: 'italic' }}>day&rsquo;s work</em>.
+        </OpDisplay>
+        <div
+          className="mt-1.5 italic"
+          style={{ fontFamily: OP_TOK.serif, fontSize: 13, color: OP_TOK.inkSoft }}
+        >
+          {dateLabel} · route {routeIdShort}
+        </div>
       </header>
 
       {pickups.length > 0 && (
-        <section className="mt-4 grid grid-cols-4 gap-2">
-          <Stat label="Stops" value={String(stopsTotal)} />
-          <Stat label="Bags" value={String(completed)} />
-          <Stat label="Missed" value={String(missed)} tone={missed > 0 ? 'warn' : 'default'} />
-          <Stat
-            label="Issues"
-            value={String(issues.length)}
-            tone={issues.length > 0 ? 'danger' : 'default'}
+        <section
+          className="grid grid-cols-2 gap-x-6 gap-y-5"
+          style={{
+            padding: '22px 0',
+            borderTop: `2px solid ${OP_TOK.ink}`,
+            borderBottom: `1px solid ${OP_TOK.line}`,
+          }}
+        >
+          <SummaryStat label="Stops completed" value={stopsTotal} tone="ink" />
+          <SummaryStat label="Bags collected" value={completed} tone="green" />
+          <SummaryStat label="Missed" value={missed} tone={missed > 0 ? 'amber' : 'ink'} />
+          <SummaryStat
+            label="Issues flagged"
+            value={issues.length}
+            tone={issues.length > 0 ? 'rust' : 'ink'}
           />
         </section>
       )}
 
       {route.bagOrdersToDeliver.length > 0 && (
-        <section className="mt-4 rounded-xl border border-white/10 bg-white/5 p-4 text-sm">
-          <div className="text-[11px] uppercase tracking-wide text-gray-400">Deliveries</div>
-          <div className="mt-1 text-white">
-            {bagsDelivered} of {route.bagOrdersToDeliver.length} bag order
-            {route.bagOrdersToDeliver.length === 1 ? '' : 's'} fulfilled
-          </div>
+        <section className="mt-5">
+          <OpPaper>
+            <div className="flex items-center gap-2.5">
+              <IconBag size={16} color={OP_TOK.green} stroke={1.5} />
+              <OpEyebrow color={OP_TOK.green}>Deliveries</OpEyebrow>
+            </div>
+            <div
+              className="mt-2"
+              style={{
+                fontFamily: OP_TOK.serif,
+                fontSize: 18,
+                color: OP_TOK.ink,
+                letterSpacing: -0.2,
+              }}
+            >
+              <span style={{ fontFeatureSettings: '"lnum","tnum"' }}>{bagsDelivered}</span> of{' '}
+              {route.bagOrdersToDeliver.length} bag order
+              {route.bagOrdersToDeliver.length === 1 ? '' : 's'} fulfilled
+            </div>
+          </OpPaper>
         </section>
       )}
 
       {issues.length > 0 && (
-        <section className="mt-3 rounded-xl border border-red-500/25 bg-red-500/10 p-4 text-sm">
-          <div className="text-[11px] uppercase tracking-wide text-red-300">Issues flagged</div>
-          <ul className="mt-2 space-y-2">
-            {issues.map((p) => {
-              const a = addressMap.get(p.addressId);
-              return (
-                <li key={p.id} className="text-xs">
-                  <div className="text-white">
-                    {a ? `${a.street}${a.unit ? ` · Unit ${a.unit}` : ''}` : p.addressId}
-                  </div>
-                  <div className="text-red-200/80">
-                    {p.issue ?? 'other'}
-                    {p.issueNote ? ` — ${p.issueNote}` : ''}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+        <section className="mt-4">
+          <OpPaper
+            style={{
+              background: OP_TOK.rustSoft,
+              border: `1px solid ${OP_TOK.rust}`,
+            }}
+          >
+            <OpEyebrow color={OP_TOK.rust}>Issues flagged</OpEyebrow>
+            <ul className="mt-2.5">
+              {issues.map((p, i) => {
+                const a = addressMap.get(p.addressId);
+                return (
+                  <li
+                    key={p.id}
+                    style={{
+                      padding: '10px 0',
+                      borderBottom:
+                        i < issues.length - 1 ? `1px solid rgba(154,75,38,0.25)` : 'none',
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontFamily: OP_TOK.serif,
+                        fontSize: 14,
+                        color: OP_TOK.ink,
+                      }}
+                    >
+                      {a ? `${a.street}${a.unit ? ` · Unit ${a.unit}` : ''}` : p.addressId}
+                    </div>
+                    <div
+                      className="mt-0.5 italic"
+                      style={{
+                        fontFamily: OP_TOK.serif,
+                        fontSize: 12,
+                        color: OP_TOK.rust,
+                      }}
+                    >
+                      {p.issue ?? 'other'}
+                      {p.issueNote ? ` — ${p.issueNote}` : ''}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </OpPaper>
         </section>
       )}
+
+      <blockquote
+        className="mt-6"
+        style={{
+          padding: '20px 24px',
+          borderLeft: `2px solid ${OP_TOK.green}`,
+          margin: 0,
+        }}
+      >
+        <p
+          className="italic"
+          style={{
+            fontFamily: OP_TOK.serif,
+            fontSize: 16,
+            color: OP_TOK.ink,
+            lineHeight: 1.4,
+            letterSpacing: -0.2,
+          }}
+        >
+          “Drive back to the depot. The closing crew will weigh and sort what you brought in.”
+        </p>
+        <div
+          className="mt-2.5 uppercase"
+          style={{
+            fontFamily: OP_TOK.sans,
+            fontSize: 11,
+            color: OP_TOK.inkSoft,
+            letterSpacing: 1.4,
+          }}
+        >
+          — Dispatcher
+        </div>
+      </blockquote>
 
       {!alreadyDone ? (
         <CompleteRouteButton routeId={route.id} hasPickups={pickups.length > 0} />
       ) : (
-        <p className="mt-6 text-center text-xs text-gray-500">
+        <p
+          className="mt-7 text-center italic"
+          style={{
+            fontFamily: OP_TOK.serif,
+            fontSize: 11,
+            color: OP_TOK.inkFaint,
+          }}
+        >
           Route was closed on{' '}
           {route.completedAt
             ? route.completedAt.toDate().toLocaleString('en-US', {
@@ -169,29 +283,6 @@ export default async function OperatorSummaryPage() {
           .
         </p>
       )}
-    </main>
-  );
-}
-
-function Stat({
-  label,
-  value,
-  tone = 'default',
-}: {
-  label: string;
-  value: string;
-  tone?: 'default' | 'warn' | 'danger';
-}) {
-  const accent =
-    tone === 'danger'
-      ? 'border-red-500/30 bg-red-500/10 text-red-300'
-      : tone === 'warn'
-        ? 'border-amber-500/30 bg-amber-500/10 text-amber-300'
-        : 'border-white/10 bg-white/5 text-white';
-  return (
-    <div className={`rounded-lg border px-2 py-2 text-center ${accent}`}>
-      <div className="text-lg font-bold">{value}</div>
-      <div className="text-[10px] uppercase tracking-wide opacity-70">{label}</div>
-    </div>
+    </OpPage>
   );
 }

@@ -46,55 +46,119 @@ export function OrderBagsForm({ unitPrice }: { unitPrice: number }) {
 
   return (
     <section className="mt-4 space-y-4">
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <div className="text-xs uppercase tracking-wide text-gray-400">Quantity</div>
-        <div className="mt-2 flex items-center justify-between">
+      <div className="rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] p-4">
+        <div
+          className="uppercase"
+          style={{ fontSize: 11, color: '#5A6358', letterSpacing: 1.4 }}
+        >
+          Quantity
+        </div>
+        <div className="mt-3 flex items-center justify-between">
           <button
             type="button"
             onClick={() => adjust(-1)}
             disabled={quantity <= MIN_QTY || busy}
-            className="flex size-10 items-center justify-center rounded-full border border-white/20 text-lg text-white disabled:opacity-30"
+            className="flex size-11 items-center justify-center rounded-full border border-[#D9D2C2] bg-[#FBF7EE] text-xl text-[#1F2A22] transition-colors hover:bg-[#E8EFE6] disabled:opacity-30"
+            aria-label="Decrease quantity"
           >
             −
           </button>
           <div className="text-center">
-            <div className="text-3xl font-bold text-white">{quantity}</div>
-            <div className="text-xs text-gray-400">{quantity * 10} bags</div>
+            <div
+              style={{
+                fontFamily: 'var(--eco-serif)',
+                fontSize: 40,
+                fontWeight: 400,
+                color: '#1F2A22',
+                lineHeight: 1,
+                letterSpacing: -0.5,
+              }}
+            >
+              {quantity}
+            </div>
+            <div
+              className="mt-1 italic"
+              style={{
+                fontFamily: 'var(--eco-serif)',
+                fontSize: 12,
+                color: '#5A6358',
+              }}
+            >
+              {quantity * 10} bags · {quantity} sheet{quantity === 1 ? '' : 's'}
+            </div>
           </div>
           <button
             type="button"
             onClick={() => adjust(1)}
             disabled={quantity >= MAX_QTY || busy}
-            className="flex size-10 items-center justify-center rounded-full border border-white/20 text-lg text-white disabled:opacity-30"
+            className="flex size-11 items-center justify-center rounded-full border border-[#D9D2C2] bg-[#FBF7EE] text-xl text-[#1F2A22] transition-colors hover:bg-[#E8EFE6] disabled:opacity-30"
+            aria-label="Increase quantity"
           >
             +
           </button>
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm">
-        <div className="flex justify-between text-gray-300">
-          <span>Subtotal</span>
-          <span>{formatDollars(breakdown.subtotal)}</span>
-        </div>
-        <div className="mt-1 flex justify-between text-gray-300">
-          <span>Shipping</span>
-          <span>
-            {breakdown.freeShipping ? (
-              <span className="text-green-400">Free</span>
-            ) : (
-              formatDollars(breakdown.shipping)
-            )}
+      <div className="rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] p-4 text-sm">
+        <div className="flex items-baseline justify-between border-b border-[#E8E2D0] py-2">
+          <span
+            className="uppercase"
+            style={{ fontSize: 11, color: '#5A6358', letterSpacing: 1.4 }}
+          >
+            Subtotal
+          </span>
+          <span
+            style={{
+              fontFamily: 'var(--eco-serif)',
+              fontSize: 15,
+              color: '#1F2A22',
+            }}
+          >
+            {formatDollars(breakdown.subtotal)}
           </span>
         </div>
-        <div className="mt-2 border-t border-white/10 pt-2 text-lg font-semibold text-white">
-          <div className="flex justify-between">
-            <span>Total</span>
-            <span>{formatDollars(breakdown.total)}</span>
-          </div>
+        <div className="flex items-baseline justify-between border-b border-[#E8E2D0] py-2">
+          <span
+            className="uppercase"
+            style={{ fontSize: 11, color: '#5A6358', letterSpacing: 1.4 }}
+          >
+            Shipping
+          </span>
+          <span
+            style={{
+              fontFamily: 'var(--eco-serif)',
+              fontSize: 15,
+              color: breakdown.freeShipping ? '#2D5A3D' : '#1F2A22',
+              fontStyle: breakdown.freeShipping ? 'italic' : 'normal',
+            }}
+          >
+            {breakdown.freeShipping ? 'Free' : formatDollars(breakdown.shipping)}
+          </span>
+        </div>
+        <div className="mt-1 flex items-baseline justify-between pt-3">
+          <span
+            className="uppercase"
+            style={{ fontSize: 11, color: '#1F2A22', letterSpacing: 1.4, fontWeight: 600 }}
+          >
+            Total
+          </span>
+          <span
+            style={{
+              fontFamily: 'var(--eco-serif)',
+              fontSize: 28,
+              fontWeight: 400,
+              color: '#1F2A22',
+              letterSpacing: -0.5,
+            }}
+          >
+            {formatDollars(breakdown.total)}
+          </span>
         </div>
         {!breakdown.freeShipping && (
-          <div className="mt-2 text-xs text-gray-400">
+          <div
+            className="mt-2 italic"
+            style={{ fontFamily: 'var(--eco-serif)', fontSize: 12, color: '#5A6358' }}
+          >
             Add {formatDollars(20 - breakdown.subtotal)} more to unlock free shipping.
           </div>
         )}
@@ -104,15 +168,22 @@ export function OrderBagsForm({ unitPrice }: { unitPrice: number }) {
         type="button"
         onClick={handleCheckout}
         disabled={busy}
-        className="w-full rounded-xl bg-green-500 px-3 py-3 text-sm font-semibold text-black disabled:opacity-50"
+        className="w-full rounded-full bg-[#2D5A3D] px-4 py-3.5 text-[14px] font-semibold tracking-[0.3px] text-[#FBF7EE] transition-colors hover:bg-[#1F4029] disabled:opacity-50"
       >
-        {busy ? 'Placing order…' : `Checkout (stub) — ${formatDollars(breakdown.total)}`}
+        {busy ? 'Placing order…' : `Place order — ${formatDollars(breakdown.total)}`}
       </button>
-      <p className="text-center text-[10px] text-gray-500">
+      <p
+        className="text-center italic"
+        style={{ fontFamily: 'var(--eco-serif)', fontSize: 11, color: '#8A8A7A' }}
+      >
         Pilot uses a mocked Stripe checkout — no card is charged.
       </p>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && (
+        <p className="rounded-[10px] border border-[rgba(154,75,38,0.3)] bg-[#F0DCC8] px-3 py-2 text-sm text-[#9A4B26]">
+          {error}
+        </p>
+      )}
     </section>
   );
 }

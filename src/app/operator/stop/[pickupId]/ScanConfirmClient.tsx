@@ -3,12 +3,22 @@
 import { useEffect, useRef, useState } from 'react';
 import jsQR from 'jsqr';
 import { useRouter } from 'next/navigation';
+import {
+  OP_TOK,
+  OpEyebrow,
+  OpPaper,
+  OpPrimaryButton,
+  OpRow,
+  StepDots,
+  ToggleRow,
+} from '@/components/operator/Op';
+import { IconArrow, IconCheck, IconScan } from '@/components/icons/EcoIcons';
 
 const MAX_PHOTO_EDGE = 1024;
 const STORAGE_MOCKED =
   (process.env.NEXT_PUBLIC_STORAGE_MODE ?? 'mock').toLowerCase() !== 'firebase';
 
-type Step = 'scan' | 'details' | 'submitting' | 'done';
+type Step = 'scan' | 'condition' | 'photo' | 'review' | 'submitting' | 'done';
 
 function resizeToBase64(file: File): Promise<{ base64: string; mime: string }> {
   return new Promise((resolve, reject) => {
@@ -110,8 +120,6 @@ export function ScanConfirmClient({
       if (rafId != null) cancelAnimationFrame(rafId);
       stream?.getTracks().forEach((t) => t.stop());
     };
-    // handleScanned references stable props (expectedCode) — the effect only
-    // needs to re-run when the camera toggles on/off or the step changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cameraOn, step]);
 
@@ -122,7 +130,7 @@ export function ScanConfirmClient({
     }
     setScannedCode(code);
     setCameraOn(false);
-    setStep('details');
+    setStep('condition');
     setError(null);
   }
 
@@ -163,133 +171,332 @@ export function ScanConfirmClient({
       const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body.error ?? 'submit_failed');
       setStep('done');
-      // Let the UI show the success state briefly, then bounce back — the route
-      // loader will advance to the next pending pickup (or next stop) automatically.
       setTimeout(() => {
         router.replace('/operator');
         router.refresh();
-      }, 700);
+      }, 800);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'submit_failed');
-      setStep('details');
+      setStep('review');
     }
   }
 
   if (step === 'done') {
     return (
-      <section className="mt-6 rounded-xl border border-green-500/30 bg-green-500/10 p-5 text-center">
-        <div className="text-3xl">✅</div>
-        <div className="mt-1 text-sm font-semibold text-white">Pickup confirmed</div>
-        <div className="mt-1 text-xs text-gray-400">Loading next stop…</div>
+      <section className="mt-6">
+        <OpPaper
+          style={{
+            background: OP_TOK.greenSoft,
+            border: `1px solid ${OP_TOK.green}`,
+            textAlign: 'center',
+            padding: 24,
+          }}
+        >
+          <div
+            className="inline-flex items-center justify-center"
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: '50%',
+              background: OP_TOK.green,
+              color: OP_TOK.paper,
+              marginBottom: 12,
+            }}
+          >
+            <IconCheck size={28} color={OP_TOK.paper} stroke={2} />
+          </div>
+          <div
+            style={{
+              fontFamily: OP_TOK.serif,
+              fontSize: 22,
+              color: OP_TOK.green,
+              letterSpacing: -0.3,
+            }}
+          >
+            Pickup confirmed.
+          </div>
+          <div
+            className="mt-1.5 italic"
+            style={{
+              fontFamily: OP_TOK.serif,
+              fontSize: 12,
+              color: OP_TOK.green,
+              opacity: 0.85,
+            }}
+          >
+            Loading next stop…
+          </div>
+        </OpPaper>
       </section>
     );
   }
 
   return (
-    <section className="mt-5 space-y-4">
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <div className="text-[11px] uppercase tracking-wide text-gray-400">Expected bag</div>
-        <div className="mt-1 font-mono text-sm text-white">{expectedCode}</div>
-      </div>
+    <section className="space-y-4">
+      <StepDots step={step} />
+
+      {/* Expected bag */}
+      <OpPaper className="flex items-center justify-between gap-3">
+        <div>
+          <OpEyebrow>Expected bag</OpEyebrow>
+          <div
+            className="mt-1.5"
+            style={{
+              fontFamily: OP_TOK.mono,
+              fontSize: 18,
+              color: OP_TOK.ink,
+              letterSpacing: 0.4,
+            }}
+          >
+            {expectedCode || '—'}
+          </div>
+        </div>
+        {scannedCode && step !== 'scan' && (
+          <button
+            type="button"
+            onClick={() => {
+              setStep('scan');
+              setScannedCode('');
+              setPhoto(null);
+            }}
+            className="cursor-pointer p-0 italic underline"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              fontFamily: OP_TOK.serif,
+              fontSize: 12,
+              color: OP_TOK.green,
+              textDecorationColor: OP_TOK.line,
+            }}
+          >
+            Rescan
+          </button>
+        )}
+      </OpPaper>
 
       {step === 'scan' && (
-        <div className="rounded-xl border border-white/10 bg-black p-3">
-          {cameraOn ? (
-            <video ref={videoRef} playsInline muted className="aspect-[4/3] w-full rounded-lg object-cover" />
-          ) : (
-            <button
-              type="button"
+        <OpPaper style={{ padding: 0, overflow: 'hidden' }}>
+          <div
+            style={{
+              aspectRatio: '4/3',
+              background: '#1F2A22',
+              position: 'relative',
+            }}
+          >
+            {cameraOn ? (
+              <video
+                ref={videoRef}
+                playsInline
+                muted
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setError(null);
+                  setCameraOn(true);
+                }}
+                className="flex h-full w-full cursor-pointer items-center justify-center"
+                style={{ background: 'transparent', border: 'none' }}
+              >
+                <ScanReticule />
+              </button>
+            )}
+            <canvas ref={canvasRef} className="hidden" />
+            <div
+              className="absolute right-0 bottom-3 left-0 text-center italic"
+              style={{
+                fontFamily: OP_TOK.serif,
+                fontSize: 12,
+                color: 'rgba(255,255,255,0.7)',
+              }}
+            >
+              {cameraOn ? 'Center the QR sticker.' : 'Tap to scan.'}
+            </div>
+          </div>
+          <div style={{ padding: 14 }}>
+            <OpPrimaryButton
               onClick={() => {
                 setError(null);
                 setCameraOn(true);
               }}
-              className="flex aspect-[4/3] w-full items-center justify-center text-sm text-gray-400"
+              disabled={cameraOn}
             >
-              📷 Tap to scan QR
-            </button>
-          )}
-          <canvas ref={canvasRef} className="hidden" />
-          <form onSubmit={handleManualSubmit} className="mt-3 flex gap-2">
-            <input
-              type="text"
-              placeholder="Or type the printed number"
-              value={manual}
-              onChange={(e) => setManual(e.target.value)}
-              className="flex-1 rounded border border-white/15 bg-black/40 px-2 py-2 text-sm text-white"
-            />
-            <button
-              type="submit"
-              disabled={!manual.trim()}
-              className="rounded bg-white px-3 text-sm font-semibold text-black disabled:opacity-30"
-            >
-              Use
-            </button>
-          </form>
-        </div>
-      )}
-
-      {step !== 'scan' && scannedCode && (
-        <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm">
-          <div className="text-[11px] uppercase tracking-wide text-gray-400">Scanned</div>
-          <div className="mt-1 flex items-center justify-between">
-            <div className="font-mono text-white">{scannedCode}</div>
-            <button
-              type="button"
-              onClick={() => {
-                setStep('scan');
-                setScannedCode('');
-                setPhoto(null);
-              }}
-              className="text-xs text-gray-400 underline"
-            >
-              Rescan
-            </button>
+              <IconScan size={18} color={OP_TOK.paper} stroke={1.75} />
+              {cameraOn ? 'Scanning…' : 'Tap to scan'}
+            </OpPrimaryButton>
+            <div className="mt-3.5 flex items-center gap-2">
+              <div style={{ flex: 1, height: 1, background: OP_TOK.lineSoft }} />
+              <span
+                className="italic"
+                style={{
+                  fontFamily: OP_TOK.serif,
+                  fontSize: 11,
+                  color: OP_TOK.inkSoft,
+                }}
+              >
+                or type the code
+              </span>
+              <div style={{ flex: 1, height: 1, background: OP_TOK.lineSoft }} />
+            </div>
+            <form onSubmit={handleManualSubmit} className="mt-3 flex gap-2">
+              <input
+                value={manual}
+                onChange={(e) => setManual(e.target.value)}
+                placeholder="Printed number"
+                style={{
+                  flex: 1,
+                  padding: '12px 14px',
+                  border: `1px solid ${OP_TOK.line}`,
+                  borderRadius: 10,
+                  fontFamily: OP_TOK.mono,
+                  fontSize: 14,
+                  background: OP_TOK.paper,
+                  color: OP_TOK.ink,
+                  outline: 'none',
+                }}
+              />
+              <button
+                type="submit"
+                disabled={!manual.trim()}
+                className="cursor-pointer disabled:opacity-50"
+                style={{
+                  padding: '12px 18px',
+                  background: manual.trim() ? OP_TOK.ink : OP_TOK.lineSoft,
+                  color: manual.trim() ? OP_TOK.paper : OP_TOK.inkFaint,
+                  border: 'none',
+                  borderRadius: 10,
+                  fontFamily: OP_TOK.serif,
+                  fontSize: 14,
+                }}
+              >
+                Use
+              </button>
+            </form>
           </div>
-        </div>
+        </OpPaper>
       )}
 
-      {step !== 'scan' && (
+      {step === 'condition' && (
         <>
-          <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm">
-            <div className="text-[11px] uppercase tracking-wide text-gray-400">Condition check</div>
-            <label className="mt-3 flex items-center justify-between">
-              <span>Bag sealed properly?</span>
-              <Toggle value={sealed} onChange={setSealed} />
-            </label>
-            <label className="mt-3 flex items-center justify-between">
-              <span>Visible contamination?</span>
-              <Toggle value={contamination} onChange={setContamination} tone="warn" />
-            </label>
-          </div>
+          <OpPaper>
+            <OpEyebrow>Condition check</OpEyebrow>
+            <div className="mt-2">
+              <ToggleRow label="Bag sealed properly" value={sealed} onChange={setSealed} />
+              <ToggleRow
+                label="Visible contamination"
+                value={contamination}
+                onChange={setContamination}
+                tone="rust"
+              />
+            </div>
+            <p
+              className="mt-3.5 italic"
+              style={{
+                fontFamily: OP_TOK.serif,
+                fontSize: 12,
+                color: OP_TOK.inkSoft,
+                lineHeight: 1.5,
+              }}
+            >
+              {contamination
+                ? 'We’ll log this and the depot will sort it out at intake. The pickup still counts.'
+                : 'We’ll log these notes against the bag for the depot.'}
+            </p>
+          </OpPaper>
+          <OpPrimaryButton onClick={() => setStep('photo')}>
+            Continue
+            <IconArrow size={16} color={OP_TOK.paper} />
+          </OpPrimaryButton>
+        </>
+      )}
 
-          <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+      {step === 'photo' && (
+        <>
+          <OpPaper>
             <div className="flex items-center justify-between">
-              <div className="text-[11px] uppercase tracking-wide text-gray-400">Doorstep photo</div>
+              <OpEyebrow>Doorstep photo</OpEyebrow>
               {STORAGE_MOCKED && (
-                <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[10px] font-medium text-amber-300">
-                  Demo mode · upload simulated
+                <span
+                  style={{
+                    background: OP_TOK.amberSoft,
+                    color: OP_TOK.amber,
+                    fontFamily: OP_TOK.sans,
+                    fontSize: 9,
+                    fontWeight: 500,
+                    letterSpacing: 1.2,
+                    textTransform: 'uppercase',
+                    padding: '3px 8px',
+                    borderRadius: 999,
+                  }}
+                >
+                  Demo mode
                 </span>
               )}
             </div>
+            <p
+              className="mt-1 italic"
+              style={{
+                fontFamily: OP_TOK.serif,
+                fontSize: 12,
+                color: OP_TOK.inkSoft,
+              }}
+            >
+              Proof of pickup. Saved with the route record.
+            </p>
             {photo ? (
-              <div className="mt-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={photo.previewUrl}
-                  alt=""
-                  className="aspect-video w-full rounded-lg object-cover"
-                />
-                <button
-                  type="button"
-                  onClick={() => setPhoto(null)}
-                  className="mt-2 text-xs text-gray-400 underline"
+              <div className="mt-3.5">
+                <div
+                  style={{
+                    aspectRatio: '4/3',
+                    borderRadius: 12,
+                    overflow: 'hidden',
+                  }}
                 >
-                  Retake
-                </button>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={photo.previewUrl}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="mt-2.5 text-center">
+                  <button
+                    type="button"
+                    onClick={() => setPhoto(null)}
+                    className="cursor-pointer p-0 italic underline"
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      fontFamily: OP_TOK.serif,
+                      fontSize: 12,
+                      color: OP_TOK.inkSoft,
+                      textDecorationColor: OP_TOK.line,
+                    }}
+                  >
+                    Retake
+                  </button>
+                </div>
               </div>
             ) : (
-              <label className="mt-2 flex aspect-video w-full items-center justify-center rounded-lg border border-dashed border-white/20 bg-black/30 text-sm text-gray-400">
-                📸 Tap to take photo
+              <label
+                className="mt-3.5 flex w-full cursor-pointer flex-col items-center justify-center gap-2.5"
+                style={{
+                  aspectRatio: '4/3',
+                  background: OP_TOK.paperTint,
+                  border: `1px dashed ${OP_TOK.line}`,
+                  borderRadius: 12,
+                  color: OP_TOK.inkSoft,
+                }}
+              >
+                <IconScan size={32} stroke={1.5} />
+                <span
+                  className="italic"
+                  style={{ fontFamily: OP_TOK.serif, fontSize: 14 }}
+                >
+                  Tap to take photo
+                </span>
                 <input
                   type="file"
                   accept="image/*"
@@ -299,21 +506,56 @@ export function ScanConfirmClient({
                 />
               </label>
             )}
-          </div>
+          </OpPaper>
+          <OpPrimaryButton onClick={() => setStep('review')} disabled={!photo}>
+            Continue
+            <IconArrow size={16} color={OP_TOK.paper} />
+          </OpPrimaryButton>
+        </>
+      )}
 
-          <button
-            type="button"
-            onClick={handleConfirm}
-            disabled={!photo || step === 'submitting'}
-            className="w-full rounded-xl bg-green-500 px-4 py-3 text-sm font-semibold text-black disabled:opacity-50"
-          >
-            {step === 'submitting' ? 'Submitting…' : '✓ Confirm pickup'}
-          </button>
+      {(step === 'review' || step === 'submitting') && (
+        <>
+          <OpPaper>
+            <OpEyebrow>Review &amp; submit</OpEyebrow>
+            <div className="mt-3">
+              <OpRow
+                label="Sealed"
+                value={sealed ? 'Yes' : 'No'}
+                onEdit={() => setStep('condition')}
+              />
+              <OpRow
+                label="Contamination"
+                value={contamination ? 'Flagged' : 'None'}
+                valueTone={contamination ? 'rust' : 'ink'}
+                onEdit={() => setStep('condition')}
+              />
+              <OpRow
+                label="Photo"
+                value={photo ? 'Captured' : '—'}
+                onEdit={() => setStep('photo')}
+              />
+            </div>
+          </OpPaper>
+          <OpPrimaryButton onClick={handleConfirm} disabled={!photo || step === 'submitting'}>
+            <IconCheck size={18} color={OP_TOK.paper} stroke={2} />
+            {step === 'submitting' ? 'Submitting…' : 'Confirm pickup'}
+          </OpPrimaryButton>
         </>
       )}
 
       {error && (
-        <p className="rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+        <p
+          style={{
+            background: OP_TOK.rustSoft,
+            border: `1px solid ${OP_TOK.rust}`,
+            color: OP_TOK.rust,
+            borderRadius: 10,
+            padding: '8px 12px',
+            fontFamily: OP_TOK.serif,
+            fontSize: 12,
+          }}
+        >
           {error}
         </p>
       )}
@@ -321,36 +563,60 @@ export function ScanConfirmClient({
   );
 }
 
+function ScanReticule() {
+  type Corner = {
+    top?: number;
+    left?: number;
+    right?: number;
+    bottom?: number;
+    borderTop?: boolean;
+    borderLeft?: boolean;
+    borderRight?: boolean;
+    borderBottom?: boolean;
+  };
+  const corners: Corner[] = [
+    { top: 0, left: 0, borderTop: true, borderLeft: true },
+    { top: 0, right: 0, borderTop: true, borderRight: true },
+    { bottom: 0, left: 0, borderBottom: true, borderLeft: true },
+    { bottom: 0, right: 0, borderBottom: true, borderRight: true },
+  ];
+  return (
+    <div className="relative" style={{ width: 200, height: 200 }}>
+      {corners.map((c, i) => (
+        <div
+          key={i}
+          style={{
+            position: 'absolute',
+            width: 28,
+            height: 28,
+            top: c.top,
+            left: c.left,
+            right: c.right,
+            bottom: c.bottom,
+            borderTop: c.borderTop ? `2px solid ${OP_TOK.paper}` : undefined,
+            borderLeft: c.borderLeft ? `2px solid ${OP_TOK.paper}` : undefined,
+            borderRight: c.borderRight ? `2px solid ${OP_TOK.paper}` : undefined,
+            borderBottom: c.borderBottom ? `2px solid ${OP_TOK.paper}` : undefined,
+          }}
+        />
+      ))}
+      <div
+        style={{
+          position: 'absolute',
+          left: 4,
+          right: 4,
+          top: '50%',
+          height: 1,
+          background: `linear-gradient(90deg, transparent, ${OP_TOK.green}, transparent)`,
+          opacity: 0.7,
+        }}
+      />
+    </div>
+  );
+}
+
 function codeMatches(scanned: string, expected: string): boolean {
   if (!expected) return false;
   const norm = (s: string) => s.trim().toUpperCase();
   return norm(scanned) === norm(expected);
-}
-
-function Toggle({
-  value,
-  onChange,
-  tone = 'ok',
-}: {
-  value: boolean;
-  onChange: (v: boolean) => void;
-  tone?: 'ok' | 'warn';
-}) {
-  const on = tone === 'warn' ? value : value;
-  const bg = tone === 'warn'
-    ? (value ? 'bg-red-500' : 'bg-white/20')
-    : (value ? 'bg-green-500' : 'bg-white/20');
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={value}
-      onClick={() => onChange(!value)}
-      className={`relative h-6 w-11 rounded-full transition-colors ${bg}`}
-    >
-      <span
-        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all ${on ? 'left-5' : 'left-0.5'}`}
-      />
-    </button>
-  );
 }

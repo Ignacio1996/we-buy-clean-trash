@@ -1,8 +1,10 @@
-import Link from 'next/link';
 import { getSession } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
 import type { BagOrderDoc, BagOrderStatus } from '@/lib/types/bagOrder';
 import type { RouteDoc } from '@/lib/types/route';
+import { EcoMasthead, EcoH1, EcoEmpty, EcoButton } from '@/components/resident/eco/Eco';
+import { IconBox, IconTruck, IconClock } from '@/components/icons/EcoIcons';
+import type { ReactNode } from 'react';
 
 function formatDollars(dollars: number): string {
   return dollars.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -27,32 +29,32 @@ function statusLabel(status: BagOrderStatus): string {
   }
 }
 
-function statusEmoji(status: BagOrderStatus): string {
+function statusIcon(status: BagOrderStatus): ReactNode {
   switch (status) {
     case 'delivered':
-      return '✅';
+      return <IconBox size={18} color="#2D5A3D" stroke={1.5} />;
     case 'cancelled':
-      return '✖️';
+      return <IconBox size={18} color="#8A8A7A" stroke={1.5} />;
     case 'out_for_delivery':
-      return '🚐';
+      return <IconTruck size={18} color="#2D5A3D" stroke={1.5} />;
     case 'pending':
-      return '⏳';
+      return <IconClock size={18} color="#A0682A" stroke={1.5} />;
     default:
-      return '📦';
+      return <IconBox size={18} color="#5A6358" stroke={1.5} />;
   }
 }
 
 function statusTone(status: BagOrderStatus): string {
   switch (status) {
     case 'delivered':
-      return 'text-green-400';
+      return '#2D5A3D';
     case 'cancelled':
-      return 'text-gray-500';
+      return '#8A8A7A';
     case 'out_for_delivery':
     case 'queued':
-      return 'text-blue-300';
+      return '#2D5A3D';
     case 'pending':
-      return 'text-yellow-300';
+      return '#A0682A';
   }
 }
 
@@ -90,30 +92,37 @@ export default async function OrderHistoryPage() {
   }
 
   return (
-    <main className="px-4 pt-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-white">📦 Order history</h1>
-        <Link href="/resident" className="text-xs text-gray-400">
-          ← Home
-        </Link>
-      </div>
-      <p className="mt-1 text-xs text-gray-400">All your bag orders — newest first.</p>
+    <main className="relative px-5 pt-12 sm:px-8 sm:pt-14">
+      <EcoMasthead title="Order history" backHref="/resident" />
+
+      <section className="mb-5">
+        <EcoH1>Order history</EcoH1>
+        <p
+          className="mt-2 italic"
+          style={{
+            fontFamily: 'var(--eco-serif)',
+            fontSize: 13,
+            color: '#5A6358',
+          }}
+        >
+          All your bag orders — newest first.
+        </p>
+      </section>
 
       {orders.length === 0 ? (
-        <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-6 text-center">
-          <div className="text-sm font-semibold text-white">No orders yet</div>
-          <div className="mt-1 text-xs text-gray-400">
-            When you order bags, they&rsquo;ll show up here.
+        <>
+          <EcoEmpty
+            title="No orders yet."
+            body="When you order bags, they'll show up here."
+          />
+          <div className="mt-4 flex justify-center">
+            <EcoButton href="/resident/order-bags" variant="primary">
+              Order bags
+            </EcoButton>
           </div>
-          <Link
-            href="/resident/order-bags"
-            className="mt-4 inline-block rounded-full bg-green-500 px-4 py-2 text-xs font-semibold text-black"
-          >
-            Order bags →
-          </Link>
-        </section>
+        </>
       ) : (
-        <ul className="mt-4 space-y-2">
+        <ul className="space-y-2">
           {orders.map((o) => {
             const placed = o.createdAt?.toDate?.();
             const delivered = o.deliveredAt?.toDate?.();
@@ -128,21 +137,44 @@ export default async function OrderHistoryPage() {
             return (
               <li
                 key={o.id}
-                className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs"
+                className="rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] px-4 py-3"
               >
                 <div className="flex items-center justify-between">
-                  <div className="font-semibold text-white">
-                    {statusEmoji(o.status)} {o.quantity} sheet{o.quantity === 1 ? '' : 's'} ·{' '}
-                    {o.quantity * 10} bags
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className="flex size-8 items-center justify-center rounded-[10px]"
+                      style={{ background: '#E8EFE6' }}
+                    >
+                      {statusIcon(o.status)}
+                    </span>
+                    <div
+                      style={{
+                        fontFamily: 'var(--eco-serif)',
+                        fontSize: 15,
+                        color: '#1F2A22',
+                      }}
+                    >
+                      {o.quantity} sheet{o.quantity === 1 ? '' : 's'} · {o.quantity * 10} bags
+                    </div>
                   </div>
-                  <div className="text-gray-300">{formatDollars(o.total)}</div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--eco-serif)',
+                      fontSize: 15,
+                      color: '#1F2A22',
+                    }}
+                  >
+                    {formatDollars(o.total)}
+                  </div>
                 </div>
-                <div className="mt-1 flex items-center justify-between text-[11px]">
-                  <span className={statusTone(o.status)}>{statusLabel(o.status)}</span>
-                  <span className="text-gray-400">{rightLabel}</span>
+                <div className="mt-2 flex items-center justify-between text-[11px]">
+                  <span style={{ color: statusTone(o.status), fontWeight: 500 }}>
+                    {statusLabel(o.status)}
+                  </span>
+                  <span style={{ color: '#5A6358' }}>{rightLabel}</span>
                 </div>
                 {placed && (
-                  <div className="mt-1 text-[10px] text-gray-500">
+                  <div className="mt-1 text-[10px]" style={{ color: '#8A8A7A' }}>
                     Placed {formatDate(placed)}
                   </div>
                 )}

@@ -64,38 +64,93 @@ export async function CommercialResidentHome({
   const firstName = userName?.split(' ')[0] ?? 'there';
 
   return (
-    <main className="px-4 pt-8">
-      <header className="flex items-center justify-between pb-4">
+    <main className="relative px-5 pt-12 sm:px-8 sm:pt-14">
+      <header className="mb-6 flex items-baseline justify-between border-b border-[#D9D2C2] pb-3.5">
         <div>
-          <p className="text-xs uppercase tracking-widest text-gray-500">We Buy Clean Trash</p>
-          <h1 className="text-xl font-semibold text-white">Hi, {firstName} 👋</h1>
-          {account && (
-            <div className="mt-0.5 text-xs text-gray-400">{account.businessName}</div>
-          )}
+          <div
+            className="italic"
+            style={{
+              fontFamily: 'var(--eco-serif)',
+              fontSize: 14,
+              color: '#2D5A3D',
+              letterSpacing: 0.5,
+            }}
+          >
+            We Buy Clean Trash
+          </div>
+          <div
+            className="mt-0.5 uppercase"
+            style={{ fontSize: 11, color: '#5A6358', letterSpacing: 1.6 }}
+          >
+            Commercial site
+          </div>
         </div>
         <LogoutButton />
       </header>
 
+      <section className="mb-6">
+        <div style={{ fontSize: 13, color: '#5A6358', marginBottom: 6 }}>
+          Hello, {firstName}.
+        </div>
+        <h1
+          style={{
+            fontFamily: 'var(--eco-serif)',
+            fontSize: 28,
+            fontWeight: 500,
+            lineHeight: 1.2,
+            letterSpacing: -0.4,
+            color: '#1F2A22',
+          }}
+        >
+          {account ? account.businessName : 'Welcome'}
+        </h1>
+      </section>
+
       {!account ? (
-        <section className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100">
-          Your portal isn&rsquo;t linked to a commercial site yet. Ask the WBCT admin to attach
-          your account.
+        <section
+          className="rounded-[14px] border p-4"
+          style={{
+            background: '#F2E8D6',
+            borderColor: 'rgba(160,104,42,0.3)',
+          }}
+        >
+          <div className="eco-eyebrow" style={{ color: '#A0682A' }}>
+            Site not linked
+          </div>
+          <p
+            className="mt-2 italic"
+            style={{
+              fontFamily: 'var(--eco-serif)',
+              fontSize: 14,
+              color: '#1F2A22',
+              lineHeight: 1.5,
+            }}
+          >
+            Your portal isn&rsquo;t linked to a commercial site yet. Ask the WBCT admin
+            to attach your account.
+          </p>
         </section>
       ) : (
         <>
-          <section className="rounded-xl border border-white/10 bg-white/5 p-4">
-            <div className="text-[11px] uppercase tracking-wide text-gray-500">Your site</div>
-            <div className="mt-1 text-sm text-white">{account.businessName}</div>
-            <div className="mt-0.5 text-xs text-gray-400">
+          <section className="mb-5 rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] p-4">
+            <div className="eco-eyebrow">Your site</div>
+            <div
+              className="mt-1.5"
+              style={{
+                fontFamily: 'var(--eco-serif)',
+                fontSize: 17,
+                color: '#1F2A22',
+              }}
+            >
+              {account.businessName}
+            </div>
+            <div className="mt-0.5 text-[12px]" style={{ color: '#5A6358' }}>
               {account.street}
               {account.unit ? `, ${account.unit}` : ''}, {account.city}, {account.state}{' '}
               {account.postalCode}
             </div>
-            <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
-              <Stat
-                label="Pickups"
-                value={`${account.pickupsPerWeek}× / wk`}
-              />
+            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <Stat label="Pickups" value={`${account.pickupsPerWeek}× / wk`} />
               <Stat
                 label="Days"
                 value={
@@ -111,41 +166,105 @@ export async function CommercialResidentHome({
             </div>
           </section>
 
-          <section className="mt-4 rounded-xl border border-blue-500/25 bg-blue-500/10 p-4">
-            <div className="text-[11px] uppercase tracking-wide text-blue-200/70">
+          <section
+            className="mb-5 rounded-[14px] border p-5"
+            style={{
+              background: '#E8EFE6',
+              borderColor: 'rgba(45,90,61,0.3)',
+            }}
+          >
+            <div className="eco-eyebrow" style={{ color: '#2D5A3D' }}>
               Last {REPORT_LOOKBACK_DAYS} days
             </div>
-            <div className="mt-1 text-3xl font-bold text-white">
-              {pickupSummary.totalLbs.toLocaleString('en-US')} lbs
+            <div
+              className="mt-2"
+              style={{
+                fontFamily: 'var(--eco-serif)',
+                fontSize: 40,
+                fontWeight: 400,
+                color: '#1F2A22',
+                letterSpacing: -0.5,
+                lineHeight: 1,
+              }}
+            >
+              {pickupSummary.totalLbs.toLocaleString('en-US')}
+              <span
+                className="ml-1.5 italic"
+                style={{
+                  fontFamily: 'var(--eco-serif)',
+                  fontSize: 18,
+                  color: '#5A6358',
+                  fontWeight: 400,
+                  letterSpacing: 0,
+                }}
+              >
+                lbs
+              </span>
             </div>
-            <div className="text-[11px] text-blue-200/80">
+            <div
+              className="mt-1 italic"
+              style={{
+                fontFamily: 'var(--eco-serif)',
+                fontSize: 13,
+                color: '#2D5A3D',
+              }}
+            >
               diverted across {pickupSummary.rows.length} pickup
               {pickupSummary.rows.length === 1 ? '' : 's'}
             </div>
           </section>
 
-          <section className="mt-4">
-            <div className="text-sm font-semibold text-white">Recent pickups</div>
-            <ul className="mt-2 space-y-1.5">
-              {pickupSummary.rows.length === 0 ? (
-                <li className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-gray-500">
+          <section className="mb-4">
+            <div className="eco-eyebrow mb-3">Recent pickups</div>
+            {pickupSummary.rows.length === 0 ? (
+              <div
+                className="rounded-[14px] border px-4 py-6 text-center"
+                style={{ background: '#FBF7EE', borderColor: '#D9D2C2' }}
+              >
+                <div
+                  className="italic"
+                  style={{
+                    fontFamily: 'var(--eco-serif)',
+                    fontSize: 15,
+                    color: '#1F2A22',
+                  }}
+                >
                   No pickups recorded yet.
-                </li>
-              ) : (
-                pickupSummary.rows.map((p) => (
+                </div>
+              </div>
+            ) : (
+              <ul className="space-y-1.5">
+                {pickupSummary.rows.map((p) => (
                   <li
                     key={p.id}
-                    className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs"
+                    className="flex items-center justify-between rounded-[12px] border border-[#D9D2C2] bg-[#FBF7EE] px-4 py-3"
                   >
-                    <span className="text-gray-300">{p.dateLabel}</span>
-                    <span className="text-gray-500">
+                    <span
+                      style={{
+                        fontFamily: 'var(--eco-serif)',
+                        fontSize: 14,
+                        color: '#1F2A22',
+                      }}
+                    >
+                      {p.dateLabel}
+                    </span>
+                    <span className="text-[12px]" style={{ color: '#8A8A7A' }}>
                       {p.binCount} bin{p.binCount === 1 ? '' : 's'}
                     </span>
-                    <span className="font-semibold text-white">{p.totalWeightLbs} lbs</span>
+                    <span
+                      style={{
+                        fontFamily: 'var(--eco-serif)',
+                        fontSize: 15,
+                        color: '#2D5A3D',
+                        fontFeatureSettings: '"lnum","tnum"',
+                      }}
+                    >
+                      {p.totalWeightLbs} lbs
+                    </span>
                   </li>
-                ))
-              )}
-            </ul>
+                ))}
+              </ul>
+            )}
           </section>
         </>
       )}
@@ -155,9 +274,27 @@ export async function CommercialResidentHome({
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded border border-white/10 bg-black/30 px-2 py-1.5">
-      <div className="text-[9px] uppercase tracking-wide text-gray-500">{label}</div>
-      <div className="text-gray-200">{value}</div>
+    <div
+      className="rounded-[10px] border px-2.5 py-2"
+      style={{ background: '#F8F3E5', borderColor: '#E8E2D0' }}
+    >
+      <div
+        className="uppercase"
+        style={{ fontSize: 9, color: '#8A8A7A', letterSpacing: 1.2, fontWeight: 500 }}
+      >
+        {label}
+      </div>
+      <div
+        className="mt-0.5"
+        style={{
+          fontFamily: 'var(--eco-serif)',
+          fontSize: 13,
+          color: '#1F2A22',
+          lineHeight: 1.3,
+        }}
+      >
+        {value}
+      </div>
     </div>
   );
 }

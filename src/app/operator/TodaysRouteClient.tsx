@@ -5,6 +5,27 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { PickupIssue } from '@/lib/types/pickup';
 import type { RouteView, StopView } from './page';
+import {
+  OP_TOK,
+  OpEyebrow,
+  OpGhostButton,
+  OpPaper,
+  OpPrimaryButton,
+  OpSheet,
+  ProgressStrip,
+  StatusPill,
+  type StatusKey,
+} from '@/components/operator/Op';
+import {
+  IconArrow,
+  IconBag,
+  IconBell,
+  IconCheck,
+  IconChevR,
+  IconPin,
+  IconScan,
+  IconStar,
+} from '@/components/icons/EcoIcons';
 
 export function TodaysRouteClient({
   route,
@@ -21,14 +42,12 @@ export function TodaysRouteClient({
 
   const openStops = route.stops.filter((s) => !s.allDone);
   const visibleStops = openStops.filter((s) => !skipped.has(s.addressId));
-
-  // "Current" = first non-skipped open stop. If none, all skipped — show the
-  // first skipped stop again instead of a dead state.
   const currentStop = visibleStops[0] ?? openStops[0] ?? null;
   const nextStops = useMemo(() => {
     if (!currentStop) return [] as StopView[];
-    const after = openStops.filter((s) => s.addressId !== currentStop.addressId).slice(0, 2);
-    return after;
+    return openStops
+      .filter((s) => s.addressId !== currentStop.addressId)
+      .slice(0, 2);
   }, [currentStop, openStops]);
 
   async function post(url: string, body?: unknown) {
@@ -107,192 +126,386 @@ export function TodaysRouteClient({
     }
   }
 
-  const routeFinished = route.stats.stopsDone === route.stats.stopsTotal && route.stats.deliveriesPending === 0;
+  const routeFinished =
+    route.stats.stopsDone === route.stats.stopsTotal &&
+    route.stats.deliveriesPending === 0;
+  const firstPending = currentStop?.pickups.find((p) => p.status === 'pending');
 
   return (
     <>
-      {(() => {
-        const showStops = route.stats.stopsTotal > 0;
-        const showBags = route.stats.bagsTotal > 0;
-        const showDeliver = route.stats.deliveriesTotal > 0;
-        const visible = [showStops, showBags, showDeliver].filter(Boolean).length;
-        if (visible === 0) return null;
-        const cols = visible === 1 ? 'grid-cols-1' : visible === 2 ? 'grid-cols-2' : 'grid-cols-3';
-        return (
-          <section className={`mt-4 grid ${cols} gap-2`}>
-            {showStops && (
-              <Stat label="Stops" value={`${route.stats.stopsDone}/${route.stats.stopsTotal}`} />
-            )}
-            {showBags && (
-              <Stat label="Bags" value={`${route.stats.bagsDone}/${route.stats.bagsTotal}`} />
-            )}
-            {showDeliver && (
-              <Stat
-                label="Deliver"
-                value={`${route.stats.deliveriesDone}/${route.stats.deliveriesTotal}`}
-              />
-            )}
-          </section>
-        );
-      })()}
+      <ProgressStrip
+        cells={[
+          { label: 'Stops', done: route.stats.stopsDone, total: route.stats.stopsTotal },
+          { label: 'Bags', done: route.stats.bagsDone, total: route.stats.bagsTotal },
+          {
+            label: 'Deliver',
+            done: route.stats.deliveriesDone,
+            total: route.stats.deliveriesTotal,
+          },
+        ]}
+      />
 
       {route.status === 'assigned' && (
-        <section className="mt-4 rounded-xl border border-blue-500/30 bg-blue-500/10 p-4 text-sm">
-          <div className="font-semibold text-white">Ready to roll?</div>
-          <p className="mt-1 text-xs text-blue-200/80">
-            Tap <strong>Start route</strong> to begin. You can’t complete stops until the route is
-            started.
-          </p>
-          <button
-            type="button"
-            onClick={handleStart}
-            disabled={busy}
-            className="mt-3 w-full rounded-lg bg-blue-500 px-3 py-2 text-sm font-semibold text-black disabled:opacity-50"
-          >
-            {busy ? 'Starting…' : '▶ Start route'}
-          </button>
-        </section>
-      )}
-
-      {route.status === 'in_progress' && currentStop && (
-        <section className="mt-4 rounded-xl border border-white/15 bg-white/5 p-4">
-          <div className="text-[11px] uppercase tracking-wide text-gray-400">Current stop</div>
-          <div className="mt-1 font-semibold text-white">{currentStop.street}</div>
-          {(currentStop.unitLine || currentStop.cityLine) && (
-            <div className="text-xs text-gray-400">
-              {[currentStop.unitLine, currentStop.cityLine].filter(Boolean).join(' · ')}
-            </div>
-          )}
-          <div className="mt-1 text-xs text-gray-500">{currentStop.residentName}</div>
-
-          {currentStop.pickups.length > 0 && (
-            <ul className="mt-3 space-y-1.5">
-              {currentStop.pickups.map((p) => (
-                <li
-                  key={p.id}
-                  className="flex items-center justify-between rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-xs"
-                >
-                  <div>
-                    <div className="font-mono text-white">{p.bagCode}</div>
-                    <div className="text-gray-400">
-                      {p.declaredType === 'separated'
-                        ? '⭐ Separated'
-                        : p.declaredType === 'mixed'
-                          ? '🔀 Mixed'
-                          : '—'}
-                    </div>
-                  </div>
-                  <StatusBadge status={p.status} />
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {currentStop.pickups.some((p) => p.status === 'pending') && (
-            <Link
-              href={`/operator/stop/${currentStop.pickups.find((p) => p.status === 'pending')!.id}`}
-              className="mt-3 block rounded-lg bg-green-500 px-4 py-3 text-center text-sm font-semibold text-black"
-            >
-              ✓ SCAN &amp; COMPLETE
-            </Link>
-          )}
-
-          <div className="mt-2 grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setSkipped((prev) => new Set(prev).add(currentStop.addressId));
-                setError(null);
+        <section className="mt-6">
+          <OpPaper>
+            <div
+              style={{
+                fontFamily: OP_TOK.serif,
+                fontSize: 18,
+                color: OP_TOK.ink,
+                letterSpacing: -0.3,
               }}
-              disabled={busy}
-              className="rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-[11px] text-gray-200 disabled:opacity-50"
             >
-              ⏭ Skip
-            </button>
-            <button
-              type="button"
-              onClick={() => handleNotOut(currentStop)}
-              disabled={busy || pendingCount(currentStop) === 0}
-              className="rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-[11px] text-gray-200 disabled:opacity-50"
-            >
-              📦 Not out
-            </button>
-            <button
-              type="button"
-              onClick={() => setIssueOpen(true)}
-              disabled={busy || pendingCount(currentStop) === 0}
-              className="rounded-lg border border-red-500/30 bg-red-500/10 px-2 py-2 text-[11px] text-red-300 disabled:opacity-50"
-            >
-              ⚠ Issue
-            </button>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => handleNotify(currentStop)}
-            disabled={busy || pendingCount(currentStop) === 0}
-            className="mt-2 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-[11px] text-gray-200 disabled:opacity-50"
-          >
-            📲 Text resident: driver on the way
-          </button>
-
-          {currentStop.bagOrdersToDeliver.length > 0 && (
-            <div className="mt-3 rounded-lg border border-green-500/25 bg-green-500/10 p-3 text-xs">
-              <div className="font-semibold text-green-200">📦 Deliver bags + QR stickers</div>
-              {currentStop.bagOrdersToDeliver.map((o) => (
-                <Link
-                  key={o.id}
-                  href={`/operator/deliver/${o.id}`}
-                  className="mt-2 block rounded-md bg-green-500/20 px-3 py-2 text-green-100 hover:bg-green-500/25"
-                >
-                  {o.quantity} sheet{o.quantity === 1 ? '' : 's'} (10 bags each) →
-                </Link>
-              ))}
+              Begin the route.
             </div>
-          )}
+            <p
+              className="mt-1 italic"
+              style={{
+                fontFamily: OP_TOK.serif,
+                fontSize: 12,
+                color: OP_TOK.inkSoft,
+                lineHeight: 1.5,
+              }}
+            >
+              Tap below to clock in. You can&rsquo;t complete stops until the route is started.
+            </p>
+            <div className="mt-4">
+              <OpPrimaryButton onClick={handleStart} disabled={busy}>
+                <IconCheck size={18} color={OP_TOK.paper} stroke={2} />
+                {busy ? 'Starting…' : 'Start route'}
+              </OpPrimaryButton>
+            </div>
+          </OpPaper>
         </section>
       )}
 
-      {route.status === 'in_progress' && nextStops.length > 0 && (
-        <section className="mt-4 rounded-xl border border-white/10 bg-white/5 p-4">
-          <div className="text-[11px] uppercase tracking-wide text-gray-400">Next 2 stops</div>
-          <ul className="mt-2 space-y-1.5">
-            {nextStops.map((s) => (
-              <li key={s.addressId} className="text-xs text-gray-300">
-                <div className="text-white">{s.street}</div>
-                <div className="text-gray-500">
-                  {s.pickups.length} bag{s.pickups.length === 1 ? '' : 's'}
-                  {s.bagOrdersToDeliver.length > 0 && ' · deliver'}
+      {route.status === 'in_progress' && currentStop && !routeFinished && (
+        <section className="mt-6">
+          <OpPaper style={{ padding: 0, overflow: 'hidden' }}>
+            {/* Address header */}
+            <div
+              style={{
+                padding: '18px 18px 14px',
+                borderBottom: `1px solid ${OP_TOK.lineSoft}`,
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <IconPin size={14} color={OP_TOK.green} stroke={1.5} />
+                <OpEyebrow color={OP_TOK.green}>Current stop</OpEyebrow>
+              </div>
+              <div
+                className="mt-2"
+                style={{
+                  fontFamily: OP_TOK.serif,
+                  fontSize: 22,
+                  color: OP_TOK.ink,
+                  letterSpacing: -0.3,
+                  lineHeight: 1.15,
+                }}
+              >
+                {currentStop.street}
+                {currentStop.unitLine ? (
+                  <span style={{ color: OP_TOK.inkSoft }}>, {currentStop.unitLine}</span>
+                ) : null}
+              </div>
+              <div
+                className="mt-1"
+                style={{ fontFamily: OP_TOK.sans, fontSize: 12, color: OP_TOK.inkSoft }}
+              >
+                {currentStop.cityLine}
+              </div>
+              <div
+                className="mt-1.5 italic"
+                style={{ fontFamily: OP_TOK.serif, fontSize: 12, color: OP_TOK.inkSoft }}
+              >
+                {currentStop.residentName}
+              </div>
+            </div>
+
+            {/* Bag list */}
+            {currentStop.pickups.length > 0 && (
+              <div style={{ padding: '14px 18px' }}>
+                <OpEyebrow className="mb-2">
+                  Bags to scan ({currentStop.pickups.length})
+                </OpEyebrow>
+                <ul>
+                  {currentStop.pickups.map((p, i) => (
+                    <li
+                      key={p.id}
+                      className="flex items-center justify-between"
+                      style={{
+                        padding: '10px 0',
+                        borderBottom:
+                          i < currentStop.pickups.length - 1
+                            ? `1px solid ${OP_TOK.lineSoft}`
+                            : 'none',
+                      }}
+                    >
+                      <div>
+                        <div
+                          style={{
+                            fontFamily: OP_TOK.mono,
+                            fontSize: 13,
+                            color: OP_TOK.ink,
+                          }}
+                        >
+                          {p.bagCode}
+                        </div>
+                        <div
+                          className="mt-0.5 flex items-center gap-1 italic"
+                          style={{
+                            fontFamily: OP_TOK.serif,
+                            fontSize: 11,
+                            color: OP_TOK.inkSoft,
+                          }}
+                        >
+                          {p.declaredType === 'separated' ? (
+                            <>
+                              <IconStar size={10} color={OP_TOK.green} stroke={1.5} />
+                              Separated
+                            </>
+                          ) : p.declaredType === 'mixed' ? (
+                            <>Mixed</>
+                          ) : (
+                            <>—</>
+                          )}
+                        </div>
+                      </div>
+                      <StatusPill status={p.status as StatusKey} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Primary scan action */}
+            {firstPending && (
+              <div style={{ padding: '0 18px 14px' }}>
+                <OpPrimaryButton href={`/operator/stop/${firstPending.id}`}>
+                  <IconScan size={18} color={OP_TOK.paper} stroke={1.75} />
+                  Scan &amp; complete
+                </OpPrimaryButton>
+              </div>
+            )}
+
+            {/* Secondary tray */}
+            <div
+              style={{
+                padding: '0 18px 14px',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: 8,
+              }}
+            >
+              <OpGhostButton
+                onClick={() => {
+                  setSkipped((prev) => new Set(prev).add(currentStop.addressId));
+                  setError(null);
+                }}
+                disabled={busy}
+              >
+                Skip
+              </OpGhostButton>
+              <OpGhostButton
+                onClick={() => handleNotOut(currentStop)}
+                disabled={busy || pendingCount(currentStop) === 0}
+              >
+                Not out
+              </OpGhostButton>
+              <OpGhostButton
+                onClick={() => setIssueOpen(true)}
+                disabled={busy || pendingCount(currentStop) === 0}
+                tone="rust"
+              >
+                Issue
+              </OpGhostButton>
+            </div>
+
+            {/* Notify resident */}
+            <div style={{ padding: '0 18px 16px' }}>
+              <button
+                type="button"
+                onClick={() => handleNotify(currentStop)}
+                disabled={busy || pendingCount(currentStop) === 0}
+                className="flex w-full cursor-pointer items-center justify-center gap-2 italic disabled:opacity-40"
+                style={{
+                  background: 'transparent',
+                  border: `1px dashed ${OP_TOK.line}`,
+                  borderRadius: 10,
+                  padding: '10px 12px',
+                  fontFamily: OP_TOK.serif,
+                  fontSize: 12,
+                  color: OP_TOK.inkSoft,
+                }}
+              >
+                <IconBell size={14} stroke={1.5} />
+                Text resident: driver on the way
+              </button>
+            </div>
+
+            {/* Bag delivery sub-task */}
+            {currentStop.bagOrdersToDeliver.length > 0 && (
+              <div
+                style={{
+                  padding: '14px 18px 18px',
+                  background: OP_TOK.greenSoft,
+                  borderTop: `1px solid ${OP_TOK.line}`,
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <IconBag size={14} color={OP_TOK.green} stroke={1.5} />
+                  <OpEyebrow color={OP_TOK.green}>Also deliver</OpEyebrow>
                 </div>
-              </li>
+                {currentStop.bagOrdersToDeliver.map((o) => (
+                  <Link
+                    key={o.id}
+                    href={`/operator/deliver/${o.id}`}
+                    className="mt-2.5 flex items-center justify-between"
+                    style={{
+                      background: OP_TOK.paper,
+                      border: `1px solid ${OP_TOK.green}`,
+                      borderRadius: 10,
+                      padding: '12px 14px',
+                    }}
+                  >
+                    <div>
+                      <div
+                        style={{
+                          fontFamily: OP_TOK.serif,
+                          fontSize: 14,
+                          color: OP_TOK.ink,
+                        }}
+                      >
+                        {o.quantity} sheet{o.quantity === 1 ? '' : 's'}{' '}
+                        <span
+                          className="italic"
+                          style={{ color: OP_TOK.inkFaint }}
+                        >
+                          · {o.quantity * 10} bags
+                        </span>
+                      </div>
+                      <div
+                        className="mt-0.5 italic"
+                        style={{
+                          fontFamily: OP_TOK.serif,
+                          fontSize: 11,
+                          color: OP_TOK.green,
+                        }}
+                      >
+                        Scan first sticker to claim sheet
+                      </div>
+                    </div>
+                    <IconChevR size={14} color={OP_TOK.green} />
+                  </Link>
+                ))}
+              </div>
+            )}
+          </OpPaper>
+        </section>
+      )}
+
+      {route.status === 'in_progress' && nextStops.length > 0 && !routeFinished && (
+        <section className="mt-6">
+          <OpEyebrow className="mb-2.5">
+            Next {nextStops.length} stop{nextStops.length === 1 ? '' : 's'}
+          </OpEyebrow>
+          <div style={{ borderTop: `1px solid ${OP_TOK.line}` }}>
+            {nextStops.map((s) => (
+              <div
+                key={s.addressId}
+                className="flex items-center justify-between"
+                style={{
+                  padding: '14px 0',
+                  borderBottom: `1px solid ${OP_TOK.lineSoft}`,
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      fontFamily: OP_TOK.serif,
+                      fontSize: 15,
+                      color: OP_TOK.ink,
+                    }}
+                  >
+                    {s.street}
+                  </div>
+                  <div
+                    className="mt-0.5 italic"
+                    style={{
+                      fontFamily: OP_TOK.serif,
+                      fontSize: 11,
+                      color: OP_TOK.inkSoft,
+                    }}
+                  >
+                    {s.pickups.length} bag{s.pickups.length === 1 ? '' : 's'}
+                    {s.bagOrdersToDeliver.length > 0 && ` · ${s.bagOrdersToDeliver.length} delivery`}
+                  </div>
+                </div>
+                <IconChevR size={14} color={OP_TOK.inkFaint} />
+              </div>
             ))}
-          </ul>
+          </div>
         </section>
       )}
 
       {route.status === 'in_progress' && routeFinished && (
-        <section className="mt-4 rounded-xl border border-green-500/30 bg-green-500/10 p-4 text-sm">
-          <div className="font-semibold text-green-200">🎉 All stops handled</div>
-          <p className="mt-1 text-xs text-green-300/80">
-            Head back to the depot, then tap below to close the route.
-          </p>
-          <Link
-            href="/operator/summary"
-            className="mt-3 block rounded-lg bg-green-500 px-3 py-2 text-center text-sm font-semibold text-black"
+        <section className="mt-6">
+          <OpPaper
+            style={{
+              background: OP_TOK.greenSoft,
+              border: `1px solid ${OP_TOK.green}`,
+            }}
           >
-            End-of-route summary →
-          </Link>
+            <div
+              style={{
+                fontFamily: OP_TOK.serif,
+                fontSize: 20,
+                color: OP_TOK.green,
+                letterSpacing: -0.3,
+              }}
+            >
+              Route handled.
+            </div>
+            <p
+              className="mt-1 italic"
+              style={{
+                fontFamily: OP_TOK.serif,
+                fontSize: 12,
+                color: OP_TOK.green,
+                opacity: 0.85,
+              }}
+            >
+              Head back to the depot, then close it out.
+            </p>
+            <div className="mt-4">
+              <OpPrimaryButton href="/operator/summary">
+                End-of-route summary
+                <IconArrow size={16} color={OP_TOK.paper} />
+              </OpPrimaryButton>
+            </div>
+          </OpPaper>
         </section>
       )}
 
       {error && (
-        <p className="mt-3 rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-300">
+        <p
+          className="mt-3"
+          style={{
+            background: OP_TOK.rustSoft,
+            border: `1px solid ${OP_TOK.rust}`,
+            color: OP_TOK.rust,
+            borderRadius: 10,
+            padding: '8px 12px',
+            fontFamily: OP_TOK.serif,
+            fontSize: 12,
+          }}
+        >
           {error}
         </p>
       )}
 
       {issueOpen && currentStop && (
-        <IssueModal
+        <IssueSheet
           stop={currentStop}
           busy={busy}
           onCancel={() => setIssueOpen(false)}
@@ -300,7 +513,15 @@ export function TodaysRouteClient({
         />
       )}
 
-      <footer className="mt-10 text-center text-[10px] text-gray-600">
+      <footer
+        className="mt-8 text-center"
+        style={{
+          fontFamily: OP_TOK.serif,
+          fontStyle: 'italic',
+          fontSize: 11,
+          color: OP_TOK.inkFaint,
+        }}
+      >
         Signed in as {operatorLabel}
       </footer>
     </>
@@ -311,33 +532,7 @@ function pendingCount(stop: StopView): number {
   return stop.pickups.filter((p) => p.status === 'pending').length;
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-center">
-      <div className="text-lg font-bold text-white">{value}</div>
-      <div className="text-[10px] uppercase tracking-wide text-gray-500">{label}</div>
-    </div>
-  );
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    pending: 'border-gray-500/30 bg-gray-500/10 text-gray-300',
-    completed: 'border-green-500/30 bg-green-500/10 text-green-300',
-    missed: 'border-amber-500/30 bg-amber-500/10 text-amber-300',
-    issue: 'border-red-500/30 bg-red-500/10 text-red-300',
-    skipped: 'border-blue-500/30 bg-blue-500/10 text-blue-300',
-  };
-  return (
-    <span
-      className={`rounded border px-1.5 py-0.5 text-[9px] uppercase tracking-wide ${map[status] ?? ''}`}
-    >
-      {status}
-    </span>
-  );
-}
-
-function IssueModal({
+function IssueSheet({
   stop,
   busy,
   onCancel,
@@ -351,62 +546,78 @@ function IssueModal({
   const [issue, setIssue] = useState<PickupIssue>('contaminated');
   const [note, setNote] = useState('');
   return (
-    <div className="fixed inset-0 z-20 flex items-end justify-center bg-black/60 p-4 sm:items-center">
-      <div className="w-full max-w-sm rounded-xl border border-white/15 bg-neutral-900 p-4">
-        <div className="text-sm font-semibold text-white">Flag an issue</div>
-        <div className="mt-0.5 text-xs text-gray-400">
-          {stop.street} · {pendingCount(stop)} pending bag(s)
-        </div>
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={() => setIssue('contaminated')}
-            className={`rounded-lg border px-3 py-2 text-xs ${
-              issue === 'contaminated'
-                ? 'border-red-500 bg-red-500/15 text-white'
-                : 'border-white/15 bg-white/5 text-gray-200'
-            }`}
-          >
-            Contaminated
-          </button>
-          <button
-            type="button"
-            onClick={() => setIssue('other')}
-            className={`rounded-lg border px-3 py-2 text-xs ${
-              issue === 'other'
-                ? 'border-white bg-white/10 text-white'
-                : 'border-white/15 bg-white/5 text-gray-200'
-            }`}
-          >
-            Other
-          </button>
-        </div>
-        <textarea
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          rows={3}
-          placeholder="What did you see? (optional)"
-          className="mt-3 w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm text-white placeholder-gray-600 focus:border-white/30 focus:outline-none"
-        />
-        <div className="mt-4 flex items-center justify-end gap-2">
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={busy}
-            className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-gray-200"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={() => onSubmit(issue, note.trim())}
-            disabled={busy}
-            className="rounded-lg bg-red-500 px-3 py-1.5 text-xs font-semibold text-black disabled:opacity-50"
-          >
-            {busy ? 'Flagging…' : 'Flag issue'}
-          </button>
-        </div>
+    <OpSheet
+      title="Flag an issue"
+      subtitle={`${stop.street} · ${pendingCount(stop)} pending bag${pendingCount(stop) === 1 ? '' : 's'}`}
+      onClose={onCancel}
+    >
+      <div className="grid grid-cols-2 gap-2">
+        {(['contaminated', 'other'] as const).map((opt) => {
+          const sel = issue === opt;
+          return (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => setIssue(opt)}
+              className="cursor-pointer"
+              style={{
+                background: sel ? OP_TOK.ink : OP_TOK.paper,
+                color: sel ? OP_TOK.paper : OP_TOK.ink,
+                border: `1px solid ${sel ? OP_TOK.ink : OP_TOK.line}`,
+                borderRadius: 12,
+                padding: '12px 10px',
+                fontFamily: OP_TOK.serif,
+                fontSize: 14,
+                letterSpacing: -0.2,
+                textTransform: 'capitalize',
+              }}
+            >
+              {opt}
+            </button>
+          );
+        })}
       </div>
-    </div>
+      <textarea
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+        rows={3}
+        placeholder="What did you see? (optional)"
+        className="mt-3 w-full"
+        style={{
+          background: OP_TOK.paper,
+          border: `1px solid ${OP_TOK.line}`,
+          borderRadius: 10,
+          padding: '10px 12px',
+          fontFamily: OP_TOK.serif,
+          fontSize: 14,
+          color: OP_TOK.ink,
+          outline: 'none',
+          resize: 'vertical',
+        }}
+      />
+      <div className="mt-4 flex items-center justify-end gap-2">
+        <OpGhostButton onClick={onCancel} disabled={busy}>
+          Cancel
+        </OpGhostButton>
+        <button
+          type="button"
+          onClick={() => onSubmit(issue, note.trim())}
+          disabled={busy}
+          className="cursor-pointer disabled:opacity-50"
+          style={{
+            background: OP_TOK.rust,
+            color: OP_TOK.paper,
+            border: 'none',
+            borderRadius: 12,
+            padding: '12px 18px',
+            fontFamily: OP_TOK.serif,
+            fontSize: 14,
+            fontWeight: 500,
+          }}
+        >
+          {busy ? 'Flagging…' : 'Flag issue'}
+        </button>
+      </div>
+    </OpSheet>
   );
 }

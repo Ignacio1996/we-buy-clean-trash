@@ -3,6 +3,7 @@ import { adminDb } from '@/lib/firebase/admin';
 import { pointsToDollars } from '@/lib/logic/pointsToDollars';
 import type { TransactionDoc } from '@/lib/types/transaction';
 import { RedemptionList } from './RedemptionList';
+import { EcoMasthead, EcoH1 } from '@/components/resident/eco/Eco';
 
 const GIFT_CARD_POINTS = 100_000;
 
@@ -39,50 +40,92 @@ export default async function RewardsPage() {
   const transactions = txSnap.docs.map((d) => d.data() as TransactionDoc);
 
   return (
-    <main className="px-4 pt-8">
-      <h1 className="text-xl font-semibold text-white">🎁 Rewards</h1>
+    <main className="relative px-5 pt-12 sm:px-8 sm:pt-14">
+      <EcoMasthead title="Rewards" backHref="/resident" />
 
-      <section className="mt-4 rounded-xl border border-white/10 bg-white/5 p-5 text-center">
-        <div className="text-xs text-gray-400">Your balance</div>
-        <div className="mt-1 text-3xl font-bold text-white">{formatPoints(balance)} pts</div>
-        <div className="mt-1 text-xs text-gray-400">
-          = {formatDollars(pointsToDollars(balance))}
+      <section className="mb-5">
+        <EcoH1>Rewards</EcoH1>
+      </section>
+
+      <section className="mb-5 rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] p-5 text-center">
+        <div className="eco-eyebrow">Your balance</div>
+        <div
+          className="mt-2"
+          style={{
+            fontFamily: 'var(--eco-serif)',
+            fontSize: 40,
+            fontWeight: 400,
+            color: '#1F2A22',
+            letterSpacing: -0.5,
+            lineHeight: 1,
+          }}
+        >
+          {formatPoints(balance)}
         </div>
-        <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
+        <div
+          className="mt-1 italic"
+          style={{ fontFamily: 'var(--eco-serif)', fontSize: 13, color: '#5A6358' }}
+        >
+          points · {formatDollars(pointsToDollars(balance))}
+        </div>
+        <div
+          className="mt-4 h-1 overflow-hidden rounded-sm"
+          style={{ background: '#D9D2C2' }}
+        >
           <div
-            className="h-full bg-green-500"
-            style={{ width: `${(progress * 100).toFixed(1)}%` }}
+            className="h-full"
+            style={{ width: `${(progress * 100).toFixed(1)}%`, background: '#2D5A3D' }}
           />
         </div>
-        <div className="mt-2 text-[11px] text-gray-500">
+        <div
+          className="mt-2 italic"
+          style={{ fontFamily: 'var(--eco-serif)', fontSize: 12, color: '#5A6358' }}
+        >
           {pointsToNext > 0
             ? `${formatPoints(pointsToNext)} pts until a $10 gift card`
-            : 'Ready to redeem a $10 gift card'}
+            : 'Ready to redeem a $10 gift card.'}
         </div>
       </section>
 
       <RedemptionList balance={balance} />
 
-      <section className="mt-4 rounded-xl border border-white/10 bg-white/5 p-4">
-        <div className="text-xs uppercase tracking-wide text-gray-400">Points history</div>
+      <section className="mt-5 rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] p-4">
+        <div className="eco-eyebrow mb-1">Points history</div>
         {transactions.length === 0 ? (
-          <p className="mt-3 text-sm text-gray-400">No activity yet.</p>
+          <p
+            className="mt-3 italic"
+            style={{ fontFamily: 'var(--eco-serif)', fontSize: 14, color: '#5A6358' }}
+          >
+            No activity yet.
+          </p>
         ) : (
-          <ul className="mt-2 divide-y divide-white/5">
-            {transactions.map((tx) => (
-              <li key={tx.id} className="flex items-start justify-between py-2 text-sm">
-                <div>
-                  <div className={tx.pointsDelta >= 0 ? 'text-green-400' : 'text-red-400'}>
-                    {tx.pointsDelta >= 0 ? '+' : ''}
-                    {formatPoints(tx.pointsDelta)} pts
+          <ul className="mt-1 divide-y divide-[#E8E2D0]">
+            {transactions.map((tx) => {
+              const positive = tx.pointsDelta >= 0;
+              return (
+                <li key={tx.id} className="flex items-start justify-between py-3">
+                  <div>
+                    <div
+                      style={{
+                        fontFamily: 'var(--eco-serif)',
+                        fontSize: 16,
+                        color: positive ? '#2D5A3D' : '#9A4B26',
+                        letterSpacing: -0.2,
+                      }}
+                    >
+                      {positive ? '+' : ''}
+                      {formatPoints(tx.pointsDelta)} pts
+                    </div>
+                    <div className="mt-0.5 text-[12px]" style={{ color: '#5A6358' }}>
+                      {tx.description}
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-400">{tx.description}</div>
-                </div>
-                <div className="text-[11px] text-gray-500">
-                  {formatDate((tx.createdAt as { seconds?: number })?.seconds)}
-                </div>
-              </li>
-            ))}
+                  <div className="text-[11px]" style={{ color: '#8A8A7A' }}>
+                    {formatDate((tx.createdAt as { seconds?: number })?.seconds)}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>

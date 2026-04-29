@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { requireRole } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
@@ -7,6 +6,12 @@ import type { PickupDoc } from '@/lib/types/pickup';
 import type { BagDoc } from '@/lib/types/bag';
 import type { AddressDoc, UserDoc } from '@/lib/types/user';
 import { ScanConfirmClient } from './ScanConfirmClient';
+import {
+  OP_TOK,
+  OpBackRow,
+  OpEyebrow,
+  OpPage,
+} from '@/components/operator/Op';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,28 +42,47 @@ export default async function ScanConfirmPage({
   const resident = residentSnap.data() as UserDoc | undefined;
 
   const expectedCode = bag?.qrCode ?? bag?.printedNumber ?? '';
+  const declaredType = bag?.declaredType;
 
   return (
-    <main className="mx-auto min-h-dvh max-w-md bg-neutral-950 px-4 pb-16 pt-6 text-gray-100">
-      <Link href="/operator" className="text-xs text-gray-400 underline">
-        ← Back to route
-      </Link>
-      <header className="mt-3">
-        <div className="text-[10px] uppercase tracking-[0.2em] text-gray-500">Pickup</div>
-        <h1 className="mt-1 text-lg font-semibold text-white">
+    <OpPage>
+      <OpBackRow label="Back to route" href="/operator" />
+
+      <header className="mb-6">
+        <OpEyebrow>Pickup</OpEyebrow>
+        <h1
+          className="mt-1.5"
+          style={{
+            fontFamily: OP_TOK.serif,
+            fontSize: 26,
+            color: OP_TOK.ink,
+            letterSpacing: -0.5,
+            lineHeight: 1.15,
+            fontWeight: 400,
+          }}
+        >
           {address?.street ?? '—'}
-          {address?.unit ? ` · Unit ${address.unit}` : ''}
+          {address?.unit ? (
+            <span style={{ color: OP_TOK.inkSoft, fontStyle: 'italic' }}>
+              , Unit {address.unit}
+            </span>
+          ) : null}
         </h1>
-        <div className="text-xs text-gray-400">
+        <div
+          className="mt-1.5 italic"
+          style={{ fontFamily: OP_TOK.serif, fontSize: 12, color: OP_TOK.inkSoft }}
+        >
           {resident?.name ?? 'Resident'}
-          {bag?.declaredType === 'separated'
-            ? ' · ⭐ Separated'
-            : bag?.declaredType === 'mixed'
-              ? ' · 🔀 Mixed'
-              : ''}
+          {declaredType === 'separated' && (
+            <span className="ml-2" style={{ color: OP_TOK.green }}>
+              · separated
+            </span>
+          )}
+          {declaredType === 'mixed' && <span className="ml-2">· mixed</span>}
         </div>
       </header>
+
       <ScanConfirmClient pickupId={pickupId} expectedCode={expectedCode} />
-    </main>
+    </OpPage>
   );
 }

@@ -2,6 +2,7 @@ import { getSession } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
 import { LogoutButton } from '@/components/LogoutButton';
 import { PhoneField } from './PhoneField';
+import { EcoH1, EcoMasthead } from '@/components/resident/eco/Eco';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -23,21 +24,64 @@ export default async function ProfilePage() {
   const phone = typeof user.phone === 'string' ? user.phone : null;
 
   return (
-    <main className="px-4 pt-8">
-      <h1 className="text-xl font-semibold text-white">👤 Profile</h1>
+    <main className="relative px-5 pt-12 sm:px-8 sm:pt-14">
+      <EcoMasthead backHref="/resident" />
 
-      <section className="mt-4 rounded-xl border border-white/10 bg-white/5 p-4 text-sm">
-        <div className="text-xs uppercase tracking-wide text-gray-400">Name</div>
-        <div className="mt-1 text-white">{typeof user.name === 'string' ? user.name : '—'}</div>
-        <div className="mt-3 text-xs uppercase tracking-wide text-gray-400">Email</div>
-        <div className="mt-1 text-white">{session!.email ?? '—'}</div>
-        <div className="mt-3 text-xs uppercase tracking-wide text-gray-400">Phone</div>
+      <section className="mb-6">
+        <div className="eco-eyebrow mb-2">Account</div>
+        <EcoH1>Profile.</EcoH1>
+      </section>
+
+      <section className="rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] p-4">
+        <div className="eco-eyebrow">Name</div>
+        <div
+          className="mt-1"
+          style={{
+            fontFamily: 'var(--eco-serif)',
+            fontSize: 16,
+            color: '#1F2A22',
+          }}
+        >
+          {typeof user.name === 'string' ? user.name : '—'}
+        </div>
+
+        <div
+          className="my-3.5"
+          style={{ borderTop: '1px solid #E8E2D0' }}
+        />
+
+        <div className="eco-eyebrow">Email</div>
+        <div
+          className="mt-1"
+          style={{
+            fontFamily: 'var(--eco-serif)',
+            fontSize: 16,
+            color: '#1F2A22',
+          }}
+        >
+          {session!.email ?? '—'}
+        </div>
+
+        <div
+          className="my-3.5"
+          style={{ borderTop: '1px solid #E8E2D0' }}
+        />
+
+        <div className="eco-eyebrow">Phone</div>
         <PhoneField initial={phone} />
       </section>
 
-      <section className="mt-3 rounded-xl border border-white/10 bg-white/5 p-4 text-sm">
-        <div className="text-xs uppercase tracking-wide text-gray-400">Pickup address</div>
-        <div className="mt-1 text-white">
+      <section className="mt-3 rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] p-4">
+        <div className="eco-eyebrow">Pickup address</div>
+        <div
+          className="mt-1"
+          style={{
+            fontFamily: 'var(--eco-serif)',
+            fontSize: 15,
+            color: '#1F2A22',
+            lineHeight: 1.4,
+          }}
+        >
           {address
             ? [
                 address.street,
@@ -50,9 +94,17 @@ export default async function ProfilePage() {
         </div>
       </section>
 
-      <section className="mt-3 rounded-xl border border-white/10 bg-white/5 p-4 text-sm">
-        <div className="text-xs uppercase tracking-wide text-gray-400">Pickup day</div>
-        <div className="mt-1 text-white">
+      <section className="mt-3 rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] p-4">
+        <div className="eco-eyebrow">Pickup day</div>
+        <div
+          className="mt-1"
+          style={{
+            fontFamily: 'var(--eco-serif)',
+            fontSize: 15,
+            color: '#1F2A22',
+            lineHeight: 1.4,
+          }}
+        >
           {pickupDayIdx !== null && pickupDayIdx >= 0 && pickupDayIdx <= 6
             ? `${DAYS[pickupDayIdx]} (${typeof zone?.name === 'string' ? zone.name : 'your zone'})`
             : 'Not assigned — your ZIP isn’t in a pickup zone yet.'}

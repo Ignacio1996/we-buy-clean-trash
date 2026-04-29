@@ -4,6 +4,8 @@ import { loadActiveMaterials } from '@/lib/admin/loadActiveMaterials';
 import { loadActiveCampaigns } from '@/lib/admin/loadActiveCampaigns';
 import { buildMaterialMultipliers } from '@/lib/types/pricingCampaign';
 import { CalculatorForm } from './CalculatorForm';
+import { EcoMasthead, EcoH1 } from '@/components/resident/eco/Eco';
+import { IconFire } from '@/components/icons/EcoIcons';
 
 function formatDollars(n: number) {
   return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -22,48 +24,120 @@ export default async function CalculatorPage() {
   const materialNameById = new Map(materials.map((m) => [m.id, m.name]));
 
   return (
-    <main className="px-4 pt-8">
-      <h1 className="text-xl font-semibold text-white">💰 What&rsquo;s it worth?</h1>
-      <p className="mt-1 text-xs text-gray-400">
-        Live yellow-sheet prices · you earn {(earningPct * 100).toFixed(0)}% of market.
-      </p>
+    <main className="relative px-5 pt-12 sm:px-8 sm:pt-14">
+      <EcoMasthead title="What's it worth" backHref="/resident" />
+
+      <section className="mb-5">
+        <EcoH1>What is your trash worth?</EcoH1>
+        <p
+          className="mt-2 italic"
+          style={{
+            fontFamily: 'var(--eco-serif)',
+            fontSize: 13,
+            color: '#5A6358',
+          }}
+        >
+          Live yellow-sheet prices · you earn {(earningPct * 100).toFixed(0)}% of market.
+        </p>
+      </section>
 
       {liveCampaigns.length > 0 && (
-        <section className="mt-3 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3">
-          <div className="text-[11px] font-semibold uppercase tracking-wide text-amber-200">
-            🔥 Bonus running now
+        <section
+          className="mb-5 flex items-start gap-3 rounded-[14px] border p-4"
+          style={{
+            background: '#F2E8D6',
+            borderColor: 'rgba(160,104,42,0.3)',
+          }}
+        >
+          <div
+            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full"
+            style={{ background: '#FBF7EE', color: '#A0682A' }}
+          >
+            <IconFire size={18} stroke={1.5} />
           </div>
-          <ul className="mt-1 space-y-0.5 text-xs text-amber-100">
-            {liveCampaigns.map((c) => (
-              <li key={c.id}>
-                <span className="font-semibold">×{c.multiplier}</span> on{' '}
-                {c.materialIds.map((id) => materialNameById.get(id) ?? id).join(', ')} ·{' '}
-                <span className="opacity-80">{c.name}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="flex-1">
+            <div className="eco-eyebrow" style={{ color: '#A0682A' }}>
+              Bonus running now
+            </div>
+            <ul className="mt-1.5 space-y-1">
+              {liveCampaigns.map((c) => (
+                <li
+                  key={c.id}
+                  style={{
+                    fontFamily: 'var(--eco-serif)',
+                    fontSize: 14,
+                    color: '#1F2A22',
+                    lineHeight: 1.4,
+                  }}
+                >
+                  <span style={{ fontWeight: 600 }}>×{c.multiplier}</span> on{' '}
+                  {c.materialIds.map((id) => materialNameById.get(id) ?? id).join(', ')} ·{' '}
+                  <span className="italic" style={{ color: '#A0682A' }}>
+                    {c.name}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </section>
       )}
 
-      <section className="mt-4 rounded-xl border border-white/10 bg-white/5 p-4">
-        <div className="text-xs uppercase tracking-wide text-gray-400">Accepted materials</div>
-        <ul className="mt-2 space-y-2 text-sm">
+      <section className="mb-5 rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] p-4">
+        <div className="eco-eyebrow mb-1">Accepted materials</div>
+        <ul className="mt-1 divide-y divide-[#E8E2D0]">
           {materials.map((m) => {
             const mult = multipliers[m.id] ?? 1;
             const youGet = m.marketPrice * m.customerPct * mult;
             return (
-              <li key={m.id} className="flex items-center justify-between">
-                <span className="text-white">
-                  {m.name}
+              <li
+                key={m.id}
+                className="flex items-baseline justify-between gap-3 py-2.5"
+              >
+                <div className="flex items-baseline gap-2">
+                  <span
+                    style={{
+                      fontFamily: 'var(--eco-serif)',
+                      fontSize: 15,
+                      color: '#1F2A22',
+                    }}
+                  >
+                    {m.name}
+                  </span>
                   {mult !== 1 && (
-                    <span className="ml-2 rounded bg-amber-400/20 px-1 text-[10px] font-semibold text-amber-200">
+                    <span
+                      className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase"
+                      style={{
+                        background: '#F2E8D6',
+                        color: '#A0682A',
+                        letterSpacing: 0.6,
+                      }}
+                    >
                       ×{mult}
                     </span>
                   )}
-                </span>
-                <span className="text-gray-400">
-                  {formatDollars(m.marketPrice)} / lb · you get {formatDollars(youGet)}
-                </span>
+                </div>
+                <div className="flex items-baseline gap-2 text-right">
+                  <span
+                    className="italic"
+                    style={{
+                      fontFamily: 'var(--eco-serif)',
+                      fontSize: 12,
+                      color: '#8A8A7A',
+                    }}
+                  >
+                    {formatDollars(m.marketPrice)} / lb
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: 'var(--eco-serif)',
+                      fontSize: 14,
+                      color: '#2D5A3D',
+                      fontFeatureSettings: '"lnum","tnum"',
+                    }}
+                  >
+                    {formatDollars(youGet)}
+                  </span>
+                </div>
               </li>
             );
           })}
@@ -72,7 +146,15 @@ export default async function CalculatorPage() {
 
       <CalculatorForm materials={materials} multipliers={multipliers} />
 
-      <p className="mt-4 text-[10px] text-gray-500">
+      <p
+        className="mt-5 italic"
+        style={{
+          fontFamily: 'var(--eco-serif)',
+          fontSize: 12,
+          color: '#5A6358',
+          lineHeight: 1.5,
+        }}
+      >
         Separated bags earn 2× points. Contamination can reduce your payout by up to 90%.
       </p>
     </main>

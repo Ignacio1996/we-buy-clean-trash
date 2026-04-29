@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { OP_TOK, OpPrimaryButton } from '@/components/operator/Op';
+import { IconCheck } from '@/components/icons/EcoIcons';
 
 export function CompleteRouteButton({
   routeId,
@@ -37,17 +39,34 @@ export function CompleteRouteButton({
   }
 
   return (
-    <div className="mt-6">
-      <button
-        type="button"
-        onClick={handle}
-        disabled={busy}
-        className="w-full rounded-xl bg-green-500 px-4 py-3 text-sm font-semibold text-black disabled:opacity-50"
+    <div className="mt-7">
+      <OpPrimaryButton onClick={handle} disabled={busy}>
+        <IconCheck size={18} color={OP_TOK.paper} stroke={2} />
+        {busy ? 'Closing…' : 'Close route & clock out'}
+      </OpPrimaryButton>
+      <p
+        className="mt-2.5 text-center italic"
+        style={{
+          fontFamily: OP_TOK.serif,
+          fontSize: 11,
+          color: OP_TOK.inkFaint,
+        }}
       >
-        {busy ? 'Closing…' : hasPickups ? 'Deliver to depot →' : 'Close route →'}
-      </button>
+        You can’t reopen a closed route. Make sure the truck is empty.
+      </p>
       {error && (
-        <p className="mt-2 rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+        <p
+          className="mt-3"
+          style={{
+            background: OP_TOK.rustSoft,
+            border: `1px solid ${OP_TOK.rust}`,
+            color: OP_TOK.rust,
+            borderRadius: 10,
+            padding: '8px 12px',
+            fontFamily: OP_TOK.serif,
+            fontSize: 12,
+          }}
+        >
           {error}
         </p>
       )}

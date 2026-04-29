@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { clearPresignupScan } from '@/lib/presignup/scan-storage';
+import { IconArrow } from '@/components/icons/EcoIcons';
 
 export function WelcomeActions() {
   const router = useRouter();
@@ -25,9 +26,10 @@ export function WelcomeActions() {
       type="button"
       onClick={dismiss}
       disabled={busy}
-      className="mt-6 w-full rounded-xl bg-green-500 px-3 py-3 text-sm font-semibold text-black disabled:opacity-50"
+      className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-[#2D5A3D] px-5 py-3 text-[14px] font-semibold tracking-[0.3px] text-[#FBF7EE] transition-colors hover:bg-[#1F4029] disabled:cursor-not-allowed disabled:opacity-50"
     >
-      {busy ? 'One sec…' : "Let's go →"}
+      {busy ? 'One sec…' : "Let's go"}
+      {!busy && <IconArrow size={14} color="#FBF7EE" />}
     </button>
   );
 }

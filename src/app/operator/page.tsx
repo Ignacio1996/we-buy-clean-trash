@@ -2,13 +2,22 @@ import { Timestamp } from 'firebase-admin/firestore';
 import Link from 'next/link';
 import { requireRole } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
-import { LogoutButton } from '@/components/LogoutButton';
 import type { RouteDoc } from '@/lib/types/route';
 import type { PickupDoc, PickupStatus } from '@/lib/types/pickup';
 import type { BagDoc, DeclaredBagType } from '@/lib/types/bag';
 import type { AddressDoc, UserDoc } from '@/lib/types/user';
 import type { BagOrderDoc } from '@/lib/types/bagOrder';
 import { TodaysRouteClient } from './TodaysRouteClient';
+import {
+  OP_TOK,
+  OpAvatar,
+  OpDisplay,
+  OpEyebrow,
+  OpMasthead,
+  OpPage,
+} from '@/components/operator/Op';
+import { LogoutLink } from './LogoutLink';
+import { IconChevR, IconLeaf } from '@/components/icons/EcoIcons';
 
 export const dynamic = 'force-dynamic';
 
@@ -64,16 +73,20 @@ function startOfToday(): Timestamp {
 
 function formatDate(ts: RouteDoc['date']): string {
   try {
-    return ts
-      .toDate()
-      .toLocaleDateString('en-US', {
-        weekday: 'long',
-        month: 'short',
-        day: 'numeric',
-      });
+    const d = ts.toDate();
+    const weekday = d.toLocaleDateString('en-US', { weekday: 'long' });
+    const month = d.toLocaleDateString('en-US', { month: 'short' });
+    return `${weekday} · ${month} ${d.getDate()}`;
   } catch {
     return '—';
   }
+}
+
+function formatTodayLabel(): string {
+  const d = new Date();
+  const weekday = d.toLocaleDateString('en-US', { weekday: 'long' });
+  const month = d.toLocaleDateString('en-US', { month: 'short' });
+  return `${weekday} · ${month} ${d.getDate()}`;
 }
 
 async function loadTodaysRoute(operatorUid: string): Promise<RouteView | null> {
@@ -153,7 +166,6 @@ async function loadTodaysRoute(operatorUid: string): Promise<RouteView | null> {
     if (s.exists) bagMap.set(s.id, s.data() as BagDoc);
   });
 
-  // Group by addressId.
   const stopMap = new Map<string, StopView>();
   for (const pickup of pickups) {
     const stop = ensureStop(stopMap, pickup.addressId, pickup.residentId, addressMap, userMap);
@@ -173,7 +185,6 @@ async function loadTodaysRoute(operatorUid: string): Promise<RouteView | null> {
     stop.bagOrdersToDeliver.push({ id: order.id, quantity: order.quantity, status: order.status });
   }
 
-  // Finalize: sort pickups within stop, compute min order + done flag, sort stops.
   const stops = [...stopMap.values()].map((stop): StopView => {
     stop.pickups.sort((a, b) => a.order - b.order);
     const pickupsDone = stop.pickups.every((p) => p.status !== 'pending');
@@ -249,50 +260,180 @@ async function loadCompostSiteCount(operatorUid: string): Promise<number> {
   return snap.data().count;
 }
 
+function deriveOperator(uid: string, name: string | undefined, email: string | null) {
+  const fullName = name?.trim() || email?.split('@')[0] || 'Operator';
+  const initial = fullName.charAt(0).toUpperCase() || '·';
+  return { name: fullName, initial, displayLabel: email ?? uid };
+}
+
 export default async function OperatorHome() {
   const session = await requireRole('operator');
-  const [route, compostSiteCount] = await Promise.all([
+  const [route, compostSiteCount, userSnap] = await Promise.all([
     loadTodaysRoute(session.uid),
     loadCompostSiteCount(session.uid),
+    adminDb.collection('users').doc(session.uid).get(),
   ]);
+  const userData = userSnap.exists ? (userSnap.data() as UserDoc) : null;
+  const operator = deriveOperator(session.uid, userData?.name, session.email ?? null);
 
   return (
-    <main className="mx-auto min-h-dvh max-w-md bg-neutral-950 px-4 pb-16 pt-6 text-gray-100">
-      <header className="flex items-center justify-between">
-        <div>
-          <div className="text-[10px] uppercase tracking-[0.2em] text-gray-500">Operator</div>
-          <h1 className="mt-0.5 text-lg font-semibold text-white">
-            {route ? 'Today’s Route' : 'No active route'}
-          </h1>
-          {route && <div className="mt-0.5 text-xs text-gray-400">{route.dateLabel}</div>}
-        </div>
-        <LogoutButton />
-      </header>
-
-      {compostSiteCount > 0 && (
-        <Link
-          href="/operator/compost"
-          className="mt-3 flex items-center justify-between rounded-lg border border-blue-400/40 bg-blue-500/10 px-3 py-2 text-xs text-blue-100 hover:bg-blue-500/15"
-        >
-          <span>
-            🥬 Compost route — {compostSiteCount} site{compostSiteCount === 1 ? '' : 's'} in zone
-          </span>
-          <span className="text-blue-300">→</span>
-        </Link>
-      )}
+    <OpPage>
+      <OpMasthead
+        date={route?.dateLabel ?? formatTodayLabel()}
+        rightSlot={
+          <OpAvatar
+            name={operator.name}
+            initial={operator.initial}
+            signOutSlot={<LogoutLink />}
+          />
+        }
+      />
 
       {!route ? (
-        <section className="mt-10 rounded-xl border border-white/10 bg-white/5 p-5 text-sm text-gray-400">
-          You don’t have a route assigned for today or later. Check back once an admin builds one,
-          or sign out if you’re done for the day.
-        </section>
+        <>
+          {compostSiteCount > 0 && (
+            <CompostBanner count={compostSiteCount} />
+          )}
+          <div className="mt-20 text-center">
+            <div
+              style={{
+                fontFamily: OP_TOK.serif,
+                fontSize: 24,
+                color: OP_TOK.ink,
+                letterSpacing: -0.3,
+              }}
+            >
+              No route assigned.
+            </div>
+            <div
+              className="mt-2 italic"
+              style={{
+                fontFamily: OP_TOK.serif,
+                fontSize: 13,
+                color: OP_TOK.inkSoft,
+                lineHeight: 1.5,
+              }}
+            >
+              Check back once an admin builds one,
+              <br />
+              or sign out if you&rsquo;re done for the day.
+            </div>
+          </div>
+        </>
       ) : (
-        <TodaysRouteClient route={route} operatorLabel={session.email ?? session.uid} />
+        <RouteHeader route={route} compostSiteCount={compostSiteCount}>
+          <TodaysRouteClient route={route} operatorLabel={operator.displayLabel} />
+        </RouteHeader>
       )}
 
-      <p className="mt-10 text-[11px] text-gray-600">
-        Questions during a shift? Ask the admin via Slack.
+      <p
+        className="mt-10 text-center italic"
+        style={{
+          fontFamily: OP_TOK.serif,
+          fontSize: 11,
+          color: OP_TOK.inkFaint,
+        }}
+      >
+        Questions during a shift? Slack the dispatcher.
       </p>
-    </main>
+    </OpPage>
+  );
+}
+
+function RouteHeader({
+  route,
+  compostSiteCount,
+  children,
+}: {
+  route: RouteView;
+  compostSiteCount: number;
+  children: React.ReactNode;
+}) {
+  const allHandled =
+    route.stats.stopsDone === route.stats.stopsTotal &&
+    route.stats.deliveriesPending === 0;
+  const idx = route.stats.stopsDone + 1;
+  const currentStop = route.stops.find((s) => !s.allDone);
+
+  return (
+    <>
+      <div className="mb-5">
+        <OpEyebrow>Today&rsquo;s route</OpEyebrow>
+        <OpDisplay className="mt-1.5">
+          {route.status === 'assigned' ? (
+            <>
+              Ready when{' '}
+              <em style={{ color: OP_TOK.green, fontStyle: 'italic' }}>you are</em>.
+            </>
+          ) : allHandled ? (
+            <>
+              All stops{' '}
+              <em style={{ color: OP_TOK.green, fontStyle: 'italic' }}>handled</em>.
+            </>
+          ) : (
+            <>
+              Stop{' '}
+              <em style={{ color: OP_TOK.green, fontStyle: 'italic' }}>
+                {String(idx).padStart(2, '0')}
+              </em>{' '}
+              &mdash;
+            </>
+          )}
+        </OpDisplay>
+        {route.status === 'in_progress' && currentStop && !allHandled && (
+          <div
+            className="mt-1.5 italic"
+            style={{
+              fontFamily: OP_TOK.serif,
+              fontSize: 13,
+              color: OP_TOK.inkSoft,
+            }}
+          >
+            {currentStop.street}
+            {currentStop.unitLine ? ` · ${currentStop.unitLine}` : ''}
+          </div>
+        )}
+      </div>
+
+      {compostSiteCount > 0 && <CompostBanner count={compostSiteCount} className="mb-5" />}
+
+      {children}
+    </>
+  );
+}
+
+function CompostBanner({ count, className = '' }: { count: number; className?: string }) {
+  return (
+    <Link
+      href="/operator/compost"
+      className={`flex items-center justify-between gap-3 ${className}`}
+      style={{
+        background: OP_TOK.amberSoft,
+        border: `1px solid rgba(160,104,42,0.3)`,
+        borderRadius: 12,
+        padding: '12px 14px',
+      }}
+    >
+      <div className="flex items-center gap-3">
+        <div
+          className="flex h-8 w-8 items-center justify-center rounded-full"
+          style={{ background: '#fff' }}
+        >
+          <IconLeaf size={16} color={OP_TOK.amber} stroke={1.5} />
+        </div>
+        <div>
+          <div style={{ fontFamily: OP_TOK.serif, fontSize: 14, color: OP_TOK.ink }}>
+            Compost route &mdash; {count} site{count === 1 ? '' : 's'}
+          </div>
+          <div
+            className="mt-0.5 italic"
+            style={{ fontFamily: OP_TOK.serif, fontSize: 11, color: OP_TOK.amber }}
+          >
+            Tap to view today&rsquo;s commercial pickups.
+          </div>
+        </div>
+      </div>
+      <IconChevR size={16} color={OP_TOK.amber} />
+    </Link>
   );
 }

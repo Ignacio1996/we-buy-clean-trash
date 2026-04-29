@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { requireRole } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
@@ -6,6 +5,12 @@ import { loadOperatorRoute } from '@/lib/auth/operatorAccess';
 import type { BagOrderDoc } from '@/lib/types/bagOrder';
 import type { AddressDoc, UserDoc } from '@/lib/types/user';
 import { DeliverClient } from './DeliverClient';
+import {
+  OP_TOK,
+  OpBackRow,
+  OpEyebrow,
+  OpPage,
+} from '@/components/operator/Op';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,22 +40,39 @@ export default async function DeliverPage({
   const resident = userSnap.data() as UserDoc | undefined;
 
   return (
-    <main className="mx-auto min-h-dvh max-w-md bg-neutral-950 px-4 pb-16 pt-6 text-gray-100">
-      <Link href="/operator" className="text-xs text-gray-400 underline">
-        ← Back to route
-      </Link>
-      <header className="mt-3">
-        <div className="text-[10px] uppercase tracking-[0.2em] text-gray-500">Delivery</div>
-        <h1 className="mt-1 text-lg font-semibold text-white">
+    <OpPage>
+      <OpBackRow label="Back to route" href="/operator" />
+
+      <header className="mb-6">
+        <OpEyebrow>Delivery</OpEyebrow>
+        <h1
+          className="mt-1.5"
+          style={{
+            fontFamily: OP_TOK.serif,
+            fontSize: 26,
+            color: OP_TOK.ink,
+            letterSpacing: -0.5,
+            lineHeight: 1.15,
+            fontWeight: 400,
+          }}
+        >
           {address?.street ?? '—'}
-          {address?.unit ? ` · Unit ${address.unit}` : ''}
+          {address?.unit ? (
+            <span style={{ color: OP_TOK.inkSoft, fontStyle: 'italic' }}>
+              , Unit {address.unit}
+            </span>
+          ) : null}
         </h1>
-        <div className="text-xs text-gray-400">
+        <div
+          className="mt-1.5 italic"
+          style={{ fontFamily: OP_TOK.serif, fontSize: 12, color: OP_TOK.inkSoft }}
+        >
           {resident?.name ?? 'Resident'} · {order.quantity} sheet
-          {order.quantity === 1 ? '' : 's'} (10 bags each)
+          {order.quantity === 1 ? '' : 's'} · {order.quantity * 10} bags
         </div>
       </header>
+
       <DeliverClient bagOrderId={bagOrderId} />
-    </main>
+    </OpPage>
   );
 }

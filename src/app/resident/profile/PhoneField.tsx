@@ -38,7 +38,19 @@ export function PhoneField({ initial }: { initial: string | null }) {
   if (!editing) {
     return (
       <div className="mt-1 flex items-center justify-between">
-        <div className="text-white">{current ?? <span className="text-gray-500">— (none)</span>}</div>
+        <div
+          style={{
+            fontFamily: 'var(--eco-serif)',
+            fontSize: 16,
+            color: '#1F2A22',
+          }}
+        >
+          {current ?? (
+            <span className="italic" style={{ color: '#8A8A7A' }}>
+              — (none)
+            </span>
+          )}
+        </div>
         <button
           type="button"
           onClick={() => {
@@ -46,7 +58,7 @@ export function PhoneField({ initial }: { initial: string | null }) {
             setEditing(true);
             setError(null);
           }}
-          className="text-xs text-gray-400 underline"
+          className="text-[12px] text-[#2D5A3D] underline"
         >
           {current ? 'Edit' : 'Add'}
         </button>
@@ -55,20 +67,20 @@ export function PhoneField({ initial }: { initial: string | null }) {
   }
 
   return (
-    <div className="mt-1">
+    <div className="mt-1.5">
       <input
         type="tel"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="555-123-4567"
-        className="w-full rounded border border-white/15 bg-black/40 px-2 py-1.5 text-sm text-white placeholder-gray-600 focus:border-white/30 focus:outline-none"
+        className="w-full rounded-[10px] border border-[#D9D2C2] bg-[#FBF7EE] px-3 py-2 text-[14px] text-[#1F2A22] placeholder:text-[#8A8A7A] focus:border-[#2D5A3D] focus:outline-none"
       />
-      <div className="mt-2 flex items-center gap-2">
+      <div className="mt-2.5 flex items-center gap-3">
         <button
           type="button"
           onClick={save}
           disabled={busy}
-          className="rounded bg-white px-2 py-1 text-xs font-semibold text-black disabled:opacity-50"
+          className="rounded-full bg-[#2D5A3D] px-4 py-1.5 text-[12px] font-semibold text-[#FBF7EE] transition-colors hover:bg-[#1F4029] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {busy ? 'Saving…' : 'Save'}
         </button>
@@ -79,12 +91,16 @@ export function PhoneField({ initial }: { initial: string | null }) {
             setEditing(false);
             setError(null);
           }}
-          className="text-xs text-gray-400 underline"
+          className="text-[12px] text-[#5A6358] underline"
         >
           Cancel
         </button>
       </div>
-      {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
+      {error && (
+        <p className="mt-1.5 text-[12px]" style={{ color: '#9A4B26' }}>
+          {error}
+        </p>
+      )}
     </div>
   );
 }

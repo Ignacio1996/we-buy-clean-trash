@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
 import { pointsToDollars } from '@/lib/logic/pointsToDollars';
-import { LogoutButton } from '@/components/LogoutButton';
 import { SignupBonusModal } from '@/components/resident/SignupBonusModal';
 import { loadActiveCampaigns } from '@/lib/admin/loadActiveCampaigns';
 import { loadActiveMaterials } from '@/lib/admin/loadActiveMaterials';
@@ -11,8 +10,24 @@ import type { BagOrderDoc, BagOrderStatus } from '@/lib/types/bagOrder';
 import type { RouteDoc } from '@/lib/types/route';
 import { resolveAccountType } from '@/lib/types/user';
 import { CommercialResidentHome } from './CommercialResidentHome';
+import {
+  IconArrow,
+  IconChevR,
+  IconCloud,
+  IconDroplet,
+  IconFire,
+  IconLeaf,
+  IconRecycle,
+  IconTruck,
+} from '@/components/icons/EcoIcons';
 
 const GIFT_CARD_POINTS = 100_000;
+
+const OPEN_ORDER_STATUSES: readonly BagOrderStatus[] = [
+  'pending',
+  'queued',
+  'out_for_delivery',
+];
 
 function formatPoints(points: number): string {
   return points.toLocaleString('en-US');
@@ -22,40 +37,23 @@ function formatDollars(dollars: number): string {
   return dollars.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 }
 
-const OPEN_ORDER_STATUSES: readonly BagOrderStatus[] = [
-  'pending',
-  'queued',
-  'out_for_delivery',
-];
-
-function statusLabel(status: BagOrderStatus): string {
-  switch (status) {
-    case 'pending':
-      return 'Payment pending';
-    case 'queued':
-      return 'Queued for delivery';
-    case 'out_for_delivery':
-      return 'Out for delivery';
-    case 'delivered':
-      return 'Delivered';
-    case 'cancelled':
-      return 'Cancelled';
-  }
+function formatMastheadDate(d: Date): string {
+  const weekday = d.toLocaleDateString('en-US', { weekday: 'long' });
+  const month = d.toLocaleDateString('en-US', { month: 'short' });
+  const day = d.getDate();
+  return `${weekday} · ${month} ${day}`;
 }
 
-function statusEmoji(status: BagOrderStatus): string {
-  switch (status) {
-    case 'out_for_delivery':
-      return '🚐';
-    case 'pending':
-      return '⏳';
-    default:
-      return '📦';
+function endsInLabel(endsAt: Date, now: Date): string {
+  const diffMs = endsAt.getTime() - now.getTime();
+  if (diffMs <= 0) return 'Ending now';
+  const diffH = diffMs / 3_600_000;
+  if (diffH < 24) {
+    const h = Math.max(1, Math.round(diffH));
+    return `${h} hour${h === 1 ? '' : 's'}`;
   }
-}
-
-function formatRouteDate(date: Date): string {
-  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+  const d = Math.round(diffH / 24);
+  return `${d} day${d === 1 ? '' : 's'}`;
 }
 
 export default async function ResidentHome() {
@@ -75,7 +73,9 @@ export default async function ResidentHome() {
     );
   }
   const pointsBalance = typeof user.pointsBalance === 'number' ? user.pointsBalance : 0;
-  const name = typeof user.name === 'string' ? user.name.split(' ')[0] : 'there';
+  const fullName = typeof user.name === 'string' ? user.name : 'there';
+  const firstName = fullName.split(' ')[0] || 'there';
+  const initial = firstName.charAt(0).toUpperCase() || '·';
   const dollarValue = pointsToDollars(pointsBalance);
 
   const ordersSnap = await adminDb
@@ -96,8 +96,10 @@ export default async function ResidentHome() {
     loadActiveCampaigns(),
     loadActiveMaterials(),
   ]);
-  const liveCampaigns = activeCampaigns.filter((c) => c.startsAt <= new Date());
+  const now = new Date();
+  const liveCampaigns = activeCampaigns.filter((c) => c.startsAt <= now);
   const materialNameById = new Map(allMaterials.map((m) => [m.id, m.name]));
+  const featuredCampaign = liveCampaigns[0];
 
   const routeIds = Array.from(
     new Set(openOrders.map((o) => o.deliveryRouteId).filter((id): id is string => !!id)),
@@ -115,181 +117,334 @@ export default async function ResidentHome() {
     }
   }
 
-  return (
-    <main className="px-4 pt-8">
-      <SignupBonusModal uid={uid} />
-      <header className="flex items-center justify-between pb-4">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-gray-500">We Buy Clean Trash</p>
-          <h1 className="text-xl font-semibold text-white">Hi, {name} 👋</h1>
-        </div>
-        <LogoutButton />
-      </header>
+  const headlineOrder = openOrders[0];
+  const headlineRouteDate = headlineOrder?.deliveryRouteId
+    ? routeDates.get(headlineOrder.deliveryRouteId) ?? null
+    : null;
+  const totalOpenBags = openOrders.reduce((sum, o) => sum + o.quantity * 10, 0);
+  const pct = Math.min(1, pointsBalance / GIFT_CARD_POINTS);
+  const ptsToGo = Math.max(0, GIFT_CARD_POINTS - pointsBalance);
+  const pickupsCount = ordersSnap.docs.filter(
+    (d) => (d.data() as BagOrderDoc).status === 'delivered',
+  ).length;
 
-      <section className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
-          <div className="text-xs text-gray-400">Points</div>
-          <div className="mt-1 text-2xl font-bold text-white">{formatPoints(pointsBalance)}</div>
+  return (
+    <main className="relative px-5 pt-12 sm:px-8 sm:pt-14">
+      <SignupBonusModal uid={uid} />
+
+      {/* Masthead */}
+      <div className="mb-6 flex items-baseline justify-between border-b border-[#D9D2C2] pb-3.5">
+        <div>
+          <div
+            className="italic"
+            style={{
+              fontFamily: 'var(--eco-serif)',
+              fontSize: 14,
+              color: '#2D5A3D',
+              letterSpacing: 0.5,
+            }}
+          >
+            We Buy Clean Trash
+          </div>
+          <div
+            className="mt-0.5 uppercase"
+            style={{ fontSize: 11, color: '#5A6358', letterSpacing: 1.6 }}
+          >
+            {formatMastheadDate(now)}
+          </div>
         </div>
-        <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
-          <div className="text-xs text-gray-400">Value</div>
-          <div className="mt-1 text-2xl font-bold text-white">{formatDollars(dollarValue)}</div>
+        <Link
+          href="/resident/profile"
+          className="flex h-9 w-9 items-center justify-center rounded-full"
+          style={{
+            background: '#E8EFE6',
+            color: '#2D5A3D',
+            fontFamily: 'var(--eco-serif)',
+            fontWeight: 600,
+          }}
+        >
+          {initial}
+        </Link>
+      </div>
+
+      {/* Hero */}
+      <section className="mb-7">
+        <div style={{ fontSize: 13, color: '#5A6358', marginBottom: 8 }}>
+          Hello, {firstName}.
+        </div>
+        <h1 className="eco-display">
+          You&apos;ve turned trash
+          <br />
+          into <em>{formatDollars(dollarValue)}</em>.
+        </h1>
+        <div
+          className="mt-2.5 italic"
+          style={{ fontSize: 12, color: '#5A6358', fontFamily: 'var(--eco-serif)' }}
+        >
+          {formatPoints(pointsBalance)} points · {pickupsCount} pickup
+          {pickupsCount === 1 ? '' : 's'}
         </div>
       </section>
 
-      <Link
-        href="/resident/rewards"
-        className="mt-3 block rounded-xl border border-white/10 bg-white/5 p-3"
-      >
-        <div className="flex items-center justify-between text-[11px] text-gray-400">
-          <span>
-            {pointsBalance >= GIFT_CARD_POINTS
-              ? '🎉 Ready to redeem a $10 gift card'
-              : `${formatPoints(Math.max(0, GIFT_CARD_POINTS - pointsBalance))} pts to a $10 gift card`}
-          </span>
-          <span className="text-gray-500">→</span>
+      {/* Reward progress */}
+      <section className="mb-6">
+        <div className="mb-2 flex items-baseline justify-between">
+          <div className="eco-eyebrow">Next reward · $10 gift card</div>
+          <div style={{ fontSize: 11, color: '#2D5A3D', fontWeight: 600 }}>
+            {Math.round(pct * 100)}%
+          </div>
         </div>
-        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
+        <div
+          className="h-1 overflow-hidden rounded-sm"
+          style={{ background: '#D9D2C2' }}
+        >
           <div
-            className="h-full bg-green-500"
-            style={{
-              width: `${(Math.min(1, pointsBalance / GIFT_CARD_POINTS) * 100).toFixed(1)}%`,
-            }}
+            className="h-full"
+            style={{ width: `${pct * 100}%`, background: '#2D5A3D' }}
           />
         </div>
-      </Link>
+        <div
+          className="mt-1.5 italic"
+          style={{ fontSize: 11, color: '#5A6358', fontFamily: 'var(--eco-serif)' }}
+        >
+          {pct >= 1 ? 'Ready to redeem.' : `${formatPoints(ptsToGo)} pts to go.`}
+        </div>
+      </section>
 
-      {liveCampaigns.length > 0 && (
+      {/* Campaign */}
+      {featuredCampaign && (
         <Link
           href="/resident/calculator"
-          className="mt-3 block rounded-xl border border-amber-400/30 bg-amber-400/10 p-3"
+          className="mb-4 flex items-center gap-3 rounded-[14px] border p-3.5"
+          style={{ background: '#F2E8D6', borderColor: 'rgba(160,104,42,0.3)' }}
         >
-          <div className="text-[11px] font-semibold uppercase tracking-wide text-amber-200">
-            🔥 Bonus running now
+          <div
+            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full"
+            style={{ background: '#fff', color: '#A0682A' }}
+          >
+            <IconFire size={18} stroke={1.5} />
           </div>
-          <ul className="mt-1 space-y-0.5 text-xs text-amber-100">
-            {liveCampaigns.slice(0, 2).map((c) => (
-              <li key={c.id}>
-                <span className="font-semibold">×{c.multiplier}</span> on{' '}
-                {c.materialIds.map((id) => materialNameById.get(id) ?? id).join(', ')}
-              </li>
-            ))}
-            {liveCampaigns.length > 2 && (
-              <li className="opacity-80">+{liveCampaigns.length - 2} more</li>
-            )}
-          </ul>
+          <div className="flex-1">
+            <div
+              style={{
+                fontFamily: 'var(--eco-serif)',
+                fontSize: 15,
+                color: '#1F2A22',
+                fontWeight: 500,
+              }}
+            >
+              ×{featuredCampaign.multiplier} on{' '}
+              {featuredCampaign.materialIds
+                .map((id) => materialNameById.get(id) ?? id)
+                .join(', ')}
+            </div>
+            <div className="mt-0.5" style={{ fontSize: 11, color: '#A0682A' }}>
+              Ends in {endsInLabel(featuredCampaign.endsAt, now)}
+            </div>
+          </div>
         </Link>
       )}
 
+      {/* Hero CTA */}
       <Link
         href="/resident/order-bags"
-        className="mt-4 flex items-center justify-between rounded-xl border border-green-500/25 bg-green-500/10 p-4"
+        className="mb-3 block rounded-2xl"
+        style={{ background: '#2D5A3D', color: '#FBF7EE', padding: 18 }}
       >
-        <div>
-          <div className="font-semibold text-white">
-            {hasEverOrdered ? '🛍️ Order more bags' : '🛍️ Order your first batch'}
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div
+              className="uppercase"
+              style={{ fontSize: 11, opacity: 0.7, letterSpacing: 1.4 }}
+            >
+              {hasEverOrdered ? 'Order more bags' : 'Get started'}
+            </div>
+            <div
+              className="mt-1.5"
+              style={{
+                fontFamily: 'var(--eco-serif)',
+                fontSize: 22,
+                fontWeight: 500,
+                letterSpacing: -0.3,
+              }}
+            >
+              {hasEverOrdered ? 'Order more bags' : 'Order your first batch'}
+            </div>
+            <div className="mt-1" style={{ fontSize: 12, opacity: 0.8 }}>
+              10 bags per sheet · Free shipping over $20
+            </div>
           </div>
-          <div className="mt-0.5 text-xs text-gray-400">
-            {hasEverOrdered
-              ? '10 bags per sheet · Free shipping over $20'
-              : '10 bags per sheet — your operator drops them at your door'}
+          <div
+            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full"
+            style={{ background: 'rgba(255,255,255,0.2)' }}
+          >
+            <IconArrow size={14} color="#fff" />
           </div>
         </div>
-        <span className="rounded-full bg-green-500 px-3 py-1 text-xs font-semibold text-black">
-          {hasEverOrdered ? 'Order →' : 'Get started →'}
-        </span>
       </Link>
 
-      {openOrders.length > 0 ? (
-        <section className="mt-3 rounded-xl border border-blue-500/25 bg-blue-500/10 p-4">
-          <div className="flex items-center justify-between">
-            <div className="text-sm font-semibold text-white">
-              📦 {openOrders.length === 1 ? 'Pending order' : `${openOrders.length} pending orders`}
-            </div>
-            <Link
-              href="/resident/order-bags/history"
-              className="text-[10px] uppercase tracking-wide text-blue-300"
-            >
-              View all →
-            </Link>
-          </div>
-          <ul className="mt-3 space-y-2">
-            {openOrders.map((o) => {
-              const routeDate = o.deliveryRouteId ? routeDates.get(o.deliveryRouteId) : null;
-              return (
-                <li
-                  key={o.id}
-                  className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="font-semibold text-white">
-                      {statusEmoji(o.status)} {o.quantity} sheet{o.quantity === 1 ? '' : 's'} ·{' '}
-                      {o.quantity * 10} bags
-                    </div>
-                    <div className="text-gray-300">{formatDollars(o.total)}</div>
-                  </div>
-                  <div className="mt-1 flex items-center justify-between text-[11px] text-gray-400">
-                    <span>{statusLabel(o.status)}</span>
-                    <span>
-                      {routeDate
-                        ? `Arrives ${formatRouteDate(routeDate)}`
-                        : 'Delivery date TBD'}
-                    </span>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      ) : (
-        <section className="mt-3 rounded-xl border border-white/10 bg-white/5 p-4 text-center">
-          <div className="text-sm font-semibold text-white">🚐 No pickup scheduled yet</div>
-          <div className="mt-1 text-xs text-gray-400">
-            Order bags and your first pickup will be assigned to an upcoming route.
-          </div>
-          <Link
-            href="/resident/order-bags/history"
-            className="mt-2 inline-block text-[11px] text-gray-400 underline-offset-2 hover:underline"
+      {/* Pending order */}
+      {headlineOrder && (
+        <Link
+          href="/resident/order-bags/history"
+          className="mb-3 flex items-center gap-3 rounded-[14px] border p-4"
+          style={{ background: '#FBF7EE', borderColor: '#D9D2C2' }}
+        >
+          <div
+            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[10px]"
+            style={{ background: '#E8EFE6', color: '#2D5A3D' }}
           >
-            View past orders →
-          </Link>
-        </section>
+            <IconTruck size={20} />
+          </div>
+          <div className="flex-1">
+            <div
+              style={{
+                fontSize: 13,
+                color: '#1F2A22',
+                fontWeight: 500,
+              }}
+            >
+              {totalOpenBags} bags arriving
+            </div>
+            <div className="mt-0.5" style={{ fontSize: 11, color: '#5A6358' }}>
+              {headlineOrder.status === 'out_for_delivery'
+                ? 'Out for delivery'
+                : headlineOrder.status === 'pending'
+                  ? 'Payment pending'
+                  : headlineRouteDate
+                    ? `Arrives ${headlineRouteDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`
+                    : 'Queued for delivery'}
+            </div>
+          </div>
+          <IconChevR size={16} color="#5A6358" />
+        </Link>
       )}
 
-      <section className="mt-3 rounded-xl border border-blue-500/20 bg-blue-500/10 p-4 text-center">
-        <div className="text-xs font-semibold uppercase tracking-wide text-blue-400">
-          📱 Text notifications
+      {/* Next pickup / empty state */}
+      {headlineRouteDate ? (
+        <div
+          className="mb-4 flex items-center gap-3.5 rounded-[14px] border p-4"
+          style={{ background: '#FBF7EE', borderColor: '#D9D2C2' }}
+        >
+          <div
+            className="flex w-[50px] flex-shrink-0 flex-col items-center overflow-hidden rounded-lg border"
+            style={{ background: '#fff', borderColor: '#D9D2C2' }}
+          >
+            <div
+              className="w-full text-center uppercase"
+              style={{
+                background: '#2D5A3D',
+                color: '#fff',
+                fontSize: 9,
+                padding: '2px 0',
+                letterSpacing: 1,
+              }}
+            >
+              {headlineRouteDate.toLocaleDateString('en-US', { month: 'short' })}
+            </div>
+            <div
+              className="py-1 text-center"
+              style={{
+                fontFamily: 'var(--eco-serif)',
+                fontSize: 22,
+                color: '#1F2A22',
+              }}
+            >
+              {headlineRouteDate.getDate()}
+            </div>
+          </div>
+          <div className="flex-1">
+            <div className="eco-eyebrow">Next pickup</div>
+            <div
+              className="mt-0.5"
+              style={{ fontFamily: 'var(--eco-serif)', fontSize: 17, color: '#1F2A22' }}
+            >
+              {headlineRouteDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'short',
+                day: 'numeric',
+              })}
+            </div>
+          </div>
+          <IconChevR size={16} color="#5A6358" />
         </div>
-        <div className="mt-1 text-xs text-gray-400">
-          30-min reminder + &ldquo;Driver on the way&rdquo; alerts (coming soon)
-        </div>
-      </section>
-
-      <Link
-        href="/resident/calculator"
-        className="mt-3 flex items-center justify-between rounded-xl border border-green-500/20 bg-green-500/6 p-4"
-      >
-        <div>
-          <div className="font-semibold text-white">💰 What&rsquo;s your trash worth?</div>
-          <div className="mt-0.5 text-xs text-gray-400">
-            Prices for cans, bottles, cardboard &amp; more
+      ) : (
+        <div
+          className="mb-4 rounded-[14px] border px-4 py-5 text-center"
+          style={{ background: '#FBF7EE', borderColor: '#D9D2C2' }}
+        >
+          <div
+            className="italic"
+            style={{
+              fontFamily: 'var(--eco-serif)',
+              fontSize: 15,
+              color: '#1F2A22',
+            }}
+          >
+            No pickup scheduled.
+          </div>
+          <div className="mt-1" style={{ fontSize: 11, color: '#5A6358' }}>
+            Order bags to join the next route.
           </div>
         </div>
-        <span className="text-gray-500">→</span>
-      </Link>
+      )}
 
-      <section className="mt-3 rounded-xl border border-white/10 bg-white/5 p-4">
-        <div className="text-sm font-semibold text-white">🌍 Your impact</div>
-        <div className="mt-2 grid grid-cols-2 gap-y-1 text-xs text-gray-300">
-          <div>🌳 0 trees saved</div>
-          <div>💧 0 gal water</div>
-          <div>♻️ 0 lbs recycled</div>
-          <div>🏭 0 lbs CO₂</div>
-        </div>
-        <div className="mt-2 text-[10px] text-gray-500">
-          Updates after your first processed bag.
+      {/* Contribution */}
+      <section
+        className="mb-4 py-5"
+        style={{ borderTop: '1px solid #D9D2C2', borderBottom: '1px solid #D9D2C2' }}
+      >
+        <div className="eco-eyebrow mb-3.5">Your contribution</div>
+        <div className="grid grid-cols-2 gap-4">
+          {[
+            { Ic: IconRecycle, value: 0, label: 'lbs recycled' },
+            { Ic: IconLeaf, value: 0, label: 'trees saved' },
+            { Ic: IconDroplet, value: 0, label: 'gal water' },
+            { Ic: IconCloud, value: 0, label: 'lbs CO₂' },
+          ].map(({ Ic, value, label }) => (
+            <div key={label} className="flex items-center gap-2.5">
+              <Ic size={18} color="#2D5A3D" stroke={1.5} />
+              <div>
+                <div
+                  style={{
+                    fontFamily: 'var(--eco-serif)',
+                    fontSize: 18,
+                    color: '#1F2A22',
+                    lineHeight: 1,
+                  }}
+                >
+                  {value}
+                </div>
+                <div
+                  className="mt-1"
+                  style={{ fontSize: 10, color: '#5A6358', letterSpacing: 0.3 }}
+                >
+                  {label}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
+
+      {/* Calculator footer link */}
+      <Link
+        href="/resident/calculator"
+        className="flex items-center justify-between py-2"
+      >
+        <div>
+          <div
+            className="italic"
+            style={{ fontFamily: 'var(--eco-serif)', fontSize: 16, color: '#1F2A22' }}
+          >
+            What is your trash worth?
+          </div>
+          <div className="mt-0.5" style={{ fontSize: 11, color: '#5A6358' }}>
+            Current rates · 7 commodities
+          </div>
+        </div>
+        <IconArrow size={18} color="#2D5A3D" />
+      </Link>
     </main>
   );
 }
