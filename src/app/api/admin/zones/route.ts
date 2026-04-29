@@ -3,6 +3,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
 import { parseZipCodes } from '@/lib/types/zone';
+import { assignResidentsToZone } from '@/lib/admin/assignResidentsToZone';
 
 export const runtime = 'nodejs';
 
@@ -58,5 +59,7 @@ export async function POST(request: Request) {
     });
     tx.update(depotRef, { zoneIds: FieldValue.arrayUnion(zoneRef.id) });
   });
-  return NextResponse.json({ ok: true, id: zoneRef.id });
+
+  const assigned = await assignResidentsToZone(zoneRef.id, zipCodes);
+  return NextResponse.json({ ok: true, id: zoneRef.id, residentsAssigned: assigned });
 }

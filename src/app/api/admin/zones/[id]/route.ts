@@ -3,6 +3,10 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
 import { parseZipCodes } from '@/lib/types/zone';
+import {
+  assignResidentsToZone,
+  unassignResidentsFromZone,
+} from '@/lib/admin/assignResidentsToZone';
 
 export const runtime = 'nodejs';
 
@@ -49,7 +53,17 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   if (!zoneSnap.exists) return NextResponse.json({ error: 'not_found' }, { status: 404 });
 
   await zoneRef.update(updates);
-  return NextResponse.json({ ok: true });
+
+  let residentsAssigned = 0;
+  let residentsUnassigned = 0;
+  if (Array.isArray(updates.zipCodes)) {
+    const newZips = updates.zipCodes as string[];
+    residentsUnassigned = await unassignResidentsFromZone(id, newZips);
+    if (newZips.length > 0) {
+      residentsAssigned = await assignResidentsToZone(id, newZips);
+    }
+  }
+  return NextResponse.json({ ok: true, residentsAssigned, residentsUnassigned });
 }
 
 export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
@@ -62,10 +76,7 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
   const zoneSnap = await zoneRef.get();
   if (!zoneSnap.exists) return NextResponse.json({ error: 'not_found' }, { status: 404 });
 
-  const usersSnap = await adminDb.collection('users').where('zoneId', '==', id).limit(1).get();
-  if (!usersSnap.empty) {
-    return NextResponse.json({ error: 'zone_has_residents' }, { status: 409 });
-  }
+  const residentsUnassigned = await unassignResidentsFromZone(id, []);
 
   const depotId = zoneSnap.get('depotId') as string | undefined;
   await adminDb.runTransaction(async (tx) => {
@@ -76,5 +87,5 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
       });
     }
   });
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, residentsUnassigned });
 }
