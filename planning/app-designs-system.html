@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>We Buy Clean Trash — Editorial-Eco Design System</title>
+<link rel="stylesheet" href="app-designs.css">
+</head>
+<body>
+
+<div class="header">
+  <h1>Editorial-Eco Design System</h1>
+  <p>Tokens, primitives, type, and icons. Shipped April 30, 2026 across the resident + operator surface.</p>
+  <p style="margin-top:10px;"><a href="app-designs.html" style="color:#9ca3af;font-size:0.8rem;text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:1px;">← back to app screens</a></p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- EDITORIAL-ECO DESIGN SYSTEM — added Apr 30, 2026                     -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="design-system-card">
+  <div class="ds-eyebrow">VOL. I · NO. 02 · DESIGN SYSTEM</div>
+  <h3>The <em>Editorial-Eco</em> language.</h3>
+  <p class="lede">Warm paper, italic serif headlines, hairline rules, no shadows. Shipped April 30, 2026 across the resident + operator surface. Tokens live in <code style="font-size:0.78rem;background:#FBF7EE;padding:2px 5px;border-radius:4px;border:1px solid #D9D2C2;">src/app/globals.css</code>; primitives in <code style="font-size:0.78rem;background:#FBF7EE;padding:2px 5px;border-radius:4px;border:1px solid #D9D2C2;">src/components/resident/eco/Eco.tsx</code> &amp; <code style="font-size:0.78rem;background:#FBF7EE;padding:2px 5px;border-radius:4px;border:1px solid #D9D2C2;">src/components/operator/Op.tsx</code>.</p>
+
+  <div class="ds-grid">
+    <!-- PALETTE -->
+    <div class="ds-block">
+      <h4>Palette</h4>
+      <div class="ds-swatch"><div class="chip" style="background:#F4F0E8;"></div><span class="name">Paper bg</span><span class="hex">#F4F0E8</span></div>
+      <div class="ds-swatch"><div class="chip" style="background:#FBF7EE;"></div><span class="name">Paper</span><span class="hex">#FBF7EE</span></div>
+      <div class="ds-swatch"><div class="chip" style="background:#1F2A22;"></div><span class="name">Ink</span><span class="hex">#1F2A22</span></div>
+      <div class="ds-swatch"><div class="chip" style="background:#5A6358;"></div><span class="name">Ink soft</span><span class="hex">#5A6358</span></div>
+      <div class="ds-swatch"><div class="chip" style="background:#D9D2C2;"></div><span class="name">Line</span><span class="hex">#D9D2C2</span></div>
+      <div class="ds-swatch"><div class="chip" style="background:#2D5A3D;"></div><span class="name">Green</span><span class="hex">#2D5A3D</span></div>
+      <div class="ds-swatch"><div class="chip" style="background:#E8EFE6;"></div><span class="name">Green soft</span><span class="hex">#E8EFE6</span></div>
+      <div class="ds-swatch"><div class="chip" style="background:#A0682A;"></div><span class="name">Amber</span><span class="hex">#A0682A</span></div>
+      <div class="ds-swatch"><div class="chip" style="background:#9A4B26;"></div><span class="name">Rust</span><span class="hex">#9A4B26</span></div>
+    </div>
+
+    <!-- TYPE -->
+    <div class="ds-block">
+      <h4>Type</h4>
+      <div class="ds-type-sample">
+        <div class="ds-type-label">Display · 40px serif, italic em → green</div>
+        <div style="font-family:ui-serif,Georgia,serif;font-size:1.4rem;line-height:1.05;letter-spacing:-0.6px;color:#1F2A22;">Turn what you throw away into <em style="font-style:italic;color:#2D5A3D;">cash</em>.</div>
+      </div>
+      <div class="ds-type-sample">
+        <div class="ds-type-label">H2 · 22px serif, weight 500</div>
+        <div style="font-family:ui-serif,Georgia,serif;font-size:1.05rem;letter-spacing:-0.3px;color:#1F2A22;font-weight:500;">Where shall we collect?</div>
+      </div>
+      <div class="ds-type-sample">
+        <div class="ds-type-label">Eyebrow · 11px sans, 1.4px tracking</div>
+        <div style="font-family:-apple-system,Inter,sans-serif;font-size:0.66rem;text-transform:uppercase;letter-spacing:1.4px;color:#5A6358;font-weight:500;">STEP ONE · SERVICE AREA</div>
+      </div>
+      <div class="ds-type-sample">
+        <div class="ds-type-label">Italic body</div>
+        <div style="font-family:ui-serif,Georgia,serif;font-style:italic;color:#5A6358;font-size:0.78rem;">Sign in to see this week's pickup.</div>
+      </div>
+      <div class="ds-type-sample">
+        <div class="ds-type-label">Stack</div>
+        <div style="font-size:0.66rem;color:#5A6358;font-family:ui-monospace,SF Mono,monospace;">Serif: Georgia, Iowan Old Style<br>Sans: Inter, system UI<br>Mono: SF Mono</div>
+      </div>
+    </div>
+
+    <!-- PRIMITIVES -->
+    <div class="ds-block">
+      <h4>Primitives — Eco.* (resident)</h4>
+      <div class="ds-component-row">
+        <span class="eco-btn primary" style="width:auto;padding:8px 16px;margin:0;font-size:0.74rem;">Get started</span>
+        <span class="eco-btn secondary" style="width:auto;padding:8px 16px;margin:0;font-size:0.74rem;">Skip</span>
+      </div>
+      <div class="ds-component-row">
+        <span class="eco-pill green">Active</span>
+        <span class="eco-pill amber">Bonus</span>
+        <span class="eco-pill rust">Issue</span>
+        <span class="eco-pill ink">Ledger</span>
+      </div>
+      <div class="eco-rule" style="border-bottom-color:#E8E2D0;padding:5px 0;margin-bottom:0;">
+        <span class="label">Avg. earnings</span>
+        <span class="value">$5–$12 / pickup</span>
+      </div>
+      <div class="eco-rule" style="border-bottom:none;padding:5px 0;margin-bottom:6px;">
+        <span class="label">Cadence</span>
+        <span class="value">Weekly · curbside</span>
+      </div>
+      <div style="font-size:0.62rem;color:#5A6358;line-height:1.5;">
+        EcoMasthead · EcoH1 · EcoPaper · EcoButton<br>
+        EcoRule · EcoListLink · EcoEmpty · BottomNav
+      </div>
+    </div>
+
+    <!-- OPERATOR PRIMITIVES -->
+    <div class="ds-block" style="background:#F4F0E8;background-image:radial-gradient(circle at 20% 30%, rgba(160,140,100,0.08) 1px, transparent 2px),radial-gradient(circle at 70% 60%, rgba(160,140,100,0.06) 1px, transparent 2px);background-size:14px 14px, 22px 22px;">
+      <h4>Primitives — Op.* (operator)</h4>
+      <div style="font-family:ui-serif,Georgia,serif;font-size:1.05rem;color:#1F2A22;line-height:1.1;letter-spacing:-0.3px;margin-bottom:8px;">You are <em style="color:#2D5A3D;">on stop 06</em> of 14.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid #D9D2C2;border-bottom:1px solid #D9D2C2;margin-bottom:10px;">
+        <div style="padding:8px 6px;border-right:1px solid #E8E2D0;text-align:left;">
+          <div style="font-family:ui-serif,Georgia,serif;font-size:1.1rem;letter-spacing:-0.4px;color:#1F2A22;font-feature-settings:'lnum','tnum';">06 / 14</div>
+          <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Stops</div>
+        </div>
+        <div style="padding:8px 6px;border-right:1px solid #E8E2D0;text-align:left;">
+          <div style="font-family:ui-serif,Georgia,serif;font-size:1.1rem;letter-spacing:-0.4px;color:#1F2A22;font-feature-settings:'lnum','tnum';">12 / 32</div>
+          <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Bags</div>
+        </div>
+        <div style="padding:8px 6px;text-align:left;">
+          <div style="font-family:ui-serif,Georgia,serif;font-size:1.1rem;letter-spacing:-0.4px;color:#1F2A22;font-feature-settings:'lnum','tnum';">02 / 04</div>
+          <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Deliver</div>
+        </div>
+      </div>
+      <div class="ds-component-row">
+        <span class="eco-btn primary" style="width:auto;padding:9px 22px;margin:0;font-size:0.78rem;border-radius:14px;">Mark complete</span>
+      </div>
+      <div class="ds-component-row">
+        <span class="eco-pill green">Completed</span>
+        <span class="eco-pill amber">Missed</span>
+        <span class="eco-pill rust">Issue</span>
+      </div>
+      <div style="font-size:0.62rem;color:#5A6358;line-height:1.5;">
+        OpPage (grain) · OpMasthead · OpDisplay<br>
+        OpPaper · OpPrimary/Ghost · ProgressStrip<br>
+        StatusPill · OpSheet · OpRow · SummaryStat
+      </div>
+    </div>
+
+    <!-- ICON SET -->
+    <div class="ds-block">
+      <h4>Icons — EcoIcons.tsx</h4>
+      <div style="font-size:0.7rem;color:#1F2A22;line-height:1.6;">
+        Line drawings, 24-viewBox, 1.75px stroke. <em style="font-style:italic;color:#5A6358;">Configurable size and color.</em>
+      </div>
+      <div style="margin-top:8px;display:grid;grid-template-columns:repeat(2,1fr);gap:4px 12px;font-size:0.66rem;color:#5A6358;">
+        <span>Home</span><span>Scan</span>
+        <span>Bag</span><span>Gift</span>
+        <span>User</span><span>Truck</span>
+        <span>Leaf</span><span>Droplet</span>
+        <span>Recycle</span><span>Cloud</span>
+        <span>Fire</span><span>Box</span>
+        <span>Clock</span><span>Bell</span>
+        <span>Check</span><span>Close</span>
+        <span>Star</span><span>Pin</span>
+        <span>Plus</span><span>Arrow ↔</span>
+      </div>
+    </div>
+
+    <!-- COVERAGE -->
+    <div class="ds-block">
+      <h4>Coverage</h4>
+      <div style="font-size:0.7rem;color:#1F2A22;line-height:1.55;">
+        <strong>Resident · Operator</strong> — full surface migrated.
+      </div>
+      <div style="margin-top:8px;font-size:0.66rem;color:#5A6358;line-height:1.6;">
+        Login · Signup wizard · Welcome · Dashboard · Order bags · History · Calculator · Guide · Rewards · Profile · Bottom nav · Bonus modal · Pre-signup banner.
+      </div>
+      <div style="margin-top:8px;font-size:0.66rem;color:#5A6358;line-height:1.6;">
+        Operator dashboard · Today's route · Stop scan/photo/issue · Deliver · Summary · Compost route.
+      </div>
+      <div style="margin-top:10px;padding-top:8px;border-top:1px solid #D9D2C2;font-size:0.62rem;color:#A0682A;">
+        <strong>Out of scope (still dark UI):</strong> depot, depot manager, admin. Migration not yet planned.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer" style="text-align:center;padding:30px;color:#4b5563;font-size:0.8rem;">
+  We Buy Clean Trash · Editorial-Eco design system · Tokens in <code>src/app/globals.css</code> · Primitives in <code>src/components/resident/eco/Eco.tsx</code> &amp; <code>src/components/operator/Op.tsx</code> · Icons in <code>src/components/icons/EcoIcons.tsx</code>
+</div>
+
+</body>
+</html>

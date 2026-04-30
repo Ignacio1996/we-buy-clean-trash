@@ -4,599 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>We Buy Clean Trash - App Screens by User</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: #0e0e0e;
-    color: #e0e0e0;
-    min-height: 100vh;
-  }
-
-  .header {
-    text-align: center;
-    padding: 48px 20px 12px;
-  }
-  .header h1 { font-size: 2.2rem; color: #ffffff; margin-bottom: 6px; }
-  .header p { color: #9ca3af; font-size: 1rem; }
-
-  /* ── TAB NAV ── */
-  .tab-bar {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    padding: 24px 16px 32px;
-    flex-wrap: wrap;
-  }
-  .tab-btn {
-    padding: 10px 20px;
-    border-radius: 28px;
-    border: 1px solid rgba(255,255,255,0.08);
-    background: rgba(255,255,255,0.04);
-    color: #9ca3af;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-  }
-  .tab-btn:hover { border-color: rgba(255,255,255,0.3); color: #d1d5db; }
-  .tab-btn.active {
-    background: rgba(255,255,255,0.12);
-    border-color: #ffffff;
-    color: #ffffff;
-  }
-
-  /* ── PANEL CONTAINER ── */
-  .panel { display: none; max-width: 1100px; margin: 0 auto; padding: 0 24px 60px; }
-  .panel.active { display: block; }
-
-  /* ── PHONE MOCKUPS ── */
-  .screens-row {
-    display: flex;
-    gap: 28px;
-    margin-bottom: 40px;
-    overflow-x: auto;
-    padding-bottom: 12px;
-    -webkit-overflow-scrolling: touch;
-  }
-  .screens-row::-webkit-scrollbar { height: 6px; }
-  .screens-row::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); border-radius: 3px; }
-  .screens-row::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
-  .screens-row::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
-
-  .phone {
-    width: 270px;
-    background: #161616;
-    border: 2px solid rgba(255,255,255,0.08);
-    border-radius: 28px;
-    overflow: hidden;
-    flex-shrink: 0;
-    transition: transform 0.2s, border-color 0.2s;
-  }
-  .phone:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.3); }
-  .screens-row > div { padding-top: 8px; }
-
-  .phone-status {
-    height: 32px;
-    background: #111111;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.65rem;
-    color: #6b7280;
-    letter-spacing: 0.5px;
-  }
-  .phone-header {
-    padding: 14px 18px 10px;
-    background: #111111;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
-  .phone-header h4 {
-    font-size: 0.95rem;
-    color: #ffffff;
-    margin-bottom: 2px;
-  }
-  .phone-header span {
-    font-size: 0.7rem;
-    color: #6b7280;
-  }
-
-  .phone-body { padding: 14px 16px 20px; }
-
-  .screen-label {
-    text-align: center;
-    margin-top: 10px;
-    font-size: 0.78rem;
-    color: #6b7280;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-  }
-
-  /* ── UI COMPONENTS INSIDE PHONES ── */
-  .ui-card {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 12px;
-    padding: 12px 14px;
-    margin-bottom: 10px;
-  }
-  .ui-card-title {
-    font-size: 0.72rem;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-bottom: 8px;
-  }
-
-  .stat-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
-  .stat-box {
-    flex: 1;
-    background: rgba(255,255,255,0.05);
-    border-radius: 10px;
-    padding: 10px 8px;
-    text-align: center;
-  }
-  .stat-box .num {
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: #ffffff;
-  }
-  .stat-box .label {
-    font-size: 0.6rem;
-    color: #9ca3af;
-    margin-top: 2px;
-  }
-
-  .ui-list-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-  }
-  .ui-list-item:last-child { border-bottom: none; }
-  .ui-list-icon {
-    width: 32px; height: 32px; border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.9rem; flex-shrink: 0;
-  }
-  .ui-list-text { flex: 1; }
-  .ui-list-text .primary { font-size: 0.8rem; color: #d1d5db; }
-  .ui-list-text .secondary { font-size: 0.65rem; color: #6b7280; margin-top: 1px; }
-  .ui-list-badge {
-    padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 700;
-  }
-
-  .ui-btn {
-    display: block;
-    width: 100%;
-    padding: 11px;
-    border-radius: 10px;
-    border: none;
-    font-size: 0.82rem;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 8px;
-    cursor: default;
-  }
-  .btn-primary { background: #ffffff; color: #111111; }
-  .btn-secondary { background: rgba(255,255,255,0.06); color: #9ca3af; border: 1px solid rgba(255,255,255,0.1); }
-  .btn-green { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
-
-  .ui-input {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.04);
-    color: #6b7280;
-    font-size: 0.78rem;
-    margin-bottom: 8px;
-  }
-
-  .ui-toggle-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-  }
-  .ui-toggle-row span { font-size: 0.78rem; color: #d1d5db; }
-  .toggle-pill {
-    width: 36px; height: 20px; border-radius: 10px;
-    background: #ffffff; position: relative;
-  }
-  .toggle-pill::after {
-    content: ''; position: absolute; right: 3px; top: 3px;
-    width: 14px; height: 14px; border-radius: 50%; background: white;
-  }
-
-  .progress-bar {
-    height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08);
-    margin: 6px 0; overflow: hidden;
-  }
-  .progress-fill { height: 100%; border-radius: 3px; background: #ffffff; }
-
-  .ui-photo-placeholder {
-    width: 100%; height: 60px; border-radius: 10px;
-    background: rgba(255,255,255,0.04); border: 2px dashed rgba(255,255,255,0.08);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.75rem; color: #6b7280; margin-bottom: 10px;
-  }
-
-  .notif-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: #f87171; flex-shrink: 0;
-  }
-
-  .ui-nav {
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0 6px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    margin-top: 10px;
-  }
-  .ui-nav-item {
-    text-align: center;
-    font-size: 0.6rem;
-    color: #6b7280;
-  }
-  .ui-nav-item.active { color: #ffffff; }
-  .ui-nav-item .ico { font-size: 1.1rem; margin-bottom: 2px; }
-
-  /* ── DESCRIPTION CARDS ── */
-  .role-desc {
-    max-width: 800px;
-    margin: 0 auto 40px;
-    padding: 24px 28px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 16px;
-  }
-  .role-desc h3 { color: #ffffff; font-size: 1.1rem; margin-bottom: 6px; }
-  .role-desc .subtitle { color: #9ca3af; font-size: 0.88rem; margin-bottom: 14px; }
-  .flow-steps {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .flow-chip {
-    padding: 6px 14px;
-    border-radius: 20px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.08);
-    font-size: 0.78rem;
-    color: #d1d5db;
-    white-space: nowrap;
-  }
-  .flow-arrow { color: #ffffff; font-size: 0.9rem; }
-
-  /* ── DASHBOARD (ADMIN) WIDE VIEW ── */
-  .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-  .dash-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 14px;
-    padding: 18px;
-  }
-  .dash-card .kpi { font-size: 1.8rem; font-weight: 800; color: #ffffff; }
-  .dash-card .kpi-label { font-size: 0.78rem; color: #9ca3af; margin-top: 2px; }
-  .dash-card .kpi-sub { font-size: 0.7rem; color: #6b7280; margin-top: 6px; }
-
-  .dash-wide {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 14px;
-    padding: 20px;
-    margin-bottom: 20px;
-  }
-  .dash-wide h4 { color: #ffffff; font-size: 0.9rem; margin-bottom: 14px; }
-
-  .table-row {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-    gap: 8px;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    font-size: 0.75rem;
-  }
-  .table-row.head { color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.65rem; }
-  .table-row .cell { color: #b0b8c4; }
-  .table-row .cell:first-child { color: #d1d5db; font-weight: 600; }
-
-  .mini-bar {
-    height: 18px; border-radius: 4px; background: rgba(255,255,255,0.06);
-    overflow: hidden; margin-bottom: 6px;
-  }
-  .mini-bar-fill { height: 100%; border-radius: 4px; }
-
-  @media (max-width: 650px) {
-    .phone { width: 90%; max-width: 300px; }
-    .dashboard-grid { grid-template-columns: 1fr 1fr; }
-    .table-row { grid-template-columns: 1.5fr 1fr 1fr; }
-    .table-row .cell:nth-child(4), .table-row .cell:nth-child(5),
-    .table-row.head .cell:nth-child(4), .table-row.head .cell:nth-child(5) { display: none; }
-  }
-
-  /* ── IMPLEMENTATION STATUS BADGES ── */
-  .status-badge {
-    display: inline-block;
-    margin-left: 6px;
-    padding: 2px 7px;
-    border-radius: 10px;
-    font-size: 0.6rem;
-    font-weight: 800;
-    letter-spacing: 0.4px;
-    border: 1px solid transparent;
-    vertical-align: middle;
-  }
-  .status-badge.built     { background: rgba(34,197,94,0.15);  color: #22c55e; border-color: rgba(34,197,94,0.35); }
-  .status-badge.partial   { background: rgba(251,191,36,0.15); color: #fbbf24; border-color: rgba(251,191,36,0.35); }
-  .status-badge.missing   { background: rgba(248,113,113,0.15);color: #f87171; border-color: rgba(248,113,113,0.35); }
-  .status-badge.extra     { background: rgba(59,130,246,0.15); color: #60a5fa; border-color: rgba(59,130,246,0.35); }
-  .status-badge.eco       { background: rgba(52,211,153,0.18); color: #34d399; border-color: rgba(52,211,153,0.4); }
-
-  /* ── EDITORIAL-ECO PHONE THEME (cream paper) ── */
-  .phone.eco {
-    background: #FBF7EE;
-    border-color: #D9D2C2;
-  }
-  .phone.eco .phone-status {
-    background: #F4F0E8;
-    color: #5A6358;
-    letter-spacing: 1.4px;
-    font-weight: 500;
-  }
-  .phone.eco .phone-header {
-    background: #F4F0E8;
-    border-bottom-color: #D9D2C2;
-    padding: 12px 18px 10px;
-  }
-  .phone.eco .phone-header h4 {
-    color: #1F2A22;
-    font-family: ui-serif, Georgia, 'Iowan Old Style', serif;
-    font-weight: 500;
-    font-size: 0.92rem;
-    letter-spacing: -0.2px;
-  }
-  .phone.eco .phone-header span { color: #2D5A3D; font-style: italic; }
-  .phone.eco .phone-body {
-    background: #F4F0E8;
-    color: #1F2A22;
-    background-image:
-      radial-gradient(circle at 20% 30%, rgba(160,140,100,0.06) 1px, transparent 2px),
-      radial-gradient(circle at 70% 60%, rgba(160,140,100,0.05) 1px, transparent 2px);
-    background-size: 14px 14px, 22px 22px;
-  }
-  .eco-paper {
-    background: #FBF7EE;
-    border: 1px solid #D9D2C2;
-    border-radius: 14px;
-    padding: 12px 14px;
-    margin-bottom: 10px;
-  }
-  .eco-eyebrow {
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 1.4px;
-    color: #5A6358;
-    font-weight: 500;
-  }
-  .eco-display {
-    font-family: ui-serif, Georgia, serif;
-    font-size: 1.5rem;
-    font-weight: 400;
-    line-height: 1.05;
-    letter-spacing: -1px;
-    color: #1F2A22;
-  }
-  .eco-display em {
-    font-style: italic;
-    color: #2D5A3D;
-  }
-  .eco-h2 {
-    font-family: ui-serif, Georgia, serif;
-    font-weight: 500;
-    font-size: 1.05rem;
-    letter-spacing: -0.3px;
-    color: #1F2A22;
-  }
-  .eco-italic {
-    font-family: ui-serif, Georgia, serif;
-    font-style: italic;
-    color: #5A6358;
-  }
-  .eco-rule {
-    border-bottom: 1px solid #E8E2D0;
-    padding: 6px 0;
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.66rem;
-  }
-  .eco-rule .label {
-    color: #5A6358;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    font-size: 0.55rem;
-  }
-  .eco-rule .value {
-    font-family: ui-serif, Georgia, serif;
-    color: #1F2A22;
-  }
-  .eco-btn {
-    display: block;
-    width: 100%;
-    padding: 11px;
-    border-radius: 999px;
-    font-family: ui-serif, Georgia, serif;
-    font-size: 0.85rem;
-    text-align: center;
-    margin-bottom: 8px;
-    cursor: default;
-  }
-  .eco-btn.primary {
-    background: #2D5A3D;
-    color: #FBF7EE;
-    border: 1px solid #2D5A3D;
-  }
-  .eco-btn.secondary {
-    background: #FBF7EE;
-    color: #1F2A22;
-    border: 1px solid #D9D2C2;
-  }
-  .eco-pill {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-size: 0.62rem;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    font-weight: 500;
-  }
-  .eco-pill.green { background: #E8EFE6; color: #2D5A3D; border: 1px solid #2D5A3D; }
-  .eco-pill.amber { background: #F2E8D6; color: #A0682A; border: 1px solid #A0682A; }
-  .eco-pill.rust  { background: #F0DCC8; color: #9A4B26; border: 1px solid #9A4B26; }
-  .eco-pill.ink   { background: transparent; color: #5A6358; border: 1px solid #D9D2C2; }
-
-  /* ── DESIGN SYSTEM REFERENCE CARD ── */
-  .design-system-card {
-    max-width: 1100px;
-    margin: 0 auto 32px;
-    padding: 28px 32px;
-    background: #F4F0E8;
-    border: 1px solid #D9D2C2;
-    border-radius: 18px;
-    color: #1F2A22;
-    background-image:
-      radial-gradient(circle at 20% 30%, rgba(160,140,100,0.06) 1px, transparent 2px),
-      radial-gradient(circle at 70% 60%, rgba(160,140,100,0.05) 1px, transparent 2px);
-    background-size: 14px 14px, 22px 22px;
-  }
-  .design-system-card .ds-eyebrow {
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 1.6px;
-    color: #2D5A3D;
-    font-weight: 500;
-    margin-bottom: 6px;
-  }
-  .design-system-card h3 {
-    font-family: ui-serif, Georgia, serif;
-    font-weight: 400;
-    font-size: 1.7rem;
-    letter-spacing: -0.6px;
-    margin-bottom: 4px;
-  }
-  .design-system-card h3 em { font-style: italic; color: #2D5A3D; }
-  .design-system-card .lede {
-    font-family: ui-serif, Georgia, serif;
-    font-style: italic;
-    color: #5A6358;
-    font-size: 0.92rem;
-    margin-bottom: 18px;
-    max-width: 640px;
-  }
-  .ds-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 18px;
-  }
-  .ds-block {
-    background: #FBF7EE;
-    border: 1px solid #D9D2C2;
-    border-radius: 12px;
-    padding: 14px 16px;
-  }
-  .ds-block h4 {
-    font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-    font-size: 0.62rem;
-    text-transform: uppercase;
-    letter-spacing: 1.4px;
-    color: #5A6358;
-    font-weight: 500;
-    margin-bottom: 10px;
-  }
-  .ds-swatch {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-    font-size: 0.7rem;
-  }
-  .ds-swatch .chip {
-    width: 22px;
-    height: 22px;
-    border-radius: 6px;
-    border: 1px solid rgba(0,0,0,0.08);
-    flex-shrink: 0;
-  }
-  .ds-swatch .name { color: #1F2A22; flex: 1; }
-  .ds-swatch .hex {
-    font-family: ui-monospace, SF Mono, monospace;
-    font-size: 0.62rem;
-    color: #5A6358;
-  }
-  .ds-type-sample {
-    margin-bottom: 8px;
-  }
-  .ds-type-sample .ds-type-label {
-    font-size: 0.55rem;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    color: #5A6358;
-    margin-bottom: 2px;
-  }
-  .ds-component-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 8px;
-    align-items: center;
-  }
-
-  .status-legend {
-    max-width: 1100px;
-    margin: -8px auto 24px;
-    padding: 14px 20px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 12px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 18px;
-    align-items: center;
-    font-size: 0.78rem;
-    color: #9ca3af;
-  }
-  .status-legend strong { color: #ffffff; margin-right: 6px; }
-
-  .impl-note {
-    margin-top: 10px;
-    padding: 10px 12px;
-    background: rgba(251,191,36,0.06);
-    border: 1px solid rgba(251,191,36,0.2);
-    border-radius: 10px;
-    font-size: 0.72rem;
-    color: #fbbf24;
-    line-height: 1.45;
-  }
-  .impl-note.missing { background: rgba(248,113,113,0.06); border-color: rgba(248,113,113,0.2); color: #f87171; }
-  .impl-note.extra   { background: rgba(59,130,246,0.06);  border-color: rgba(59,130,246,0.2);  color: #93c5fd; }
-  .impl-note .impl-tag { font-weight: 800; letter-spacing: 0.4px; margin-right: 4px; }
-</style>
+<link rel="stylesheet" href="app-designs.css">
 </head>
 <body>
 
@@ -614,204 +22,11 @@
   <div class="tab-btn" onclick="showPanel('admin')">📊 Admin</div>
 </div>
 
-<div class="status-legend">
-  <strong>Status legend:</strong>
-  <span><span class="status-badge built">✅ BUILT</span> shipped & wired end-to-end</span>
-  <span><span class="status-badge partial">🟡 PARTIAL</span> built but diverges from mock or skips a detail</span>
-  <span><span class="status-badge missing">❌ MISSING</span> not yet implemented</span>
-  <span><span class="status-badge extra">➕ EXTRA</span> built but not in this design doc</span>
-  <span><span class="status-badge eco">🌿 EDITORIAL ECO</span> reflects the Apr 30 visual refresh</span>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- EDITORIAL-ECO DESIGN SYSTEM — added Apr 30, 2026                     -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<div class="design-system-card">
-  <div class="ds-eyebrow">VOL. I · NO. 02 · DESIGN SYSTEM</div>
-  <h3>The <em>Editorial-Eco</em> language.</h3>
-  <p class="lede">Warm paper, italic serif headlines, hairline rules, no shadows. Shipped April 30, 2026 across the resident + operator surface. Tokens live in <code style="font-size:0.78rem;background:#FBF7EE;padding:2px 5px;border-radius:4px;border:1px solid #D9D2C2;">src/app/globals.css</code>; primitives in <code style="font-size:0.78rem;background:#FBF7EE;padding:2px 5px;border-radius:4px;border:1px solid #D9D2C2;">src/components/resident/eco/Eco.tsx</code> &amp; <code style="font-size:0.78rem;background:#FBF7EE;padding:2px 5px;border-radius:4px;border:1px solid #D9D2C2;">src/components/operator/Op.tsx</code>.</p>
-
-  <div class="ds-grid">
-    <!-- PALETTE -->
-    <div class="ds-block">
-      <h4>Palette</h4>
-      <div class="ds-swatch"><div class="chip" style="background:#F4F0E8;"></div><span class="name">Paper bg</span><span class="hex">#F4F0E8</span></div>
-      <div class="ds-swatch"><div class="chip" style="background:#FBF7EE;"></div><span class="name">Paper</span><span class="hex">#FBF7EE</span></div>
-      <div class="ds-swatch"><div class="chip" style="background:#1F2A22;"></div><span class="name">Ink</span><span class="hex">#1F2A22</span></div>
-      <div class="ds-swatch"><div class="chip" style="background:#5A6358;"></div><span class="name">Ink soft</span><span class="hex">#5A6358</span></div>
-      <div class="ds-swatch"><div class="chip" style="background:#D9D2C2;"></div><span class="name">Line</span><span class="hex">#D9D2C2</span></div>
-      <div class="ds-swatch"><div class="chip" style="background:#2D5A3D;"></div><span class="name">Green</span><span class="hex">#2D5A3D</span></div>
-      <div class="ds-swatch"><div class="chip" style="background:#E8EFE6;"></div><span class="name">Green soft</span><span class="hex">#E8EFE6</span></div>
-      <div class="ds-swatch"><div class="chip" style="background:#A0682A;"></div><span class="name">Amber</span><span class="hex">#A0682A</span></div>
-      <div class="ds-swatch"><div class="chip" style="background:#9A4B26;"></div><span class="name">Rust</span><span class="hex">#9A4B26</span></div>
-    </div>
-
-    <!-- TYPE -->
-    <div class="ds-block">
-      <h4>Type</h4>
-      <div class="ds-type-sample">
-        <div class="ds-type-label">Display · 40px serif, italic em → green</div>
-        <div style="font-family:ui-serif,Georgia,serif;font-size:1.4rem;line-height:1.05;letter-spacing:-0.6px;color:#1F2A22;">Turn what you throw away into <em style="font-style:italic;color:#2D5A3D;">cash</em>.</div>
-      </div>
-      <div class="ds-type-sample">
-        <div class="ds-type-label">H2 · 22px serif, weight 500</div>
-        <div style="font-family:ui-serif,Georgia,serif;font-size:1.05rem;letter-spacing:-0.3px;color:#1F2A22;font-weight:500;">Where shall we collect?</div>
-      </div>
-      <div class="ds-type-sample">
-        <div class="ds-type-label">Eyebrow · 11px sans, 1.4px tracking</div>
-        <div style="font-family:-apple-system,Inter,sans-serif;font-size:0.66rem;text-transform:uppercase;letter-spacing:1.4px;color:#5A6358;font-weight:500;">STEP ONE · SERVICE AREA</div>
-      </div>
-      <div class="ds-type-sample">
-        <div class="ds-type-label">Italic body</div>
-        <div style="font-family:ui-serif,Georgia,serif;font-style:italic;color:#5A6358;font-size:0.78rem;">Sign in to see this week's pickup.</div>
-      </div>
-      <div class="ds-type-sample">
-        <div class="ds-type-label">Stack</div>
-        <div style="font-size:0.66rem;color:#5A6358;font-family:ui-monospace,SF Mono,monospace;">Serif: Georgia, Iowan Old Style<br>Sans: Inter, system UI<br>Mono: SF Mono</div>
-      </div>
-    </div>
-
-    <!-- PRIMITIVES -->
-    <div class="ds-block">
-      <h4>Primitives — Eco.* (resident)</h4>
-      <div class="ds-component-row">
-        <span class="eco-btn primary" style="width:auto;padding:8px 16px;margin:0;font-size:0.74rem;">Get started</span>
-        <span class="eco-btn secondary" style="width:auto;padding:8px 16px;margin:0;font-size:0.74rem;">Skip</span>
-      </div>
-      <div class="ds-component-row">
-        <span class="eco-pill green">Active</span>
-        <span class="eco-pill amber">Bonus</span>
-        <span class="eco-pill rust">Issue</span>
-        <span class="eco-pill ink">Ledger</span>
-      </div>
-      <div class="eco-rule" style="border-bottom-color:#E8E2D0;padding:5px 0;margin-bottom:0;">
-        <span class="label">Avg. earnings</span>
-        <span class="value">$5–$12 / pickup</span>
-      </div>
-      <div class="eco-rule" style="border-bottom:none;padding:5px 0;margin-bottom:6px;">
-        <span class="label">Cadence</span>
-        <span class="value">Weekly · curbside</span>
-      </div>
-      <div style="font-size:0.62rem;color:#5A6358;line-height:1.5;">
-        EcoMasthead · EcoH1 · EcoPaper · EcoButton<br>
-        EcoRule · EcoListLink · EcoEmpty · BottomNav
-      </div>
-    </div>
-
-    <!-- OPERATOR PRIMITIVES -->
-    <div class="ds-block" style="background:#F4F0E8;background-image:radial-gradient(circle at 20% 30%, rgba(160,140,100,0.08) 1px, transparent 2px),radial-gradient(circle at 70% 60%, rgba(160,140,100,0.06) 1px, transparent 2px);background-size:14px 14px, 22px 22px;">
-      <h4>Primitives — Op.* (operator)</h4>
-      <div style="font-family:ui-serif,Georgia,serif;font-size:1.05rem;color:#1F2A22;line-height:1.1;letter-spacing:-0.3px;margin-bottom:8px;">You are <em style="color:#2D5A3D;">on stop 06</em> of 14.</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid #D9D2C2;border-bottom:1px solid #D9D2C2;margin-bottom:10px;">
-        <div style="padding:8px 6px;border-right:1px solid #E8E2D0;text-align:left;">
-          <div style="font-family:ui-serif,Georgia,serif;font-size:1.1rem;letter-spacing:-0.4px;color:#1F2A22;font-feature-settings:'lnum','tnum';">06 / 14</div>
-          <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Stops</div>
-        </div>
-        <div style="padding:8px 6px;border-right:1px solid #E8E2D0;text-align:left;">
-          <div style="font-family:ui-serif,Georgia,serif;font-size:1.1rem;letter-spacing:-0.4px;color:#1F2A22;font-feature-settings:'lnum','tnum';">12 / 32</div>
-          <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Bags</div>
-        </div>
-        <div style="padding:8px 6px;text-align:left;">
-          <div style="font-family:ui-serif,Georgia,serif;font-size:1.1rem;letter-spacing:-0.4px;color:#1F2A22;font-feature-settings:'lnum','tnum';">02 / 04</div>
-          <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Deliver</div>
-        </div>
-      </div>
-      <div class="ds-component-row">
-        <span class="eco-btn primary" style="width:auto;padding:9px 22px;margin:0;font-size:0.78rem;border-radius:14px;">Mark complete</span>
-      </div>
-      <div class="ds-component-row">
-        <span class="eco-pill green">Completed</span>
-        <span class="eco-pill amber">Missed</span>
-        <span class="eco-pill rust">Issue</span>
-      </div>
-      <div style="font-size:0.62rem;color:#5A6358;line-height:1.5;">
-        OpPage (grain) · OpMasthead · OpDisplay<br>
-        OpPaper · OpPrimary/Ghost · ProgressStrip<br>
-        StatusPill · OpSheet · OpRow · SummaryStat
-      </div>
-    </div>
-
-    <!-- ICON SET -->
-    <div class="ds-block">
-      <h4>Icons — EcoIcons.tsx</h4>
-      <div style="font-size:0.7rem;color:#1F2A22;line-height:1.6;">
-        Line drawings, 24-viewBox, 1.75px stroke. <em style="font-style:italic;color:#5A6358;">Configurable size and color.</em>
-      </div>
-      <div style="margin-top:8px;display:grid;grid-template-columns:repeat(2,1fr);gap:4px 12px;font-size:0.66rem;color:#5A6358;">
-        <span>Home</span><span>Scan</span>
-        <span>Bag</span><span>Gift</span>
-        <span>User</span><span>Truck</span>
-        <span>Leaf</span><span>Droplet</span>
-        <span>Recycle</span><span>Cloud</span>
-        <span>Fire</span><span>Box</span>
-        <span>Clock</span><span>Bell</span>
-        <span>Check</span><span>Close</span>
-        <span>Star</span><span>Pin</span>
-        <span>Plus</span><span>Arrow ↔</span>
-      </div>
-    </div>
-
-    <!-- COVERAGE -->
-    <div class="ds-block">
-      <h4>Coverage</h4>
-      <div style="font-size:0.7rem;color:#1F2A22;line-height:1.55;">
-        <strong>Resident · Operator</strong> — full surface migrated.
-      </div>
-      <div style="margin-top:8px;font-size:0.66rem;color:#5A6358;line-height:1.6;">
-        Login · Signup wizard · Welcome · Dashboard · Order bags · History · Calculator · Guide · Rewards · Profile · Bottom nav · Bonus modal · Pre-signup banner.
-      </div>
-      <div style="margin-top:8px;font-size:0.66rem;color:#5A6358;line-height:1.6;">
-        Operator dashboard · Today's route · Stop scan/photo/issue · Deliver · Summary · Compost route.
-      </div>
-      <div style="margin-top:10px;padding-top:8px;border-top:1px solid #D9D2C2;font-size:0.62rem;color:#A0682A;">
-        <strong>Out of scope (still dark UI):</strong> depot, depot manager, admin. Migration not yet planned.
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- ═══════════════════════════════════════ -->
 <!-- RESIDENT -->
 <!-- ═══════════════════════════════════════ -->
 <div class="panel active" id="panel-resident">
-
-  <div class="role-desc">
-    <h3>🏠 Resident — The Customer</h3>
-    <div class="subtitle">Lives in the community. Buys bags, fills them, earns points, redeems gift cards.</div>
-    <div class="flow-steps">
-      <span class="flow-chip">Scan trash &amp; see value</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Sign up</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Order bags</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Fill &amp; separate</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Schedule pickup</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Earn &amp; redeem</span>
-    </div>
-    <div class="impl-note">
-      <span class="impl-tag">PARTIAL · ONBOARDING</span>
-      Step 2 in the mock reads "Schedule pickup day". Pickup day is admin-assigned per zone (locked decision), so the built copy is "Fill &amp; put out bags · Scan each bag the night before your pickup".
-    </div>
-    <div class="impl-note extra">
-      <span class="impl-tag">EXTRA · SHIPPED</span>
-      Built but not in this design doc: <strong>Order Bags</strong> (quantity stepper + free-ship rule + Stripe stub) at <code>/resident/order-bags</code>, <strong>Order Bags Success</strong> page, <strong>Profile</strong> at <code>/resident/profile</code> (address, phone, sign-out). Login / signup / invite-acceptance pages also exist.
-    </div>
-    <div class="impl-note extra">
-      <span class="impl-tag">FRIDAY MEETING · APR 27</span>
-      <strong>Signup-bonus modal</strong> pops once on first dashboard load, explaining the 10,000-pt bonus (= $1).
-      <strong>Redemption progress card</strong> (points balance → "$X to a $10 gift card") with a thin progress bar; links to /rewards.
-      First-time users see <em>"Order your first batch"</em> CTA instead of "Order more bags."
-      Calculator inputs now show a <code>lbs</code> suffix. Resident dashboard surfaces a <strong>🔥 Bonus running now</strong> banner whenever a pricing campaign is live for any material; the calculator preview reflects the multiplier per row.
-    </div>
-    <div class="impl-note" style="background:rgba(52,211,153,0.08);border-color:rgba(52,211,153,0.3);color:#34d399;">
-      <span class="impl-tag" style="color:#34d399;">EDITORIAL ECO · APR 30</span>
-      The entire resident surface was rebuilt in the editorial-eco language: cream paper backgrounds (<code>#F4F0E8</code>), italic serif display headlines with green <em>em</em>, hairline rules <code>#D9D2C2</code>, no shadows, pill buttons, EcoMasthead/EcoH1/EcoPaper/EcoButton primitives from <code>src/components/resident/eco/Eco.tsx</code>, line-drawn icons from <code>src/components/icons/EcoIcons.tsx</code>. Cards below tagged <span class="status-badge eco">🌿 EDITORIAL ECO</span> show what shipped; the older dark mockups are preserved for comparison.
-    </div>
-  </div>
-
   <!-- ════════════════════════════════════════════ -->
   <!-- EDITORIAL-ECO RESIDENT SCREENS (Apr 30, 2026) -->
   <!-- ════════════════════════════════════════════ -->
@@ -1336,623 +551,57 @@
 
   </div>
 
-  <!-- Older dark-aesthetic mockups follow (kept for comparison) -->
-  <div style="margin-bottom:14px;padding:10px 18px;background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.1);border-radius:10px;font-size:0.72rem;color:#9ca3af;font-style:italic;">
-    Earlier dark-aesthetic mockups below — preserved for reference. The shipped resident UI uses the editorial-eco language above.
+  <!-- Earlier dark mockups moved to app-designs-legacy.html (Apr 30, 2026) -->
+  <a class="doc-link-card" href="app-designs-legacy.html#panel-legacy-resident" style="margin:0 0 12px;max-width:none;">
+    <div class="dlc-eyebrow">📁 ARCHIVE</div>
+    <div class="dlc-title">Earlier dark-aesthetic resident mockups</div>
+    <div class="dlc-body">Pre-refresh mockups (Pre-Signup Hook, Home Dashboard, Calculator, Rewards, etc.) moved to a separate archive page so this view stays focused on the shipped editorial-eco screens above.</div>
+  </a>
+
+
+  <div class="role-desc">
+    <h3>🏠 Resident — The Customer</h3>
+    <div class="subtitle">Lives in the community. Buys bags, fills them, earns points, redeems gift cards.</div>
+    <div class="flow-steps">
+      <span class="flow-chip">Scan trash &amp; see value</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Sign up</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Order bags</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Fill &amp; separate</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Schedule pickup</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Earn &amp; redeem</span>
+    </div>
+    <div class="impl-note">
+      <span class="impl-tag">PARTIAL · ONBOARDING</span>
+      Step 2 in the mock reads "Schedule pickup day". Pickup day is admin-assigned per zone (locked decision), so the built copy is "Fill &amp; put out bags · Scan each bag the night before your pickup".
+    </div>
+    <div class="impl-note extra">
+      <span class="impl-tag">EXTRA · SHIPPED</span>
+      Built but not in this design doc: <strong>Order Bags</strong> (quantity stepper + free-ship rule + Stripe stub) at <code>/resident/order-bags</code>, <strong>Order Bags Success</strong> page, <strong>Profile</strong> at <code>/resident/profile</code> (address, phone, sign-out). Login / signup / invite-acceptance pages also exist.
+    </div>
+    <div class="impl-note extra">
+      <span class="impl-tag">FRIDAY MEETING · APR 27</span>
+      <strong>Signup-bonus modal</strong> pops once on first dashboard load, explaining the 10,000-pt bonus (= $1).
+      <strong>Redemption progress card</strong> (points balance → "$X to a $10 gift card") with a thin progress bar; links to /rewards.
+      First-time users see <em>"Order your first batch"</em> CTA instead of "Order more bags."
+      Calculator inputs now show a <code>lbs</code> suffix. Resident dashboard surfaces a <strong>🔥 Bonus running now</strong> banner whenever a pricing campaign is live for any material; the calculator preview reflects the multiplier per row.
+    </div>
+    <div class="impl-note" style="background:rgba(52,211,153,0.08);border-color:rgba(52,211,153,0.3);color:#34d399;">
+      <span class="impl-tag" style="color:#34d399;">EDITORIAL ECO · APR 30</span>
+      The entire resident surface was rebuilt in the editorial-eco language: cream paper backgrounds (<code>#F4F0E8</code>), italic serif display headlines with green <em>em</em>, hairline rules <code>#D9D2C2</code>, no shadows, pill buttons, EcoMasthead/EcoH1/EcoPaper/EcoButton primitives from <code>src/components/resident/eco/Eco.tsx</code>, line-drawn icons from <code>src/components/icons/EcoIcons.tsx</code>. Cards below tagged <span class="status-badge eco">🌿 EDITORIAL ECO</span> show what shipped; the older dark mockups are preserved for comparison.
+    </div>
   </div>
 
-  <div class="screens-row">
-
-    <!-- Screen 1: Pre-Signup Value Hook (NEW - replaces old onboarding) -->
-    <div>
-      <div class="phone" style="border-color:rgba(34,197,94,0.3);">
-        <div class="phone-status">WE BUY CLEAN TRASH</div>
-        <div class="phone-header">
-          <h4>💰 See What Your Trash Is Worth</h4>
-          <span style="color:#22c55e;">UPDATED — Pre-Signup Hook</span>
-        </div>
-        <div class="phone-body">
-          <div style="text-align:center;margin-bottom:12px;">
-            <div style="font-size:0.82rem;color:#ffffff;font-weight:700;">Scan some trash, see how much you'll earn</div>
-            <div style="font-size:0.68rem;color:#6b7280;margin-top:3px;">No account needed — try it right now</div>
-          </div>
-          <div class="ui-photo-placeholder" style="height:70px;border-color:rgba(34,197,94,0.2);">📸 Point camera at any recyclable item</div>
-          <div class="ui-card" style="border-color:rgba(255,255,255,0.18);">
-            <div class="ui-card-title">Scanned Items</div>
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(255,255,255,0.07)">🥤</div>
-              <div class="ui-list-text">
-                <div class="primary">3x Water Bottles (PET)</div>
-                <div class="secondary">$0.15 · 1,500 pts</div>
-              </div>
-            </div>
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(255,255,255,0.07)">🥫</div>
-              <div class="ui-list-text">
-                <div class="primary">4x Coke Cans (Aluminum)</div>
-                <div class="secondary">$0.08 · 800 pts</div>
-              </div>
-            </div>
-          </div>
-          <div class="ui-card" style="background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.2);text-align:center;">
-            <div style="font-size:0.68rem;color:#9ca3af;">Your estimated earnings</div>
-            <div style="font-size:1.4rem;font-weight:800;color:#ffffff;margin:4px 0;">$0.23 · 2,300 pts</div>
-            <div style="font-size:0.65rem;color:#22c55e;">Recycle 100 cans/week = $10 Amazon gift card/month</div>
-          </div>
-          <div class="ui-btn btn-primary">Sign Up &amp; Start Earning →</div>
-          <div style="text-align:center;font-size:0.65rem;color:#6b7280;margin-top:2px;">Scan more items or sign up to get started</div>
-        </div>
-      </div>
-      <div class="screen-label" style="color:#22c55e;">PRE-SIGNUP VALUE HOOK (UPDATED) <span class="status-badge built">✅ BUILT</span></div>
-    </div>
-
-    <!-- Screen 2: Signup wizard (NEW - editorial-eco linear flow, replaces 3-step onboarding) -->
-    <div>
-      <div class="phone" style="border-color:rgba(34,197,94,0.4);background:#FBF7EE;">
-        <div class="phone-status" style="background:#F4F0E8;color:#5A6358;">WE BUY CLEAN TRASH</div>
-        <div class="phone-header" style="background:#F4F0E8;border-bottom-color:#D9D2C2;">
-          <h4 style="color:#1F2A22;font-family:Georgia,serif;font-style:italic;">Resident Signup — Linear wizard</h4>
-          <span style="color:#2D5A3D;">NEW — Editorial-eco onboarding</span>
-        </div>
-        <div class="phone-body" style="background:#F4F0E8;color:#1F2A22;">
-          <!-- Splash preview -->
-          <div style="border-bottom:1px solid #D9D2C2;padding-bottom:6px;margin-bottom:10px;font-size:0.55rem;color:#5A6358;letter-spacing:2px;">VOL. I · NO. 01</div>
-          <div style="font-family:Georgia,serif;font-style:italic;font-size:0.85rem;color:#2D5A3D;line-height:1.1;margin-bottom:8px;">We Buy<br>Clean Trash</div>
-          <div style="font-family:Georgia,serif;font-size:1.15rem;line-height:1.05;color:#1F2A22;letter-spacing:-0.4px;margin-bottom:8px;">Turn what you throw away into <em style="color:#2D5A3D;">cash</em>.</div>
-          <div style="font-family:Georgia,serif;font-style:italic;font-size:0.65rem;color:#5A6358;line-height:1.4;margin-bottom:10px;">Fill our bags with cleaned bottles, cans and paper. We pick them up. Points become gift cards.</div>
-          <div style="border-top:1px solid #D9D2C2;border-bottom:1px solid #D9D2C2;padding:6px 0;margin-bottom:10px;font-size:0.6rem;">
-            <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #E8E2D0;"><span style="color:#5A6358;text-transform:uppercase;letter-spacing:1px;font-size:0.55rem;">Avg. earnings</span><span style="font-family:Georgia,serif;color:#1F2A22;">$5–$12 / pickup</span></div>
-            <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #E8E2D0;"><span style="color:#5A6358;text-transform:uppercase;letter-spacing:1px;font-size:0.55rem;">Cadence</span><span style="font-family:Georgia,serif;color:#1F2A22;">Weekly · curbside</span></div>
-            <div style="display:flex;justify-content:space-between;padding:3px 0;"><span style="color:#5A6358;text-transform:uppercase;letter-spacing:1px;font-size:0.55rem;">Materials</span><span style="font-family:Georgia,serif;color:#1F2A22;">7 commodities</span></div>
-          </div>
-          <div style="background:#2D5A3D;color:#FBF7EE;border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;font-size:0.7rem;font-weight:600;letter-spacing:0.3px;">
-            <span>Get started</span><span>→</span>
-          </div>
-          <!-- Step ledger -->
-          <div style="margin-top:12px;padding-top:8px;border-top:1px solid #D9D2C2;">
-            <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.4px;margin-bottom:6px;">Six steps · one decision per screen</div>
-            <div style="font-family:Georgia,serif;font-size:0.65rem;color:#1F2A22;line-height:1.7;">
-              <div><em style="color:#2D5A3D;">00</em> · Welcome</div>
-              <div><em style="color:#2D5A3D;">01</em> · Address &amp; service area</div>
-              <div><em style="color:#2D5A3D;">02</em> · How it works (4-row almanac)</div>
-              <div><em style="color:#2D5A3D;">03</em> · Account · name / email / phone / SMS·Email·Both</div>
-              <div><em style="color:#2D5A3D;">04</em> · Password · live rules ledger</div>
-              <div><em style="color:#2D5A3D;">05</em> · First bag sheet · stepper, total, skip</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="screen-label" style="color:#22c55e;">SIGNUP WIZARD (NEW) <span class="status-badge built">✅ BUILT</span></div>
-    </div>
-
-    <!-- Screen 3: Home / Dashboard (UPDATED - bags moved up) -->
-    <div>
-      <div class="phone" style="border-color:rgba(59,130,246,0.3);">
-        <div class="phone-status">WE BUY CLEAN TRASH</div>
-        <div class="phone-header">
-          <h4>Hi, Aguirre 👋</h4>
-          <span style="color:#3b82f6;">UPDATED — Order Bags prominent</span>
-        </div>
-        <div class="phone-body">
-          <div class="stat-row">
-            <div class="stat-box">
-              <div class="num">54,320</div>
-              <div class="label">Points</div>
-            </div>
-            <div class="stat-box">
-              <div class="num">$5.43</div>
-              <div class="label">Value</div>
-            </div>
-          </div>
-
-          <!-- ORDER BAGS — moved to top of hierarchy (main revenue) -->
-          <div class="ui-card" style="background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.25);">
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-              <div>
-                <div style="font-size:0.78rem;color:#ffffff;font-weight:700;">🛍️ Order More Bags</div>
-                <div style="font-size:0.65rem;color:#9ca3af;margin-top:2px;">3 bags remaining · Restock now</div>
-              </div>
-              <div class="ui-btn btn-primary" style="width:auto;padding:8px 14px;margin:0;font-size:0.72rem;">Order →</div>
-            </div>
-          </div>
-
-          <!-- PENDING ORDER — shown when resident has an open bag order -->
-          <div class="ui-card" style="background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.25);">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-              <div style="font-size:0.75rem;color:#ffffff;font-weight:700;">📦 Pending order</div>
-              <div style="font-size:0.6rem;color:#93c5fd;text-transform:uppercase;letter-spacing:0.05em;">In progress</div>
-            </div>
-            <div style="border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.25);border-radius:8px;padding:8px 10px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;">
-                <div style="font-size:0.72rem;color:#ffffff;font-weight:700;">📦 2 sheets · 20 bags</div>
-                <div style="font-size:0.72rem;color:#d1d5db;">$16.00</div>
-              </div>
-              <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.62rem;color:#9ca3af;">
-                <span>Queued for delivery</span>
-                <span>Arrives Monday, Apr 27</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="ui-card" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.15);text-align:center;">
-            <div style="font-size:0.75rem;color:#ffffff;font-weight:700;">🚐 Next pickup: Monday, 6:00 PM</div>
-            <div style="font-size:0.65rem;color:#6b7280;margin-top:2px;">Place bags at your door before pickup time</div>
-          </div>
-
-          <!-- Realtime notification card -->
-          <div class="ui-card" style="background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.2);text-align:center;">
-            <div style="font-size:0.7rem;color:#3b82f6;font-weight:700;">📱 TEXT NOTIFICATIONS</div>
-            <div style="font-size:0.65rem;color:#9ca3af;margin-top:3px;">30 min reminder + "Driver on the way" alert</div>
-          </div>
-
-          <div class="ui-card" style="background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.2);cursor:pointer;">
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-              <div>
-                <div style="font-size:0.78rem;color:#ffffff;font-weight:700;">💰 What's your trash worth?</div>
-                <div style="font-size:0.65rem;color:#9ca3af;margin-top:2px;">Prices for cans, bottles, cardboard &amp; more</div>
-              </div>
-              <div style="font-size:1rem;color:#6b7280;">→</div>
-            </div>
-          </div>
-
-          <div class="ui-card">
-            <div class="ui-card-title">🌍 Your Impact</div>
-            <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:#b0b8c4;margin-bottom:4px;">
-              <span>🌳 3 trees saved</span><span>💧 840 gal water</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:#b0b8c4;">
-              <span>♻️ 47 lbs recycled</span><span>🏭 12 lbs CO₂</span>
-            </div>
-          </div>
-
-          <div class="ui-nav">
-            <div class="ui-nav-item active"><div class="ico">🏠</div>Home</div>
-            <div class="ui-nav-item"><div class="ico">📷</div>Scan</div>
-            <div class="ui-nav-item"><div class="ico">🛍️</div>Bags</div>
-            <div class="ui-nav-item"><div class="ico">🎁</div>Rewards</div>
-            <div class="ui-nav-item"><div class="ico">👤</div>Profile</div>
-          </div>
-        </div>
-      </div>
-      <div class="screen-label" style="color:#3b82f6;">HOME DASHBOARD (UPDATED) <span class="status-badge built">✅ BUILT</span></div>
-    </div>
-
-    <!-- Screen 3a-FRI: Signup Bonus Modal (Friday meeting) -->
-    <div>
-      <div class="phone" style="border-color:rgba(34,197,94,0.3);">
-        <div class="phone-status">WE BUY CLEAN TRASH</div>
-        <div class="phone-header">
-          <h4>🎉 You earned 10,000 points</h4>
-          <span style="color:#22c55e;">NEW — First-visit modal (Apr 27)</span>
-        </div>
-        <div class="phone-body" style="background:rgba(0,0,0,0.55);">
-          <div style="background:#0b1d12;border:1px solid rgba(34,197,94,0.4);border-radius:18px;padding:22px 18px;text-align:center;">
-            <div style="font-size:2.4rem;line-height:1;">🎉</div>
-            <div style="font-size:0.95rem;font-weight:800;color:#fff;margin-top:8px;">You earned 10,000 points</div>
-            <div style="font-size:0.75rem;color:#d1d5db;margin-top:6px;">That&rsquo;s your signup bonus — worth <strong style="color:#fff;">$1</strong> toward your first reward.</div>
-            <div style="font-size:0.65rem;color:#9ca3af;margin-top:6px;">Earn 100,000 pts to redeem a $10 gift card. Order bags to start collecting more.</div>
-            <div class="ui-btn btn-primary" style="margin-top:14px;">Let&rsquo;s go</div>
-          </div>
-          <div style="text-align:center;font-size:0.6rem;color:#6b7280;margin-top:8px;">Tap outside or press the button to dismiss · shown once per resident</div>
-        </div>
-      </div>
-      <div class="screen-label" style="color:#22c55e;">SIGNUP BONUS MODAL (NEW) <span class="status-badge built">✅ BUILT</span></div>
-    </div>
-
-    <!-- Screen 3a2-FRI: Dashboard with bonus banner + redemption progress (Friday meeting) -->
-    <div>
-      <div class="phone" style="border-color:rgba(251,191,36,0.35);">
-        <div class="phone-status">WE BUY CLEAN TRASH</div>
-        <div class="phone-header">
-          <h4>Hi, Aguirre 👋</h4>
-          <span style="color:#fbbf24;">UPDATED — Campaign banner + progress (Apr 27)</span>
-        </div>
-        <div class="phone-body">
-          <div class="stat-row">
-            <div class="stat-box">
-              <div class="num">54,320</div>
-              <div class="label">Points</div>
-            </div>
-            <div class="stat-box">
-              <div class="num">$5.43</div>
-              <div class="label">Value</div>
-            </div>
-          </div>
-
-          <!-- Redemption progress card (NEW) -->
-          <div class="ui-card" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);">
-            <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.62rem;color:#9ca3af;">
-              <span>45,680 pts to a $10 gift card</span>
-              <span style="color:#6b7280;">→</span>
-            </div>
-            <div style="height:5px;border-radius:6px;background:rgba(255,255,255,0.1);margin-top:8px;overflow:hidden;">
-              <div style="height:100%;width:54%;background:#22c55e;"></div>
-            </div>
-          </div>
-
-          <!-- 🔥 Bonus running now banner (NEW) -->
-          <div class="ui-card" style="background:rgba(251,191,36,0.1);border-color:rgba(251,191,36,0.35);">
-            <div style="font-size:0.62rem;font-weight:700;color:#fbbf24;letter-spacing:0.06em;">🔥 BONUS RUNNING NOW</div>
-            <div style="font-size:0.7rem;color:#fde68a;margin-top:4px;">
-              <strong>×2</strong> on Aluminum · <em style="opacity:0.85;">Aluminum 2× week</em>
-            </div>
-          </div>
-
-          <!-- First-time CTA (UPDATED copy) -->
-          <div class="ui-card" style="background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.25);">
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-              <div>
-                <div style="font-size:0.78rem;color:#ffffff;font-weight:700;">🛍️ Order your first batch</div>
-                <div style="font-size:0.62rem;color:#9ca3af;margin-top:2px;">10 bags / sheet — operator drops at your door</div>
-              </div>
-              <div class="ui-btn btn-primary" style="width:auto;padding:8px 12px;margin:0;font-size:0.7rem;">Get started →</div>
-            </div>
-          </div>
-
-          <div class="ui-card" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);text-align:center;">
-            <div style="font-size:0.74rem;color:#ffffff;font-weight:700;">🚐 No pickup scheduled yet</div>
-            <div style="font-size:0.6rem;color:#6b7280;margin-top:2px;">Order bags and your first pickup will be assigned to a route.</div>
-          </div>
-
-          <div class="ui-nav">
-            <div class="ui-nav-item active"><div class="ico">🏠</div>Home</div>
-            <div class="ui-nav-item"><div class="ico">📷</div>Scan</div>
-            <div class="ui-nav-item"><div class="ico">🛍️</div>Bags</div>
-            <div class="ui-nav-item"><div class="ico">🎁</div>Rewards</div>
-            <div class="ui-nav-item"><div class="ico">👤</div>Profile</div>
-          </div>
-        </div>
-      </div>
-      <div class="screen-label" style="color:#fbbf24;">DASHBOARD W/ CAMPAIGN BANNER &amp; PROGRESS (NEW) <span class="status-badge built">✅ BUILT</span></div>
-    </div>
-
-    <!-- Screen 3b: Order History (NEW) -->
-    <div>
-      <div class="phone" style="border-color:rgba(34,197,94,0.3);">
-        <div class="phone-status">WE BUY CLEAN TRASH</div>
-        <div class="phone-header">
-          <h4>📦 Order History</h4>
-          <span style="color:#22c55e;">NEW — Past orders</span>
-        </div>
-        <div class="phone-body">
-          <div style="text-align:center;margin-bottom:12px;">
-            <div style="font-size:0.78rem;color:#ffffff;font-weight:700;">All your bag orders</div>
-            <div style="font-size:0.65rem;color:#6b7280;margin-top:3px;">Newest first · Reached from Home &amp; Order Bags</div>
-          </div>
-
-          <!-- Out for delivery -->
-          <div class="ui-card" style="background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.25);">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <div style="font-size:0.74rem;color:#ffffff;font-weight:700;">🚐 3 sheets · 30 bags</div>
-              <div style="font-size:0.74rem;color:#d1d5db;">$24.00</div>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.62rem;">
-              <span style="color:#93c5fd;">Out for delivery</span>
-              <span style="color:#9ca3af;">Arrives Apr 24, 2026</span>
-            </div>
-            <div style="font-size:0.6rem;color:#6b7280;margin-top:2px;">Placed Apr 22, 2026</div>
-          </div>
-
-          <!-- Delivered -->
-          <div class="ui-card">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <div style="font-size:0.74rem;color:#ffffff;font-weight:700;">✅ 2 sheets · 20 bags</div>
-              <div style="font-size:0.74rem;color:#d1d5db;">$16.00</div>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.62rem;">
-              <span style="color:#22c55e;">Delivered</span>
-              <span style="color:#9ca3af;">Delivered Apr 13, 2026</span>
-            </div>
-            <div style="font-size:0.6rem;color:#6b7280;margin-top:2px;">Placed Apr 10, 2026</div>
-          </div>
-
-          <!-- Delivered -->
-          <div class="ui-card">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <div style="font-size:0.74rem;color:#ffffff;font-weight:700;">✅ 1 sheet · 10 bags</div>
-              <div style="font-size:0.74rem;color:#d1d5db;">$12.00</div>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.62rem;">
-              <span style="color:#22c55e;">Delivered</span>
-              <span style="color:#9ca3af;">Delivered Mar 30, 2026</span>
-            </div>
-            <div style="font-size:0.6rem;color:#6b7280;margin-top:2px;">Placed Mar 27, 2026</div>
-          </div>
-
-          <!-- Cancelled -->
-          <div class="ui-card" style="opacity:0.7;">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <div style="font-size:0.74rem;color:#d1d5db;font-weight:700;">✖️ 1 sheet · 10 bags</div>
-              <div style="font-size:0.74rem;color:#9ca3af;">$12.00</div>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.62rem;">
-              <span style="color:#6b7280;">Cancelled</span>
-              <span></span>
-            </div>
-            <div style="font-size:0.6rem;color:#6b7280;margin-top:2px;">Placed Mar 18, 2026</div>
-          </div>
-
-          <div style="text-align:center;font-size:0.6rem;color:#6b7280;margin-top:6px;">← Home</div>
-        </div>
-      </div>
-      <div class="screen-label" style="color:#22c55e;">ORDER HISTORY (NEW) <span class="status-badge built">✅ BUILT</span></div>
-    </div>
-
-    <!-- Screen 4: Payout Calculator (UPDATED — 7 categories + bad recycling) -->
-    <div>
-      <div class="phone" style="border-color:rgba(59,130,246,0.3);">
-        <div class="phone-status">WE BUY CLEAN TRASH</div>
-        <div class="phone-header">
-          <h4>💰 What's It Worth?</h4>
-          <span style="color:#3b82f6;">UPDATED — 7 categories + bad recycling warning</span>
-        </div>
-        <div class="phone-body">
-          <div class="ui-card">
-            <div class="ui-card-title">Accepted Materials (7 categories)</div>
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(255,255,255,0.07)">🥫</div>
-              <div class="ui-list-text">
-                <div class="primary">Aluminum Cans</div>
-                <div class="secondary">$0.02 each · $0.92/lb</div>
-              </div>
-            </div>
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(255,255,255,0.07)">🥫</div>
-              <div class="ui-list-text">
-                <div class="primary">Tin / Steel Cans</div>
-                <div class="secondary">$0.01 each · $0.14/lb</div>
-              </div>
-            </div>
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(255,255,255,0.07)">📦</div>
-              <div class="ui-list-text">
-                <div class="primary">Cardboard</div>
-                <div class="secondary">$0.08/lb</div>
-              </div>
-            </div>
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(255,255,255,0.07)">📰</div>
-              <div class="ui-list-text">
-                <div class="primary">Paper</div>
-                <div class="secondary">$0.05/lb</div>
-              </div>
-            </div>
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(255,255,255,0.07)">🧴</div>
-              <div class="ui-list-text">
-                <div class="primary">Plastic (PET, HDPE, etc.)</div>
-                <div class="secondary">$0.05–$0.23/lb depending on type</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Quick estimate - GOOD recycling -->
-          <div class="ui-card" style="background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.15);text-align:center;">
-            <div style="font-size:0.7rem;color:#22c55e;font-weight:700;margin-bottom:4px;">✓ Clean &amp; Separated</div>
-            <div style="font-size:0.72rem;color:#9ca3af;">20 cans + 10 bottles + 5 lbs cardboard =</div>
-            <div style="font-size:1.2rem;font-weight:800;color:#ffffff;margin-top:4px;">$1.30 · 13,000 pts</div>
-          </div>
-
-          <!-- Quick estimate - BAD recycling (NEW) -->
-          <div class="ui-card" style="background:rgba(248,113,113,0.06);border-color:rgba(248,113,113,0.15);text-align:center;">
-            <div style="font-size:0.7rem;color:#f87171;font-weight:700;margin-bottom:4px;">✗ Contaminated / Not Separated</div>
-            <div style="font-size:0.72rem;color:#9ca3af;">Same items, poorly recycled =</div>
-            <div style="font-size:1.2rem;font-weight:800;color:#f87171;margin-top:4px;">$0.13 · 1,300 pts</div>
-            <div style="font-size:0.6rem;color:#9ca3af;margin-top:4px;">Up to 90% reduction if not recycled correctly</div>
-          </div>
-
-          <div class="ui-btn btn-primary">Schedule Pickup →</div>
-        </div>
-      </div>
-      <div class="screen-label" style="color:#3b82f6;">PAYOUT CALCULATOR (UPDATED) <span class="status-badge built">✅ BUILT</span></div>
-    </div>
-
-    <!-- Screen 5: Recycling Education (NEW) -->
-    <div>
-      <div class="phone" style="border-color:rgba(34,197,94,0.3);">
-        <div class="phone-status">WE BUY CLEAN TRASH</div>
-        <div class="phone-header">
-          <h4>♻️ Recycling Guide</h4>
-          <span style="color:#22c55e;">NEW — Simple Education</span>
-        </div>
-        <div class="phone-body">
-          <div style="text-align:center;margin-bottom:10px;">
-            <div style="font-size:0.78rem;color:#ffffff;font-weight:700;">Do It Right, Earn More</div>
-            <div style="font-size:0.65rem;color:#6b7280;">Quick examples of good vs. bad recycling</div>
-          </div>
-
-          <!-- Good example -->
-          <div class="ui-card" style="border-color:rgba(34,197,94,0.2);">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-              <div style="font-size:0.7rem;color:#22c55e;font-weight:700;">✓ GOOD</div>
-            </div>
-            <div class="ui-list-item" style="padding:6px 0;">
-              <div class="ui-list-icon" style="background:rgba(34,197,94,0.1)">🧴</div>
-              <div class="ui-list-text">
-                <div class="primary" style="font-size:0.75rem;">Empty, rinsed water bottle</div>
-                <div class="secondary">Cap removed, no liquid inside</div>
-              </div>
-            </div>
-            <div class="ui-list-item" style="padding:6px 0;">
-              <div class="ui-list-icon" style="background:rgba(34,197,94,0.1)">📦</div>
-              <div class="ui-list-text">
-                <div class="primary" style="font-size:0.75rem;">Flattened cardboard box</div>
-                <div class="secondary">No tape, dry, no food stains</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Bad example -->
-          <div class="ui-card" style="border-color:rgba(248,113,113,0.2);">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-              <div style="font-size:0.7rem;color:#f87171;font-weight:700;">✗ NOT ACCEPTED</div>
-            </div>
-            <div class="ui-list-item" style="padding:6px 0;">
-              <div class="ui-list-icon" style="background:rgba(248,113,113,0.1)">🧴</div>
-              <div class="ui-list-text">
-                <div class="primary" style="font-size:0.75rem;">Half-full soda bottle</div>
-                <div class="secondary">Must be empty &amp; rinsed first</div>
-              </div>
-            </div>
-            <div class="ui-list-item" style="padding:6px 0;">
-              <div class="ui-list-icon" style="background:rgba(248,113,113,0.1)">🍕</div>
-              <div class="ui-list-text">
-                <div class="primary" style="font-size:0.75rem;">Greasy pizza box</div>
-                <div class="secondary">Food-soiled cardboard = contamination</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Oil can tip -->
-          <div class="ui-card" style="background:rgba(59,130,246,0.06);border-color:rgba(59,130,246,0.15);">
-            <div style="font-size:0.7rem;color:#3b82f6;font-weight:700;margin-bottom:4px;">💡 TIP: Preparing an oil can</div>
-            <div style="font-size:0.68rem;color:#9ca3af;line-height:1.5;">
-              1. Empty all oil completely<br>
-              2. Rinse with warm soapy water<br>
-              3. Let dry before putting in bag
-            </div>
-          </div>
-          <div style="text-align:center;font-size:0.65rem;color:#6b7280;">More guides coming soon</div>
-        </div>
-      </div>
-      <div class="screen-label" style="color:#22c55e;">RECYCLING GUIDE (NEW) <span class="status-badge built">✅ BUILT</span></div>
-    </div>
-
-    <!-- Screen 6: Scan & Schedule -->
-    <div>
-      <div class="phone">
-        <div class="phone-status">WE BUY CLEAN TRASH</div>
-        <div class="phone-header">
-          <h4>📷 Scan Your Bag</h4>
-          <span>Step 1 of 3</span>
-        </div>
-        <div class="phone-body">
-          <div class="ui-photo-placeholder">📸 Tap to scan QR code on bag</div>
-          <div style="text-align:center;font-size:0.75rem;color:#6b7280;margin-bottom:14px;">QR Code detected: <span style="color:#ffffff;font-weight:700;">BAG-2026-0473</span></div>
-          <div class="ui-card">
-            <div class="ui-card-title">What's in this bag?</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-              <div class="ui-btn btn-primary">📦 Cardboard &amp; Paper</div>
-              <div class="ui-btn btn-secondary">🔀 Commingled</div>
-            </div>
-            <div style="font-size:0.65rem;color:#6b7280;margin-top:6px;text-align:center;">
-              Commingled = glass, plastic, aluminum, tin
-            </div>
-          </div>
-          <div style="font-size:0.7rem;color:#6b7280;text-align:center;margin:8px 0;">
-            ⭐ Separated = <span style="color:#ffffff">2x points</span> &nbsp;·&nbsp; Commingled = base points
-          </div>
-          <div class="ui-btn btn-primary" style="margin-top:8px;">Next: Take photo →</div>
-        </div>
-      </div>
-      <div class="screen-label">SCAN &amp; CATEGORIZE <span class="status-badge built">✅ BUILT</span></div>
-    </div>
-
-    <!-- Screen 7: Rewards (UPDATED — gift cards) -->
-    <div>
-      <div class="phone" style="border-color:rgba(59,130,246,0.3);">
-        <div class="phone-status">WE BUY CLEAN TRASH</div>
-        <div class="phone-header">
-          <h4>🎁 Rewards</h4>
-          <span style="color:#3b82f6;">UPDATED — Gift card redemption</span>
-        </div>
-        <div class="phone-body">
-          <div class="ui-card" style="background:rgba(255,255,255,0.06);text-align:center;">
-            <div style="font-size:0.7rem;color:#6b7280;margin-bottom:4px;">Your balance</div>
-            <div style="font-size:1.4rem;font-weight:800;color:#ffffff;">54,320 pts</div>
-            <div style="font-size:0.7rem;color:#9ca3af;margin-top:2px;">= $5.43 value</div>
-            <div class="progress-bar" style="height:8px;margin-top:8px;"><div class="progress-fill" style="width:54%;"></div></div>
-            <div style="font-size:0.65rem;color:#9ca3af;margin-top:4px;">45,680 pts until $10 gift card</div>
-          </div>
-
-          <div class="ui-card">
-            <div class="ui-card-title">Redeem For</div>
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(255,255,255,0.12)">🛒</div>
-              <div class="ui-list-text">
-                <div class="primary">Amazon Gift Card</div>
-                <div class="secondary">100,000 pts = $10 card</div>
-              </div>
-              <span class="ui-list-badge" style="background:rgba(255,255,255,0.12);color:#ffffff;">$10</span>
-            </div>
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(255,255,255,0.1)">🏪</div>
-              <div class="ui-list-text">
-                <div class="primary">Walmart Gift Card</div>
-                <div class="secondary">100,000 pts = $10 card</div>
-              </div>
-              <span class="ui-list-badge" style="background:rgba(255,255,255,0.1);color:#a0a0a0;">$10</span>
-            </div>
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(255,255,255,0.1)">🧾</div>
-              <div class="ui-list-text">
-                <div class="primary">Pay Trash Bill</div>
-                <div class="secondary">Apply credit to monthly bill</div>
-              </div>
-              <span class="ui-list-badge" style="background:rgba(255,255,255,0.08);color:#6b7280;">$5.43</span>
-            </div>
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(208,208,208,0.1)">❤️</div>
-              <div class="ui-list-text">
-                <div class="primary">Donate</div>
-                <div class="secondary">Clean Community Program</div>
-              </div>
-            </div>
-          </div>
-          <div class="ui-card">
-            <div class="ui-card-title">Points History</div>
-            <div class="ui-list-item">
-              <div class="ui-list-text">
-                <div class="primary" style="color:#ffffff;">+10,000 pts</div>
-                <div class="secondary">Signup bonus · Welcome! · Mar 15</div>
-              </div>
-            </div>
-            <div class="ui-list-item">
-              <div class="ui-list-text">
-                <div class="primary" style="color:#ffffff;">+1,200 pts</div>
-                <div class="secondary">Bag #0472 · Cardboard &amp; Paper · Mar 28</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="screen-label" style="color:#3b82f6;">REWARDS (UPDATED) <span class="status-badge built">✅ BUILT</span></div>
-    </div>
-
-  </div>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
 <!-- OPERATOR -->
 <!-- ═══════════════════════════════════════ -->
 <div class="panel" id="panel-operator">
-
-  <div class="role-desc">
-    <h3>🚐 Operator — The Driver</h3>
-    <div class="subtitle">Drives the van. Picks up bags from doorsteps. Scans QR codes. Delivers new bags + stickers.</div>
-    <div class="flow-steps">
-      <span class="flow-chip">View route</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Drive to stop</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Scan QR code</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Tap "Complete"</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Deliver bags + stickers</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Deliver to depot</span>
-    </div>
-    <div class="impl-note extra">
-      <span class="impl-tag">EXTRA · SHIPPED</span>
-      The mock implies a single Stop view; the build also has dedicated routes <code>/operator/stop/[pickupId]</code> (per-stop scan/photo/issue actions) and <code>/operator/deliver/[bagOrderId]</code> (sticker-batch confirm). "Driver on the way" SMS is wired through the Twilio stub.
-    </div>
-    <div class="impl-note" style="background:rgba(52,211,153,0.08);border-color:rgba(52,211,153,0.3);color:#34d399;">
-      <span class="impl-tag" style="color:#34d399;">EDITORIAL ECO · APR 30</span>
-      Operator surface migrated to the <code>Op.*</code> primitives in <code>src/components/operator/Op.tsx</code> — paper-grain background, italic serif <code>OpDisplay</code> headings with green <em>em</em>, <code>ProgressStrip</code> with serif numerals, <code>StatusPill</code> for stop status, <code>OpPaper</code> cards with hairline rules, full-width green <code>OpPrimaryButton</code>. Cards below tagged <span class="status-badge eco">🌿 EDITORIAL ECO</span> reflect what's shipped; the older blue/dark mocks are kept for comparison.
-    </div>
-  </div>
-
   <!-- ════════════════════════════════════════════ -->
   <!-- EDITORIAL-ECO OPERATOR SCREENS (Apr 30, 2026) -->
   <!-- ════════════════════════════════════════════ -->
@@ -2170,275 +819,46 @@
 
   </div>
 
-  <!-- Older blue-dark mockups follow (kept for comparison) -->
-  <div style="margin-bottom:14px;padding:10px 18px;background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.1);border-radius:10px;font-size:0.72rem;color:#9ca3af;font-style:italic;">
-    Earlier blue/dark operator mockups below — preserved for reference. Live operator UI uses the editorial-eco / Op aesthetic above.
+  <!-- Earlier dark mockups moved to app-designs-legacy.html (Apr 30, 2026) -->
+  <a class="doc-link-card" href="app-designs-legacy.html#panel-legacy-operator" style="margin:0 0 12px;max-width:none;">
+    <div class="dlc-eyebrow">📁 ARCHIVE</div>
+    <div class="dlc-title">Earlier blue/dark operator mockups</div>
+    <div class="dlc-body">Pre-refresh mockups (Route List, Scan &amp; Confirm, Bag Delivery, Route Summary) moved to a separate archive page. Shipped operator UI uses the Op aesthetic above.</div>
+  </a>
+
+
+  <div class="role-desc">
+    <h3>🚐 Operator — The Driver</h3>
+    <div class="subtitle">Drives the van. Picks up bags from doorsteps. Scans QR codes. Delivers new bags + stickers.</div>
+    <div class="flow-steps">
+      <span class="flow-chip">View route</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Drive to stop</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Scan QR code</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Tap "Complete"</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Deliver bags + stickers</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Deliver to depot</span>
+    </div>
+    <div class="impl-note extra">
+      <span class="impl-tag">EXTRA · SHIPPED</span>
+      The mock implies a single Stop view; the build also has dedicated routes <code>/operator/stop/[pickupId]</code> (per-stop scan/photo/issue actions) and <code>/operator/deliver/[bagOrderId]</code> (sticker-batch confirm). "Driver on the way" SMS is wired through the Twilio stub.
+    </div>
+    <div class="impl-note" style="background:rgba(52,211,153,0.08);border-color:rgba(52,211,153,0.3);color:#34d399;">
+      <span class="impl-tag" style="color:#34d399;">EDITORIAL ECO · APR 30</span>
+      Operator surface migrated to the <code>Op.*</code> primitives in <code>src/components/operator/Op.tsx</code> — paper-grain background, italic serif <code>OpDisplay</code> headings with green <em>em</em>, <code>ProgressStrip</code> with serif numerals, <code>StatusPill</code> for stop status, <code>OpPaper</code> cards with hairline rules, full-width green <code>OpPrimaryButton</code>. Cards below tagged <span class="status-badge eco">🌿 EDITORIAL ECO</span> reflect what's shipped; the older blue/dark mocks are kept for comparison.
+    </div>
   </div>
 
-  <div class="screens-row">
-
-    <!-- Screen 1: Route List (UPDATED — complete button, QR + number) -->
-    <div>
-      <div class="phone" style="border-color:rgba(59,130,246,0.3);">
-        <div class="phone-status">WE BUY CLEAN TRASH · OPERATOR</div>
-        <div class="phone-header">
-          <h4>Today's Route</h4>
-          <span style="color:#3b82f6;">UPDATED — Quick complete button</span>
-        </div>
-        <div class="phone-body">
-          <div class="stat-row">
-            <div class="stat-box">
-              <div class="num">14</div>
-              <div class="label">Stops</div>
-            </div>
-            <div class="stat-box">
-              <div class="num">6</div>
-              <div class="label">Done</div>
-            </div>
-            <div class="stat-box">
-              <div class="num">32</div>
-              <div class="label">Bags</div>
-            </div>
-          </div>
-          <div class="ui-card" style="border-color:rgba(255,255,255,0.15);">
-            <div class="ui-card-title">Current Stop</div>
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(255,255,255,0.12)">📍</div>
-              <div class="ui-list-text">
-                <div class="primary">1247 Oak Valley Dr, Unit 3B</div>
-                <div class="secondary">3 bags · Cardboard/Paper (2), Commingled (1)</div>
-              </div>
-            </div>
-            <!-- Big COMPLETE button for fast tapping -->
-            <div class="ui-btn btn-primary" style="padding:16px;font-size:0.95rem;margin-top:8px;">✓ COMPLETE</div>
-            <div style="display:flex;gap:6px;margin-top:4px;">
-              <div class="ui-btn btn-secondary" style="flex:1;font-size:0.68rem;padding:8px;">⏭️ Skip</div>
-              <div class="ui-btn btn-secondary" style="flex:1;font-size:0.68rem;padding:8px;">📦 Bag Not Out</div>
-              <div class="ui-btn btn-secondary" style="flex:1;font-size:0.68rem;padding:8px;color:#f87171;">⚠️ Issue</div>
-            </div>
-          </div>
-          <div class="ui-card" style="border-color:rgba(34,197,94,0.2);background:rgba(34,197,94,0.04);">
-            <div class="ui-card-title" style="color:#22c55e;">📦 DELIVER: Bags + QR Stickers</div>
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(34,197,94,0.12)">📦</div>
-              <div class="ui-list-text">
-                <div class="primary">Unit 3B — 10 bags + sticker sheet</div>
-                <div class="secondary">Re-order · Scan to confirm delivery</div>
-              </div>
-              <span class="ui-list-badge" style="background:rgba(34,197,94,0.15);color:#22c55e;">DELIVER</span>
-            </div>
-          </div>
-          <div class="ui-card">
-            <div class="ui-card-title">Next 2 Stops</div>
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(255,255,255,0.06)">📍</div>
-              <div class="ui-list-text">
-                <div class="primary">1251 Oak Valley Dr, Unit 1A</div>
-                <div class="secondary">1 bag · Commingled</div>
-              </div>
-            </div>
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(255,255,255,0.06)">📍</div>
-              <div class="ui-list-text">
-                <div class="primary">1300 Elm St, Unit 12</div>
-                <div class="secondary">2 bags · Cardboard/Paper (1), Commingled (1)</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="screen-label" style="color:#3b82f6;">ROUTE &amp; QUICK COMPLETE (UPDATED) <span class="status-badge built">✅ BUILT</span></div>
-    </div>
-
-    <!-- Screen 2: Scan & Confirm (UPDATED — QR code + number fallback) -->
-    <div>
-      <div class="phone" style="border-color:rgba(59,130,246,0.3);">
-        <div class="phone-status">WE BUY CLEAN TRASH · OPERATOR</div>
-        <div class="phone-header">
-          <h4>Pickup: 1247 Oak Valley</h4>
-          <span style="color:#3b82f6;">UPDATED — QR + number fallback</span>
-        </div>
-        <div class="phone-body">
-          <div class="ui-photo-placeholder">📸 Scan bag QR code</div>
-
-          <!-- QR + Number display -->
-          <div class="ui-card" style="border-color:rgba(255,255,255,0.18);">
-            <div style="text-align:center;margin-bottom:6px;">
-              <span style="color:#ffffff;font-weight:700;font-size:0.85rem;">✓ QR Scanned</span>
-            </div>
-            <div style="display:flex;justify-content:center;gap:12px;font-size:0.78rem;color:#b0b8c4;margin-bottom:6px;">
-              <span>QR: <strong style="color:#fff;">BAG-2026-0473</strong></span>
-              <span>ID: <strong style="color:#fff;">#0473</strong></span>
-            </div>
-            <div style="font-size:0.65rem;color:#6b7280;text-align:center;">
-              Resident: Aguirre Johnson · Cardboard &amp; Paper (separated)
-            </div>
-          </div>
-
-          <!-- Manual entry fallback -->
-          <div class="ui-card" style="border-color:rgba(59,130,246,0.2);background:rgba(59,130,246,0.04);">
-            <div style="text-align:center;font-size:0.68rem;color:#3b82f6;margin-bottom:6px;font-weight:600;">QR damaged? Type the number printed next to it</div>
-            <div class="ui-input" style="text-align:center;margin-bottom:0;">Enter bag number (e.g. 0473)</div>
-          </div>
-
-          <div class="ui-card">
-            <div class="ui-card-title">Condition Check</div>
-            <div class="ui-toggle-row">
-              <span>Bag sealed properly?</span>
-              <div class="toggle-pill"></div>
-            </div>
-            <div class="ui-toggle-row">
-              <span>Visible contamination?</span>
-              <div class="toggle-pill" style="background:#374151;"><div style="position:absolute;left:3px;top:3px;width:14px;height:14px;border-radius:50%;background:white;"></div></div>
-            </div>
-          </div>
-          <div class="ui-photo-placeholder">📸 Take photo of doorstep</div>
-          <div class="ui-btn btn-primary">✓ Confirm Pickup</div>
-          <div class="ui-btn btn-secondary" style="color:#f87171;">⚠️ Report Issue</div>
-        </div>
-      </div>
-      <div class="screen-label" style="color:#3b82f6;">SCAN &amp; CONFIRM (UPDATED) <span class="status-badge built">✅ BUILT</span></div>
-    </div>
-
-    <!-- Screen 3: Bag + Sticker Delivery (NEW) -->
-    <div>
-      <div class="phone" style="border-color:rgba(34,197,94,0.3);">
-        <div class="phone-status">WE BUY CLEAN TRASH · OPERATOR</div>
-        <div class="phone-header">
-          <h4>📦 Deliver Bags + QR Stickers</h4>
-          <span style="color:#22c55e;">NEW — QR Sticker model</span>
-        </div>
-        <div class="phone-body">
-          <div class="ui-card" style="background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.15);">
-            <div style="text-align:center;margin-bottom:8px;">
-              <div style="font-size:0.82rem;color:#ffffff;font-weight:700;">Delivery for Unit 3B</div>
-              <div style="font-size:0.68rem;color:#9ca3af;margin-top:2px;">Aguirre Johnson</div>
-            </div>
-            <div style="display:flex;gap:8px;margin-bottom:8px;">
-              <div style="flex:1;background:rgba(255,255,255,0.06);border-radius:8px;padding:10px;text-align:center;">
-                <div style="font-size:1.1rem;font-weight:800;color:#fff;">10</div>
-                <div style="font-size:0.6rem;color:#9ca3af;">Plain Bags</div>
-              </div>
-              <div style="flex:1;background:rgba(255,255,255,0.06);border-radius:8px;padding:10px;text-align:center;">
-                <div style="font-size:1.1rem;font-weight:800;color:#fff;">10</div>
-                <div style="font-size:0.6rem;color:#9ca3af;">QR Stickers</div>
-              </div>
-            </div>
-            <div style="font-size:0.65rem;color:#6b7280;text-align:center;line-height:1.5;">
-              Each QR sticker has a unique code + printed number<br>
-              Resident sticks one QR label on each bag before filling
-            </div>
-          </div>
-
-          <div class="ui-photo-placeholder">📸 Scan a QR sticker to confirm batch</div>
-
-          <div class="ui-card">
-            <div style="font-size:0.72rem;color:#9ca3af;margin-bottom:6px;">Stickers in this batch:</div>
-            <div style="font-size:0.68rem;color:#b0b8c4;line-height:1.8;">
-              QR #0480 · ID: 0480<br>
-              QR #0481 · ID: 0481<br>
-              QR #0482 · ID: 0482<br>
-              <span style="color:#6b7280;">... and 7 more</span>
-            </div>
-          </div>
-
-          <div class="ui-btn btn-primary">✓ Confirm Delivery</div>
-        </div>
-      </div>
-      <div class="screen-label" style="color:#22c55e;">BAG + STICKER DELIVERY (NEW) <span class="status-badge built">✅ BUILT</span></div>
-    </div>
-
-    <!-- Screen 4: End of route -->
-    <div>
-      <div class="phone">
-        <div class="phone-status">WE BUY CLEAN TRASH · OPERATOR</div>
-        <div class="phone-header">
-          <h4>Route Complete 🎉</h4>
-          <span>Today's summary</span>
-        </div>
-        <div class="phone-body">
-          <div class="stat-row">
-            <div class="stat-box">
-              <div class="num">20</div>
-              <div class="label">Stops</div>
-            </div>
-            <div class="stat-box">
-              <div class="num">32</div>
-              <div class="label">Bags</div>
-            </div>
-            <div class="stat-box" style="border:1px solid rgba(59,130,246,0.2);">
-              <div class="num" style="color:#3b82f6;">2</div>
-              <div class="label">Skips</div>
-            </div>
-            <div class="stat-box" style="border:1px solid rgba(248,113,113,0.2);">
-              <div class="num" style="color:#f87171;">3</div>
-              <div class="label">Not Out</div>
-            </div>
-          </div>
-          <div class="ui-card">
-            <div class="ui-card-title">Bags by type</div>
-            <div style="font-size:0.78rem;color:#b0b8c4;">
-              <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span>📦 Cardboard &amp; Paper</span><span style="color:#ffffff">14</span></div>
-              <div style="display:flex;justify-content:space-between;"><span>🔀 Commingled</span><span style="color:#d0d0d0">18</span></div>
-            </div>
-          </div>
-          <div class="ui-card">
-            <div class="ui-card-title">Deliveries Made</div>
-            <div style="font-size:0.78rem;color:#b0b8c4;">
-              <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span>📦 Bags delivered</span><span style="color:#ffffff">40</span></div>
-              <div style="display:flex;justify-content:space-between;"><span>🏷️ QR stickers</span><span style="color:#ffffff">40</span></div>
-            </div>
-          </div>
-          <div class="ui-card">
-            <div class="ui-card-title">Issues flagged</div>
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(248,113,113,0.12)">⚠️</div>
-              <div class="ui-list-text">
-                <div class="primary">Unit 7C — contamination</div>
-                <div class="secondary">Full soda bottle found in cans bag</div>
-              </div>
-            </div>
-          </div>
-          <div class="ui-btn btn-primary">Deliver to Depot →</div>
-        </div>
-      </div>
-      <div class="screen-label">ROUTE SUMMARY <span class="status-badge built">✅ BUILT</span></div>
-    </div>
-
-  </div>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
 <!-- DEPOT -->
 <!-- ═══════════════════════════════════════ -->
 <div class="panel" id="panel-depot">
-
-  <div class="role-desc">
-    <h3>⚖️ Depot Worker — The Sorter</h3>
-    <div class="subtitle">At the depot. Opens bags, separates materials, weighs each commodity separately, enters data. Replaces paper + Excel process.</div>
-    <div class="flow-steps">
-      <span class="flow-chip">Receive delivery</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Scan bag QR</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Open &amp; sort</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Weigh each material</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Submit &amp; next</span>
-    </div>
-    <div class="impl-note">
-      <span class="impl-tag">NOTE</span>
-      Process Bag is wired end-to-end: <code>POST /api/process-bag</code> runs <code>calculatePoints</code> from <code>src/lib/logic</code>, then in one Admin SDK transaction writes <code>bagProcessing</code> + <code>transactions</code> ledger entry, increments <code>users.pointsBalance</code>, updates <code>inventory</code>, and fires the SMS stub.
-    </div>
-    <div class="impl-note extra">
-      <span class="impl-tag">FRIDAY MEETING · APR 27</span>
-      The process form now <strong>only renders material rows the depot is configured to accept</strong> (set per-depot from admin Zones &amp; Depots). The server rejects weights for unaccepted materials.
-      A <strong>🔥 Active campaign banner</strong> appears above contamination when global multipliers are running, and the points preview / submit reflect the multiplier. The applied campaigns are snapshotted onto each <code>bagProcessing</code> doc for audit.
-      The depot Inventory page now lists <em>any</em> material the depot has actually processed (including custom ones like compost / textile / electronics), not just the canonical 7.
-    </div>
-  </div>
-
   <div class="screens-row">
 
     <!-- Screen 1: Incoming -->
@@ -2622,31 +1042,39 @@
     </div>
 
   </div>
+
+  <div class="role-desc">
+    <h3>⚖️ Depot Worker — The Sorter</h3>
+    <div class="subtitle">At the depot. Opens bags, separates materials, weighs each commodity separately, enters data. Replaces paper + Excel process.</div>
+    <div class="flow-steps">
+      <span class="flow-chip">Receive delivery</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Scan bag QR</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Open &amp; sort</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Weigh each material</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Submit &amp; next</span>
+    </div>
+    <div class="impl-note">
+      <span class="impl-tag">NOTE</span>
+      Process Bag is wired end-to-end: <code>POST /api/process-bag</code> runs <code>calculatePoints</code> from <code>src/lib/logic</code>, then in one Admin SDK transaction writes <code>bagProcessing</code> + <code>transactions</code> ledger entry, increments <code>users.pointsBalance</code>, updates <code>inventory</code>, and fires the SMS stub.
+    </div>
+    <div class="impl-note extra">
+      <span class="impl-tag">FRIDAY MEETING · APR 27</span>
+      The process form now <strong>only renders material rows the depot is configured to accept</strong> (set per-depot from admin Zones &amp; Depots). The server rejects weights for unaccepted materials.
+      A <strong>🔥 Active campaign banner</strong> appears above contamination when global multipliers are running, and the points preview / submit reflect the multiplier. The applied campaigns are snapshotted onto each <code>bagProcessing</code> doc for audit.
+      The depot Inventory page now lists <em>any</em> material the depot has actually processed (including custom ones like compost / textile / electronics), not just the canonical 7.
+    </div>
+  </div>
+
 </div>
 
 <!-- ═══════════════════════════════════════ -->
 <!-- DEPOT MANAGER -->
 <!-- ═══════════════════════════════════════ -->
 <div class="panel" id="panel-pm">
-
-  <div class="role-desc">
-    <h3>🏢 Depot Manager</h3>
-    <div class="subtitle">Oversees one or more depot locations. Monitors inventory, schedules mill pickups, and tracks throughput.</div>
-    <div class="flow-steps">
-      <span class="flow-chip">View depots</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Monitor inventory</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Schedule mill pickups</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Review reports</span>
-    </div>
-    <div class="impl-note">
-      <span class="impl-tag">NOTE</span>
-      Mill-pickup form on <code>/manager/depots/[depotId]</code> creates <code>millShipments</code> and decrements depot <code>inventory</code> in one transaction. Monthly Report exports a printable PDF.
-    </div>
-  </div>
-
   <div class="screens-row">
 
     <!-- Screen 1: Depots overview -->
@@ -2779,40 +1207,31 @@
     </div>
 
   </div>
+
+  <div class="role-desc">
+    <h3>🏢 Depot Manager</h3>
+    <div class="subtitle">Oversees one or more depot locations. Monitors inventory, schedules mill pickups, and tracks throughput.</div>
+    <div class="flow-steps">
+      <span class="flow-chip">View depots</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Monitor inventory</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Schedule mill pickups</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Review reports</span>
+    </div>
+    <div class="impl-note">
+      <span class="impl-tag">NOTE</span>
+      Mill-pickup form on <code>/manager/depots/[depotId]</code> creates <code>millShipments</code> and decrements depot <code>inventory</code> in one transaction. Monthly Report exports a printable PDF.
+    </div>
+  </div>
+
 </div>
 
 <!-- ═══════════════════════════════════════ -->
 <!-- ADMIN -->
 <!-- ═══════════════════════════════════════ -->
 <div class="panel" id="panel-admin">
-
-  <div class="role-desc">
-    <h3>📊 Admin — Tia &amp; Kirk</h3>
-    <div class="subtitle">Sees everything. All districts, all users, all revenue. The command center. Expect this screen to change a lot as we iterate.</div>
-    <div class="flow-steps">
-      <span class="flow-chip">Monitor all zones</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Track revenue</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Manage users</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">View commodity pricing</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-chip">Export reports</span>
-    </div>
-    <div class="impl-note extra">
-      <span class="impl-tag">EXTRA · SHIPPED</span>
-      Beyond the dashboard mocked here, the admin app has full CRUD for: <strong>Users</strong>, <strong>Invites</strong> (operator/depot/manager/admin invite-only), <strong>Zones</strong>, <strong>Depots</strong>, <strong>Yellow-sheet pricing</strong> (writes to <code>materials</code> + <code>priceHistory</code>), <strong>Routes builder</strong> (Google Maps <code>computeRoutes</code> with waypoint optimization), <strong>Redemption queue</strong> (Mark fulfilled), <strong>Bag QR sheets</strong> (PDF for Rollo + atomic <code>stickerSheets</code>/<code>bags</code> creation), and <strong>Compliance batches</strong> (PDF generate + Mark as mailed).
-    </div>
-    <div class="impl-note extra">
-      <span class="impl-tag">FRIDAY MEETING · APR 27</span>
-      Pricing screen now lets admins <strong>add new materials</strong> (e.g. Compost, Textile, Electronics) and <strong>toggle existing ones active/inactive</strong> when a commodity market shifts — soft-delete only, history is preserved. A new <strong>Pricing Campaigns</strong> manager schedules global ×N multipliers for selected materials over a date range; live campaigns surface on the resident dashboard, calculator, and depot processing form.
-      Zones &amp; Depots now has a per-depot <strong>accepted-materials chip toggle</strong> (Tocco Hills can refuse glass, etc.).
-      Compliance &gt; Initial Service notices automatically <strong>skip residents whose service has already started</strong> (any completed pickup); the batch row shows the skipped-active count for transparency.
-    </div>
-  </div>
-
-  <!-- Implementation status for each dashboard section -->
   <div class="impl-note" style="background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.25);color:#86efac;margin-bottom:24px;">
     <span class="impl-tag" style="color:#22c55e;">✅ BUILT</span>
     Dashboard sections below — KPIs, Zone Performance, Contamination Alerts (rolling 6-month strike window), Operator Leaderboard, Compliance Notices, Yellow Sheet pricing — are all live and pull from Firestore via the Admin SDK.
@@ -3181,309 +1600,278 @@
     </div>
   </div>
 
-</div>
 
-<div class="footer" style="text-align:center;padding:30px;color:#4b5563;font-size:0.8rem;">
-  We Buy Clean Trash — App Screen Map · 5 User Roles · Pilot v1.2 · Updated April 16, 2026 · Implementation status April 23, 2026 · <span style="color:#34d399;">Editorial-Eco design system shipped April 30, 2026</span>
-</div>
-
-<!-- IMPLEMENTATION STATUS · April 23, 2026 -->
-<div style="max-width:800px;margin:0 auto 24px;padding:24px 28px;background:rgba(34,197,94,0.04);border:1px solid rgba(34,197,94,0.18);border-radius:16px;">
-  <h3 style="color:#ffffff;font-size:1.1rem;margin-bottom:6px;">Implementation Status — April 23, 2026 · <span style="color:#22c55e;">All phases complete</span></h3>
-  <div style="font-size:0.7rem;color:#6b7280;margin-bottom:16px;">Snapshot of build progress against the 12-phase plan. Latest commit: <code>phase 11</code>. Phase 12 is non-code (pilot launch on real customers).</div>
-
-  <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:0.78rem;color:#b0b8c4;line-height:1.5;">
-    <div><span class="status-badge built">✅ BUILT</span></div>
-    <div><strong style="color:#fff;">Phase 0 — Foundation:</strong> Next.js 15 + TS + Tailwind, <code>src/lib/firebase</code> client + admin, Firebase project linked, env wired, Vercel deploys.</div>
-
-    <div><span class="status-badge built">✅ BUILT</span></div>
-    <div><strong style="color:#fff;">Phase 1 — Auth &amp; role routing:</strong> Email/Google signup, <code>/api/signup</code> sets resident claim, <code>middleware.ts</code> gates by role, full invite flow (<code>/api/invites</code>, <code>/invite/[token]</code>, <code>/api/accept-invite</code>) for operator / depot / manager / admin.</div>
-
-    <div><span class="status-badge built">✅ BUILT</span></div>
-    <div><strong style="color:#fff;">Phase 2 — Shared types + logic:</strong> 17 Firestore doc types under <code>src/lib/types</code>, pure functions in <code>src/lib/logic</code> (<code>calculatePoints</code>, <code>calculateBagOrderTotal</code>, <code>pointsToDollars</code>).</div>
-
-    <div><span class="status-badge built">✅ BUILT</span></div>
-    <div><strong style="color:#fff;">Phase 3 — Resident flow:</strong> Pre-signup scan (Gemini 2.5 Flash, session-only), signup w/ address + zone assignment, 3-step onboarding, home dashboard, order bags (Stripe stub), scan-bag (jsQR + manual fallback + photo), payout calculator, recycling guide, rewards (Amazon/Walmart redeem; Pay Bill + Donate are disabled stubs as planned), profile.</div>
-
-    <div><span class="status-badge built">✅ BUILT</span></div>
-    <div><strong style="color:#fff;">Phase 4 — Admin core:</strong> KPI dashboard, users + invites pages, zones &amp; depots CRUD, yellow-sheet pricing editor (snapshots to <code>priceHistory</code>), redemption queue (Mark fulfilled).</div>
-
-    <div><span class="status-badge built">✅ BUILT</span></div>
-    <div><strong style="color:#fff;">Phase 5 — Routes:</strong> Admin route builder, <code>/api/route-optimize</code> (Google Maps <code>computeRoutes</code> + waypoint optimization), <code>/api/bag-orders</code> atomically enqueues onto next pending route for that zone.</div>
-
-    <div><span class="status-badge built">✅ BUILT</span></div>
-    <div><strong style="color:#fff;">Phase 6 — Operator flow:</strong> Today's Route w/ stat row + big Complete button, per-stop scan/photo/issue page, sticker-batch deliver page, "Driver on the way" SMS stub trigger, end-of-route summary.</div>
-
-    <div><span class="status-badge built">✅ BUILT</span></div>
-    <div><strong style="color:#fff;">Phase 7 — Depot flow:</strong> Incoming deliveries list, per-route detail, Process Bag form (7 weight fields + contamination picker → <code>/api/process-bag</code> writes <code>bagProcessing</code> + <code>transactions</code> + bumps <code>users.pointsBalance</code> + updates <code>inventory</code> + SMS stub in one transaction), inventory page.</div>
-
-    <div><span class="status-badge built">✅ BUILT</span></div>
-    <div><strong style="color:#fff;">Phase 8 — Depot Manager:</strong> Depots overview, depot detail, Schedule Mill Pickup form (<code>/api/mill-shipments</code>), Monthly Report PDF export.</div>
-
-    <div><span class="status-badge built">✅ BUILT</span></div>
-    <div><strong style="color:#fff;">Phase 9 — Admin polish:</strong> Zone Performance table, Contamination Alerts w/ rolling 6-month strike logic (1st warning → 2nd strike → 3rd action), Operator Leaderboard, Compliance Notices (PDF generate + Mark as mailed).</div>
-
-    <div><span class="status-badge built">✅ BUILT</span></div>
-    <div><strong style="color:#fff;">Phase 10 — QR generation:</strong> <code>/api/qr-sheet</code> generates Rollo-sized PDF with 10 QR + printed-number stickers, atomically creates <code>stickerSheets</code> + 10 <code>bags</code>; <code>/api/qr-sheet/[id]/printed</code> marks sheets as printed.</div>
-
-    <div><span class="status-badge built">✅ BUILT</span></div>
-    <div><strong style="color:#fff;">Phase 11 — Security &amp; deploy:</strong> <code>firestore.rules</code> now enforces per-role reads (residents see only their own docs; operators see only their assigned routes; depot staff see their depot's bags; manager sees only their zone; admin sees all) — all client writes still denied, every privileged write goes through Admin SDK. <code>storage.rules</code> scopes evidence photos to the right roles. Comprehensive <code>seed-pilot.ts</code> idempotently creates the pilot zone, depot, admin, operator, depot worker, and 5 residents.</div>
-
-    <div><span class="status-badge built">✅ BUILT</span></div>
-    <div><strong style="color:#fff;">Phase 12 — Pilot onboarding:</strong> Out-of-code pilot work (print stickers on Rollo, hand-deliver first bag batch, collect in-person feedback). Tracked separately from the codebase.</div>
-  </div>
-
-  <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
-    <div style="font-size:0.78rem;color:#fbbf24;font-weight:700;margin-bottom:8px;">Known divergences from this design doc</div>
-    <div style="font-size:0.75rem;color:#9ca3af;line-height:1.7;">
-      <div>🟡 <strong style="color:#d1d5db;">Onboarding step 2</strong> reads "Fill &amp; put out bags" instead of "Schedule pickup day" — pickup day is admin-assigned per zone (locked decision).</div>
-      <div>🟡 <strong style="color:#d1d5db;">Stripe</strong>, <strong style="color:#d1d5db;">Twilio SMS</strong>, <strong style="color:#d1d5db;">Amazon/Walmart fulfillment</strong>, and <strong style="color:#d1d5db;">"Pay Trash Bill" / "Donate"</strong> are all stubbed exactly as planned (mock checkout, console+<code>smsLog</code> writes, manual admin fulfillment queue, disabled buttons).</div>
-      <div>🟡 <strong style="color:#d1d5db;">Mockup numbers</strong> (1,024 residents, 8.4k bags, etc.) are illustrative — the live admin dashboard pulls real counts from Firestore.</div>
+  <div class="role-desc">
+    <h3>📊 Admin — Tia &amp; Kirk</h3>
+    <div class="subtitle">Sees everything. All districts, all users, all revenue. The command center. Expect this screen to change a lot as we iterate.</div>
+    <div class="flow-steps">
+      <span class="flow-chip">Monitor all zones</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Track revenue</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Manage users</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">View commodity pricing</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-chip">Export reports</span>
+    </div>
+    <div class="impl-note extra">
+      <span class="impl-tag">EXTRA · SHIPPED</span>
+      Beyond the dashboard mocked here, the admin app has full CRUD for: <strong>Users</strong>, <strong>Invites</strong> (operator/depot/manager/admin invite-only), <strong>Zones</strong>, <strong>Depots</strong>, <strong>Yellow-sheet pricing</strong> (writes to <code>materials</code> + <code>priceHistory</code>), <strong>Routes builder</strong> (Google Maps <code>computeRoutes</code> with waypoint optimization), <strong>Redemption queue</strong> (Mark fulfilled), <strong>Bag QR sheets</strong> (PDF for Rollo + atomic <code>stickerSheets</code>/<code>bags</code> creation), and <strong>Compliance batches</strong> (PDF generate + Mark as mailed).
+    </div>
+    <div class="impl-note extra">
+      <span class="impl-tag">FRIDAY MEETING · APR 27</span>
+      Pricing screen now lets admins <strong>add new materials</strong> (e.g. Compost, Textile, Electronics) and <strong>toggle existing ones active/inactive</strong> when a commodity market shifts — soft-delete only, history is preserved. A new <strong>Pricing Campaigns</strong> manager schedules global ×N multipliers for selected materials over a date range; live campaigns surface on the resident dashboard, calculator, and depot processing form.
+      Zones &amp; Depots now has a per-depot <strong>accepted-materials chip toggle</strong> (Tocco Hills can refuse glass, etc.).
+      Compliance &gt; Initial Service notices automatically <strong>skip residents whose service has already started</strong> (any completed pickup); the batch row shows the skipped-active count for transparency.
     </div>
   </div>
 
-  <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
-    <div style="font-size:0.78rem;color:#60a5fa;font-weight:700;margin-bottom:8px;">Built but not in this design doc</div>
-    <div style="font-size:0.75rem;color:#9ca3af;line-height:1.7;">
-      <div>➕ <strong style="color:#d1d5db;">Resident:</strong> Order Bags (+ success page), Profile (address / phone / sign out), Login, Signup, Invite-acceptance.</div>
-      <div>➕ <strong style="color:#d1d5db;">Operator:</strong> Per-stop detail page, Sticker-batch deliver page.</div>
-      <div>➕ <strong style="color:#d1d5db;">Admin:</strong> Users, Invites, Zones CRUD, Depots CRUD, Pricing editor, Routes builder, Bag QR sheet generator + printable view, Compliance batch detail + printable PDF, Redemption fulfill action.</div>
-      <div>➕ <strong style="color:#d1d5db;">Manager:</strong> Schedule Mill Pickup form + shipments list per depot.</div>
-      <div>➕ <strong style="color:#d1d5db;">Platform:</strong> Per-role Firestore &amp; Storage security rules, idempotent <code>seed-pilot</code> script, dev helper to hand-issue bag sheets (<code>npm run dev:issue-bags</code>).</div>
-    </div>
-  </div>
 </div>
 
-<!-- CHANGELOG -->
-<div style="max-width:800px;margin:0 auto 40px;padding:24px 28px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;">
-  <h3 style="color:#ffffff;font-size:1.1rem;margin-bottom:6px;">Changes from April 16 Meeting</h3>
-  <div style="font-size:0.7rem;color:#6b7280;margin-bottom:16px;">All previous open questions have been resolved. Ready to start coding.</div>
-  <div style="font-size:0.82rem;color:#b0b8c4;line-height:1.6;">
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- LEGEND & DESIGN-SYSTEM REFERENCE (moved below panels Apr 30, 2026)   -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="status-legend">
+  <strong>Status legend:</strong>
+  <span><span class="status-badge built">✅ BUILT</span> shipped & wired end-to-end</span>
+  <span><span class="status-badge partial">🟡 PARTIAL</span> built but diverges from mock or skips a detail</span>
+  <span><span class="status-badge missing">❌ MISSING</span> not yet implemented</span>
+  <span><span class="status-badge extra">➕ EXTRA</span> built but not in this design doc</span>
+  <span><span class="status-badge eco">🌿 EDITORIAL ECO</span> reflects the Apr 30 visual refresh</span>
+</div>
 
-    <div style="margin-bottom:14px;">
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- DESIGN SYSTEM REFERENCE (moved Apr 30, 2026)                         -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<a class="doc-link-card" href="app-designs-system.html">
+  <div class="dlc-eyebrow">🌿 EDITORIAL-ECO · DESIGN SYSTEM</div>
+  <div class="dlc-title">View the design system reference</div>
+  <div class="dlc-body">Palette, type scale, primitives (Eco.* &amp; Op.*), icon set, and coverage notes — moved to its own page so the role panels below stay focused on screens. Tokens live in <code>src/app/globals.css</code>.</div>
+</a>
+
+<!-- UPDATES & STATUS — collapsible groups (reorganised Apr 30, 2026)     -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div style="max-width:900px;margin:0 auto 24px;padding:0 24px;">
+  <h2 style="color:#ffffff;font-size:1.2rem;margin-bottom:6px;font-weight:700;">Updates &amp; Status</h2>
+  <p style="font-size:0.78rem;color:#9ca3af;margin-bottom:18px;line-height:1.5;">Each section below summarises a milestone or meeting. Tap a row to expand the detail.</p>
+
+  <!-- ─── Build phases ─── -->
+  <details class="update-group">
+    <summary>
+      <div class="update-group-summary-text">
+        <div class="ug-title"><span class="ug-tag green">✅ APR 23</span> Implementation Status — all 12 phases complete</div>
+        <div class="ug-blurb">Phases 0–12 of the build plan shipped against the design doc. Includes known divergences and extras built beyond the mocks.</div>
+      </div>
+    </summary>
+    <div class="update-group-body">
+      <div style="font-size:0.7rem;color:#6b7280;margin-bottom:10px;">Snapshot of build progress against the 12-phase plan. Latest commit: <code>phase 11</code>. Phase 12 is non-code (pilot launch on real customers).</div>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:0.78rem;color:#b0b8c4;line-height:1.5;border-bottom:none;">
+        <div><span class="status-badge built">✅ BUILT</span></div>
+        <div><strong style="color:#fff;">Phase 0 — Foundation:</strong> Next.js 15 + TS + Tailwind, <code>src/lib/firebase</code> client + admin, Firebase project linked, env wired, Vercel deploys.</div>
+        <div><span class="status-badge built">✅ BUILT</span></div>
+        <div><strong style="color:#fff;">Phase 1 — Auth &amp; role routing:</strong> Email/Google signup, <code>/api/signup</code> sets resident claim, <code>middleware.ts</code> gates by role, full invite flow (<code>/api/invites</code>, <code>/invite/[token]</code>, <code>/api/accept-invite</code>) for operator / depot / manager / admin.</div>
+        <div><span class="status-badge built">✅ BUILT</span></div>
+        <div><strong style="color:#fff;">Phase 2 — Shared types + logic:</strong> 17 Firestore doc types under <code>src/lib/types</code>, pure functions in <code>src/lib/logic</code> (<code>calculatePoints</code>, <code>calculateBagOrderTotal</code>, <code>pointsToDollars</code>).</div>
+        <div><span class="status-badge built">✅ BUILT</span></div>
+        <div><strong style="color:#fff;">Phase 3 — Resident flow:</strong> Pre-signup scan (Gemini 2.5 Flash, session-only), signup w/ address + zone assignment, 3-step onboarding, home dashboard, order bags (Stripe stub), scan-bag (jsQR + manual fallback + photo), payout calculator, recycling guide, rewards (Amazon/Walmart redeem; Pay Bill + Donate are disabled stubs as planned), profile.</div>
+        <div><span class="status-badge built">✅ BUILT</span></div>
+        <div><strong style="color:#fff;">Phase 4 — Admin core:</strong> KPI dashboard, users + invites pages, zones &amp; depots CRUD, yellow-sheet pricing editor (snapshots to <code>priceHistory</code>), redemption queue (Mark fulfilled).</div>
+        <div><span class="status-badge built">✅ BUILT</span></div>
+        <div><strong style="color:#fff;">Phase 5 — Routes:</strong> Admin route builder, <code>/api/route-optimize</code> (Google Maps <code>computeRoutes</code> + waypoint optimization), <code>/api/bag-orders</code> atomically enqueues onto next pending route for that zone.</div>
+        <div><span class="status-badge built">✅ BUILT</span></div>
+        <div><strong style="color:#fff;">Phase 6 — Operator flow:</strong> Today's Route w/ stat row + big Complete button, per-stop scan/photo/issue page, sticker-batch deliver page, "Driver on the way" SMS stub trigger, end-of-route summary.</div>
+        <div><span class="status-badge built">✅ BUILT</span></div>
+        <div><strong style="color:#fff;">Phase 7 — Depot flow:</strong> Incoming deliveries list, per-route detail, Process Bag form (7 weight fields + contamination picker → <code>/api/process-bag</code> writes <code>bagProcessing</code> + <code>transactions</code> + bumps <code>users.pointsBalance</code> + updates <code>inventory</code> + SMS stub in one transaction), inventory page.</div>
+        <div><span class="status-badge built">✅ BUILT</span></div>
+        <div><strong style="color:#fff;">Phase 8 — Depot Manager:</strong> Depots overview, depot detail, Schedule Mill Pickup form (<code>/api/mill-shipments</code>), Monthly Report PDF export.</div>
+        <div><span class="status-badge built">✅ BUILT</span></div>
+        <div><strong style="color:#fff;">Phase 9 — Admin polish:</strong> Zone Performance table, Contamination Alerts w/ rolling 6-month strike logic (1st warning → 2nd strike → 3rd action), Operator Leaderboard, Compliance Notices (PDF generate + Mark as mailed).</div>
+        <div><span class="status-badge built">✅ BUILT</span></div>
+        <div><strong style="color:#fff;">Phase 10 — QR generation:</strong> <code>/api/qr-sheet</code> generates Rollo-sized PDF with 10 QR + printed-number stickers, atomically creates <code>stickerSheets</code> + 10 <code>bags</code>; <code>/api/qr-sheet/[id]/printed</code> marks sheets as printed.</div>
+        <div><span class="status-badge built">✅ BUILT</span></div>
+        <div><strong style="color:#fff;">Phase 11 — Security &amp; deploy:</strong> <code>firestore.rules</code> now enforces per-role reads (residents see only their own docs; operators see only their assigned routes; depot staff see their depot's bags; manager sees only their zone; admin sees all) — all client writes still denied, every privileged write goes through Admin SDK. <code>storage.rules</code> scopes evidence photos to the right roles. Comprehensive <code>seed-pilot.ts</code> idempotently creates the pilot zone, depot, admin, operator, depot worker, and 5 residents.</div>
+        <div><span class="status-badge built">✅ BUILT</span></div>
+        <div><strong style="color:#fff;">Phase 12 — Pilot onboarding:</strong> Out-of-code pilot work (print stickers on Rollo, hand-deliver first bag batch, collect in-person feedback). Tracked separately from the codebase.</div>
+      </div>
+
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
+        <div style="font-size:0.78rem;color:#fbbf24;font-weight:700;margin-bottom:8px;">Known divergences from this design doc</div>
+        <div style="font-size:0.75rem;color:#9ca3af;line-height:1.7;">
+          <div>🟡 <strong style="color:#d1d5db;">Onboarding step 2</strong> reads "Fill &amp; put out bags" instead of "Schedule pickup day" — pickup day is admin-assigned per zone (locked decision).</div>
+          <div>🟡 <strong style="color:#d1d5db;">Stripe</strong>, <strong style="color:#d1d5db;">Twilio SMS</strong>, <strong style="color:#d1d5db;">Amazon/Walmart fulfillment</strong>, and <strong style="color:#d1d5db;">"Pay Trash Bill" / "Donate"</strong> are all stubbed exactly as planned (mock checkout, console+<code>smsLog</code> writes, manual admin fulfillment queue, disabled buttons).</div>
+          <div>🟡 <strong style="color:#d1d5db;">Mockup numbers</strong> (1,024 residents, 8.4k bags, etc.) are illustrative — the live admin dashboard pulls real counts from Firestore.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
+        <div style="font-size:0.78rem;color:#60a5fa;font-weight:700;margin-bottom:8px;">Built but not in this design doc</div>
+        <div style="font-size:0.75rem;color:#9ca3af;line-height:1.7;">
+          <div>➕ <strong style="color:#d1d5db;">Resident:</strong> Order Bags (+ success page), Profile (address / phone / sign out), Login, Signup, Invite-acceptance.</div>
+          <div>➕ <strong style="color:#d1d5db;">Operator:</strong> Per-stop detail page, Sticker-batch deliver page.</div>
+          <div>➕ <strong style="color:#d1d5db;">Admin:</strong> Users, Invites, Zones CRUD, Depots CRUD, Pricing editor, Routes builder, Bag QR sheet generator + printable view, Compliance batch detail + printable PDF, Redemption fulfill action.</div>
+          <div>➕ <strong style="color:#d1d5db;">Manager:</strong> Schedule Mill Pickup form + shipments list per depot.</div>
+          <div>➕ <strong style="color:#d1d5db;">Platform:</strong> Per-role Firestore &amp; Storage security rules, idempotent <code>seed-pilot</code> script, dev helper to hand-issue bag sheets (<code>npm run dev:issue-bags</code>).</div>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- ─── Apr 16 meeting changes ─── -->
+  <details class="update-group">
+    <summary>
+      <div class="update-group-summary-text">
+        <div class="ug-title"><span class="ug-tag blue">📌 APR 16</span> Changes from the April 16 meeting</div>
+        <div class="ug-blurb">Pre-signup value hook, onboarding reorder, calculator + rewards refresh, QR + number fallback, per-commodity weighing.</div>
+      </div>
+    </summary>
+    <div class="update-group-body">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Resident:</strong> Pre-signup value hook — scan items and see estimated earnings before signing up. Lowest time-to-value first screen.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Onboarding flow reordered — Step 1: Order bags, Step 2: Schedule pickup, Step 3: Start earning. "Sell your trash" excitement happens pre-signup now.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> "Order More Bags" moved to top of Home Dashboard — bag sales are the main revenue stream, so this is highest priority.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Payout calculator now shows 7 categories (aluminum, tin, cardboard, paper, plastic types) + "badly recycled" estimate showing up to 90% payout reduction.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Resident:</strong> Recycling Guide screen — simple good vs. bad examples (empty rinsed bottle vs. half-full bottle, clean box vs. greasy pizza box). Includes prep tips (e.g., how to prepare an oil can).</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Resident:</strong> Order History screen at <code>/resident/order-bags/history</code> — full list of past bag orders (delivered, cancelled, in-flight) with placed/arrives/delivered dates. Linked from Home and Order Bags.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Rewards now shows gift card redemption (Amazon, Walmart) with clear points-to-value mapping (100K pts = $10 gift card). Points linked to real rewards immediately.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Text notifications now include "Driver on the way" real-time alert in addition to 30-min reminder.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Operator:</strong> Big "COMPLETE" button at each stop for fast one-tap workflow — no need to stop and type. Skip/Not Out/Issue are secondary buttons below.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Operator:</strong> Bag + QR Sticker delivery screen. Phase 1: plain bags + separate QR sticker sheets delivered to residents. Each sticker has QR code + printed number as fallback.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Operator:</strong> QR scan screen now shows both QR code and printed number. Manual entry says "type the number printed next to the QR".</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Depot:</strong> Processing screen now has per-commodity weighing — open bag, sort on table, weigh PET/aluminum/tin/cardboard/paper separately. Replaces single "total weight" field. Points auto-calculated per material.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Depot:</strong> Inventory now shows 7 material categories individually instead of just "cardboard" and "commingled".</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Admin:</strong> Yellow Sheet now reflects all 7 commodity categories.</div>
     </div>
+  </details>
 
-    <!-- ── Friday Meeting · Apr 27, 2026 ── -->
-    <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
-      <div style="font-size:0.78rem;color:#fbbf24;font-weight:700;margin-bottom:8px;">Friday Meeting Updates · April 27, 2026</div>
-    </div>
-    <div style="margin-bottom:14px;">
+  <!-- ─── Apr 27 Friday meeting ─── -->
+  <details class="update-group">
+    <summary>
+      <div class="update-group-summary-text">
+        <div class="ug-title"><span class="ug-tag amber">🟡 APR 27</span> Friday Meeting Updates</div>
+        <div class="ug-blurb">Signup-bonus modal, redemption progress, accepted-materials per depot, add/hide materials, Pricing Campaigns Manager, compliance gating.</div>
+      </div>
+    </summary>
+    <div class="update-group-body">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Resident:</strong> Signup-bonus modal pops once on the first dashboard visit (localStorage-keyed) explaining the 10,000-pt = $1 bonus and the 100K = $10 ladder.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Resident:</strong> Redemption-progress card under the points/value tiles: <em>"X pts to a $10 gift card"</em> with a thin progress bar; links to /resident/rewards.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> "Order more bags" CTA reads <em>"Order your first batch"</em> until the resident has placed at least one bag order.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Calculator weight inputs now show a <code>lbs</code> suffix per row.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Resident:</strong> 🔥 Bonus-running-now banner on dashboard + calculator whenever a global pricing campaign is live (e.g. ×2 on Aluminum). Calculator row tags show the multiplier.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Admin:</strong> Per-depot <strong>accepted-materials chip toggle</strong> on Zones &amp; Depots. Depot processing form filters by this set; <code>POST /api/process-bag</code> rejects weights for unaccepted materials.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Admin:</strong> Pricing UI now lets admin <strong>add new materials</strong> (auto-slugged ids — compost, textile, electronics, etc.) and <strong>toggle existing ones active/inactive</strong>. Soft-delete only — historical bagProcessing/inventory/millShipment records stay valid.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Admin:</strong> <strong>Pricing Campaigns Manager</strong> on the Pricing page — schedule global ×N multipliers for selected materials over a date range. Compounds when multiple campaigns target the same material. Snapshotted onto each <code>bagProcessing</code> doc.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Admin:</strong> Compliance &gt; Initial Service Notices skip residents whose service has already started (any completed pickup). Batch row shows the skipped-active count; resident UIDs are snapshotted onto the batch for reproducible reprints. Semi-Annual Updates unchanged (still mail to all).</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Depot:</strong> Process-bag form only renders rows for materials this depot accepts (intersected with active materials). 🔥 Active-campaign banner appears above contamination when multipliers are live, and the live points preview applies them. Inventory page lists any material the depot has actually processed (including custom ones).</div>
     </div>
+  </details>
 
-    <!-- ── Compost Foundation · Apr 27, 2026 (afternoon) ── -->
-    <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
-      <div style="font-size:0.78rem;color:#34d399;font-weight:700;margin-bottom:8px;">Compost Foundation · April 27, 2026</div>
-      <div style="font-size:0.72rem;color:#6b7280;margin-bottom:10px;line-height:1.5;">
-        Foundation work for Tia's Compost Clubhouse integration. Tia's drivers measure pickups by bin count + fullness per bin instead of by weight at scale; bins are reusable (persistent QR), customers are commercial sites (no public signup), and the reward is access to free compost rather than cash. Phase A below is the cross-cutting plumbing — equally useful for Kirk's request to track textiles / electronics / commingled bags as "diverted but not paid." See <code>planning/Compost Integration - Phase A.md</code> for the full plan including Phase B + C.
+  <!-- ─── Compost Phase A ─── -->
+  <details class="update-group">
+    <summary>
+      <div class="update-group-summary-text">
+        <div class="ug-title"><span class="ug-tag green">🌱 APR 27</span> Compost Foundation (Phase A)</div>
+        <div class="ug-blurb">Materials gain payoutMode (cash vs. diversion-only) + measurementMode (bag weight vs. bin fullness). Bin-weight lookup table seeded.</div>
       </div>
-    </div>
-    <div style="margin-bottom:14px;">
+    </summary>
+    <div class="update-group-body">
+      <div style="font-size:0.72rem;color:#9ca3af;margin-bottom:8px;line-height:1.5;font-style:italic;">
+        Foundation work for Tia's Compost Clubhouse integration. Tia's drivers measure pickups by bin count + fullness per bin instead of by weight at scale; bins are reusable (persistent QR), customers are commercial sites (no public signup), and the reward is access to free compost rather than cash. Phase A is the cross-cutting plumbing — equally useful for Kirk's request to track textiles / electronics / commingled bags as "diverted but not paid." See <code>planning/Compost Integration - Phase A.md</code>.
+      </div>
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Admin:</strong> Materials now have a <code>payoutMode</code>: <strong>Cash</strong> (pays points, existing behavior) or <strong>Diversion-only</strong> (weight tracked for landfill-diversion reports, no points). Diversion-only rows show a blue badge, hide price fields, and are excluded from the pricing-campaigns picker.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Admin:</strong> Materials now have a <code>measurementMode</code>: <strong>Bag weight</strong> (lbs at scale, existing) or <strong>Bin fullness</strong> (driver picks fullness bucket, weight derived from a lookup). New-material composer surfaces both as selects.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Admin:</strong> Per-depot accepted-materials chip list now iterates the live materials collection — newly added custom materials (compost, commingled, textiles…) appear and can be toggled per depot. Depot PATCH validates against the live set.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Depot:</strong> Process-bag form has a <strong>Commingled</strong> toggle (pre-checked when the bag was declared <code>mixed</code>). When checked: weight is recorded for diversion reporting, but <code>pointsAwarded</code> is forced to 0. Matches Kirk's "you get the weight but no points" scenario for jumbled plastic + glass.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> <code>src/lib/logic/binWeightTable.ts</code> seeds the exact 32 / 48 / 64 gallon ↔ fullness ↔ lbs lookup from Dominique's <em>Static Values</em> sheet (verified by 9/21/23 on-site weighing at City of Columbus). Not yet wired to UI — Phase B uses it.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> Two new seeded materials — <code>commingled</code> (diversion-only / bag weight) and <code>food_scrap</code> (diversion-only / bin fullness). Run <code>npm run seed:materials -- --force</code> to backfill modes on the canonical 7 and add the new ones.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#fbbf24;font-weight:700;">FIXED</span> <strong style="color:#fff;">Admin:</strong> Editing per-depot accepted materials no longer crashes the Zones page — the depot loader now strips the <code>updatedAt</code> Firestore <code>Timestamp</code> before passing the doc to the client component (Timestamps don't serialize across the RSC boundary).</div>
     </div>
+  </details>
 
-    <!-- ── Compost Phase B · Apr 27, 2026 (evening) ── -->
-    <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
-      <div style="font-size:0.78rem;color:#34d399;font-weight:700;margin-bottom:8px;">Compost Phase B · April 27, 2026</div>
-      <div style="font-size:0.72rem;color:#6b7280;margin-bottom:10px;line-height:1.5;">
+  <!-- ─── Compost Phase B ─── -->
+  <details class="update-group">
+    <summary>
+      <div class="update-group-summary-text">
+        <div class="ug-title"><span class="ug-tag green">🌱 APR 27</span> Compost Phase B — commercial intake</div>
+        <div class="ug-blurb">commercial-accounts CRUD, reusable BIN-NNNN provisioning, /operator/compost stop screen, binPickups collection, accountType-aware resident UI.</div>
+      </div>
+    </summary>
+    <div class="update-group-body">
+      <div style="font-size:0.72rem;color:#9ca3af;margin-bottom:8px;line-height:1.5;font-style:italic;">
         Compost-specific intake on top of Phase A primitives. Tia's drivers can now use the operator app instead of Linktree + Google Sheets: scan a site, enter fullness per bin, submit. Admin can onboard commercial sites and provision reusable bins. Resident UI gates so commercial portals don't show consumer CTAs. Full notes in <code>planning/Compost Integration - Phase B.md</code>.
       </div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Admin:</strong> <code>/admin/commercial-accounts</code> — full CRUD for compost / bulk-collection sites. Fields mirror Dominique's Directory sheet: business name, contact, address, zone, default bin size, pickups/week, collection days, affiliation tag, materials, driver notes. Soft-delete (archive) preserves history.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Admin:</strong> <strong>Provision bins</strong> on each commercial site — mints N reusable <code>BIN-NNNN</code> QR-coded BagDocs in one transaction (up to 50/req). Bins stay <code>unused</code> across pickups instead of retiring. Each bin is attached to the site via <code>commercialAccountId</code>.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Operator:</strong> <code>/operator/compost</code> — today's commercial sites in the operator's zone, with a "TODAY" badge on sites whose <code>collectionDays</code> includes the current weekday. Banner on <code>/operator</code> links here when sites exist.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Operator:</strong> Site stop screen with one row per provisioned bin (or manual rows for unprovisioned), 5-bucket fullness picker (0/25/50/75/100%) with large touch targets, live <strong>total weight</strong> from the bin-weight table, and an "(estimated)" flag on interpolated 48-gal intermediates. Submit hits <code>POST /api/process-bin-pickup</code>.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> <code>binPickups</code> collection — one doc per pickup event, holds <code>bins[]</code> with computed lbs, total weight, contamination, optional photo. Inventory rolls up by zone × material in a <code>commercial_</code>-namespaced doc so it doesn't collide with depot inventory.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Bottom nav and routes now respect <code>accountType</code>. Commercial-site portals see only Home + Profile; calculator / order-bags / scan-bag bounce back via <code>requireConsumerResident()</code>. Home renders a commercial dashboard (site directory + 30-day diversion total + recent pickups) instead of the points/orders view.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> <code>BagDoc</code> gains optional <code>containerType</code> + <code>reusable</code> + <code>commercialAccountId</code>. <code>UserDoc</code> gains optional <code>accountType</code> + <code>commercialAccountId</code>. All back-compat — legacy bags resolve to <code>'bag'</code>, legacy users to <code>'resident'</code>.</div>
     </div>
+  </details>
 
-    <!-- ── Editorial-Eco Design System · Apr 30, 2026 ── -->
-    <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
-      <div style="font-size:0.78rem;color:#34d399;font-weight:700;margin-bottom:8px;">Editorial-Eco Design System · April 30, 2026</div>
-      <div style="font-size:0.72rem;color:#6b7280;margin-bottom:10px;line-height:1.5;">
+  <!-- ─── Editorial-Eco design system ─── -->
+  <details class="update-group" open>
+    <summary>
+      <div class="update-group-summary-text">
+        <div class="ug-title"><span class="ug-tag green">🌿 APR 30</span> Editorial-Eco Design System</div>
+        <div class="ug-blurb">Tokens (palette, type, grain), Eco.* + Op.* primitives, custom EcoIcons set. Resident + operator surface fully migrated. Depot / manager / admin remain dark.</div>
+      </div>
+    </summary>
+    <div class="update-group-body">
+      <div style="font-size:0.72rem;color:#9ca3af;margin-bottom:8px;line-height:1.5;font-style:italic;">
         The onboarding redesign expanded into a full visual refresh of the resident + operator surface. Tokens, primitives, and an icon set now live in the codebase; every consumer-facing screen was rebuilt against them. Depot, depot manager, and admin remain on the legacy dark UI for now.
       </div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> Design tokens in <code>src/app/globals.css</code> — palette (paper / ink / line / green / amber / rust), <code>--eco-serif</code> + <code>--eco-sans</code> stacks, semantic typography classes (<code>.eco-display</code>, <code>.eco-h2</code>, <code>.eco-eyebrow</code>, <code>.eco-quote</code>, <code>.eco-num</code>), and the <code>.eco-grain</code> background utility (dual-layer radial dot pattern at ~6% opacity).</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> Resident primitives in <code>src/components/resident/eco/Eco.tsx</code> — <code>EcoPage</code>, <code>EcoMasthead</code>, <code>EcoH1</code>, <code>EcoH2</code>, <code>EcoPaper</code>, <code>EcoButton</code> (primary / secondary / ghost), <code>EcoRule</code>, <code>EcoListLink</code>, <code>EcoEmpty</code>. Pill-shaped buttons (<code>rounded-full</code>), 14-px corner radius on cards, hairline <code>#D9D2C2</code> borders, no shadows.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> Operator primitives in <code>src/components/operator/Op.tsx</code> — <code>OpPage</code> (paper-grain bg), <code>OpMasthead</code>, <code>OpDisplay</code>, <code>OpPaper</code>, <code>OpPrimaryButton</code>, <code>OpGhostButton</code>, <code>ProgressStrip</code> (serif tabular numerals with hairline dividers), <code>StatusPill</code> (pending / completed / missed / issue tones), <code>OpSheet</code> (bottom sheet modal), <code>OpRow</code>, <code>SummaryStat</code>.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> Custom line-drawn icon set in <code>src/components/icons/EcoIcons.tsx</code> — Home, Scan, Bag, Gift, User, Truck, Leaf, Droplet, Recycle, Cloud, Fire, Box, Clock, Bell, Check, Close, Star, Pin, Plus, Arrow / ArrowLeft, ChevR. 24-viewBox, 1.75-px stroke, configurable size + color. Replaces emoji glyphs across the UI.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Login (<code>/login</code>) rebuilt — eyebrow + display headline ("Welcome <em>back</em>."), italic serif lede, underlined-rule form fields, monospace password reveal, "or" divider, Google secondary, "New here? Create an account →" footer link.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Signup wizard now ships with the editorial-eco shell — VOL. I · NO. 01 masthead, italic-em display headlines per step, ledger-style rules ("Avg. earnings · Cadence · Materials"), green primary CTA, step counter <code>00 / 05</code>. Pre-signup scan banner persists on the welcome screen.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Dashboard (<code>/resident</code>) — masthead with avatar initial, hero "You've turned trash into <em>$X.XX</em>." display, redemption progress strip, amber "BONUS RUNNING NOW" banner, dark-green hero CTA card for Order Bags, calendar-tile next-pickup row, 4-cell impact grid (lbs recycled / trees / gal water / lbs CO₂) with serif tabular numerals.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Order Bags (<code>/resident/order-bags</code>) — quantity stepper, ledger rules (subtotal · shipping · total) with the bottom border styled as a final ruling, italic copy on free-shipping rule. History &amp; success pages match.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Calculator (<code>/resident/calculator</code>) — material rows as ledger entries with italic <code>$X.XX / lb</code> subtitles and right-aligned weight inputs (<code>lbs</code> suffix). Active campaigns show as italic amber callouts above; ×N tag appears next to affected materials. Estimate appears as a top + bottom ruled "CLEAN &amp; SEPARATED → $X.XX" total.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Rewards (<code>/resident/rewards</code>) — large serif points balance, thin progress strip, <code>EcoListLink</code> rows for Amazon / Walmart / Pay Bill (disabled) / Donate (disabled). Recent points history rendered as <code>EcoRule</code> entries with green <code>+X,XXX</code> values.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Welcome (<code>/resident/welcome</code>), Profile (<code>/resident/profile</code> + <code>PhoneField</code>), Order Bags Success, Scan Bag (<code>ScanBagClient</code>), Recycling Guide, Pre-signup Scan banner, Signup Bonus Modal, BottomNav — all repainted in the editorial-eco language.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Operator:</strong> Dashboard (<code>/operator</code>) and Today's Route (<code>TodaysRouteClient</code>) — Op-aesthetic shell with paper-grain bg, italic serif <code>OpDisplay</code> ("You are <em>on stop 06</em> of 14."), <code>ProgressStrip</code> with serif numerals (Stops · Bags · Deliver), <code>StatusPill</code> per pickup (Pending / Completed / Missed / Issue), <code>OpPrimaryButton</code> for "Mark stop complete." Compost banner uses amber soft tone.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Operator:</strong> Stop scan flow (<code>/operator/stop/[pickupId]</code> + <code>ScanConfirmClient</code>) — <code>StepDots</code> progress (Scan · Condition · Photo · Confirm), <code>OpPaper</code> with <code>OpRow</code> entries for QR / Resident / Declared, dashed paper photo placeholder.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Operator:</strong> Deliver (<code>/operator/deliver/[bagOrderId]</code> + <code>DeliverClient</code>) — sticker-batch confirmation reads as a ledger (Resident / Order / Sheet QR range), italic body copy, full-width green confirm button.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Operator:</strong> Route Summary (<code>/operator/summary</code> + <code>CompleteRouteButton</code>) — "14 stops, <em>handled</em>." display, 2×2 <code>SummaryStat</code> grid (Bags · Deliveries · Missed · Issues) with tone-coloured serif numerals, issue-flagged paper card uses rust soft tones. Compost route page (<code>/operator/compost</code>) follows the same shell.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Operator:</strong> <code>LogoutLink</code> component on the operator masthead — italic serif "Sign out" link, posts to the session-clear endpoint.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident (anonymous):</strong> Pre-signup scan (<code>/scan</code> + <code>ScanClient</code>) repainted on the editorial-eco shell — VOL. I · NO. 01 masthead, italic-em "Scan some trash, see how much you'll <em>earn</em>.", ledger-style scanned-item rows with $/pts subtitle, sticky "Sign up &amp; start earning →" green CTA. Session-only state still in localStorage.</div>
-    </div>
-    <div style="margin-bottom:14px;">
-      <div style="background:rgba(160,104,42,0.1);border:1px solid rgba(160,104,42,0.3);padding:10px 12px;border-radius:8px;font-size:0.72rem;color:#fbbf24;line-height:1.5;">
+      <div style="background:rgba(160,104,42,0.1);border:1px solid rgba(160,104,42,0.3);padding:10px 12px;border-radius:8px;font-size:0.72rem;color:#fbbf24;line-height:1.5;border-bottom:none;">
         <strong>Out of scope (still legacy dark UI):</strong> depot worker, depot manager, admin. Migration not yet planned — these are operator-internal tools and the dark theme reads fine in a depot-floor / desk context.
       </div>
     </div>
+  </details>
 
-    <!-- ── Resident onboarding redesign · Apr 30, 2026 ── -->
-    <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
-      <div style="font-size:0.78rem;color:#34d399;font-weight:700;margin-bottom:8px;">Resident Onboarding Redesign · April 30, 2026</div>
-      <div style="font-size:0.72rem;color:#6b7280;margin-bottom:10px;line-height:1.5;">
+  <!-- ─── Resident onboarding redesign ─── -->
+  <details class="update-group">
+    <summary>
+      <div class="update-group-summary-text">
+        <div class="ug-title"><span class="ug-tag green">🌿 APR 30</span> Resident Onboarding Redesign</div>
+        <div class="ug-blurb">/signup is now a 6-step wizard: Welcome → Address → How it works → Account → Password → First bag. Live password rules + optional first-bag step.</div>
+      </div>
+    </summary>
+    <div class="update-group-body">
+      <div style="font-size:0.72rem;color:#9ca3af;margin-bottom:8px;line-height:1.5;font-style:italic;">
         Replaced the single-page <code>/signup</code> form with a 6-step linear wizard in the editorial-eco aesthetic — warm paper, italic serif headlines, hairline rules, no shadows. Each step is one decision. Imported from the Claude Design handoff <code>ui_kits/resident-onboarding</code>.
       </div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> <code>/signup</code> is now a wizard: <em>Welcome → Address → How it works → Account → Password → First bag</em>. Top bar shows back chevron, italic wordmark, and <code>00 / 05</code> step counter (hidden on splash). Pre-signup scan banner persists on the welcome screen so anonymous-scan momentum carries through.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Resident:</strong> Password step has a live ruled checklist (8+ chars · a number or capital · both entries match) and a Show/Hide toggle. Continue is disabled until all three rules pass. Account creation (Firebase + <code>/api/signup</code> + session cookie) happens on this step's Continue.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Resident:</strong> First-bag step (post-signup) — quantity stepper, ledger (subtotal / shipping / total) using real <code>calculateBagOrderTotal</code> ($5/sheet, free over $20). Place order routes through <code>/api/bag-orders</code>; "Skip — I'll order later" routes to <code>/resident</code>.</div>
-    </div>
-    <div style="margin-bottom:14px;">
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Old 3-step "Order bags / Schedule pickup / Start earning" post-signup splash is retired — its purpose is now absorbed into the wizard's <em>How it works</em> almanac (4 roman-numeral rows) and the optional first-bag step.</div>
     </div>
-  </div>
+  </details>
 
-  <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
-    <div style="font-size:0.78rem;color:#22c55e;font-weight:700;margin-bottom:8px;">Resolved Decisions (previously pending)</div>
-    <div style="font-size:0.75rem;color:#9ca3af;line-height:1.8;">
+  <!-- ─── Resolved decisions ─── -->
+  <details class="update-group">
+    <summary>
+      <div class="update-group-summary-text">
+        <div class="ug-title"><span class="ug-tag green">✅ DECISIONS</span> Resolved decisions (locked-in)</div>
+        <div class="ug-blurb">QR vs barcode, sticker model, 7 categories, weighing process, voice prompts, AI scope, bags reorder, recycling education, rewards model, invoicing.</div>
+      </div>
+    </summary>
+    <div class="update-group-body">
       <div>✅ <strong style="color:#d1d5db;">QR vs barcode</strong> → Using QR codes. Each QR has a printed number next to it as fallback.</div>
       <div>✅ <strong style="color:#d1d5db;">QR sticker model</strong> → Phase 1: Send plain bags + QR sticker sheets. Phase 2 (at scale): Manufacturer prints QR directly on bags.</div>
       <div>✅ <strong style="color:#d1d5db;">Categories</strong> → 7 categories: aluminum, tin, cardboard, paper, PET, HDPE, mixed plastic.</div>
@@ -3495,11 +1883,17 @@
       <div>✅ <strong style="color:#d1d5db;">Rewards model</strong> → Points linked to gift cards (Amazon, Walmart). 100K pts = $10. Pilot: ~$1,000 in gift cards for ~100 users in local area.</div>
       <div>✅ <strong style="color:#d1d5db;">Invoicing</strong> → Monthly, end of month (e.g., April 30).</div>
     </div>
-  </div>
+  </details>
 
-  <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
-    <div style="font-size:0.78rem;color:#3b82f6;font-weight:700;margin-bottom:8px;">Pilot Success Metrics (from meeting)</div>
-    <div style="font-size:0.75rem;color:#9ca3af;line-height:1.8;">
+  <!-- ─── Pilot success metrics ─── -->
+  <details class="update-group">
+    <summary>
+      <div class="update-group-summary-text">
+        <div class="ug-title"><span class="ug-tag blue">🎯 PILOT</span> Pilot success metrics</div>
+        <div class="ug-blurb">Single HOA / district, ~100 residents, ~$1,000 gift-card budget, in-person feedback, Rollo wireless thermal printer.</div>
+      </div>
+    </summary>
+    <div class="update-group-body">
       <div>📍 Target a single HOA / district close to Kirk</div>
       <div>👥 ~100 residents for initial pilot</div>
       <div>🎁 ~$1,000 budget for gift card rewards</div>
@@ -3507,18 +1901,29 @@
       <div>🔄 Iterate based on real usage data → train AI later</div>
       <div>🏭 QR sticker label printer: Rollo wireless thermal (prints from phone/tablet)</div>
     </div>
-  </div>
+  </details>
 
-  <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
-    <div style="font-size:0.78rem;color:#ffffff;font-weight:700;margin-bottom:8px;">Next Steps</div>
-    <div style="font-size:0.75rem;color:#9ca3af;line-height:1.8;">
+  <!-- ─── Next steps ─── -->
+  <details class="update-group">
+    <summary>
+      <div class="update-group-summary-text">
+        <div class="ug-title"><span class="ug-tag amber">→ NEXT</span> Next steps</div>
+        <div class="ug-blurb">Final mockup feedback, start coding, target end-of-week working version, customers in ~2 weeks.</div>
+      </div>
+    </summary>
+    <div class="update-group-body">
       <div>→ Ignacio to send final mockup for last round of feedback</div>
       <div>→ Start coding the app</div>
       <div>→ Target: working version by end of week / mid next week</div>
       <div>→ A few rounds of iteration, then to customers in ~2 weeks</div>
     </div>
-  </div>
+  </details>
 </div>
+
+<div class="footer" style="text-align:center;padding:30px;color:#4b5563;font-size:0.8rem;">
+  We Buy Clean Trash — App Screen Map · 5 User Roles · Pilot v1.2 · Updated April 16, 2026 · Implementation status April 23, 2026 · <span style="color:#34d399;">Editorial-Eco design system shipped April 30, 2026</span>
+</div>
+
 
 <script>
 function showPanel(id) {
@@ -3526,7 +1931,10 @@ function showPanel(id) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('panel-' + id).classList.add('active');
   event.currentTarget.classList.add('active');
-  window.scrollTo({ top: 200, behavior: 'smooth' });
+  // Scroll just below the tab bar so the screens land in view immediately.
+  const tabBar = document.querySelector('.tab-bar');
+  const top = tabBar ? tabBar.getBoundingClientRect().bottom + window.scrollY - 8 : 200;
+  window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
 }
 </script>
 
