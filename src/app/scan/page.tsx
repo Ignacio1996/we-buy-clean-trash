@@ -13,18 +13,5 @@ export default async function ScanPage() {
   const session = await getSession();
   if (session) redirect(ROLE_HOME_PATH[session.role]);
 
-  return (
-    <div className="min-h-dvh flex-1 bg-neutral-950 text-white">
-      <main className="mx-auto w-full max-w-md px-4 py-8">
-        <header className="text-center">
-          <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">
-            We Buy Clean Trash
-          </div>
-          <h1 className="mt-2 text-2xl font-bold">💰 See What Your Trash Is Worth</h1>
-          <p className="mt-1 text-sm text-gray-400">No account needed — try it right now.</p>
-        </header>
-        <ScanClient />
-      </main>
-    </div>
-  );
+  return <ScanClient />;
 }
