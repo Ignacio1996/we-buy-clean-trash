@@ -347,6 +347,225 @@
   .status-badge.partial   { background: rgba(251,191,36,0.15); color: #fbbf24; border-color: rgba(251,191,36,0.35); }
   .status-badge.missing   { background: rgba(248,113,113,0.15);color: #f87171; border-color: rgba(248,113,113,0.35); }
   .status-badge.extra     { background: rgba(59,130,246,0.15); color: #60a5fa; border-color: rgba(59,130,246,0.35); }
+  .status-badge.eco       { background: rgba(52,211,153,0.18); color: #34d399; border-color: rgba(52,211,153,0.4); }
+
+  /* ── EDITORIAL-ECO PHONE THEME (cream paper) ── */
+  .phone.eco {
+    background: #FBF7EE;
+    border-color: #D9D2C2;
+  }
+  .phone.eco .phone-status {
+    background: #F4F0E8;
+    color: #5A6358;
+    letter-spacing: 1.4px;
+    font-weight: 500;
+  }
+  .phone.eco .phone-header {
+    background: #F4F0E8;
+    border-bottom-color: #D9D2C2;
+    padding: 12px 18px 10px;
+  }
+  .phone.eco .phone-header h4 {
+    color: #1F2A22;
+    font-family: ui-serif, Georgia, 'Iowan Old Style', serif;
+    font-weight: 500;
+    font-size: 0.92rem;
+    letter-spacing: -0.2px;
+  }
+  .phone.eco .phone-header span { color: #2D5A3D; font-style: italic; }
+  .phone.eco .phone-body {
+    background: #F4F0E8;
+    color: #1F2A22;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(160,140,100,0.06) 1px, transparent 2px),
+      radial-gradient(circle at 70% 60%, rgba(160,140,100,0.05) 1px, transparent 2px);
+    background-size: 14px 14px, 22px 22px;
+  }
+  .eco-paper {
+    background: #FBF7EE;
+    border: 1px solid #D9D2C2;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .eco-eyebrow {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: #5A6358;
+    font-weight: 500;
+  }
+  .eco-display {
+    font-family: ui-serif, Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    color: #1F2A22;
+  }
+  .eco-display em {
+    font-style: italic;
+    color: #2D5A3D;
+  }
+  .eco-h2 {
+    font-family: ui-serif, Georgia, serif;
+    font-weight: 500;
+    font-size: 1.05rem;
+    letter-spacing: -0.3px;
+    color: #1F2A22;
+  }
+  .eco-italic {
+    font-family: ui-serif, Georgia, serif;
+    font-style: italic;
+    color: #5A6358;
+  }
+  .eco-rule {
+    border-bottom: 1px solid #E8E2D0;
+    padding: 6px 0;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.66rem;
+  }
+  .eco-rule .label {
+    color: #5A6358;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-size: 0.55rem;
+  }
+  .eco-rule .value {
+    font-family: ui-serif, Georgia, serif;
+    color: #1F2A22;
+  }
+  .eco-btn {
+    display: block;
+    width: 100%;
+    padding: 11px;
+    border-radius: 999px;
+    font-family: ui-serif, Georgia, serif;
+    font-size: 0.85rem;
+    text-align: center;
+    margin-bottom: 8px;
+    cursor: default;
+  }
+  .eco-btn.primary {
+    background: #2D5A3D;
+    color: #FBF7EE;
+    border: 1px solid #2D5A3D;
+  }
+  .eco-btn.secondary {
+    background: #FBF7EE;
+    color: #1F2A22;
+    border: 1px solid #D9D2C2;
+  }
+  .eco-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 500;
+  }
+  .eco-pill.green { background: #E8EFE6; color: #2D5A3D; border: 1px solid #2D5A3D; }
+  .eco-pill.amber { background: #F2E8D6; color: #A0682A; border: 1px solid #A0682A; }
+  .eco-pill.rust  { background: #F0DCC8; color: #9A4B26; border: 1px solid #9A4B26; }
+  .eco-pill.ink   { background: transparent; color: #5A6358; border: 1px solid #D9D2C2; }
+
+  /* ── DESIGN SYSTEM REFERENCE CARD ── */
+  .design-system-card {
+    max-width: 1100px;
+    margin: 0 auto 32px;
+    padding: 28px 32px;
+    background: #F4F0E8;
+    border: 1px solid #D9D2C2;
+    border-radius: 18px;
+    color: #1F2A22;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(160,140,100,0.06) 1px, transparent 2px),
+      radial-gradient(circle at 70% 60%, rgba(160,140,100,0.05) 1px, transparent 2px);
+    background-size: 14px 14px, 22px 22px;
+  }
+  .design-system-card .ds-eyebrow {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1.6px;
+    color: #2D5A3D;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .design-system-card h3 {
+    font-family: ui-serif, Georgia, serif;
+    font-weight: 400;
+    font-size: 1.7rem;
+    letter-spacing: -0.6px;
+    margin-bottom: 4px;
+  }
+  .design-system-card h3 em { font-style: italic; color: #2D5A3D; }
+  .design-system-card .lede {
+    font-family: ui-serif, Georgia, serif;
+    font-style: italic;
+    color: #5A6358;
+    font-size: 0.92rem;
+    margin-bottom: 18px;
+    max-width: 640px;
+  }
+  .ds-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+  }
+  .ds-block {
+    background: #FBF7EE;
+    border: 1px solid #D9D2C2;
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .ds-block h4 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: #5A6358;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .ds-swatch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 0.7rem;
+  }
+  .ds-swatch .chip {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.08);
+    flex-shrink: 0;
+  }
+  .ds-swatch .name { color: #1F2A22; flex: 1; }
+  .ds-swatch .hex {
+    font-family: ui-monospace, SF Mono, monospace;
+    font-size: 0.62rem;
+    color: #5A6358;
+  }
+  .ds-type-sample {
+    margin-bottom: 8px;
+  }
+  .ds-type-sample .ds-type-label {
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #5A6358;
+    margin-bottom: 2px;
+  }
+  .ds-component-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
 
   .status-legend {
     max-width: 1100px;
@@ -384,6 +603,7 @@
 <div class="header">
   <h1>App Screens by User Role</h1>
   <p>What each person sees when they open the app · <span style="color:#22c55e;">Implementation status updated April 23, 2026 — all phases complete</span></p>
+  <p style="margin-top:8px;color:#34d399;font-size:0.92rem;"><strong>Visual refresh — April 30, 2026:</strong> entire resident + operator surface migrated to the <em>Editorial-Eco</em> design system (warm paper, serif italic headlines, hairline rules, no shadows). Cards below tagged <span class="status-badge built" style="background:rgba(52,211,153,0.18);color:#34d399;border-color:rgba(52,211,153,0.4);">EDITORIAL ECO</span> reflect what's shipped now; older dark mockups are kept for comparison.</p>
 </div>
 
 <div class="tab-bar">
@@ -400,6 +620,154 @@
   <span><span class="status-badge partial">🟡 PARTIAL</span> built but diverges from mock or skips a detail</span>
   <span><span class="status-badge missing">❌ MISSING</span> not yet implemented</span>
   <span><span class="status-badge extra">➕ EXTRA</span> built but not in this design doc</span>
+  <span><span class="status-badge eco">🌿 EDITORIAL ECO</span> reflects the Apr 30 visual refresh</span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- EDITORIAL-ECO DESIGN SYSTEM — added Apr 30, 2026                     -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="design-system-card">
+  <div class="ds-eyebrow">VOL. I · NO. 02 · DESIGN SYSTEM</div>
+  <h3>The <em>Editorial-Eco</em> language.</h3>
+  <p class="lede">Warm paper, italic serif headlines, hairline rules, no shadows. Shipped April 30, 2026 across the resident + operator surface. Tokens live in <code style="font-size:0.78rem;background:#FBF7EE;padding:2px 5px;border-radius:4px;border:1px solid #D9D2C2;">src/app/globals.css</code>; primitives in <code style="font-size:0.78rem;background:#FBF7EE;padding:2px 5px;border-radius:4px;border:1px solid #D9D2C2;">src/components/resident/eco/Eco.tsx</code> &amp; <code style="font-size:0.78rem;background:#FBF7EE;padding:2px 5px;border-radius:4px;border:1px solid #D9D2C2;">src/components/operator/Op.tsx</code>.</p>
+
+  <div class="ds-grid">
+    <!-- PALETTE -->
+    <div class="ds-block">
+      <h4>Palette</h4>
+      <div class="ds-swatch"><div class="chip" style="background:#F4F0E8;"></div><span class="name">Paper bg</span><span class="hex">#F4F0E8</span></div>
+      <div class="ds-swatch"><div class="chip" style="background:#FBF7EE;"></div><span class="name">Paper</span><span class="hex">#FBF7EE</span></div>
+      <div class="ds-swatch"><div class="chip" style="background:#1F2A22;"></div><span class="name">Ink</span><span class="hex">#1F2A22</span></div>
+      <div class="ds-swatch"><div class="chip" style="background:#5A6358;"></div><span class="name">Ink soft</span><span class="hex">#5A6358</span></div>
+      <div class="ds-swatch"><div class="chip" style="background:#D9D2C2;"></div><span class="name">Line</span><span class="hex">#D9D2C2</span></div>
+      <div class="ds-swatch"><div class="chip" style="background:#2D5A3D;"></div><span class="name">Green</span><span class="hex">#2D5A3D</span></div>
+      <div class="ds-swatch"><div class="chip" style="background:#E8EFE6;"></div><span class="name">Green soft</span><span class="hex">#E8EFE6</span></div>
+      <div class="ds-swatch"><div class="chip" style="background:#A0682A;"></div><span class="name">Amber</span><span class="hex">#A0682A</span></div>
+      <div class="ds-swatch"><div class="chip" style="background:#9A4B26;"></div><span class="name">Rust</span><span class="hex">#9A4B26</span></div>
+    </div>
+
+    <!-- TYPE -->
+    <div class="ds-block">
+      <h4>Type</h4>
+      <div class="ds-type-sample">
+        <div class="ds-type-label">Display · 40px serif, italic em → green</div>
+        <div style="font-family:ui-serif,Georgia,serif;font-size:1.4rem;line-height:1.05;letter-spacing:-0.6px;color:#1F2A22;">Turn what you throw away into <em style="font-style:italic;color:#2D5A3D;">cash</em>.</div>
+      </div>
+      <div class="ds-type-sample">
+        <div class="ds-type-label">H2 · 22px serif, weight 500</div>
+        <div style="font-family:ui-serif,Georgia,serif;font-size:1.05rem;letter-spacing:-0.3px;color:#1F2A22;font-weight:500;">Where shall we collect?</div>
+      </div>
+      <div class="ds-type-sample">
+        <div class="ds-type-label">Eyebrow · 11px sans, 1.4px tracking</div>
+        <div style="font-family:-apple-system,Inter,sans-serif;font-size:0.66rem;text-transform:uppercase;letter-spacing:1.4px;color:#5A6358;font-weight:500;">STEP ONE · SERVICE AREA</div>
+      </div>
+      <div class="ds-type-sample">
+        <div class="ds-type-label">Italic body</div>
+        <div style="font-family:ui-serif,Georgia,serif;font-style:italic;color:#5A6358;font-size:0.78rem;">Sign in to see this week's pickup.</div>
+      </div>
+      <div class="ds-type-sample">
+        <div class="ds-type-label">Stack</div>
+        <div style="font-size:0.66rem;color:#5A6358;font-family:ui-monospace,SF Mono,monospace;">Serif: Georgia, Iowan Old Style<br>Sans: Inter, system UI<br>Mono: SF Mono</div>
+      </div>
+    </div>
+
+    <!-- PRIMITIVES -->
+    <div class="ds-block">
+      <h4>Primitives — Eco.* (resident)</h4>
+      <div class="ds-component-row">
+        <span class="eco-btn primary" style="width:auto;padding:8px 16px;margin:0;font-size:0.74rem;">Get started</span>
+        <span class="eco-btn secondary" style="width:auto;padding:8px 16px;margin:0;font-size:0.74rem;">Skip</span>
+      </div>
+      <div class="ds-component-row">
+        <span class="eco-pill green">Active</span>
+        <span class="eco-pill amber">Bonus</span>
+        <span class="eco-pill rust">Issue</span>
+        <span class="eco-pill ink">Ledger</span>
+      </div>
+      <div class="eco-rule" style="border-bottom-color:#E8E2D0;padding:5px 0;margin-bottom:0;">
+        <span class="label">Avg. earnings</span>
+        <span class="value">$5–$12 / pickup</span>
+      </div>
+      <div class="eco-rule" style="border-bottom:none;padding:5px 0;margin-bottom:6px;">
+        <span class="label">Cadence</span>
+        <span class="value">Weekly · curbside</span>
+      </div>
+      <div style="font-size:0.62rem;color:#5A6358;line-height:1.5;">
+        EcoMasthead · EcoH1 · EcoPaper · EcoButton<br>
+        EcoRule · EcoListLink · EcoEmpty · BottomNav
+      </div>
+    </div>
+
+    <!-- OPERATOR PRIMITIVES -->
+    <div class="ds-block" style="background:#F4F0E8;background-image:radial-gradient(circle at 20% 30%, rgba(160,140,100,0.08) 1px, transparent 2px),radial-gradient(circle at 70% 60%, rgba(160,140,100,0.06) 1px, transparent 2px);background-size:14px 14px, 22px 22px;">
+      <h4>Primitives — Op.* (operator)</h4>
+      <div style="font-family:ui-serif,Georgia,serif;font-size:1.05rem;color:#1F2A22;line-height:1.1;letter-spacing:-0.3px;margin-bottom:8px;">You are <em style="color:#2D5A3D;">on stop 06</em> of 14.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid #D9D2C2;border-bottom:1px solid #D9D2C2;margin-bottom:10px;">
+        <div style="padding:8px 6px;border-right:1px solid #E8E2D0;text-align:left;">
+          <div style="font-family:ui-serif,Georgia,serif;font-size:1.1rem;letter-spacing:-0.4px;color:#1F2A22;font-feature-settings:'lnum','tnum';">06 / 14</div>
+          <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Stops</div>
+        </div>
+        <div style="padding:8px 6px;border-right:1px solid #E8E2D0;text-align:left;">
+          <div style="font-family:ui-serif,Georgia,serif;font-size:1.1rem;letter-spacing:-0.4px;color:#1F2A22;font-feature-settings:'lnum','tnum';">12 / 32</div>
+          <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Bags</div>
+        </div>
+        <div style="padding:8px 6px;text-align:left;">
+          <div style="font-family:ui-serif,Georgia,serif;font-size:1.1rem;letter-spacing:-0.4px;color:#1F2A22;font-feature-settings:'lnum','tnum';">02 / 04</div>
+          <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Deliver</div>
+        </div>
+      </div>
+      <div class="ds-component-row">
+        <span class="eco-btn primary" style="width:auto;padding:9px 22px;margin:0;font-size:0.78rem;border-radius:14px;">Mark complete</span>
+      </div>
+      <div class="ds-component-row">
+        <span class="eco-pill green">Completed</span>
+        <span class="eco-pill amber">Missed</span>
+        <span class="eco-pill rust">Issue</span>
+      </div>
+      <div style="font-size:0.62rem;color:#5A6358;line-height:1.5;">
+        OpPage (grain) · OpMasthead · OpDisplay<br>
+        OpPaper · OpPrimary/Ghost · ProgressStrip<br>
+        StatusPill · OpSheet · OpRow · SummaryStat
+      </div>
+    </div>
+
+    <!-- ICON SET -->
+    <div class="ds-block">
+      <h4>Icons — EcoIcons.tsx</h4>
+      <div style="font-size:0.7rem;color:#1F2A22;line-height:1.6;">
+        Line drawings, 24-viewBox, 1.75px stroke. <em style="font-style:italic;color:#5A6358;">Configurable size and color.</em>
+      </div>
+      <div style="margin-top:8px;display:grid;grid-template-columns:repeat(2,1fr);gap:4px 12px;font-size:0.66rem;color:#5A6358;">
+        <span>Home</span><span>Scan</span>
+        <span>Bag</span><span>Gift</span>
+        <span>User</span><span>Truck</span>
+        <span>Leaf</span><span>Droplet</span>
+        <span>Recycle</span><span>Cloud</span>
+        <span>Fire</span><span>Box</span>
+        <span>Clock</span><span>Bell</span>
+        <span>Check</span><span>Close</span>
+        <span>Star</span><span>Pin</span>
+        <span>Plus</span><span>Arrow ↔</span>
+      </div>
+    </div>
+
+    <!-- COVERAGE -->
+    <div class="ds-block">
+      <h4>Coverage</h4>
+      <div style="font-size:0.7rem;color:#1F2A22;line-height:1.55;">
+        <strong>Resident · Operator</strong> — full surface migrated.
+      </div>
+      <div style="margin-top:8px;font-size:0.66rem;color:#5A6358;line-height:1.6;">
+        Login · Signup wizard · Welcome · Dashboard · Order bags · History · Calculator · Guide · Rewards · Profile · Bottom nav · Bonus modal · Pre-signup banner.
+      </div>
+      <div style="margin-top:8px;font-size:0.66rem;color:#5A6358;line-height:1.6;">
+        Operator dashboard · Today's route · Stop scan/photo/issue · Deliver · Summary · Compost route.
+      </div>
+      <div style="margin-top:10px;padding-top:8px;border-top:1px solid #D9D2C2;font-size:0.62rem;color:#A0682A;">
+        <strong>Out of scope (still dark UI):</strong> depot, depot manager, admin. Migration not yet planned.
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
@@ -438,6 +806,539 @@
       First-time users see <em>"Order your first batch"</em> CTA instead of "Order more bags."
       Calculator inputs now show a <code>lbs</code> suffix. Resident dashboard surfaces a <strong>🔥 Bonus running now</strong> banner whenever a pricing campaign is live for any material; the calculator preview reflects the multiplier per row.
     </div>
+    <div class="impl-note" style="background:rgba(52,211,153,0.08);border-color:rgba(52,211,153,0.3);color:#34d399;">
+      <span class="impl-tag" style="color:#34d399;">EDITORIAL ECO · APR 30</span>
+      The entire resident surface was rebuilt in the editorial-eco language: cream paper backgrounds (<code>#F4F0E8</code>), italic serif display headlines with green <em>em</em>, hairline rules <code>#D9D2C2</code>, no shadows, pill buttons, EcoMasthead/EcoH1/EcoPaper/EcoButton primitives from <code>src/components/resident/eco/Eco.tsx</code>, line-drawn icons from <code>src/components/icons/EcoIcons.tsx</code>. Cards below tagged <span class="status-badge eco">🌿 EDITORIAL ECO</span> show what shipped; the older dark mockups are preserved for comparison.
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- EDITORIAL-ECO RESIDENT SCREENS (Apr 30, 2026) -->
+  <!-- ════════════════════════════════════════════ -->
+  <div style="margin-bottom:16px;padding:14px 18px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.3);border-radius:12px;">
+    <div style="font-size:0.65rem;color:#34d399;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:4px;">🌿 Visual Refresh — April 30, 2026</div>
+    <div style="font-size:0.78rem;color:#d1d5db;line-height:1.5;">Mockups in the cream-paper editorial-eco aesthetic, matching the live shipped UI (<code>src/app/resident/*</code>, <code>src/app/login</code>, <code>src/app/signup</code>, <code>src/app/scan</code>).</div>
+  </div>
+
+  <div class="screens-row">
+
+    <!-- Eco Screen A: Login (NEW Apr 30) -->
+    <div>
+      <div class="phone eco">
+        <div class="phone-status">VOL. I · NO. 02</div>
+        <div class="phone-header">
+          <h4>Login</h4>
+          <span>We Buy Clean Trash</span>
+        </div>
+        <div class="phone-body">
+          <div class="eco-eyebrow" style="margin-bottom:6px;">RETURNING RESIDENT</div>
+          <div class="eco-display" style="margin-bottom:10px;">Welcome <em>back</em>.</div>
+          <div class="eco-italic" style="font-size:0.78rem;margin-bottom:14px;">Sign in to see this week's pickup.</div>
+
+          <div style="margin-bottom:10px;">
+            <div class="eco-eyebrow">EMAIL</div>
+            <div style="border-bottom:1px solid #D9D2C2;padding:6px 0;font-size:0.82rem;color:#1F2A22;font-family:ui-serif,Georgia,serif;">aguirre@example.com</div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="eco-eyebrow" style="display:flex;justify-content:space-between;">PASSWORD <span style="color:#2D5A3D;">SHOW</span></div>
+            <div style="border-bottom:1px solid #D9D2C2;padding:6px 0;font-size:0.82rem;color:#1F2A22;font-family:ui-monospace,SF Mono,monospace;letter-spacing:2px;">••••••••</div>
+          </div>
+
+          <div class="eco-btn primary">Sign in</div>
+
+          <div style="display:flex;align-items:center;gap:8px;margin:10px 0;">
+            <div style="flex:1;height:1px;background:#D9D2C2;"></div>
+            <span style="font-size:0.6rem;color:#8A8A7A;text-transform:uppercase;letter-spacing:1.4px;">or</span>
+            <div style="flex:1;height:1px;background:#D9D2C2;"></div>
+          </div>
+
+          <div class="eco-btn secondary"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:linear-gradient(45deg,#4285F4,#34A853,#FBBC05,#EA4335);vertical-align:middle;margin-right:6px;"></span>Continue with Google</div>
+
+          <div style="text-align:center;margin-top:14px;font-size:0.74rem;color:#5A6358;font-family:ui-serif,Georgia,serif;font-style:italic;">
+            New here? <span style="color:#2D5A3D;font-style:normal;font-weight:500;">Create an account →</span>
+          </div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#34d399;">LOGIN — EDITORIAL ECO <span class="status-badge eco">🌿 EDITORIAL ECO</span></div>
+    </div>
+
+    <!-- Eco Screen B: Signup Wizard — Splash (NEW Apr 30) -->
+    <div>
+      <div class="phone eco">
+        <div class="phone-status">VOL. I · NO. 01</div>
+        <div class="phone-header">
+          <h4>Signup · 00 / 05</h4>
+          <span>Welcome</span>
+        </div>
+        <div class="phone-body">
+          <div class="eco-eyebrow" style="margin-bottom:8px;color:#2D5A3D;">WE BUY CLEAN TRASH</div>
+          <div class="eco-display" style="margin-bottom:10px;font-size:1.6rem;line-height:1.05;">Turn what you throw away into <em>cash</em>.</div>
+          <div class="eco-italic" style="font-size:0.74rem;margin-bottom:12px;line-height:1.5;">Fill our bags with cleaned bottles, cans and paper. We pick them up. Points become gift cards.</div>
+
+          <div style="border-top:1px solid #D9D2C2;padding-top:8px;margin-bottom:12px;">
+            <div class="eco-rule"><span class="label">Avg. earnings</span><span class="value">$5–$12 / pickup</span></div>
+            <div class="eco-rule"><span class="label">Cadence</span><span class="value">Weekly · curbside</span></div>
+            <div class="eco-rule" style="border-bottom:none;"><span class="label">Materials</span><span class="value">7 commodities</span></div>
+          </div>
+
+          <div style="background:#FBF7EE;border:1px solid #2D5A3D;border-radius:14px;padding:10px 12px;margin-bottom:10px;">
+            <div style="font-size:0.6rem;color:#2D5A3D;text-transform:uppercase;letter-spacing:1.2px;">Pre-signup scan</div>
+            <div style="font-size:0.7rem;color:#1F2A22;font-family:ui-serif,Georgia,serif;font-style:italic;margin-top:2px;">Scan a few items first — see what you'd earn.</div>
+          </div>
+
+          <div class="eco-btn primary">Get started →</div>
+          <div style="text-align:center;margin-top:8px;font-size:0.7rem;color:#5A6358;font-family:ui-serif,Georgia,serif;font-style:italic;">Already a resident? <span style="color:#2D5A3D;font-style:normal;">Sign in</span></div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#34d399;">SIGNUP · WELCOME <span class="status-badge eco">🌿 EDITORIAL ECO</span></div>
+    </div>
+
+    <!-- Eco Screen C: Signup Wizard — Address (NEW Apr 30) -->
+    <div>
+      <div class="phone eco">
+        <div class="phone-status">VOL. I · NO. 01</div>
+        <div class="phone-header">
+          <h4>Signup · 01 / 05</h4>
+          <span>Step one · Service area</span>
+        </div>
+        <div class="phone-body">
+          <div class="eco-eyebrow" style="margin-bottom:6px;">STEP ONE · SERVICE AREA</div>
+          <div class="eco-display" style="font-size:1.4rem;margin-bottom:10px;">Where shall we <em>collect</em>?</div>
+          <div class="eco-italic" style="font-size:0.72rem;margin-bottom:14px;">We'll match this to your zone &amp; pickup day.</div>
+
+          <div style="margin-bottom:10px;">
+            <div class="eco-eyebrow">STREET ADDRESS</div>
+            <div style="border-bottom:1px solid #D9D2C2;padding:6px 0;font-size:0.78rem;color:#1F2A22;font-family:ui-serif,Georgia,serif;">1247 Oak Valley Dr</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+            <div>
+              <div class="eco-eyebrow">APT</div>
+              <div style="border-bottom:1px solid #D9D2C2;padding:6px 0;font-size:0.78rem;color:#1F2A22;font-family:ui-serif,Georgia,serif;">3B</div>
+            </div>
+            <div>
+              <div class="eco-eyebrow">CITY</div>
+              <div style="border-bottom:1px solid #D9D2C2;padding:6px 0;font-size:0.78rem;color:#1F2A22;font-family:ui-serif,Georgia,serif;">Capitol Hts</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+            <div>
+              <div class="eco-eyebrow">STATE</div>
+              <div style="border-bottom:1px solid #D9D2C2;padding:6px 0;font-size:0.78rem;color:#1F2A22;font-family:ui-serif,Georgia,serif;">MD</div>
+            </div>
+            <div>
+              <div class="eco-eyebrow">ZIP</div>
+              <div style="border-bottom:1px solid #D9D2C2;padding:6px 0;font-size:0.78rem;color:#1F2A22;font-family:ui-serif,Georgia,serif;">20774</div>
+            </div>
+          </div>
+
+          <div style="background:#E8EFE6;border:1px solid #2D5A3D;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+            <div style="width:18px;height:18px;border-radius:50%;background:#2D5A3D;color:#FBF7EE;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;">✓</div>
+            <div style="font-size:0.7rem;color:#1F2A22;font-family:ui-serif,Georgia,serif;font-style:italic;">In Capitol Hts service area · Monday pickup</div>
+          </div>
+
+          <div class="eco-btn primary">Continue →</div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#34d399;">SIGNUP · ADDRESS <span class="status-badge eco">🌿 EDITORIAL ECO</span></div>
+    </div>
+
+    <!-- Eco Screen D: Signup Wizard — Password (NEW Apr 30) -->
+    <div>
+      <div class="phone eco">
+        <div class="phone-status">VOL. I · NO. 01</div>
+        <div class="phone-header">
+          <h4>Signup · 04 / 05</h4>
+          <span>Step five · Password</span>
+        </div>
+        <div class="phone-body">
+          <div class="eco-eyebrow" style="margin-bottom:6px;">STEP FIVE · SECURITY</div>
+          <div class="eco-display" style="font-size:1.4rem;margin-bottom:10px;">Lock the <em>ledger</em>.</div>
+          <div class="eco-italic" style="font-size:0.72rem;margin-bottom:14px;">Live rules check below.</div>
+
+          <div style="margin-bottom:10px;">
+            <div class="eco-eyebrow" style="display:flex;justify-content:space-between;">PASSWORD <span style="color:#2D5A3D;">HIDE</span></div>
+            <div style="border-bottom:1px solid #D9D2C2;padding:6px 0;font-size:0.78rem;color:#1F2A22;font-family:ui-monospace,SF Mono,monospace;">cleantrash26</div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="eco-eyebrow">CONFIRM</div>
+            <div style="border-bottom:1px solid #D9D2C2;padding:6px 0;font-size:0.78rem;color:#1F2A22;font-family:ui-monospace,SF Mono,monospace;">cleantrash26</div>
+          </div>
+
+          <div style="border-top:1px solid #D9D2C2;padding-top:8px;margin-bottom:14px;">
+            <div class="eco-rule" style="font-size:0.7rem;">
+              <span style="color:#2D5A3D;font-family:ui-serif,Georgia,serif;font-style:italic;">✓ 8 or more characters</span>
+              <span></span>
+            </div>
+            <div class="eco-rule" style="font-size:0.7rem;">
+              <span style="color:#2D5A3D;font-family:ui-serif,Georgia,serif;font-style:italic;">✓ A number or capital letter</span>
+              <span></span>
+            </div>
+            <div class="eco-rule" style="font-size:0.7rem;border-bottom:none;">
+              <span style="color:#2D5A3D;font-family:ui-serif,Georgia,serif;font-style:italic;">✓ Both entries match</span>
+              <span></span>
+            </div>
+          </div>
+
+          <div class="eco-btn primary">Create account →</div>
+          <div style="text-align:center;font-size:0.65rem;color:#8A8A7A;font-style:italic;font-family:ui-serif,Georgia,serif;">Account is created on this step.</div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#34d399;">SIGNUP · PASSWORD <span class="status-badge eco">🌿 EDITORIAL ECO</span></div>
+    </div>
+
+    <!-- Eco Screen E: Welcome (post-signup) (NEW Apr 30) -->
+    <div>
+      <div class="phone eco">
+        <div class="phone-status">VOL. I · NO. 02</div>
+        <div class="phone-header">
+          <h4>Welcome</h4>
+          <span>About two minutes</span>
+        </div>
+        <div class="phone-body">
+          <div class="eco-eyebrow" style="margin-bottom:6px;">WELCOME, AGUIRRE</div>
+          <div class="eco-display" style="font-size:1.4rem;margin-bottom:10px;">Get started in <em>three steps</em>.</div>
+          <div class="eco-italic" style="font-size:0.72rem;margin-bottom:14px;">About two minutes.</div>
+
+          <div class="eco-paper">
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <div style="width:30px;height:30px;border-radius:50%;background:#E8EFE6;color:#2D5A3D;display:flex;align-items:center;justify-content:center;font-family:ui-serif,Georgia,serif;font-size:1.05rem;flex-shrink:0;font-style:italic;">I</div>
+              <div>
+                <div class="eco-h2" style="font-size:0.85rem;">Order your first sheet of bags</div>
+                <div class="eco-italic" style="font-size:0.7rem;margin-top:3px;">10 bags. Free shipping over $20.</div>
+              </div>
+            </div>
+          </div>
+          <div class="eco-paper">
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <div style="width:30px;height:30px;border-radius:50%;background:#E8EFE6;color:#2D5A3D;display:flex;align-items:center;justify-content:center;font-family:ui-serif,Georgia,serif;font-size:1.05rem;flex-shrink:0;font-style:italic;">II</div>
+              <div>
+                <div class="eco-h2" style="font-size:0.85rem;">Fill &amp; put out bags</div>
+                <div class="eco-italic" style="font-size:0.7rem;margin-top:3px;">Scan each bag the night before pickup.</div>
+              </div>
+            </div>
+          </div>
+          <div class="eco-paper" style="margin-bottom:14px;">
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <div style="width:30px;height:30px;border-radius:50%;background:#E8EFE6;color:#2D5A3D;display:flex;align-items:center;justify-content:center;font-family:ui-serif,Georgia,serif;font-size:1.05rem;flex-shrink:0;font-style:italic;">III</div>
+              <div>
+                <div class="eco-h2" style="font-size:0.85rem;">Earn &amp; redeem</div>
+                <div class="eco-italic" style="font-size:0.7rem;margin-top:3px;">100,000 pts = $10 gift card.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="eco-btn primary">Order my first sheet →</div>
+          <div class="eco-btn secondary" style="font-size:0.78rem;">Skip — I'll order later</div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#34d399;">WELCOME (POST-SIGNUP) <span class="status-badge eco">🌿 EDITORIAL ECO</span></div>
+    </div>
+
+    <!-- Eco Screen F: Dashboard (NEW Apr 30) -->
+    <div>
+      <div class="phone eco">
+        <div class="phone-status">VOL. I · NO. 02</div>
+        <div class="phone-header">
+          <h4>Today's ledger</h4>
+          <span>Hello, Aguirre.</span>
+        </div>
+        <div class="phone-body">
+          <!-- Hero -->
+          <div class="eco-eyebrow" style="margin-bottom:4px;">HELLO, AGUIRRE.</div>
+          <div class="eco-display" style="font-size:1.5rem;line-height:1.05;">You've turned trash into <em>$5.43</em>.</div>
+          <div class="eco-italic" style="font-size:0.7rem;margin-top:4px;margin-bottom:14px;">54,320 pts · 3 pickups so far</div>
+
+          <!-- Reward progress -->
+          <div style="margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">
+              <span>Toward $10 gift card</span><span>54%</span>
+            </div>
+            <div style="height:3px;background:#E8E2D0;border-radius:2px;margin-top:6px;overflow:hidden;">
+              <div style="width:54%;height:100%;background:#2D5A3D;"></div>
+            </div>
+            <div class="eco-italic" style="font-size:0.66rem;margin-top:4px;">45,680 pts to go</div>
+          </div>
+
+          <!-- Campaign banner -->
+          <div style="background:#F2E8D6;border:1px solid #A0682A;border-radius:14px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:#FBF7EE;display:flex;align-items:center;justify-content:center;color:#A0682A;">🔥</div>
+            <div style="flex:1;">
+              <div style="font-size:0.62rem;color:#A0682A;text-transform:uppercase;letter-spacing:1.2px;font-weight:600;">BONUS RUNNING NOW</div>
+              <div style="font-family:ui-serif,Georgia,serif;font-size:0.78rem;color:#1F2A22;font-style:italic;">×2 multiplier on Aluminum</div>
+              <div style="font-size:0.62rem;color:#A0682A;font-family:ui-serif,Georgia,serif;font-style:italic;margin-top:2px;">Ends in 4d</div>
+            </div>
+          </div>
+
+          <!-- Hero CTA — order more bags -->
+          <div style="background:#2D5A3D;color:#FBF7EE;border-radius:14px;padding:14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:1.4px;color:#E8EFE6;">ORDER MORE BAGS</div>
+              <div style="font-family:ui-serif,Georgia,serif;font-size:0.95rem;margin-top:4px;letter-spacing:-0.2px;">3 bags remaining</div>
+              <div style="font-family:ui-serif,Georgia,serif;font-style:italic;font-size:0.66rem;color:#E8EFE6;margin-top:2px;">10 / sheet · Free shipping over $20</div>
+            </div>
+            <div style="width:34px;height:34px;border-radius:50%;background:#FBF7EE;color:#2D5A3D;display:flex;align-items:center;justify-content:center;font-size:1rem;">→</div>
+          </div>
+
+          <!-- Pending order rule -->
+          <div style="border-top:1px solid #D9D2C2;border-bottom:1px solid #D9D2C2;padding:10px 0;margin-bottom:10px;display:flex;align-items:center;gap:10px;">
+            <div style="width:32px;height:32px;border-radius:8px;background:#E8EFE6;color:#2D5A3D;display:flex;align-items:center;justify-content:center;">📦</div>
+            <div style="flex:1;">
+              <div style="font-family:ui-serif,Georgia,serif;font-size:0.78rem;color:#1F2A22;">Pending order · 2 sheets</div>
+              <div class="eco-italic" style="font-size:0.65rem;">Arrives Monday, May 4</div>
+            </div>
+            <div style="color:#5A6358;">›</div>
+          </div>
+
+          <!-- Next pickup -->
+          <div style="border-bottom:1px solid #D9D2C2;padding:10px 0;margin-bottom:10px;display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:8px;border:1px solid #D9D2C2;background:#FBF7EE;text-align:center;overflow:hidden;">
+              <div style="background:#2D5A3D;color:#FBF7EE;font-size:0.5rem;text-transform:uppercase;letter-spacing:1px;padding:2px 0;">May</div>
+              <div style="font-family:ui-serif,Georgia,serif;font-size:0.95rem;color:#1F2A22;font-feature-settings:'lnum','tnum';line-height:1;padding-top:3px;">04</div>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:1.2px;color:#5A6358;">Next pickup</div>
+              <div style="font-family:ui-serif,Georgia,serif;font-size:0.82rem;color:#1F2A22;">Monday, May 4 · 6 PM</div>
+            </div>
+            <div style="color:#5A6358;">›</div>
+          </div>
+
+          <!-- Impact grid -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+            <div style="border-top:1px solid #D9D2C2;padding-top:6px;">
+              <div style="font-family:ui-serif,Georgia,serif;font-size:1.05rem;color:#1F2A22;font-feature-settings:'lnum','tnum';">47</div>
+              <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Lbs recycled</div>
+            </div>
+            <div style="border-top:1px solid #D9D2C2;padding-top:6px;">
+              <div style="font-family:ui-serif,Georgia,serif;font-size:1.05rem;color:#1F2A22;font-feature-settings:'lnum','tnum';">3</div>
+              <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Trees saved</div>
+            </div>
+            <div style="border-top:1px solid #D9D2C2;padding-top:6px;">
+              <div style="font-family:ui-serif,Georgia,serif;font-size:1.05rem;color:#1F2A22;font-feature-settings:'lnum','tnum';">840</div>
+              <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Gal water</div>
+            </div>
+            <div style="border-top:1px solid #D9D2C2;padding-top:6px;">
+              <div style="font-family:ui-serif,Georgia,serif;font-size:1.05rem;color:#1F2A22;font-feature-settings:'lnum','tnum';">12</div>
+              <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Lbs CO₂</div>
+            </div>
+          </div>
+
+          <div style="text-align:center;font-family:ui-serif,Georgia,serif;font-style:italic;font-size:0.72rem;color:#2D5A3D;">What is your trash worth? →</div>
+
+          <!-- Bottom nav (eco) -->
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid #D9D2C2;background:#FBF7EE;margin:14px -16px -20px;padding:10px 0 12px;">
+            <div style="text-align:center;font-family:ui-serif,Georgia,serif;color:#2D5A3D;font-weight:600;font-size:0.6rem;">Home</div>
+            <div style="text-align:center;font-family:ui-serif,Georgia,serif;color:#5A6358;font-size:0.6rem;">Scan</div>
+            <div style="text-align:center;font-family:ui-serif,Georgia,serif;color:#5A6358;font-size:0.6rem;">Bags</div>
+            <div style="text-align:center;font-family:ui-serif,Georgia,serif;color:#5A6358;font-size:0.6rem;">Rewards</div>
+            <div style="text-align:center;font-family:ui-serif,Georgia,serif;color:#5A6358;font-size:0.6rem;">Profile</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#34d399;">DASHBOARD <span class="status-badge eco">🌿 EDITORIAL ECO</span></div>
+    </div>
+
+    <!-- Eco Screen G: Rewards (NEW Apr 30) -->
+    <div>
+      <div class="phone eco">
+        <div class="phone-status">VOL. I · NO. 02</div>
+        <div class="phone-header">
+          <h4>Rewards</h4>
+          <span>Your balance</span>
+        </div>
+        <div class="phone-body">
+          <div class="eco-eyebrow" style="margin-bottom:4px;">YOUR BALANCE</div>
+          <div style="font-family:ui-serif,Georgia,serif;font-size:2.2rem;color:#1F2A22;letter-spacing:-0.6px;font-feature-settings:'lnum','tnum';">54,320</div>
+          <div class="eco-italic" style="font-size:0.78rem;">points · $5.43</div>
+          <div style="height:3px;background:#E8E2D0;border-radius:2px;margin-top:10px;overflow:hidden;margin-bottom:6px;">
+            <div style="width:54%;height:100%;background:#2D5A3D;"></div>
+          </div>
+          <div class="eco-italic" style="font-size:0.65rem;margin-bottom:14px;">45,680 pts to a $10 gift card</div>
+
+          <div class="eco-eyebrow" style="margin-bottom:8px;">REDEEM FOR</div>
+          <div class="eco-paper" style="display:flex;align-items:center;gap:10px;">
+            <div style="width:34px;height:34px;border-radius:8px;background:#E8EFE6;color:#2D5A3D;display:flex;align-items:center;justify-content:center;">🛒</div>
+            <div style="flex:1;">
+              <div style="font-family:ui-serif,Georgia,serif;font-size:0.82rem;color:#1F2A22;">Amazon Gift Card</div>
+              <div class="eco-italic" style="font-size:0.65rem;">100,000 pts = $10</div>
+            </div>
+            <span class="eco-pill green">$10</span>
+          </div>
+          <div class="eco-paper" style="display:flex;align-items:center;gap:10px;">
+            <div style="width:34px;height:34px;border-radius:8px;background:#E8EFE6;color:#2D5A3D;display:flex;align-items:center;justify-content:center;">🏪</div>
+            <div style="flex:1;">
+              <div style="font-family:ui-serif,Georgia,serif;font-size:0.82rem;color:#1F2A22;">Walmart Gift Card</div>
+              <div class="eco-italic" style="font-size:0.65rem;">100,000 pts = $10</div>
+            </div>
+            <span class="eco-pill green">$10</span>
+          </div>
+          <div class="eco-paper" style="display:flex;align-items:center;gap:10px;opacity:0.6;">
+            <div style="width:34px;height:34px;border-radius:8px;background:#FBF7EE;border:1px solid #D9D2C2;color:#5A6358;display:flex;align-items:center;justify-content:center;">🧾</div>
+            <div style="flex:1;">
+              <div style="font-family:ui-serif,Georgia,serif;font-size:0.82rem;color:#5A6358;">Pay Trash Bill</div>
+              <div class="eco-italic" style="font-size:0.65rem;">Coming soon</div>
+            </div>
+          </div>
+
+          <div class="eco-eyebrow" style="margin:14px 0 8px;">RECENT</div>
+          <div style="border-top:1px solid #D9D2C2;padding-top:8px;">
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #E8E2D0;">
+              <div>
+                <div style="font-family:ui-serif,Georgia,serif;font-size:0.74rem;color:#1F2A22;">Bag #0473 · Cardboard</div>
+                <div class="eco-italic" style="font-size:0.62rem;">Apr 28</div>
+              </div>
+              <div style="font-family:ui-serif,Georgia,serif;color:#2D5A3D;font-feature-settings:'lnum','tnum';">+1,200</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;">
+              <div>
+                <div style="font-family:ui-serif,Georgia,serif;font-size:0.74rem;color:#1F2A22;">Signup bonus</div>
+                <div class="eco-italic" style="font-size:0.62rem;">Mar 15</div>
+              </div>
+              <div style="font-family:ui-serif,Georgia,serif;color:#2D5A3D;font-feature-settings:'lnum','tnum';">+10,000</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#34d399;">REWARDS <span class="status-badge eco">🌿 EDITORIAL ECO</span></div>
+    </div>
+
+    <!-- Eco Screen H: Calculator (NEW Apr 30) -->
+    <div>
+      <div class="phone eco">
+        <div class="phone-status">VOL. I · NO. 02</div>
+        <div class="phone-header">
+          <h4>What is it worth?</h4>
+          <span>Estimate your earnings</span>
+        </div>
+        <div class="phone-body">
+          <div class="eco-eyebrow" style="margin-bottom:4px;">PAYOUT CALCULATOR</div>
+          <div class="eco-display" style="font-size:1.4rem;margin-bottom:8px;">Weigh it, <em>see it</em>.</div>
+          <div class="eco-italic" style="font-size:0.7rem;margin-bottom:14px;">Enter pounds for any material.</div>
+
+          <!-- Campaign callout -->
+          <div style="background:#F2E8D6;border:1px solid #A0682A;border-radius:12px;padding:8px 10px;margin-bottom:12px;font-size:0.66rem;color:#A0682A;font-family:ui-serif,Georgia,serif;font-style:italic;">
+            🔥 Aluminum is paying ×2 this week.
+          </div>
+
+          <!-- Material rows -->
+          <div style="border-top:1px solid #D9D2C2;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #E8E2D0;">
+              <div>
+                <div style="font-family:ui-serif,Georgia,serif;font-size:0.78rem;color:#1F2A22;">Aluminum <span style="font-style:italic;color:#A0682A;font-size:0.62rem;">×2</span></div>
+                <div class="eco-italic" style="font-size:0.6rem;">$0.92 / lb</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="width:46px;text-align:right;font-family:ui-serif,Georgia,serif;color:#1F2A22;border-bottom:1px solid #D9D2C2;padding-bottom:2px;">2.0</div>
+                <span style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">lbs</span>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #E8E2D0;">
+              <div>
+                <div style="font-family:ui-serif,Georgia,serif;font-size:0.78rem;color:#1F2A22;">Cardboard</div>
+                <div class="eco-italic" style="font-size:0.6rem;">$0.08 / lb</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="width:46px;text-align:right;font-family:ui-serif,Georgia,serif;color:#1F2A22;border-bottom:1px solid #D9D2C2;padding-bottom:2px;">5.0</div>
+                <span style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">lbs</span>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #E8E2D0;">
+              <div>
+                <div style="font-family:ui-serif,Georgia,serif;font-size:0.78rem;color:#1F2A22;">PET (water bottles)</div>
+                <div class="eco-italic" style="font-size:0.6rem;">$0.18 / lb</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="width:46px;text-align:right;font-family:ui-serif,Georgia,serif;color:#1F2A22;border-bottom:1px solid #D9D2C2;padding-bottom:2px;">1.5</div>
+                <span style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">lbs</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Estimate -->
+          <div style="margin-top:14px;border-top:1px solid #1F2A22;border-bottom:1px solid #1F2A22;padding:10px 0;display:flex;justify-content:space-between;align-items:baseline;">
+            <span class="eco-eyebrow">CLEAN &amp; SEPARATED</span>
+            <div style="font-family:ui-serif,Georgia,serif;font-size:1.3rem;color:#2D5A3D;font-feature-settings:'lnum','tnum';">$2.32</div>
+          </div>
+          <div class="eco-italic" style="font-size:0.65rem;margin-top:6px;text-align:right;">23,200 pts at submission</div>
+
+          <div style="margin-top:14px;font-size:0.65rem;color:#9A4B26;font-family:ui-serif,Georgia,serif;font-style:italic;border-top:1px solid #F0DCC8;padding-top:8px;">
+            Contaminated &amp; mixed → up to 90% reduction.
+          </div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#34d399;">PAYOUT CALCULATOR <span class="status-badge eco">🌿 EDITORIAL ECO</span></div>
+    </div>
+
+    <!-- Eco Screen I: Order Bags (NEW Apr 30) -->
+    <div>
+      <div class="phone eco">
+        <div class="phone-status">VOL. I · NO. 02</div>
+        <div class="phone-header">
+          <h4>Order bags</h4>
+          <span>Past orders →</span>
+        </div>
+        <div class="phone-body">
+          <div class="eco-eyebrow" style="margin-bottom:4px;">RESTOCK</div>
+          <div class="eco-display" style="font-size:1.4rem;margin-bottom:10px;">Order more <em>bags</em>.</div>
+          <div class="eco-italic" style="font-size:0.7rem;margin-bottom:14px;">10 bags per sheet · Free shipping over $20.</div>
+
+          <div class="eco-paper" style="text-align:center;">
+            <div class="eco-eyebrow" style="margin-bottom:4px;">PER SHEET</div>
+            <div style="font-family:ui-serif,Georgia,serif;font-size:1.6rem;color:#1F2A22;font-feature-settings:'lnum','tnum';">$5.00</div>
+            <div class="eco-italic" style="font-size:0.65rem;">10 bags &amp; printed QR sticker sheet</div>
+          </div>
+
+          <!-- Quantity stepper -->
+          <div style="border-top:1px solid #D9D2C2;border-bottom:1px solid #D9D2C2;padding:14px 0;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
+            <span class="eco-eyebrow">QUANTITY</span>
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div style="width:32px;height:32px;border-radius:50%;border:1px solid #D9D2C2;background:#FBF7EE;display:flex;align-items:center;justify-content:center;color:#1F2A22;">−</div>
+              <div style="font-family:ui-serif,Georgia,serif;font-size:1.5rem;color:#1F2A22;font-feature-settings:'lnum','tnum';min-width:28px;text-align:center;">4</div>
+              <div style="width:32px;height:32px;border-radius:50%;border:1px solid #2D5A3D;background:#2D5A3D;color:#FBF7EE;display:flex;align-items:center;justify-content:center;">+</div>
+            </div>
+          </div>
+
+          <!-- Ledger -->
+          <div style="margin-bottom:12px;">
+            <div class="eco-rule"><span class="label">Subtotal · 4 sheets</span><span class="value">$20.00</span></div>
+            <div class="eco-rule"><span class="label">Shipping</span><span class="value">Free</span></div>
+            <div class="eco-rule" style="border-bottom:1px solid #1F2A22;padding-top:8px;"><span class="label" style="color:#1F2A22;font-weight:600;">Total</span><span class="value" style="font-size:1rem;color:#1F2A22;">$20.00</span></div>
+          </div>
+
+          <div class="eco-btn primary">Place order →</div>
+          <div style="text-align:center;font-size:0.6rem;color:#8A8A7A;font-style:italic;font-family:ui-serif,Georgia,serif;">Stripe checkout · stub returns success</div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#34d399;">ORDER BAGS <span class="status-badge eco">🌿 EDITORIAL ECO</span></div>
+    </div>
+
+    <!-- Eco Screen J: Bonus Modal (NEW Apr 30) -->
+    <div>
+      <div class="phone eco">
+        <div class="phone-status">VOL. I · NO. 02</div>
+        <div class="phone-header">
+          <h4>Welcome bonus</h4>
+          <span>First-visit modal</span>
+        </div>
+        <div class="phone-body" style="background:rgba(31,42,34,0.45);background-image:none;">
+          <div style="background:#FBF7EE;border:1px solid #2D5A3D;border-radius:18px;padding:24px 20px;text-align:center;">
+            <div style="font-size:0.6rem;color:#2D5A3D;text-transform:uppercase;letter-spacing:1.4px;margin-bottom:6px;">SIGNUP BONUS</div>
+            <div class="eco-display" style="font-size:1.6rem;line-height:1.05;">10,000 <em>points</em>.</div>
+            <div class="eco-italic" style="font-size:0.78rem;margin-top:8px;color:#1F2A22;">Worth <strong style="color:#2D5A3D;font-style:normal;">$1</strong> toward your first reward.</div>
+            <div style="height:1px;background:#D9D2C2;margin:14px 0;"></div>
+            <div style="font-size:0.66rem;color:#5A6358;font-family:ui-serif,Georgia,serif;font-style:italic;line-height:1.5;">Earn 100,000 pts to redeem a $10 gift card. Order bags to start collecting more.</div>
+            <div class="eco-btn primary" style="margin-top:14px;">Let's go →</div>
+          </div>
+          <div style="text-align:center;font-size:0.6rem;color:#FBF7EE;margin-top:12px;font-style:italic;font-family:ui-serif,Georgia,serif;opacity:0.8;">Tap outside to dismiss · shown once per resident</div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#34d399;">SIGNUP BONUS MODAL <span class="status-badge eco">🌿 EDITORIAL ECO</span></div>
+    </div>
+
+  </div>
+
+  <!-- Older dark-aesthetic mockups follow (kept for comparison) -->
+  <div style="margin-bottom:14px;padding:10px 18px;background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.1);border-radius:10px;font-size:0.72rem;color:#9ca3af;font-style:italic;">
+    Earlier dark-aesthetic mockups below — preserved for reference. The shipped resident UI uses the editorial-eco language above.
   </div>
 
   <div class="screens-row">
@@ -1046,6 +1947,232 @@
       <span class="impl-tag">EXTRA · SHIPPED</span>
       The mock implies a single Stop view; the build also has dedicated routes <code>/operator/stop/[pickupId]</code> (per-stop scan/photo/issue actions) and <code>/operator/deliver/[bagOrderId]</code> (sticker-batch confirm). "Driver on the way" SMS is wired through the Twilio stub.
     </div>
+    <div class="impl-note" style="background:rgba(52,211,153,0.08);border-color:rgba(52,211,153,0.3);color:#34d399;">
+      <span class="impl-tag" style="color:#34d399;">EDITORIAL ECO · APR 30</span>
+      Operator surface migrated to the <code>Op.*</code> primitives in <code>src/components/operator/Op.tsx</code> — paper-grain background, italic serif <code>OpDisplay</code> headings with green <em>em</em>, <code>ProgressStrip</code> with serif numerals, <code>StatusPill</code> for stop status, <code>OpPaper</code> cards with hairline rules, full-width green <code>OpPrimaryButton</code>. Cards below tagged <span class="status-badge eco">🌿 EDITORIAL ECO</span> reflect what's shipped; the older blue/dark mocks are kept for comparison.
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- EDITORIAL-ECO OPERATOR SCREENS (Apr 30, 2026) -->
+  <!-- ════════════════════════════════════════════ -->
+  <div style="margin-bottom:16px;padding:14px 18px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.3);border-radius:12px;">
+    <div style="font-size:0.65rem;color:#34d399;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:4px;">🌿 Visual Refresh — April 30, 2026</div>
+    <div style="font-size:0.78rem;color:#d1d5db;line-height:1.5;">Op-aesthetic mockups matching the live shipped UI (<code>src/app/operator/*</code>, <code>src/components/operator/Op.tsx</code>).</div>
+  </div>
+
+  <div class="screens-row">
+
+    <!-- Eco Op Screen A: Operator Dashboard / Today's Route -->
+    <div>
+      <div class="phone eco">
+        <div class="phone-status">VOL. I · NO. 02 · OPERATOR</div>
+        <div class="phone-header">
+          <h4>Today's route</h4>
+          <span>Wed · Apr 30</span>
+        </div>
+        <div class="phone-body">
+          <!-- Masthead avatar row -->
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div style="width:34px;height:34px;border-radius:50%;background:#E8EFE6;color:#2D5A3D;display:flex;align-items:center;justify-content:center;font-family:ui-serif,Georgia,serif;font-size:0.95rem;border:1px solid #2D5A3D;">M</div>
+            <div>
+              <div style="font-family:ui-serif,Georgia,serif;font-size:0.8rem;color:#1F2A22;">Marcus J.</div>
+              <div class="eco-italic" style="font-size:0.62rem;">Operator · Capitol Hts zone</div>
+            </div>
+          </div>
+
+          <div class="eco-eyebrow" style="margin-bottom:4px;">TODAY'S ROUTE</div>
+          <div class="eco-display" style="font-size:1.4rem;line-height:1.05;">You are <em>on stop 06</em> of 14.</div>
+
+          <!-- Compost banner -->
+          <div style="background:#F2E8D6;border:1px solid #A0682A;border-radius:12px;padding:8px 10px;margin-top:10px;display:flex;align-items:center;gap:8px;">
+            <span style="color:#A0682A;">🌿</span>
+            <div style="flex:1;">
+              <div style="font-family:ui-serif,Georgia,serif;font-size:0.7rem;color:#1F2A22;">Compost route — 3 sites</div>
+              <div class="eco-italic" style="font-size:0.6rem;color:#A0682A;">Tap to view →</div>
+            </div>
+          </div>
+
+          <!-- Progress strip -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid #D9D2C2;border-bottom:1px solid #D9D2C2;margin:14px 0 12px;">
+            <div style="padding:10px 8px;border-right:1px solid #E8E2D0;">
+              <div style="font-family:ui-serif,Georgia,serif;font-size:1.4rem;color:#1F2A22;font-feature-settings:'lnum','tnum';letter-spacing:-0.4px;">06 / 14</div>
+              <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Stops</div>
+            </div>
+            <div style="padding:10px 8px;border-right:1px solid #E8E2D0;">
+              <div style="font-family:ui-serif,Georgia,serif;font-size:1.4rem;color:#1F2A22;font-feature-settings:'lnum','tnum';letter-spacing:-0.4px;">12 / 32</div>
+              <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Bags</div>
+            </div>
+            <div style="padding:10px 8px;">
+              <div style="font-family:ui-serif,Georgia,serif;font-size:1.4rem;color:#1F2A22;font-feature-settings:'lnum','tnum';letter-spacing:-0.4px;">02 / 04</div>
+              <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Deliver</div>
+            </div>
+          </div>
+
+          <!-- Current stop -->
+          <div class="eco-paper">
+            <div class="eco-eyebrow" style="margin-bottom:4px;">CURRENT STOP</div>
+            <div style="font-family:ui-serif,Georgia,serif;font-size:0.9rem;color:#1F2A22;">1247 Oak Valley Dr · Unit 3B</div>
+            <div class="eco-italic" style="font-size:0.66rem;margin-top:2px;">Aguirre Johnson</div>
+
+            <div style="border-top:1px solid #E8E2D0;margin-top:8px;padding-top:8px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
+                <div style="font-family:ui-serif,Georgia,serif;font-size:0.72rem;color:#1F2A22;">Bag #0473 · Cardboard</div>
+                <span class="eco-pill green">Picked up</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
+                <div style="font-family:ui-serif,Georgia,serif;font-size:0.72rem;color:#1F2A22;">Bag #0474 · Mixed</div>
+                <span class="eco-pill ink">Pending</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
+                <div style="font-family:ui-serif,Georgia,serif;font-size:0.72rem;color:#1F2A22;">Bag #0475 · PET</div>
+                <span class="eco-pill ink">Pending</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="eco-btn primary" style="border-radius:14px;font-size:0.95rem;padding:14px;">Mark stop complete</div>
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <div class="eco-btn secondary" style="flex:1;font-size:0.7rem;padding:8px;border-radius:14px;">Bag not out</div>
+            <div class="eco-btn secondary" style="flex:1;font-size:0.7rem;padding:8px;border-radius:14px;color:#9A4B26;border-color:#9A4B26;">Log issue</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#34d399;">TODAY'S ROUTE — OP <span class="status-badge eco">🌿 EDITORIAL ECO</span></div>
+    </div>
+
+    <!-- Eco Op Screen B: Stop Scan / Confirm (StepDots) -->
+    <div>
+      <div class="phone eco">
+        <div class="phone-status">VOL. I · NO. 02 · OPERATOR</div>
+        <div class="phone-header">
+          <h4>Bag #0474</h4>
+          <span>Step three · Photo</span>
+        </div>
+        <div class="phone-body">
+          <!-- Step dots -->
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#2D5A3D;"></div>
+            <div style="flex:1;height:1px;background:#2D5A3D;"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:#2D5A3D;"></div>
+            <div style="flex:1;height:1px;background:#2D5A3D;"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:#2D5A3D;border:2px solid #FBF7EE;outline:1px solid #2D5A3D;"></div>
+            <div style="flex:1;height:1px;background:#D9D2C2;"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:#FBF7EE;border:1px solid #D9D2C2;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px;">
+            <span>Scan</span><span>Condition</span><span style="color:#2D5A3D;font-weight:600;">Photo</span><span>Confirm</span>
+          </div>
+
+          <!-- Scanned bag info -->
+          <div class="eco-paper">
+            <div class="eco-rule" style="border-bottom:1px solid #E8E2D0;"><span class="label">QR</span><span class="value">BAG-2026-0474</span></div>
+            <div class="eco-rule" style="border-bottom:1px solid #E8E2D0;"><span class="label">Resident</span><span class="value">Aguirre J.</span></div>
+            <div class="eco-rule" style="border-bottom:none;"><span class="label">Declared</span><span class="value"><em style="font-style:italic;color:#2D5A3D;">Mixed</em></span></div>
+          </div>
+
+          <!-- Photo placeholder -->
+          <div style="border:1px dashed #D9D2C2;background:#FBF7EE;border-radius:14px;padding:30px 14px;text-align:center;color:#5A6358;font-family:ui-serif,Georgia,serif;font-style:italic;font-size:0.8rem;margin-bottom:12px;">
+            📷 Tap to capture doorstep photo
+          </div>
+
+          <div class="eco-btn primary">Use this photo →</div>
+          <div class="eco-btn secondary">Retake</div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#34d399;">STOP · SCAN &amp; CONFIRM <span class="status-badge eco">🌿 EDITORIAL ECO</span></div>
+    </div>
+
+    <!-- Eco Op Screen C: Bag Order Delivery -->
+    <div>
+      <div class="phone eco">
+        <div class="phone-status">VOL. I · NO. 02 · OPERATOR</div>
+        <div class="phone-header">
+          <h4>Deliver to Unit 3B</h4>
+          <span>Sticker batch · 10 bags</span>
+        </div>
+        <div class="phone-body">
+          <div class="eco-eyebrow" style="margin-bottom:4px;">DELIVERY</div>
+          <div class="eco-display" style="font-size:1.3rem;margin-bottom:4px;">One sheet, <em>ten bags</em>.</div>
+          <div class="eco-italic" style="font-size:0.7rem;margin-bottom:14px;">Confirm by scanning a sticker.</div>
+
+          <div class="eco-paper">
+            <div class="eco-rule" style="border-bottom:1px solid #E8E2D0;"><span class="label">Resident</span><span class="value">Aguirre J. · Unit 3B</span></div>
+            <div class="eco-rule" style="border-bottom:1px solid #E8E2D0;"><span class="label">Order</span><span class="value">#2104 · $8.00</span></div>
+            <div class="eco-rule" style="border-bottom:none;"><span class="label">Sheet</span><span class="value">SHEET-0048 · QR #0480 → #0489</span></div>
+          </div>
+
+          <!-- Photo / scan placeholder -->
+          <div style="border:1px dashed #2D5A3D;background:#E8EFE6;border-radius:14px;padding:24px 14px;text-align:center;color:#2D5A3D;font-family:ui-serif,Georgia,serif;font-style:italic;font-size:0.8rem;margin-bottom:12px;">
+            📷 Scan any sticker to confirm batch
+          </div>
+
+          <div class="eco-paper" style="font-size:0.7rem;color:#5A6358;font-family:ui-serif,Georgia,serif;font-style:italic;line-height:1.5;">
+            Each sticker carries a QR + printed number. Resident applies one to each bag before filling.
+          </div>
+
+          <div class="eco-btn primary">Confirm delivery →</div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#34d399;">DELIVER · STICKER BATCH <span class="status-badge eco">🌿 EDITORIAL ECO</span></div>
+    </div>
+
+    <!-- Eco Op Screen D: Route Summary -->
+    <div>
+      <div class="phone eco">
+        <div class="phone-status">VOL. I · NO. 02 · OPERATOR</div>
+        <div class="phone-header">
+          <h4>Route summary</h4>
+          <span>End of day</span>
+        </div>
+        <div class="phone-body">
+          <div class="eco-eyebrow" style="margin-bottom:4px;">END OF ROUTE</div>
+          <div class="eco-display" style="font-size:1.4rem;margin-bottom:14px;">14 stops, <em>handled</em>.</div>
+
+          <!-- Summary stats -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid #D9D2C2;margin-bottom:12px;">
+            <div style="padding:10px 0;border-right:1px solid #E8E2D0;">
+              <div style="font-family:ui-serif,Georgia,serif;font-size:1.5rem;color:#1F2A22;font-feature-settings:'lnum','tnum';letter-spacing:-0.4px;">32</div>
+              <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Bags picked up</div>
+            </div>
+            <div style="padding:10px 0 10px 12px;">
+              <div style="font-family:ui-serif,Georgia,serif;font-size:1.5rem;color:#1F2A22;font-feature-settings:'lnum','tnum';letter-spacing:-0.4px;">04</div>
+              <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Deliveries</div>
+            </div>
+            <div style="padding:10px 0;border-right:1px solid #E8E2D0;border-top:1px solid #E8E2D0;">
+              <div style="font-family:ui-serif,Georgia,serif;font-size:1.5rem;color:#A0682A;font-feature-settings:'lnum','tnum';letter-spacing:-0.4px;">02</div>
+              <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Missed</div>
+            </div>
+            <div style="padding:10px 0 10px 12px;border-top:1px solid #E8E2D0;">
+              <div style="font-family:ui-serif,Georgia,serif;font-size:1.5rem;color:#9A4B26;font-feature-settings:'lnum','tnum';letter-spacing:-0.4px;">01</div>
+              <div style="font-size:0.55rem;color:#5A6358;text-transform:uppercase;letter-spacing:1.2px;">Issues</div>
+            </div>
+          </div>
+
+          <div class="eco-paper">
+            <div class="eco-eyebrow" style="margin-bottom:6px;">BAGS BY TYPE</div>
+            <div class="eco-rule" style="border-bottom:1px solid #E8E2D0;"><span class="label">Cardboard</span><span class="value">14</span></div>
+            <div class="eco-rule" style="border-bottom:1px solid #E8E2D0;"><span class="label">Mixed</span><span class="value">12</span></div>
+            <div class="eco-rule" style="border-bottom:none;"><span class="label">PET</span><span class="value">06</span></div>
+          </div>
+
+          <div class="eco-paper" style="border-color:#9A4B26;background:#F0DCC8;">
+            <div class="eco-eyebrow" style="color:#9A4B26;margin-bottom:4px;">ISSUE FLAGGED</div>
+            <div style="font-family:ui-serif,Georgia,serif;font-size:0.78rem;color:#1F2A22;">Unit 7C · contamination</div>
+            <div class="eco-italic" style="font-size:0.66rem;color:#9A4B26;margin-top:2px;">Half-full soda bottle in cans bag</div>
+          </div>
+
+          <div class="eco-btn primary">Deliver to depot →</div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#34d399;">ROUTE SUMMARY <span class="status-badge eco">🌿 EDITORIAL ECO</span></div>
+    </div>
+
+  </div>
+
+  <!-- Older blue-dark mockups follow (kept for comparison) -->
+  <div style="margin-bottom:14px;padding:10px 18px;background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.1);border-radius:10px;font-size:0.72rem;color:#9ca3af;font-style:italic;">
+    Earlier blue/dark operator mockups below — preserved for reference. Live operator UI uses the editorial-eco / Op aesthetic above.
   </div>
 
   <div class="screens-row">
@@ -2057,7 +3184,7 @@
 </div>
 
 <div class="footer" style="text-align:center;padding:30px;color:#4b5563;font-size:0.8rem;">
-  We Buy Clean Trash — App Screen Map · 5 User Roles · Pilot v1.2 · Updated April 16, 2026 · Implementation status April 23, 2026
+  We Buy Clean Trash — App Screen Map · 5 User Roles · Pilot v1.2 · Updated April 16, 2026 · Implementation status April 23, 2026 · <span style="color:#34d399;">Editorial-Eco design system shipped April 30, 2026</span>
 </div>
 
 <!-- IMPLEMENTATION STATUS · April 23, 2026 -->
@@ -2267,6 +3394,70 @@
     </div>
     <div style="margin-bottom:14px;">
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> <code>BagDoc</code> gains optional <code>containerType</code> + <code>reusable</code> + <code>commercialAccountId</code>. <code>UserDoc</code> gains optional <code>accountType</code> + <code>commercialAccountId</code>. All back-compat — legacy bags resolve to <code>'bag'</code>, legacy users to <code>'resident'</code>.</div>
+    </div>
+
+    <!-- ── Editorial-Eco Design System · Apr 30, 2026 ── -->
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
+      <div style="font-size:0.78rem;color:#34d399;font-weight:700;margin-bottom:8px;">Editorial-Eco Design System · April 30, 2026</div>
+      <div style="font-size:0.72rem;color:#6b7280;margin-bottom:10px;line-height:1.5;">
+        The onboarding redesign expanded into a full visual refresh of the resident + operator surface. Tokens, primitives, and an icon set now live in the codebase; every consumer-facing screen was rebuilt against them. Depot, depot manager, and admin remain on the legacy dark UI for now.
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> Design tokens in <code>src/app/globals.css</code> — palette (paper / ink / line / green / amber / rust), <code>--eco-serif</code> + <code>--eco-sans</code> stacks, semantic typography classes (<code>.eco-display</code>, <code>.eco-h2</code>, <code>.eco-eyebrow</code>, <code>.eco-quote</code>, <code>.eco-num</code>), and the <code>.eco-grain</code> background utility (dual-layer radial dot pattern at ~6% opacity).</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> Resident primitives in <code>src/components/resident/eco/Eco.tsx</code> — <code>EcoPage</code>, <code>EcoMasthead</code>, <code>EcoH1</code>, <code>EcoH2</code>, <code>EcoPaper</code>, <code>EcoButton</code> (primary / secondary / ghost), <code>EcoRule</code>, <code>EcoListLink</code>, <code>EcoEmpty</code>. Pill-shaped buttons (<code>rounded-full</code>), 14-px corner radius on cards, hairline <code>#D9D2C2</code> borders, no shadows.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> Operator primitives in <code>src/components/operator/Op.tsx</code> — <code>OpPage</code> (paper-grain bg), <code>OpMasthead</code>, <code>OpDisplay</code>, <code>OpPaper</code>, <code>OpPrimaryButton</code>, <code>OpGhostButton</code>, <code>ProgressStrip</code> (serif tabular numerals with hairline dividers), <code>StatusPill</code> (pending / completed / missed / issue tones), <code>OpSheet</code> (bottom sheet modal), <code>OpRow</code>, <code>SummaryStat</code>.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> Custom line-drawn icon set in <code>src/components/icons/EcoIcons.tsx</code> — Home, Scan, Bag, Gift, User, Truck, Leaf, Droplet, Recycle, Cloud, Fire, Box, Clock, Bell, Check, Close, Star, Pin, Plus, Arrow / ArrowLeft, ChevR. 24-viewBox, 1.75-px stroke, configurable size + color. Replaces emoji glyphs across the UI.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Login (<code>/login</code>) rebuilt — eyebrow + display headline ("Welcome <em>back</em>."), italic serif lede, underlined-rule form fields, monospace password reveal, "or" divider, Google secondary, "New here? Create an account →" footer link.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Signup wizard now ships with the editorial-eco shell — VOL. I · NO. 01 masthead, italic-em display headlines per step, ledger-style rules ("Avg. earnings · Cadence · Materials"), green primary CTA, step counter <code>00 / 05</code>. Pre-signup scan banner persists on the welcome screen.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Dashboard (<code>/resident</code>) — masthead with avatar initial, hero "You've turned trash into <em>$X.XX</em>." display, redemption progress strip, amber "BONUS RUNNING NOW" banner, dark-green hero CTA card for Order Bags, calendar-tile next-pickup row, 4-cell impact grid (lbs recycled / trees / gal water / lbs CO₂) with serif tabular numerals.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Order Bags (<code>/resident/order-bags</code>) — quantity stepper, ledger rules (subtotal · shipping · total) with the bottom border styled as a final ruling, italic copy on free-shipping rule. History &amp; success pages match.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Calculator (<code>/resident/calculator</code>) — material rows as ledger entries with italic <code>$X.XX / lb</code> subtitles and right-aligned weight inputs (<code>lbs</code> suffix). Active campaigns show as italic amber callouts above; ×N tag appears next to affected materials. Estimate appears as a top + bottom ruled "CLEAN &amp; SEPARATED → $X.XX" total.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Rewards (<code>/resident/rewards</code>) — large serif points balance, thin progress strip, <code>EcoListLink</code> rows for Amazon / Walmart / Pay Bill (disabled) / Donate (disabled). Recent points history rendered as <code>EcoRule</code> entries with green <code>+X,XXX</code> values.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident:</strong> Welcome (<code>/resident/welcome</code>), Profile (<code>/resident/profile</code> + <code>PhoneField</code>), Order Bags Success, Scan Bag (<code>ScanBagClient</code>), Recycling Guide, Pre-signup Scan banner, Signup Bonus Modal, BottomNav — all repainted in the editorial-eco language.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Operator:</strong> Dashboard (<code>/operator</code>) and Today's Route (<code>TodaysRouteClient</code>) — Op-aesthetic shell with paper-grain bg, italic serif <code>OpDisplay</code> ("You are <em>on stop 06</em> of 14."), <code>ProgressStrip</code> with serif numerals (Stops · Bags · Deliver), <code>StatusPill</code> per pickup (Pending / Completed / Missed / Issue), <code>OpPrimaryButton</code> for "Mark stop complete." Compost banner uses amber soft tone.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Operator:</strong> Stop scan flow (<code>/operator/stop/[pickupId]</code> + <code>ScanConfirmClient</code>) — <code>StepDots</code> progress (Scan · Condition · Photo · Confirm), <code>OpPaper</code> with <code>OpRow</code> entries for QR / Resident / Declared, dashed paper photo placeholder.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Operator:</strong> Deliver (<code>/operator/deliver/[bagOrderId]</code> + <code>DeliverClient</code>) — sticker-batch confirmation reads as a ledger (Resident / Order / Sheet QR range), italic body copy, full-width green confirm button.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Operator:</strong> Route Summary (<code>/operator/summary</code> + <code>CompleteRouteButton</code>) — "14 stops, <em>handled</em>." display, 2×2 <code>SummaryStat</code> grid (Bags · Deliveries · Missed · Issues) with tone-coloured serif numerals, issue-flagged paper card uses rust soft tones. Compost route page (<code>/operator/compost</code>) follows the same shell.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Operator:</strong> <code>LogoutLink</code> component on the operator masthead — italic serif "Sign out" link, posts to the session-clear endpoint.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident (anonymous):</strong> Pre-signup scan (<code>/scan</code> + <code>ScanClient</code>) repainted on the editorial-eco shell — VOL. I · NO. 01 masthead, italic-em "Scan some trash, see how much you'll <em>earn</em>.", ledger-style scanned-item rows with $/pts subtitle, sticky "Sign up &amp; start earning →" green CTA. Session-only state still in localStorage.</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="background:rgba(160,104,42,0.1);border:1px solid rgba(160,104,42,0.3);padding:10px 12px;border-radius:8px;font-size:0.72rem;color:#fbbf24;line-height:1.5;">
+        <strong>Out of scope (still legacy dark UI):</strong> depot worker, depot manager, admin. Migration not yet planned — these are operator-internal tools and the dark theme reads fine in a depot-floor / desk context.
+      </div>
     </div>
 
     <!-- ── Resident onboarding redesign · Apr 30, 2026 ── -->
