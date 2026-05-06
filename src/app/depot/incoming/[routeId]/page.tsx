@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireRole } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
@@ -7,6 +6,13 @@ import type { RouteDoc } from '@/lib/types/route';
 import type { PickupDoc } from '@/lib/types/pickup';
 import type { BagDoc } from '@/lib/types/bag';
 import type { UserDoc } from '@/lib/types/user';
+import {
+  DP_TOK,
+  DpBackRow,
+  DpEmpty,
+  DpMasthead,
+  DpProgressBar,
+} from '@/components/depot/Dp';
 import { RouteBagsClient, type RouteBagRow } from './RouteBagsClient';
 
 export const dynamic = 'force-dynamic';
@@ -79,6 +85,8 @@ export default async function RouteDetailPage({
     .sort((a, b) => a.printedNumber.localeCompare(b.printedNumber));
 
   const processedCount = rows.filter((r) => r.status === 'processed').length;
+  const progressPct =
+    rows.length > 0 ? Math.round((processedCount / rows.length) * 100) : 0;
 
   const operatorLabel = route.operatorId
     ? ((await adminDb.collection('users').doc(route.operatorId).get()).data() as UserDoc | undefined)
@@ -86,29 +94,42 @@ export default async function RouteDetailPage({
     : 'Operator';
 
   return (
-    <section className="mt-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="text-[10px] uppercase tracking-[0.2em] text-gray-500">
-            Route detail
-          </div>
-          <h1 className="mt-0.5 text-lg font-semibold text-white">{operatorLabel}</h1>
-          <div className="mt-0.5 text-xs text-gray-400">
-            {processedCount}/{rows.length} bags processed
-          </div>
-        </div>
-        <Link
-          href="/depot/incoming"
-          className="rounded border border-white/10 bg-white/5 px-3 py-1 text-xs text-gray-300"
+    <section>
+      <DpBackRow label="Incoming" href="/depot/incoming" />
+
+      <DpMasthead
+        eyebrow="Route detail"
+        title={
+          <>
+            <em style={{ color: DP_TOK.green, fontStyle: 'italic' }}>
+              {operatorLabel}
+            </em>
+            &rsquo;s haul.
+          </>
+        }
+      >
+        <div
+          className="mt-2"
+          style={{
+            fontFamily: DP_TOK.serif,
+            fontSize: 13,
+            color: DP_TOK.inkSoft,
+          }}
         >
-          ← Back
-        </Link>
-      </div>
+          {processedCount}/{rows.length} bags processed
+        </div>
+        {rows.length > 0 && (
+          <div className="mt-2">
+            <DpProgressBar pct={progressPct} tone="green" />
+          </div>
+        )}
+      </DpMasthead>
 
       {rows.length === 0 ? (
-        <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-5 text-sm text-gray-400">
-          This route has no completed pickups.
-        </div>
+        <DpEmpty
+          title="No completed pickups."
+          body="This route closed without any bags collected."
+        />
       ) : (
         <RouteBagsClient rows={rows} />
       )}

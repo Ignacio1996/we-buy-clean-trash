@@ -4,6 +4,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { QrScanner } from '@/components/scanner/QrScanner';
+import {
+  DP_TOK,
+  DpAlert,
+  DpPrimaryButton,
+  DpStatusPill,
+} from '@/components/depot/Dp';
+import { IconScan } from '@/components/icons/EcoIcons';
 import type { BagStatus, DeclaredBagType } from '@/lib/types/bag';
 
 export interface RouteBagRow {
@@ -39,7 +46,7 @@ export function RouteBagsClient({ rows }: { rows: RouteBagRow[] }) {
       return;
     }
     if (match.status === 'processed') {
-      setError(`Bag ${match.printedNumber} is already processed.`);
+      setError(`Bag #${match.printedNumber} is already processed.`);
       setScanMode(false);
       return;
     }
@@ -47,7 +54,7 @@ export function RouteBagsClient({ rows }: { rows: RouteBagRow[] }) {
   }
 
   return (
-    <div className="mt-5 space-y-4">
+    <div className="space-y-4">
       {scanMode ? (
         <QrScanner
           onDetected={handleDetected}
@@ -55,25 +62,20 @@ export function RouteBagsClient({ rows }: { rows: RouteBagRow[] }) {
           manualPlaceholder="Or type the printed number"
         />
       ) : (
-        <button
-          type="button"
+        <DpPrimaryButton
           onClick={() => {
             setError(null);
             setScanMode(true);
           }}
-          className="w-full rounded-xl bg-green-500 px-4 py-3 text-sm font-semibold text-black"
         >
-          📷 Scan a bag
-        </button>
+          <IconScan size={18} color={DP_TOK.paper} stroke={1.5} />
+          Scan a bag
+        </DpPrimaryButton>
       )}
 
-      {error && (
-        <p className="rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
-          {error}
-        </p>
-      )}
+      {error && <DpAlert tone="rust">{error}</DpAlert>}
 
-      <ul className="space-y-2">
+      <ul className="space-y-2.5">
         {rows.map((row) => {
           const processed = row.status === 'processed';
           return (
@@ -83,26 +85,50 @@ export function RouteBagsClient({ rows }: { rows: RouteBagRow[] }) {
                 onClick={(e) => {
                   if (processed) e.preventDefault();
                 }}
-                className={`flex items-center justify-between rounded-lg border border-white/10 px-3 py-3 text-sm ${
-                  processed ? 'cursor-not-allowed bg-white/5 opacity-60' : 'bg-black/30 hover:bg-white/10'
-                }`}
+                className="flex items-center justify-between transition-opacity"
+                style={{
+                  background: DP_TOK.paper,
+                  border: `1px solid ${DP_TOK.line}`,
+                  borderRadius: 12,
+                  padding: '12px 14px',
+                  textDecoration: 'none',
+                  color: DP_TOK.ink,
+                  opacity: processed ? 0.6 : 1,
+                  cursor: processed ? 'not-allowed' : 'pointer',
+                }}
               >
-                <div>
-                  <div className="font-mono text-xs text-white">#{row.printedNumber}</div>
-                  <div className="mt-0.5 text-xs text-gray-300">{row.residentName}</div>
+                <div className="min-w-0">
+                  <div
+                    style={{
+                      fontFamily: DP_TOK.mono,
+                      fontSize: 13,
+                      color: DP_TOK.ink,
+                      letterSpacing: 0.5,
+                    }}
+                  >
+                    #{row.printedNumber}
+                  </div>
+                  <div
+                    className="mt-0.5"
+                    style={{ fontFamily: DP_TOK.serif, fontSize: 13, color: DP_TOK.ink }}
+                  >
+                    {row.residentName}
+                  </div>
                   {row.declaredType && (
-                    <div className="mt-0.5 text-[11px] text-gray-500">
-                      Declared {row.declaredType === 'separated' ? 'separated' : 'mixed'}
+                    <div
+                      className="mt-0.5 italic"
+                      style={{
+                        fontFamily: DP_TOK.serif,
+                        fontSize: 11,
+                        color: DP_TOK.inkSoft,
+                      }}
+                    >
+                      Declared{' '}
+                      {row.declaredType === 'separated' ? 'separated' : 'mixed'}
                     </div>
                   )}
                 </div>
-                <span
-                  className={`rounded px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
-                    processed ? 'bg-white/5 text-gray-500' : 'bg-white text-black'
-                  }`}
-                >
-                  {processed ? 'Processed' : 'Pending'}
-                </span>
+                <DpStatusPill status={processed ? 'processed' : 'pending'} />
               </Link>
             </li>
           );

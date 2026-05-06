@@ -1,0 +1,29 @@
+Subject: WBCT progress — month 1 update
+
+Hey [Name]!
+
+Hope you're doing well! Quick update on where the app stands after month 1:
+
+What's working end-to-end:
+- All 5 roles built: resident, operator, depot worker, depot manager, and admin.
+- Full resident flow: signup, bag ordering, points balance, rewards, bag scan, and profile.
+- Full operator flow: optimized routes via Google Maps, per-stop pickups, and end-of-day summary.
+- Full admin flow: invites, zones, depots, QR sticker sheets, materials/pricing, redemptions, and route management.
+- Points formula running atomically on the server (weight, market price, customer %, separated multiplier, contamination penalty).
+- Compost integration: new material types, reusable bins (32/48/64 gal) with fullness measurement, commercial accounts for Tia's 19 sites, and a dedicated operator route at /operator/compost.
+
+Still pending:
+- Depot worker screens: redesigning to match the new app designs, I'll walk you through on our next meeting.
+- App redesign: based on Tia's feedback (cleaner look, white background, sans-serif, bolder logo). I'll send 2-3 variations between today and tomorrow.
+- Firebase billing: Kirk needs to set up the billing account and add me as a delegate. Once that's live, I can wire up the AI material scan, image uploads, push notifications, and emails. They're all built around Firebase and ready to plug in.
+- Stripe payments for bag orders: also pending Firebase setup.
+- Promo video: I'll put together a script and use screenshots from the redesigned app once the new look is approved.
+
+Next steps:
+- Kirk: Firebase billing + GoDaddy delegate access today.
+- Me: redesign options in the next day or two, plus invoice for the past month.
+
+Let me know if you have any questions, or want to hop on a quick call!
+
+Best,
+Ignacio

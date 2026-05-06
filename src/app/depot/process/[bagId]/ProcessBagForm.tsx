@@ -10,6 +10,15 @@ import {
   type MaterialPricing,
 } from '@/lib/types/material';
 import type { DeclaredBagType } from '@/lib/types/bag';
+import {
+  DP_TOK,
+  DpAlert,
+  DpEyebrow,
+  DpPaper,
+  DpPrimaryButton,
+  DpRow,
+} from '@/components/depot/Dp';
+import { IconCheck, IconFire } from '@/components/icons/EcoIcons';
 
 export interface MaterialDescriptor {
   id: MaterialId;
@@ -160,109 +169,244 @@ export function ProcessBagForm(props: ProcessBagFormProps) {
 
   if (step === 'done') {
     return (
-      <section className="rounded-xl border border-green-500/30 bg-green-500/10 p-5 text-center">
-        <div className="text-3xl">✅</div>
-        <div className="mt-1 text-sm font-semibold text-white">
-          +{(awarded ?? 0).toLocaleString()} points awarded
+      <div
+        className="px-5 py-8 text-center"
+        style={{
+          background: DP_TOK.greenSoft,
+          border: `1px solid rgba(45,90,61,0.3)`,
+          borderRadius: 14,
+        }}
+      >
+        <div
+          className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full"
+          style={{ background: DP_TOK.green }}
+        >
+          <IconCheck size={20} color={DP_TOK.paper} stroke={2.5} />
         </div>
-        <div className="mt-1 text-xs text-gray-300">Returning to route…</div>
-      </section>
+        <div
+          style={{
+            fontFamily: DP_TOK.serif,
+            fontSize: 22,
+            color: DP_TOK.ink,
+            letterSpacing: -0.4,
+            fontFeatureSettings: '"lnum","tnum"',
+          }}
+        >
+          +{(awarded ?? 0).toLocaleString()} points
+        </div>
+        <div
+          className="mt-1 italic"
+          style={{
+            fontFamily: DP_TOK.serif,
+            fontSize: 13,
+            color: DP_TOK.green,
+          }}
+        >
+          Awarded. Returning to route…
+        </div>
+      </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border border-white/15 bg-white/5 p-4 text-sm">
-        <Row label="Resident" value={props.residentName} />
-        <Row label="Bag" value={`#${props.printedNumber}`} />
-        <Row
-          label="Declared"
-          value={
-            props.declaredType === 'separated'
-              ? 'Separated (2× multiplier)'
+      <DpPaper>
+        <DpRow label="Resident" value={props.residentName} />
+        <DpRow label="Bag" value={`#${props.printedNumber}`} valueTone="mono" />
+        <div
+          className="flex items-baseline justify-between pt-2.5"
+          style={{ borderBottom: 'none' }}
+        >
+          <DpEyebrow>Declared</DpEyebrow>
+          <span
+            style={{
+              fontFamily: DP_TOK.serif,
+              fontSize: 15,
+              color:
+                props.declaredType === 'separated' ? DP_TOK.green : DP_TOK.ink,
+            }}
+          >
+            {props.declaredType === 'separated'
+              ? 'Separated · 2× multiplier'
               : props.declaredType === 'mixed'
                 ? 'Commingled'
-                : '—'
-          }
-        />
-      </div>
+                : '—'}
+          </span>
+        </div>
+      </DpPaper>
 
       <label
-        className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors ${
-          commingled
-            ? 'border-blue-400/40 bg-blue-500/10'
-            : 'border-white/10 bg-white/5'
-        }`}
+        className="flex cursor-pointer items-start gap-3"
+        style={{
+          background: commingled ? DP_TOK.amberSoft : DP_TOK.paper,
+          border: `1px solid ${commingled ? 'rgba(160,104,42,0.4)' : DP_TOK.line}`,
+          borderRadius: 12,
+          padding: 14,
+        }}
       >
         <input
           type="checkbox"
           checked={commingled}
           onChange={(e) => setCommingled(e.target.checked)}
-          className="mt-0.5 h-4 w-4 rounded border-white/20 bg-black/40"
+          className="mt-0.5 h-4 w-4 cursor-pointer"
+          style={{ accentColor: DP_TOK.amber }}
         />
-        <div className="text-xs">
-          <div className="font-semibold text-white">Commingled bag</div>
-          <div className="mt-0.5 text-gray-400">
-            Contents can&apos;t be sorted (mixed plastic + glass, etc.). Weights are still
-            recorded for landfill-diversion reporting, but no points are paid.
+        <div>
+          <div
+            style={{ fontFamily: DP_TOK.serif, fontSize: 14, color: DP_TOK.ink }}
+          >
+            Commingled bag
+          </div>
+          <div
+            className="mt-1 italic"
+            style={{
+              fontFamily: DP_TOK.serif,
+              fontSize: 12,
+              color: DP_TOK.inkSoft,
+              lineHeight: 1.5,
+            }}
+          >
+            Contents can&rsquo;t be sorted (mixed plastic + glass, etc.). Weights
+            are still recorded for landfill-diversion reporting, but no points are
+            paid.
           </div>
         </div>
       </label>
 
       {props.activeCampaignNotices.length > 0 && (
-        <div className="rounded-xl border border-amber-400/30 bg-amber-400/10 p-3">
-          <div className="text-[11px] font-semibold uppercase tracking-wide text-amber-200">
-            🔥 Active campaign{props.activeCampaignNotices.length === 1 ? '' : 's'}
+        <div
+          className="px-4 py-3"
+          style={{
+            background: DP_TOK.amberSoft,
+            border: `1px solid rgba(160,104,42,0.3)`,
+            borderRadius: 12,
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <IconFire size={14} color={DP_TOK.amber} stroke={1.8} />
+            <DpEyebrow color={DP_TOK.amber}>
+              Active campaign{props.activeCampaignNotices.length === 1 ? '' : 's'}
+            </DpEyebrow>
           </div>
-          <ul className="mt-1 space-y-0.5 text-[11px] text-amber-100">
+          <ul
+            className="mt-2 space-y-1"
+            style={{
+              fontFamily: DP_TOK.serif,
+              fontSize: 13,
+              color: DP_TOK.amber,
+              lineHeight: 1.4,
+            }}
+          >
             {props.activeCampaignNotices.map((c) => (
               <li key={c.id}>
-                <span className="font-semibold">×{c.multiplier}</span> on{' '}
-                {c.materialNames.join(', ')} · {c.name}
+                <strong style={{ fontWeight: 500 }}>×{c.multiplier}</strong> on{' '}
+                {c.materialNames.join(', ')}
+                <span
+                  className="italic"
+                  style={{ color: DP_TOK.inkSoft, marginLeft: 4 }}
+                >
+                  · {c.name}
+                </span>
               </li>
             ))}
           </ul>
         </div>
       )}
 
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <div className="text-[11px] uppercase tracking-wide text-gray-400">Contamination</div>
-        <div className="mt-2 grid grid-cols-4 gap-2">
+      <DpPaper>
+        <DpEyebrow>Contamination</DpEyebrow>
+        <div className="mt-3 grid grid-cols-4 gap-2">
           {CONTAMINATION_SEVERITIES.map((sev) => {
             const active = sev === contamination;
+            const isClean = sev === 'none';
+            const palette = active
+              ? isClean
+                ? { bg: DP_TOK.green, fg: DP_TOK.paper, border: DP_TOK.green }
+                : { bg: DP_TOK.rust, fg: DP_TOK.paper, border: DP_TOK.rust }
+              : { bg: 'transparent', fg: DP_TOK.ink, border: DP_TOK.line };
             return (
               <button
                 key={sev}
                 type="button"
                 onClick={() => setContamination(sev)}
-                className={`rounded-lg px-2 py-2 text-center transition-colors ${
-                  active
-                    ? sev === 'none'
-                      ? 'bg-green-500 text-black'
-                      : 'bg-red-500 text-black'
-                    : 'border border-white/10 bg-black/30 text-gray-300 hover:bg-white/10'
-                }`}
+                className="cursor-pointer transition-colors"
+                style={{
+                  background: palette.bg,
+                  color: palette.fg,
+                  border: `1px solid ${palette.border}`,
+                  borderRadius: 10,
+                  padding: '8px 4px',
+                }}
               >
-                <div className="text-xs font-semibold">{CONTAMINATION_LABEL[sev]}</div>
-                <div className="text-[10px] opacity-80">{CONTAMINATION_SUBLABEL[sev]}</div>
+                <div
+                  style={{
+                    fontFamily: DP_TOK.serif,
+                    fontSize: 14,
+                    letterSpacing: -0.2,
+                  }}
+                >
+                  {CONTAMINATION_LABEL[sev]}
+                </div>
+                <div
+                  style={{
+                    fontFamily: DP_TOK.sans,
+                    fontSize: 10,
+                    letterSpacing: 0.4,
+                    opacity: 0.85,
+                    marginTop: 1,
+                  }}
+                >
+                  {CONTAMINATION_SUBLABEL[sev]}
+                </div>
               </button>
             );
           })}
         </div>
-      </div>
+      </DpPaper>
 
-      <div className="rounded-xl border border-green-500/20 bg-white/5 p-4">
-        <div className="text-[11px] uppercase tracking-wide text-green-400">
-          ⚖️ Weigh each material
+      <DpPaper
+        style={{
+          background: DP_TOK.paper,
+          border: `1px solid ${DP_TOK.line}`,
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <span aria-hidden style={{ fontSize: 14 }}>
+            ⚖️
+          </span>
+          <DpEyebrow color={DP_TOK.green}>Weigh each material</DpEyebrow>
         </div>
-        <div className="mt-1 text-[10px] text-gray-500">
+        <div
+          className="mt-1 italic"
+          style={{
+            fontFamily: DP_TOK.serif,
+            fontSize: 11.5,
+            color: DP_TOK.inkSoft,
+          }}
+        >
           Open bag, sort on the table, weigh separately.
         </div>
-        <div className="mt-3 divide-y divide-white/5">
-          {props.materialList.map((m) => (
-            <div key={m.id} className="flex items-center justify-between py-2">
-              <span className="text-sm text-gray-200">
-                <span className="mr-1">{emojiFor(m.id)}</span>
+        <div className="mt-3">
+          {props.materialList.map((m, i) => (
+            <div
+              key={m.id}
+              className="flex items-center justify-between py-2.5"
+              style={{
+                borderBottom:
+                  i < props.materialList.length - 1
+                    ? `1px solid ${DP_TOK.lineSoft}`
+                    : 'none',
+              }}
+            >
+              <span
+                className="flex items-center gap-2"
+                style={{
+                  fontFamily: DP_TOK.serif,
+                  fontSize: 14,
+                  color: DP_TOK.ink,
+                }}
+              >
+                <span aria-hidden>{emojiFor(m.id)}</span>
                 {m.name}
               </span>
               <div className="flex items-center gap-2">
@@ -277,49 +421,90 @@ export function ProcessBagForm(props: ProcessBagFormProps) {
                     }))
                   }
                   placeholder="0.0"
-                  className="w-16 rounded border border-white/15 bg-black/40 px-2 py-1 text-right text-sm text-white"
+                  className="text-right"
+                  style={{
+                    width: 64,
+                    background: DP_TOK.paperTint,
+                    border: `1px solid ${DP_TOK.line}`,
+                    borderRadius: 8,
+                    padding: '6px 10px',
+                    fontFamily: DP_TOK.mono,
+                    fontSize: 14,
+                    color: DP_TOK.ink,
+                    fontFeatureSettings: '"lnum","tnum"',
+                  }}
                 />
-                <span className="text-[11px] text-gray-500">lbs</span>
+                <span
+                  style={{
+                    fontFamily: DP_TOK.sans,
+                    fontSize: 11,
+                    color: DP_TOK.inkFaint,
+                    letterSpacing: 1.2,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  lbs
+                </span>
               </div>
             </div>
           ))}
         </div>
-      </div>
+      </DpPaper>
 
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
-        <div className="text-[11px] uppercase tracking-wide text-gray-400">
+      <div
+        className="px-4 py-4 text-center"
+        style={{
+          background: commingled ? DP_TOK.paperTint : DP_TOK.greenSoft,
+          border: `1px solid ${commingled ? DP_TOK.line : 'rgba(45,90,61,0.25)'}`,
+          borderRadius: 14,
+        }}
+      >
+        <DpEyebrow color={commingled ? DP_TOK.inkSoft : DP_TOK.green}>
           Total {totalWeight.toFixed(1)} lbs
-        </div>
-        <div className="mt-1 text-base font-semibold text-white">
+        </DpEyebrow>
+        <div
+          className="mt-1.5"
+          style={{
+            fontFamily: DP_TOK.serif,
+            fontSize: 22,
+            color: commingled ? DP_TOK.inkSoft : DP_TOK.green,
+            letterSpacing: -0.4,
+            fontFeatureSettings: '"lnum","tnum"',
+          }}
+        >
           {commingled
-            ? 'Diversion-only — 0 points (commingled)'
-            : `Auto-calculated: +${previewPoints.toLocaleString()} points`}
+            ? 'Diversion only — 0 pts'
+            : `+${previewPoints.toLocaleString()} pts`}
         </div>
+        {!commingled && (
+          <div
+            className="mt-0.5 italic"
+            style={{
+              fontFamily: DP_TOK.serif,
+              fontSize: 11,
+              color: DP_TOK.inkSoft,
+            }}
+          >
+            For {props.residentName}
+          </div>
+        )}
       </div>
 
-      {error && (
-        <p className="rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
-          {error}
-        </p>
-      )}
+      {error && <DpAlert tone="rust">{error}</DpAlert>}
 
-      <button
-        type="button"
+      <DpPrimaryButton
         onClick={handleSubmit}
         disabled={totalWeight <= 0 || step === 'submitting'}
-        className="w-full rounded-xl bg-green-500 px-4 py-3 text-sm font-semibold text-black disabled:opacity-50"
       >
-        {step === 'submitting' ? 'Submitting…' : '✓ Submit & next bag'}
-      </button>
-    </div>
-  );
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between text-xs">
-      <span className="text-gray-400">{label}</span>
-      <span className="font-semibold text-white">{value}</span>
+        {step === 'submitting' ? (
+          'Submitting…'
+        ) : (
+          <>
+            <IconCheck size={16} color={DP_TOK.paper} stroke={2.5} />
+            Submit &amp; next bag
+          </>
+        )}
+      </DpPrimaryButton>
     </div>
   );
 }

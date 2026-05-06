@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireRole } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
@@ -12,6 +11,14 @@ import type { RouteDoc } from '@/lib/types/route';
 import type { UserDoc } from '@/lib/types/user';
 import type { MaterialId, MaterialPricing } from '@/lib/types/material';
 import { resolveAcceptedMaterials } from '@/lib/types/depot';
+import {
+  DP_TOK,
+  DpAlert,
+  DpBackRow,
+  DpMasthead,
+  DpPrimaryButton,
+} from '@/components/depot/Dp';
+import { IconCheck } from '@/components/icons/EcoIcons';
 import { ProcessBagForm, type ProcessBagFormProps } from './ProcessBagForm';
 
 export const dynamic = 'force-dynamic';
@@ -33,19 +40,34 @@ export default async function ProcessBagPage({
 
   if (bag.status === 'processed') {
     return (
-      <section className="mt-6 space-y-4">
-        <div className="rounded-xl border border-green-500/30 bg-green-500/10 p-5 text-center">
-          <div className="text-3xl">✅</div>
-          <div className="mt-1 text-sm font-semibold text-white">
-            Bag #{bag.printedNumber} already processed
+      <section className="space-y-5">
+        <DpBackRow label="Incoming" href="/depot/incoming" />
+        <div
+          className="px-5 py-7 text-center"
+          style={{
+            background: DP_TOK.greenSoft,
+            border: `1px solid rgba(45,90,61,0.3)`,
+            borderRadius: 14,
+          }}
+        >
+          <div
+            className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full"
+            style={{ background: DP_TOK.green }}
+          >
+            <IconCheck size={20} color={DP_TOK.paper} stroke={2.5} />
+          </div>
+          <div
+            style={{
+              fontFamily: DP_TOK.serif,
+              fontSize: 18,
+              color: DP_TOK.ink,
+              letterSpacing: -0.3,
+            }}
+          >
+            Bag #{bag.printedNumber} already processed.
           </div>
         </div>
-        <Link
-          href="/depot/incoming"
-          className="block w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-center text-sm text-gray-200"
-        >
-          Back to incoming
-        </Link>
+        <DpPrimaryButton href="/depot/incoming">Back to incoming</DpPrimaryButton>
       </section>
     );
   }
@@ -78,13 +100,22 @@ export default async function ProcessBagPage({
   if (!residentSnap.exists) notFound();
   const resident = residentSnap.data() as UserDoc;
 
-  // Restrict to materials the depot is configured to accept.
   const allMaterialIds = allMaterials.map((m) => m.id);
   const accepted = new Set(
     resolveAcceptedMaterials(depotRes.context.depot, allMaterialIds),
   );
   const visibleMaterials = allMaterials.filter((m) => accepted.has(m.id));
-  if (visibleMaterials.length === 0) notFound();
+  if (visibleMaterials.length === 0) {
+    return (
+      <section className="space-y-5">
+        <DpBackRow label="Incoming" href="/depot/incoming" />
+        <DpAlert tone="rust">
+          This depot has no accepted materials configured. Ask an admin to enable
+          materials on Zones &amp; Depots before processing.
+        </DpAlert>
+      </section>
+    );
+  }
 
   const materials: Record<MaterialId, MaterialPricing> = {};
   for (const m of visibleMaterials) {
@@ -114,23 +145,25 @@ export default async function ProcessBagPage({
   };
 
   return (
-    <section className="mt-5 space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="text-[10px] uppercase tracking-[0.2em] text-gray-500">
-            Process bag
-          </div>
-          <h1 className="mt-0.5 text-lg font-semibold text-white">
-            #{bag.printedNumber}
-          </h1>
-        </div>
-        <Link
-          href={`/depot/incoming/${route.id}`}
-          className="rounded border border-white/10 bg-white/5 px-3 py-1 text-xs text-gray-300"
-        >
-          ← Back
-        </Link>
-      </div>
+    <section>
+      <DpBackRow label={`Route — ${route.id.slice(0, 6)}`} href={`/depot/incoming/${route.id}`} />
+      <DpMasthead
+        eyebrow="Process bag"
+        title={
+          <>
+            Bag{' '}
+            <em
+              style={{
+                color: DP_TOK.green,
+                fontStyle: 'italic',
+                fontFamily: DP_TOK.mono,
+              }}
+            >
+              #{bag.printedNumber}
+            </em>
+          </>
+        }
+      />
       <ProcessBagForm {...props} />
     </section>
   );

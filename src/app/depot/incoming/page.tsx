@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { requireRole } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
 import { loadDepotContext } from '@/lib/auth/depotAccess';
@@ -6,10 +5,19 @@ import type { RouteDoc } from '@/lib/types/route';
 import type { PickupDoc } from '@/lib/types/pickup';
 import type { BagDoc } from '@/lib/types/bag';
 import type { UserDoc } from '@/lib/types/user';
+import {
+  DP_TOK,
+  DpAlert,
+  DpEmpty,
+  DpListLink,
+  DpMasthead,
+  DpProgressBar,
+  DpStatusPill,
+  type DpStatusKey,
+} from '@/components/depot/Dp';
+import { IconTruck } from '@/components/icons/EcoIcons';
 
 export const dynamic = 'force-dynamic';
-
-type RouteStatusBadge = 'NEW' | 'IN PROGRESS' | 'DONE';
 
 interface RouteRow {
   id: string;
@@ -17,7 +25,7 @@ interface RouteRow {
   bagsTotal: number;
   bagsProcessed: number;
   arrivedLabel: string;
-  badge: RouteStatusBadge;
+  status: DpStatusKey;
   progressPct: number;
 }
 
@@ -34,7 +42,6 @@ function formatArrived(ts: RouteDoc['returnedToDepotAt']): string {
 
 async function loadIncoming(depotZoneIds: string[]): Promise<RouteRow[]> {
   if (depotZoneIds.length === 0) return [];
-  // Firestore `in` supports up to 30 values — depot zone count stays small.
   const routeSnap = await adminDb
     .collection('routes')
     .where('status', '==', 'completed')
@@ -79,9 +86,9 @@ async function loadIncoming(depotZoneIds: string[]): Promise<RouteRow[]> {
     const bagsTotal = bags.length;
     const bagsProcessed = bags.filter((b) => b.status === 'processed').length;
 
-    let badge: RouteStatusBadge = 'NEW';
-    if (bagsTotal > 0 && bagsProcessed === bagsTotal) badge = 'DONE';
-    else if (bagsProcessed > 0) badge = 'IN PROGRESS';
+    let status: DpStatusKey = 'new';
+    if (bagsTotal > 0 && bagsProcessed === bagsTotal) status = 'done';
+    else if (bagsProcessed > 0) status = 'in_progress';
 
     const operator = route.operatorId ? operatorMap.get(route.operatorId) : null;
     rows.push({
@@ -90,26 +97,11 @@ async function loadIncoming(depotZoneIds: string[]): Promise<RouteRow[]> {
       bagsTotal,
       bagsProcessed,
       arrivedLabel: formatArrived(route.returnedToDepotAt),
-      badge,
+      status,
       progressPct: bagsTotal > 0 ? Math.round((bagsProcessed / bagsTotal) * 100) : 0,
     });
   }
   return rows;
-}
-
-function BadgePill({ badge }: { badge: RouteStatusBadge }) {
-  const styles: Record<RouteStatusBadge, string> = {
-    NEW: 'bg-white text-black',
-    'IN PROGRESS': 'bg-white/10 text-gray-300',
-    DONE: 'bg-white/5 text-gray-500',
-  };
-  return (
-    <span
-      className={`rounded px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${styles[badge]}`}
-    >
-      {badge}
-    </span>
-  );
 }
 
 export default async function DepotIncomingPage() {
@@ -118,11 +110,11 @@ export default async function DepotIncomingPage() {
 
   if (!depotRes.ok) {
     return (
-      <section className="mt-8 rounded-xl border border-red-500/30 bg-red-500/10 p-5 text-sm text-red-200">
+      <DpAlert tone="rust">
         {depotRes.error === 'depot_not_found'
           ? 'No depot is assigned to your account yet. Ask an admin to assign one.'
           : 'Your user record could not be loaded.'}
-      </section>
+      </DpAlert>
     );
   }
 
@@ -130,54 +122,47 @@ export default async function DepotIncomingPage() {
   const rows = await loadIncoming(depot.zoneIds);
 
   return (
-    <section className="mt-5">
-      <div>
-        <div className="text-[10px] uppercase tracking-[0.2em] text-gray-500">
-          {depot.name}
-        </div>
-        <h1 className="mt-0.5 text-lg font-semibold text-white">Incoming deliveries</h1>
-      </div>
+    <section>
+      <DpMasthead
+        eyebrow={depot.name}
+        title={
+          <>
+            Incoming{' '}
+            <em style={{ color: DP_TOK.green, fontStyle: 'italic' }}>deliveries</em>.
+          </>
+        }
+      />
 
       {rows.length === 0 ? (
-        <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-5 text-sm text-gray-400">
-          No routes waiting for processing. Completed operator routes will appear here.
-        </div>
+        <DpEmpty
+          title="Nothing waiting."
+          body="Completed operator routes will land here for processing."
+        />
       ) : (
-        <ul className="mt-5 space-y-3">
+        <ul className="space-y-3">
           {rows.map((row) => (
             <li key={row.id}>
-              <Link
+              <DpListLink
                 href={`/depot/incoming/${row.id}`}
-                className="block rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-lg">
-                      🚐
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold text-white">
-                        Route — {row.operatorLabel}
-                      </div>
-                      <div className="text-xs text-gray-400">
-                        {row.bagsTotal} bags · Arrived {row.arrivedLabel}
-                        {row.badge === 'IN PROGRESS' && (
-                          <> · Processing {row.bagsProcessed}/{row.bagsTotal}</>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <BadgePill badge={row.badge} />
-                </div>
-                {row.badge === 'IN PROGRESS' && (
-                  <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
-                    <div
-                      className="h-full bg-green-500"
-                      style={{ width: `${row.progressPct}%` }}
-                    />
-                  </div>
-                )}
-              </Link>
+                icon={<IconTruck size={18} color={DP_TOK.green} stroke={1.5} />}
+                title={`Route — ${row.operatorLabel}`}
+                subtitle={
+                  <>
+                    {row.bagsTotal} bags · Arrived {row.arrivedLabel}
+                    {row.status === 'in_progress' && (
+                      <>
+                        {' · '}Processing {row.bagsProcessed}/{row.bagsTotal}
+                      </>
+                    )}
+                  </>
+                }
+                rightSlot={<DpStatusPill status={row.status} />}
+                footer={
+                  row.status === 'in_progress' ? (
+                    <DpProgressBar pct={row.progressPct} tone="green" />
+                  ) : null
+                }
+              />
             </li>
           ))}
         </ul>
