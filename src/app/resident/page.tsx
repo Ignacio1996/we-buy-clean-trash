@@ -7,6 +7,7 @@ import { SignupBonusModal } from '@/components/resident/SignupBonusModal';
 import { loadActiveCampaigns } from '@/lib/admin/loadActiveCampaigns';
 import { loadActiveMaterials } from '@/lib/admin/loadActiveMaterials';
 import type { BagOrderDoc, BagOrderStatus } from '@/lib/types/bagOrder';
+import type { PickupDoc } from '@/lib/types/pickup';
 import type { RouteDoc } from '@/lib/types/route';
 import { resolveAccountType } from '@/lib/types/user';
 import { CommercialResidentHome } from './CommercialResidentHome';
@@ -42,6 +43,14 @@ function formatMastheadDate(d: Date): string {
   const month = d.toLocaleDateString('en-US', { month: 'short' });
   const day = d.getDate();
   return `${weekday} · ${month} ${day}`;
+}
+
+function isSameLocalDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
 }
 
 function endsInLabel(endsAt: Date, now: Date): string {
@@ -101,9 +110,20 @@ export default async function ResidentHome() {
   const materialNameById = new Map(allMaterials.map((m) => [m.id, m.name]));
   const featuredCampaign = liveCampaigns[0];
 
-  const routeIds = Array.from(
-    new Set(openOrders.map((o) => o.deliveryRouteId).filter((id): id is string => !!id)),
-  );
+  const pickupsSnap = await adminDb
+    .collection('pickups')
+    .where('residentId', '==', uid)
+    .where('status', '==', 'pending')
+    .get();
+  const scheduledPickups = pickupsSnap.docs
+    .map((d) => d.data() as PickupDoc)
+    .filter((p): p is PickupDoc & { routeId: string } => !!p.routeId);
+
+  const deliveryRouteIds = openOrders
+    .map((o) => o.deliveryRouteId)
+    .filter((id): id is string => !!id);
+  const pickupRouteIds = scheduledPickups.map((p) => p.routeId);
+  const routeIds = Array.from(new Set([...deliveryRouteIds, ...pickupRouteIds]));
   const routeDates = new Map<string, Date>();
   if (routeIds.length > 0) {
     const routeSnaps = await adminDb.getAll(
@@ -121,12 +141,105 @@ export default async function ResidentHome() {
   const headlineRouteDate = headlineOrder?.deliveryRouteId
     ? routeDates.get(headlineOrder.deliveryRouteId) ?? null
     : null;
+
+  const nextPickupDate = scheduledPickups
+    .map((p) => routeDates.get(p.routeId))
+    .filter((d): d is Date => !!d)
+    .sort((a, b) => a.getTime() - b.getTime())[0] ?? null;
+  const pickupIsToday = nextPickupDate ? isSameLocalDay(nextPickupDate, now) : false;
   const totalOpenBags = openOrders.reduce((sum, o) => sum + o.quantity * 10, 0);
   const pct = Math.min(1, pointsBalance / GIFT_CARD_POINTS);
   const ptsToGo = Math.max(0, GIFT_CARD_POINTS - pointsBalance);
   const pickupsCount = ordersSnap.docs.filter(
     (d) => (d.data() as BagOrderDoc).status === 'delivered',
   ).length;
+
+  const pickupCard = nextPickupDate ? (
+    <div
+      className="mb-4 flex items-center gap-3.5 rounded-[14px] border p-4"
+      style={{
+        background: pickupIsToday ? '#2D5A3D' : '#FBF7EE',
+        borderColor: pickupIsToday ? '#2D5A3D' : '#D9D2C2',
+      }}
+    >
+      <div
+        className="flex w-[50px] flex-shrink-0 flex-col items-center overflow-hidden rounded-lg border"
+        style={{
+          background: '#fff',
+          borderColor: pickupIsToday ? 'transparent' : '#D9D2C2',
+        }}
+      >
+        <div
+          className="w-full text-center uppercase"
+          style={{
+            background: '#2D5A3D',
+            color: '#fff',
+            fontSize: 9,
+            padding: '2px 0',
+            letterSpacing: 1,
+          }}
+        >
+          {pickupIsToday
+            ? 'Today'
+            : nextPickupDate.toLocaleDateString('en-US', { month: 'short' })}
+        </div>
+        <div
+          className="py-1 text-center"
+          style={{
+            fontFamily: 'var(--eco-serif)',
+            fontSize: 22,
+            color: '#1F2A22',
+          }}
+        >
+          {nextPickupDate.getDate()}
+        </div>
+      </div>
+      <div className="flex-1">
+        <div
+          className="eco-eyebrow"
+          style={pickupIsToday ? { color: '#E8EFE6', opacity: 0.85 } : undefined}
+        >
+          {pickupIsToday ? 'Pickup today' : 'Next pickup'}
+        </div>
+        <div
+          className="mt-0.5"
+          style={{
+            fontFamily: 'var(--eco-serif)',
+            fontSize: 17,
+            color: pickupIsToday ? '#FBF7EE' : '#1F2A22',
+          }}
+        >
+          {pickupIsToday
+            ? 'Have your bags out by 7am.'
+            : nextPickupDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'short',
+                day: 'numeric',
+              })}
+        </div>
+      </div>
+      <IconChevR size={16} color={pickupIsToday ? '#FBF7EE' : '#5A6358'} />
+    </div>
+  ) : (
+    <div
+      className="mb-4 rounded-[14px] border px-4 py-5 text-center"
+      style={{ background: '#FBF7EE', borderColor: '#D9D2C2' }}
+    >
+      <div
+        className="italic"
+        style={{
+          fontFamily: 'var(--eco-serif)',
+          fontSize: 15,
+          color: '#1F2A22',
+        }}
+      >
+        No pickup scheduled.
+      </div>
+      <div className="mt-1" style={{ fontSize: 11, color: '#5A6358' }}>
+        Scan a filled bag at curb to join the next route.
+      </div>
+    </div>
+  );
 
   return (
     <main className="relative px-5 pt-12 sm:px-8 sm:pt-14">
@@ -245,6 +358,9 @@ export default async function ResidentHome() {
         </Link>
       )}
 
+      {/* Pickup today — surfaced above the order CTA so it's the first thing seen */}
+      {pickupIsToday && pickupCard}
+
       {/* Hero CTA */}
       <Link
         href="/resident/order-bags"
@@ -321,14 +437,20 @@ export default async function ResidentHome() {
       )}
 
       {/* Next pickup / empty state */}
-      {headlineRouteDate ? (
+      {nextPickupDate ? (
         <div
           className="mb-4 flex items-center gap-3.5 rounded-[14px] border p-4"
-          style={{ background: '#FBF7EE', borderColor: '#D9D2C2' }}
+          style={{
+            background: pickupIsToday ? '#2D5A3D' : '#FBF7EE',
+            borderColor: pickupIsToday ? '#2D5A3D' : '#D9D2C2',
+          }}
         >
           <div
             className="flex w-[50px] flex-shrink-0 flex-col items-center overflow-hidden rounded-lg border"
-            style={{ background: '#fff', borderColor: '#D9D2C2' }}
+            style={{
+              background: '#fff',
+              borderColor: pickupIsToday ? 'transparent' : '#D9D2C2',
+            }}
           >
             <div
               className="w-full text-center uppercase"
@@ -340,7 +462,9 @@ export default async function ResidentHome() {
                 letterSpacing: 1,
               }}
             >
-              {headlineRouteDate.toLocaleDateString('en-US', { month: 'short' })}
+              {pickupIsToday
+                ? 'Today'
+                : nextPickupDate.toLocaleDateString('en-US', { month: 'short' })}
             </div>
             <div
               className="py-1 text-center"
@@ -350,23 +474,34 @@ export default async function ResidentHome() {
                 color: '#1F2A22',
               }}
             >
-              {headlineRouteDate.getDate()}
+              {nextPickupDate.getDate()}
             </div>
           </div>
           <div className="flex-1">
-            <div className="eco-eyebrow">Next pickup</div>
+            <div
+              className="eco-eyebrow"
+              style={pickupIsToday ? { color: '#E8EFE6', opacity: 0.85 } : undefined}
+            >
+              {pickupIsToday ? 'Pickup today' : 'Next pickup'}
+            </div>
             <div
               className="mt-0.5"
-              style={{ fontFamily: 'var(--eco-serif)', fontSize: 17, color: '#1F2A22' }}
+              style={{
+                fontFamily: 'var(--eco-serif)',
+                fontSize: 17,
+                color: pickupIsToday ? '#FBF7EE' : '#1F2A22',
+              }}
             >
-              {headlineRouteDate.toLocaleDateString('en-US', {
-                weekday: 'long',
-                month: 'short',
-                day: 'numeric',
-              })}
+              {pickupIsToday
+                ? 'Have your bags out by 7am.'
+                : nextPickupDate.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
             </div>
           </div>
-          <IconChevR size={16} color="#5A6358" />
+          <IconChevR size={16} color={pickupIsToday ? '#FBF7EE' : '#5A6358'} />
         </div>
       ) : (
         <div
@@ -384,7 +519,7 @@ export default async function ResidentHome() {
             No pickup scheduled.
           </div>
           <div className="mt-1" style={{ fontSize: 11, color: '#5A6358' }}>
-            Order bags to join the next route.
+            Scan a filled bag at curb to join the next route.
           </div>
         </div>
       )}
