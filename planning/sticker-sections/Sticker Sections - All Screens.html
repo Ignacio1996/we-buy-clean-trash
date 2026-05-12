@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sticker Sections — All Screens</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #f0eee9; }
+  body { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+  #root { height: 100%; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="icons.jsx"></script>
+<script type="text/babel" src="data.jsx"></script>
+<script type="text/babel" src="style-sticker-sections.jsx"></script>
+<script type="text/babel" src="style-ss-onboarding.jsx"></script>
+<script type="text/babel" src="style-ss-scan.jsx"></script>
+<script type="text/babel" src="style-ss-profile.jsx"></script>
+
+<script type="text/babel">
+function Phone({ children, label }) {
+  return (
+    <div style={{ width: 360, height: 760, position: 'relative' }} data-screen-label={label}>
+      <IOSDevice width={360} height={760} dark={false}>{children}</IOSDevice>
+    </div>
+  );
+}
+
+function App() {
+  const active = DATA.active;
+  return (
+    <DesignCanvas>
+      <DCSection id="intro" title="Sticker Sections — full app" subtitle="Sticker Mule influence · pastel section blocks · pill buttons · hard offset shadows">
+        <DCArtboard id="notes" label="Design system" width={520} height={760}>
+          <div style={{ background: '#fff', height: '100%', padding: 32, fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif', color: '#0A0A0A', overflow: 'auto', boxSizing: 'border-box' }}>
+            <div style={{ fontSize: 13, fontWeight: 900, letterSpacing: 1.6, textTransform: 'uppercase', color: '#E11D2A', marginBottom: 8 }}>Direction · Sticker Sections</div>
+            <div style={{ fontSize: 38, fontWeight: 900, letterSpacing: -1.5, lineHeight: 0.95, marginBottom: 18, textTransform: 'uppercase' }}>Loud. Friendly.<br/>Pastel-blocked.</div>
+            <div style={{ fontSize: 15, lineHeight: 1.5, color: '#333', marginBottom: 22 }}>
+              White base broken into yellow / mint / sky / peach section blocks. Chunky pill buttons with hard offset shadows. Heavy sans-serif, generous spacing, sticker-style stamps.
+            </div>
+            <div style={{ borderTop: '1px solid #E5E5E5', paddingTop: 16 }}>
+              <div style={{ fontSize: 12, fontWeight: 900, letterSpacing: 1.4, textTransform: 'uppercase', color: '#5A5A5A', marginBottom: 10 }}>Screens included</div>
+              <ol style={{ paddingLeft: 18, margin: 0, fontSize: 14, lineHeight: 1.6, color: '#222' }}>
+                <li>Home (active user) — balance, next pickup, impact</li>
+                <li>Onboarding — welcome, address, pickup day, first order, done</li>
+                <li>Scan — idle, detected, success, error, manual</li>
+                <li>Profile — account, lifetime stats, settings</li>
+              </ol>
+            </div>
+          </div>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="home" title="01 · Home">
+        <DCArtboard id="ss-home" label="Home · active user" width={360} height={760}>
+          <Phone label="SS Home"><SSStyle data={active} /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="onboarding" title="02 · Onboarding flow">
+        <DCArtboard id="ss-ob-1" label="01 Welcome" width={360} height={760}><Phone label="SS Onboarding · Welcome"><SSObWelcome /></Phone></DCArtboard>
+        <DCArtboard id="ss-ob-2" label="02 Address" width={360} height={760}><Phone label="SS Onboarding · Address"><SSObAddress /></Phone></DCArtboard>
+        <DCArtboard id="ss-ob-3" label="03 Pickup day" width={360} height={760}><Phone label="SS Onboarding · Pickup"><SSObPickup /></Phone></DCArtboard>
+        <DCArtboard id="ss-ob-4" label="04 First order" width={360} height={760}><Phone label="SS Onboarding · Order"><SSObOrder /></Phone></DCArtboard>
+        <DCArtboard id="ss-ob-5" label="05 Done" width={360} height={760}><Phone label="SS Onboarding · Done"><SSObDone /></Phone></DCArtboard>
+      </DCSection>
+
+      <DCSection id="scan" title="03 · Scan">
+        <DCArtboard id="ss-sc-1" label="Idle viewfinder" width={360} height={760}><Phone label="SS Scan · Idle"><SSScIdle /></Phone></DCArtboard>
+        <DCArtboard id="ss-sc-2" label="Detected" width={360} height={760}><Phone label="SS Scan · Detected"><SSScDetected /></Phone></DCArtboard>
+        <DCArtboard id="ss-sc-3" label="Success" width={360} height={760}><Phone label="SS Scan · Success"><SSScSuccess /></Phone></DCArtboard>
+        <DCArtboard id="ss-sc-4" label="Error" width={360} height={760}><Phone label="SS Scan · Error"><SSScError /></Phone></DCArtboard>
+        <DCArtboard id="ss-sc-5" label="Manual entry" width={360} height={760}><Phone label="SS Scan · Manual"><SSScManual /></Phone></DCArtboard>
+      </DCSection>
+
+      <DCSection id="profile" title="04 · Profile">
+        <DCArtboard id="ss-profile" label="Profile · account, stats, settings" width={360} height={760}>
+          <Phone label="SS Profile"><SSProfile /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      <DCPostIt top={20} right={60} rotate={2} width={220}>
+        All Sticker Sections screens in one canvas. Drag to compare; double-click any artboard to open fullscreen.
+      </DCPostIt>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

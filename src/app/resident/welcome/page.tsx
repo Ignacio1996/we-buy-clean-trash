@@ -3,7 +3,12 @@ import { getSession } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
 import { PresignupScanBanner } from '@/components/PresignupScanBanner';
 import { WelcomeActions } from './WelcomeActions';
-import { EcoH1, EcoMasthead } from '@/components/resident/eco/Eco';
+import {
+  SS,
+  SSEyebrow,
+  SSScreen,
+  SSStatusBarSpacer,
+} from '@/components/resident/ss/SS';
 
 export default async function WelcomePage() {
   const session = await getSession();
@@ -13,85 +18,148 @@ export default async function WelcomePage() {
 
   const firstName = typeof user?.name === 'string' ? user.name.split(' ')[0] : 'there';
 
-  const steps = [
-    {
-      n: 1,
-      title: 'Order your bags',
-      body: 'QR-coded bags delivered on your next route.',
-    },
-    {
-      n: 2,
-      title: 'Fill & put out bags',
-      body: 'Scan each bag the night before your pickup.',
-    },
-    {
-      n: 3,
-      title: 'Earn & redeem',
-      body: 'Points convert to Amazon / Walmart gift cards.',
-    },
-  ];
-
   return (
-    <main className="relative px-5 pt-12 sm:px-8 sm:pt-14">
-      <EcoMasthead />
+    <SSScreen>
+      <SSStatusBarSpacer />
 
-      <section className="mb-7">
-        <div style={{ fontSize: 13, color: '#5A6358', marginBottom: 8 }}>
-          Welcome, {firstName}.
-        </div>
-        <EcoH1>Get started in three steps.</EcoH1>
+      <div
+        style={{
+          padding: '32px 24px 28px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 18,
+        }}
+      >
+        <SSEyebrow style={{ color: SS.ink, opacity: 0.7 }}>We Buy Clean Trash</SSEyebrow>
         <div
-          className="mt-2.5 italic"
-          style={{ fontSize: 12, color: '#5A6358', fontFamily: 'var(--eco-serif)' }}
+          style={{
+            fontSize: 42,
+            fontWeight: 900,
+            letterSpacing: -1.6,
+            lineHeight: 0.95,
+            color: SS.ink,
+          }}
         >
-          About two minutes.
+          Welcome, {firstName}. Your trash is{' '}
+          <span style={{ color: SS.green }}>worth money.</span>
         </div>
-      </section>
+        <div
+          style={{
+            fontSize: 17,
+            fontWeight: 700,
+            color: SS.ink,
+            opacity: 0.75,
+            lineHeight: 1.4,
+          }}
+        >
+          We pick up your clean recyclables at the curb and pay you in gift cards. No sorting
+          machines. No bins to lug.
+        </div>
 
-      <div className="mb-5">
         <PresignupScanBanner />
-      </div>
 
-      <ol className="space-y-3">
-        {steps.map(({ n, title, body }) => (
-          <li
-            key={n}
-            className="rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] p-4"
+        <div
+          style={{
+            background: '#fff',
+            border: `2px solid ${SS.ink}`,
+            borderRadius: 18,
+            padding: 16,
+            display: 'flex',
+            gap: 12,
+            alignItems: 'center',
+            boxShadow: `0 4px 0 ${SS.ink}`,
+          }}
+        >
+          <div
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: 14,
+              background: SS.green,
+              color: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 28,
+              fontWeight: 900,
+            }}
           >
-            <div className="flex items-center gap-3">
-              <span
-                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full"
+            $
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 22, fontWeight: 900, color: SS.ink, letterSpacing: -0.5 }}>
+              $10 gift card
+            </div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: SS.inkSoft }}>
+              ≈ 4 weeks of pickups
+            </div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 4 }}>
+          {[
+            ['Order bags', 'A sheet of 10 QR-coded bags arrives on your next route.'],
+            ['Fill & set out', 'Clean recyclables. Set bags at the curb by 5:30 PM.'],
+            ['Return & redeem', 'Points convert to Amazon / Walmart gift cards.'],
+          ].map(([t, sub], i) => (
+            <div
+              key={t}
+              style={{
+                display: 'flex',
+                gap: 14,
+                padding: '12px 0',
+                alignItems: 'flex-start',
+              }}
+            >
+              <div
                 style={{
-                  background: '#E8EFE6',
-                  color: '#2D5A3D',
-                  fontFamily: 'var(--eco-serif)',
-                  fontSize: 15,
-                  fontWeight: 600,
+                  width: 36,
+                  height: 36,
+                  borderRadius: '50%',
+                  background: SS.ink,
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 16,
+                  fontWeight: 900,
+                  flexShrink: 0,
                 }}
               >
-                {n}
-              </span>
-              <div className="flex-1">
+                {i + 1}
+              </div>
+              <div style={{ flex: 1, paddingTop: 4 }}>
                 <div
                   style={{
-                    fontFamily: 'var(--eco-serif)',
-                    fontSize: 16,
-                    color: '#1F2A22',
-                    lineHeight: 1.2,
+                    fontSize: 17,
+                    fontWeight: 900,
+                    color: SS.ink,
+                    letterSpacing: -0.3,
                   }}
                 >
-                  {title}
+                  {t}
                 </div>
-                <div className="mt-0.5" style={{ fontSize: 12, color: '#5A6358' }}>
-                  {body}
+                <div
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: SS.ink,
+                    marginTop: 2,
+                    lineHeight: 1.4,
+                    opacity: 0.7,
+                  }}
+                >
+                  {sub}
                 </div>
               </div>
             </div>
-          </li>
-        ))}
-      </ol>
+          ))}
+        </div>
+      </div>
 
-      <WelcomeActions />
-    </main>
+      <div style={{ background: '#fff', padding: '20px 24px 28px' }}>
+        <WelcomeActions />
+      </div>
+    </SSScreen>
   );
 }

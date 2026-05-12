@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { SS } from '@/components/resident/ss/SS';
+
 export function PhoneField({ initial }: { initial: string | null }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
@@ -37,18 +39,10 @@ export function PhoneField({ initial }: { initial: string | null }) {
 
   if (!editing) {
     return (
-      <div className="mt-1 flex items-center justify-between">
-        <div
-          style={{
-            fontFamily: 'var(--eco-serif)',
-            fontSize: 16,
-            color: '#1F2A22',
-          }}
-        >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ fontSize: 17, fontWeight: 900, color: SS.ink, letterSpacing: -0.3 }}>
           {current ?? (
-            <span className="italic" style={{ color: '#8A8A7A' }}>
-              — (none)
-            </span>
+            <span style={{ color: SS.inkSoft, fontWeight: 800 }}>— (none)</span>
           )}
         </div>
         <button
@@ -58,7 +52,16 @@ export function PhoneField({ initial }: { initial: string | null }) {
             setEditing(true);
             setError(null);
           }}
-          className="text-[12px] text-[#2D5A3D] underline"
+          style={{
+            background: 'transparent',
+            border: 'none',
+            fontFamily: SS.sans,
+            fontSize: 12,
+            fontWeight: 900,
+            color: SS.brand,
+            textDecoration: 'underline',
+            cursor: 'pointer',
+          }}
         >
           {current ? 'Edit' : 'Add'}
         </button>
@@ -67,20 +70,44 @@ export function PhoneField({ initial }: { initial: string | null }) {
   }
 
   return (
-    <div className="mt-1.5">
+    <div>
       <input
         type="tel"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="555-123-4567"
-        className="w-full rounded-[10px] border border-[#D9D2C2] bg-[#FBF7EE] px-3 py-2 text-[14px] text-[#1F2A22] placeholder:text-[#8A8A7A] focus:border-[#2D5A3D] focus:outline-none"
+        style={{
+          width: '100%',
+          borderRadius: 12,
+          border: `2px solid ${SS.ink}`,
+          background: '#fff',
+          padding: '10px 14px',
+          fontFamily: SS.sans,
+          fontSize: 16,
+          fontWeight: 800,
+          color: SS.ink,
+          outline: 'none',
+          boxSizing: 'border-box',
+        }}
       />
-      <div className="mt-2.5 flex items-center gap-3">
+      <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
         <button
           type="button"
           onClick={save}
           disabled={busy}
-          className="rounded-full bg-[#2D5A3D] px-4 py-1.5 text-[12px] font-semibold text-[#FBF7EE] transition-colors hover:bg-[#1F4029] disabled:cursor-not-allowed disabled:opacity-50"
+          style={{
+            borderRadius: 999,
+            background: SS.green,
+            color: '#fff',
+            border: 'none',
+            padding: '8px 16px',
+            fontFamily: SS.sans,
+            fontSize: 13,
+            fontWeight: 900,
+            boxShadow: `0 3px 0 ${SS.greenDark}`,
+            cursor: busy ? 'not-allowed' : 'pointer',
+            opacity: busy ? 0.5 : 1,
+          }}
         >
           {busy ? 'Saving…' : 'Save'}
         </button>
@@ -91,15 +118,22 @@ export function PhoneField({ initial }: { initial: string | null }) {
             setEditing(false);
             setError(null);
           }}
-          className="text-[12px] text-[#5A6358] underline"
+          style={{
+            background: 'transparent',
+            border: 'none',
+            fontFamily: SS.sans,
+            fontSize: 13,
+            fontWeight: 800,
+            color: SS.inkSoft,
+            textDecoration: 'underline',
+            cursor: 'pointer',
+          }}
         >
           Cancel
         </button>
       </div>
       {error && (
-        <p className="mt-1.5 text-[12px]" style={{ color: '#9A4B26' }}>
-          {error}
-        </p>
+        <p style={{ marginTop: 8, fontSize: 12, fontWeight: 800, color: SS.brand }}>{error}</p>
       )}
     </div>
   );

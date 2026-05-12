@@ -2,38 +2,26 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import type { ComponentType } from 'react';
-import {
-  IconHome,
-  IconScan,
-  IconBag,
-  IconGift,
-  IconUser,
-} from '@/components/icons/EcoIcons';
 
-interface IconProps {
-  size?: number;
-  color?: string;
-  stroke?: number;
-}
+import { SS } from './ss/SS';
 
 export interface BottomNavItem {
   href: string;
   label: string;
-  icon: ComponentType<IconProps>;
+  key: 'home' | 'scan' | 'bags' | 'rewards' | 'profile';
 }
 
 const CONSUMER_ITEMS: readonly BottomNavItem[] = [
-  { href: '/resident', label: 'Home', icon: IconHome },
-  { href: '/resident/scan-bag', label: 'Scan', icon: IconScan },
-  { href: '/resident/order-bags', label: 'Bags', icon: IconBag },
-  { href: '/resident/rewards', label: 'Rewards', icon: IconGift },
-  { href: '/resident/profile', label: 'Profile', icon: IconUser },
+  { href: '/resident', label: 'Home', key: 'home' },
+  { href: '/resident/scan-bag', label: 'Scan', key: 'scan' },
+  { href: '/resident/order-bags', label: 'Bags', key: 'bags' },
+  { href: '/resident/rewards', label: 'Rewards', key: 'rewards' },
+  { href: '/resident/profile', label: 'Profile', key: 'profile' },
 ];
 
 const COMMERCIAL_ITEMS: readonly BottomNavItem[] = [
-  { href: '/resident', label: 'Home', icon: IconHome },
-  { href: '/resident/profile', label: 'Profile', icon: IconUser },
+  { href: '/resident', label: 'Home', key: 'home' },
+  { href: '/resident/profile', label: 'Profile', key: 'profile' },
 ];
 
 export function BottomNav({ items }: { items?: readonly BottomNavItem[] }) {
@@ -41,27 +29,49 @@ export function BottomNav({ items }: { items?: readonly BottomNavItem[] }) {
   const list = items ?? CONSUMER_ITEMS;
   return (
     <nav
-      className="sticky bottom-0 z-10 mx-auto grid w-full max-w-md border-t border-[#D9D2C2] bg-[#FBF7EE] px-2 pt-2.5 pb-7 sm:max-w-xl lg:max-w-2xl"
-      style={{ gridTemplateColumns: `repeat(${list.length}, minmax(0, 1fr))` }}
+      className="sticky bottom-0 z-10 mx-auto w-full max-w-md sm:max-w-xl lg:max-w-2xl"
+      style={{
+        background: '#fff',
+        borderTop: `1px solid ${SS.line}`,
+        padding: '8px 4px 24px',
+        display: 'grid',
+        gridTemplateColumns: `repeat(${list.length}, minmax(0, 1fr))`,
+      }}
     >
       {list.map((item) => {
         const active =
-          pathname === item.href || (item.href !== '/resident' && pathname.startsWith(item.href));
-        const Icon = item.icon;
+          pathname === item.href ||
+          (item.href !== '/resident' && pathname.startsWith(item.href));
+        const color = active ? SS.brand : SS.ink;
         return (
           <Link
             key={item.href}
             href={item.href}
-            className="flex flex-col items-center gap-1 rounded py-1.5"
-            style={{ color: active ? '#2D5A3D' : '#5A6358' }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 4,
+              padding: 6,
+              color,
+              textDecoration: 'none',
+            }}
           >
-            <Icon size={20} stroke={active ? 2 : 1.5} />
-            <span
-              className="text-[10px]"
+            <div
               style={{
-                fontFamily:
-                  'ui-serif, Georgia, "Iowan Old Style", "Apple Garamond", serif',
-                fontWeight: active ? 600 : 400,
+                width: 22,
+                height: 22,
+                borderRadius: 6,
+                background: active ? SS.brand : 'transparent',
+                border: `2px solid ${color}`,
+              }}
+            />
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: 0.2,
+                color,
               }}
             >
               {item.label}

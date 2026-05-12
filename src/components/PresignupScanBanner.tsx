@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from 'react';
 import { getPresignupScanSnapshot } from '@/lib/presignup/scan-storage';
+import { SS } from '@/components/resident/ss/SS';
 
 function formatPoints(n: number): string {
   return new Intl.NumberFormat().format(Math.round(n));
@@ -18,20 +19,32 @@ export function PresignupScanBanner() {
   const count = scan.items.reduce((sum, it) => sum + it.quantity, 0);
 
   return (
-    <div className="rounded-[14px] border border-[rgba(160,104,42,0.3)] bg-[#F2E8D6] px-4 py-3.5">
+    <div
+      style={{
+        background: SS.mint,
+        border: `2px solid ${SS.ink}`,
+        borderRadius: 14,
+        padding: '14px 16px',
+        boxShadow: `0 4px 0 ${SS.ink}`,
+      }}
+    >
       <div
         style={{
-          fontFamily: 'var(--eco-serif)',
-          fontSize: 15,
-          fontWeight: 500,
-          color: '#A0682A',
-          letterSpacing: -0.2,
+          fontSize: 11,
+          fontWeight: 900,
+          letterSpacing: 1.2,
+          textTransform: 'uppercase',
+          color: SS.green,
+          marginBottom: 4,
         }}
       >
-        You scanned {count} item{count === 1 ? '' : 's'} worth ${scan.totalDollars.toFixed(2)} ·{' '}
+        From your scan
+      </div>
+      <div style={{ fontSize: 16, fontWeight: 900, color: SS.ink, letterSpacing: -0.3 }}>
+        {count} item{count === 1 ? '' : 's'} · ${scan.totalDollars.toFixed(2)} ·{' '}
         {formatPoints(scan.totalPoints)} pts
       </div>
-      <div className="mt-1" style={{ fontSize: 12, color: '#A0682A', opacity: 0.85 }}>
+      <div style={{ fontSize: 12, fontWeight: 700, color: SS.inkSoft, marginTop: 4 }}>
         Finish signing up and this is the kind of earning you&rsquo;re on track for.
       </div>
     </div>

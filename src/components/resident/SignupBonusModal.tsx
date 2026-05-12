@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { SS } from './ss/SS';
 
 const STORAGE_PREFIX = 'wbct.signupBonusAcked.';
 
@@ -27,60 +28,108 @@ export function SignupBonusModal({ uid }: { uid: string }) {
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center px-6"
-      style={{ background: 'rgba(31, 42, 34, 0.55)' }}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 50,
+        background: 'rgba(17,17,17,0.55)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 24,
+      }}
       onClick={dismiss}
     >
       <div
-        className="w-full max-w-sm rounded-2xl border p-6 text-center shadow-xl"
-        style={{ background: '#FBF7EE', borderColor: '#D9D2C2' }}
         onClick={(e) => e.stopPropagation()}
+        style={{
+          width: '100%',
+          maxWidth: 360,
+          background: '#fff',
+          border: `2px solid ${SS.ink}`,
+          borderRadius: 22,
+          padding: 28,
+          textAlign: 'center',
+          boxShadow: `0 8px 0 ${SS.ink}`,
+        }}
       >
         <div
-          className="mx-auto flex h-12 w-12 items-center justify-center rounded-full"
-          style={{ background: '#F2E8D6', color: '#A0682A' }}
-        >
-          <span style={{ fontFamily: 'var(--eco-serif)', fontSize: 22 }}>+</span>
-        </div>
-        <div className="eco-eyebrow mt-4">Signup bonus</div>
-        <h2
-          className="mt-1.5"
           style={{
-            fontFamily: 'var(--eco-serif)',
-            fontSize: 24,
-            fontWeight: 500,
-            letterSpacing: -0.4,
-            color: '#1F2A22',
+            width: 72,
+            height: 72,
+            borderRadius: '50%',
+            background: SS.green,
+            color: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 36,
+            fontWeight: 900,
+            margin: '0 auto 16px',
+            border: `3px solid ${SS.ink}`,
+            boxShadow: `0 4px 0 ${SS.ink}`,
           }}
         >
-          You earned <em style={{ fontStyle: 'italic', color: '#2D5A3D' }}>10,000 points</em>.
-        </h2>
-        <p
-          className="mt-3"
-          style={{ fontSize: 13, color: '#5A6358', lineHeight: 1.5 }}
+          +
+        </div>
+        <div
+          style={{
+            fontSize: 11,
+            fontWeight: 900,
+            letterSpacing: 1.4,
+            textTransform: 'uppercase',
+            color: SS.inkSoft,
+            marginBottom: 6,
+          }}
         >
-          That&rsquo;s worth{' '}
-          <span style={{ color: '#1F2A22', fontWeight: 500 }}>$1</span> toward your first
-          reward.
+          Signup bonus
+        </div>
+        <h2
+          style={{
+            fontSize: 30,
+            fontWeight: 900,
+            letterSpacing: -1,
+            lineHeight: 1.05,
+            color: SS.ink,
+          }}
+        >
+          You earned <span style={{ color: SS.green }}>10,000 points</span>.
+        </h2>
+        <p style={{ marginTop: 12, fontSize: 14, fontWeight: 800, color: SS.ink, opacity: 0.75 }}>
+          That&rsquo;s worth <span style={{ color: SS.ink, fontWeight: 900 }}>$1</span> toward your
+          first reward.
         </p>
         <p
-          className="mt-2 italic"
           style={{
-            fontFamily: 'var(--eco-serif)',
+            marginTop: 8,
             fontSize: 12,
-            color: '#8A8A7A',
+            fontWeight: 700,
+            color: SS.inkSoft,
             lineHeight: 1.5,
           }}
         >
-          Earn 100,000 pts to redeem a $10 gift card. Order bags to start collecting more.
+          Earn 100,000 pts for a $10 gift card. Order bags to start collecting more.
         </p>
         <button
           type="button"
           onClick={dismiss}
-          className="mt-5 w-full rounded-lg px-4 py-2.5 text-sm"
-          style={{ background: '#2D5A3D', color: '#FBF7EE', fontWeight: 500 }}
+          style={{
+            marginTop: 20,
+            width: '100%',
+            background: SS.green,
+            color: '#fff',
+            border: 'none',
+            borderRadius: 999,
+            padding: '16px 24px',
+            fontFamily: SS.sans,
+            fontSize: 17,
+            fontWeight: 900,
+            letterSpacing: -0.2,
+            boxShadow: `0 4px 0 ${SS.greenDark}`,
+            cursor: 'pointer',
+          }}
         >
-          Let&rsquo;s go
+          Let&rsquo;s go →
         </button>
       </div>
     </div>

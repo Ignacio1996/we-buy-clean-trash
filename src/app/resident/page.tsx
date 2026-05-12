@@ -12,15 +12,13 @@ import type { RouteDoc } from '@/lib/types/route';
 import { resolveAccountType } from '@/lib/types/user';
 import { CommercialResidentHome } from './CommercialResidentHome';
 import {
-  IconArrow,
-  IconChevR,
-  IconCloud,
-  IconDroplet,
-  IconFire,
-  IconLeaf,
-  IconRecycle,
-  IconTruck,
-} from '@/components/icons/EcoIcons';
+  SS,
+  SSEyebrow,
+  SSHeader,
+  SSPillLink,
+  SSScreen,
+  SSStatusBarSpacer,
+} from '@/components/resident/ss/SS';
 
 const GIFT_CARD_POINTS = 100_000;
 
@@ -36,13 +34,6 @@ function formatPoints(points: number): string {
 
 function formatDollars(dollars: number): string {
   return dollars.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-}
-
-function formatMastheadDate(d: Date): string {
-  const weekday = d.toLocaleDateString('en-US', { weekday: 'long' });
-  const month = d.toLocaleDateString('en-US', { month: 'short' });
-  const day = d.getDate();
-  return `${weekday} · ${month} ${day}`;
 }
 
 function isSameLocalDay(a: Date, b: Date): boolean {
@@ -63,6 +54,14 @@ function endsInLabel(endsAt: Date, now: Date): string {
   }
   const d = Math.round(diffH / 24);
   return `${d} day${d === 1 ? '' : 's'}`;
+}
+
+function formatPickupDay(date: Date, now: Date): string {
+  if (isSameLocalDay(date, now)) return 'Today';
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  if (isSameLocalDay(date, tomorrow)) return 'Tomorrow';
+  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 }
 
 export default async function ResidentHome() {
@@ -139,362 +138,315 @@ export default async function ResidentHome() {
 
   const headlineOrder = openOrders[0];
   const headlineRouteDate = headlineOrder?.deliveryRouteId
-    ? routeDates.get(headlineOrder.deliveryRouteId) ?? null
+    ? (routeDates.get(headlineOrder.deliveryRouteId) ?? null)
     : null;
 
-  const nextPickupDate = scheduledPickups
-    .map((p) => routeDates.get(p.routeId))
-    .filter((d): d is Date => !!d)
-    .sort((a, b) => a.getTime() - b.getTime())[0] ?? null;
-  const pickupIsToday = nextPickupDate ? isSameLocalDay(nextPickupDate, now) : false;
+  const nextPickupDate =
+    scheduledPickups
+      .map((p) => routeDates.get(p.routeId))
+      .filter((d): d is Date => !!d)
+      .sort((a, b) => a.getTime() - b.getTime())[0] ?? null;
   const totalOpenBags = openOrders.reduce((sum, o) => sum + o.quantity * 10, 0);
   const pct = Math.min(1, pointsBalance / GIFT_CARD_POINTS);
   const ptsToGo = Math.max(0, GIFT_CARD_POINTS - pointsBalance);
-  const pickupsCount = ordersSnap.docs.filter(
-    (d) => (d.data() as BagOrderDoc).status === 'delivered',
-  ).length;
-
-  const pickupCard = nextPickupDate ? (
-    <div
-      className="mb-4 flex items-center gap-3.5 rounded-[14px] border p-4"
-      style={{
-        background: pickupIsToday ? '#2D5A3D' : '#FBF7EE',
-        borderColor: pickupIsToday ? '#2D5A3D' : '#D9D2C2',
-      }}
-    >
-      <div
-        className="flex w-[50px] flex-shrink-0 flex-col items-center overflow-hidden rounded-lg border"
-        style={{
-          background: '#fff',
-          borderColor: pickupIsToday ? 'transparent' : '#D9D2C2',
-        }}
-      >
-        <div
-          className="w-full text-center uppercase"
-          style={{
-            background: '#2D5A3D',
-            color: '#fff',
-            fontSize: 9,
-            padding: '2px 0',
-            letterSpacing: 1,
-          }}
-        >
-          {pickupIsToday
-            ? 'Today'
-            : nextPickupDate.toLocaleDateString('en-US', { month: 'short' })}
-        </div>
-        <div
-          className="py-1 text-center"
-          style={{
-            fontFamily: 'var(--eco-serif)',
-            fontSize: 22,
-            color: '#1F2A22',
-          }}
-        >
-          {nextPickupDate.getDate()}
-        </div>
-      </div>
-      <div className="flex-1">
-        <div
-          className="eco-eyebrow"
-          style={pickupIsToday ? { color: '#E8EFE6', opacity: 0.85 } : undefined}
-        >
-          {pickupIsToday ? 'Pickup today' : 'Next pickup'}
-        </div>
-        <div
-          className="mt-0.5"
-          style={{
-            fontFamily: 'var(--eco-serif)',
-            fontSize: 17,
-            color: pickupIsToday ? '#FBF7EE' : '#1F2A22',
-          }}
-        >
-          {pickupIsToday
-            ? 'Have your bags out by 7am.'
-            : nextPickupDate.toLocaleDateString('en-US', {
-                weekday: 'long',
-                month: 'short',
-                day: 'numeric',
-              })}
-        </div>
-      </div>
-      <IconChevR size={16} color={pickupIsToday ? '#FBF7EE' : '#5A6358'} />
-    </div>
-  ) : (
-    <div
-      className="mb-4 rounded-[14px] border px-4 py-5 text-center"
-      style={{ background: '#FBF7EE', borderColor: '#D9D2C2' }}
-    >
-      <div
-        className="italic"
-        style={{
-          fontFamily: 'var(--eco-serif)',
-          fontSize: 15,
-          color: '#1F2A22',
-        }}
-      >
-        No pickup scheduled.
-      </div>
-      <div className="mt-1" style={{ fontSize: 11, color: '#5A6358' }}>
-        Scan a filled bag at curb to join the next route.
-      </div>
-    </div>
-  );
 
   return (
-    <main className="relative px-5 pt-12 sm:px-8 sm:pt-14">
+    <SSScreen>
       <SignupBonusModal uid={uid} />
 
-      {/* Masthead */}
-      <div className="mb-6 flex items-baseline justify-between border-b border-[#D9D2C2] pb-3.5">
-        <div>
-          <div
-            className="italic"
-            style={{
-              fontFamily: 'var(--eco-serif)',
-              fontSize: 14,
-              color: '#2D5A3D',
-              letterSpacing: 0.5,
-            }}
-          >
-            We Buy Clean Trash
-          </div>
-          <div
-            className="mt-0.5 uppercase"
-            style={{ fontSize: 11, color: '#5A6358', letterSpacing: 1.6 }}
-          >
-            {formatMastheadDate(now)}
-          </div>
-        </div>
-        <Link
-          href="/resident/profile"
-          className="flex h-9 w-9 items-center justify-center rounded-full"
+      <SSStatusBarSpacer />
+      <SSHeader initial={initial} />
+
+      {/* Yellow points hero */}
+      <div style={{ background: SS.yellow, padding: '24px 20px' }}>
+        <SSEyebrow style={{ color: SS.ink, opacity: 0.7, marginBottom: 6 }}>
+          Hello, {firstName}
+        </SSEyebrow>
+        <div
           style={{
-            background: '#E8EFE6',
-            color: '#2D5A3D',
-            fontFamily: 'var(--eco-serif)',
-            fontWeight: 600,
+            fontSize: 52,
+            fontWeight: 900,
+            letterSpacing: -2,
+            lineHeight: 0.95,
+            color: SS.ink,
           }}
         >
-          {initial}
-        </Link>
+          {formatDollars(dollarValue)}
+        </div>
+        <div style={{ fontSize: 15, fontWeight: 800, color: SS.ink, marginTop: 6 }}>
+          {formatPoints(pointsBalance)} points earned
+        </div>
       </div>
 
-      {/* Hero */}
-      <section className="mb-7">
-        <div style={{ fontSize: 13, color: '#5A6358', marginBottom: 8 }}>
-          Hello, {firstName}.
-        </div>
-        <h1 className="eco-display">
-          You&apos;ve turned trash
-          <br />
-          into <em>{formatDollars(dollarValue)}</em>.
-        </h1>
-        <div
-          className="mt-2.5 italic"
-          style={{ fontSize: 12, color: '#5A6358', fontFamily: 'var(--eco-serif)' }}
+      {/* Action stack — Scan + Order */}
+      <div style={{ background: '#fff', padding: '20px 20px 8px' }}>
+        <SSPillLink
+          href="/resident/scan-bag"
+          variant="red"
+          style={{ fontSize: 22, padding: '22px 24px' }}
         >
-          {formatPoints(pointsBalance)} points · {pickupsCount} pickup
-          {pickupsCount === 1 ? '' : 's'}
-        </div>
-      </section>
+          Scan bags
+        </SSPillLink>
+        <div style={{ height: 12 }} />
+        <SSPillLink
+          href="/resident/order-bags"
+          variant="outline"
+          style={{ fontSize: 20, padding: '20px 24px' }}
+        >
+          {hasEverOrdered ? 'Order more bags' : 'Order bags'}
+        </SSPillLink>
+      </div>
 
-      {/* Reward progress */}
-      <section className="mb-6">
-        <div className="mb-2 flex items-baseline justify-between">
-          <div className="eco-eyebrow">Next reward · $10 gift card</div>
-          <div style={{ fontSize: 11, color: '#2D5A3D', fontWeight: 600 }}>
-            {Math.round(pct * 100)}%
-          </div>
-        </div>
-        <div
-          className="h-1 overflow-hidden rounded-sm"
-          style={{ background: '#D9D2C2' }}
-        >
-          <div
-            className="h-full"
-            style={{ width: `${pct * 100}%`, background: '#2D5A3D' }}
-          />
-        </div>
-        <div
-          className="mt-1.5 italic"
-          style={{ fontSize: 11, color: '#5A6358', fontFamily: 'var(--eco-serif)' }}
-        >
-          {pct >= 1 ? 'Ready to redeem.' : `${formatPoints(ptsToGo)} pts to go.`}
-        </div>
-      </section>
-
-      {/* Campaign */}
+      {/* Featured campaign — small yellow banner under CTAs */}
       {featuredCampaign && (
-        <Link
-          href="/resident/calculator"
-          className="mb-4 flex items-center gap-3 rounded-[14px] border p-3.5"
-          style={{ background: '#F2E8D6', borderColor: 'rgba(160,104,42,0.3)' }}
-        >
-          <div
-            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full"
-            style={{ background: '#fff', color: '#A0682A' }}
+        <div style={{ padding: '8px 20px 0' }}>
+          <Link
+            href="/resident/calculator"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              background: SS.yellow,
+              border: `2px solid ${SS.ink}`,
+              borderRadius: 18,
+              padding: '14px 16px',
+              textDecoration: 'none',
+              color: SS.ink,
+            }}
           >
-            <IconFire size={18} stroke={1.5} />
-          </div>
-          <div className="flex-1">
-            <div
-              style={{
-                fontFamily: 'var(--eco-serif)',
-                fontSize: 15,
-                color: '#1F2A22',
-                fontWeight: 500,
-              }}
-            >
-              ×{featuredCampaign.multiplier} on{' '}
-              {featuredCampaign.materialIds
-                .map((id) => materialNameById.get(id) ?? id)
-                .join(', ')}
+            <div style={{ fontSize: 24, fontWeight: 900 }}>×{featuredCampaign.multiplier}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: -0.2 }}>
+                ×{featuredCampaign.multiplier} on{' '}
+                {featuredCampaign.materialIds
+                  .map((id) => materialNameById.get(id) ?? id)
+                  .join(', ')}
+              </div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: SS.inkSoft, marginTop: 2 }}>
+                Ends in {endsInLabel(featuredCampaign.endsAt, now)}
+              </div>
             </div>
-            <div className="mt-0.5" style={{ fontSize: 11, color: '#A0682A' }}>
-              Ends in {endsInLabel(featuredCampaign.endsAt, now)}
-            </div>
-          </div>
-        </Link>
+            <span style={{ fontSize: 18, fontWeight: 900 }}>→</span>
+          </Link>
+        </div>
       )}
 
-      {/* Pickup today — surfaced above the order CTA so it's the first thing seen */}
-      {pickupIsToday && pickupCard}
-
-      {/* Hero CTA */}
-      <Link
-        href="/resident/order-bags"
-        className="mb-3 block rounded-2xl"
-        style={{ background: '#2D5A3D', color: '#FBF7EE', padding: 18 }}
+      {/* Next delivery / pickup */}
+      <div
+        style={{
+          background: '#fff',
+          padding: '20px 20px 22px',
+          borderTop: `1px solid ${SS.line}`,
+          marginTop: 12,
+        }}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <div
-              className="uppercase"
-              style={{ fontSize: 11, opacity: 0.7, letterSpacing: 1.4 }}
-            >
-              {hasEverOrdered ? 'Order more bags' : 'Get started'}
-            </div>
-            <div
-              className="mt-1.5"
-              style={{
-                fontFamily: 'var(--eco-serif)',
-                fontSize: 22,
-                fontWeight: 500,
-                letterSpacing: -0.3,
-              }}
-            >
-              {hasEverOrdered ? 'Order more bags' : 'Order your first batch'}
-            </div>
-            <div className="mt-1" style={{ fontSize: 12, opacity: 0.8 }}>
-              10 bags per sheet · Free shipping over $20
-            </div>
-          </div>
-          <div
-            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full"
-            style={{ background: 'rgba(255,255,255,0.2)' }}
+        <SSEyebrow style={{ marginBottom: 8 }}>Next delivery</SSEyebrow>
+        {headlineOrder ? (
+          <Link
+            href="/resident/order-bags/history"
+            style={{ display: 'block', textDecoration: 'none', color: SS.ink }}
           >
-            <IconArrow size={14} color="#fff" />
-          </div>
-        </div>
-      </Link>
-
-      {/* Pending order */}
-      {headlineOrder && (
-        <Link
-          href="/resident/order-bags/history"
-          className="mb-3 flex items-center gap-3 rounded-[14px] border p-4"
-          style={{ background: '#FBF7EE', borderColor: '#D9D2C2' }}
-        >
-          <div
-            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[10px]"
-            style={{ background: '#E8EFE6', color: '#2D5A3D' }}
-          >
-            <IconTruck size={20} />
-          </div>
-          <div className="flex-1">
             <div
               style={{
-                fontSize: 13,
-                color: '#1F2A22',
-                fontWeight: 500,
+                fontSize: 24,
+                fontWeight: 900,
+                letterSpacing: -0.7,
+                color: SS.ink,
+                lineHeight: 1.1,
               }}
             >
-              {totalOpenBags} bags arriving
-            </div>
-            <div className="mt-0.5" style={{ fontSize: 11, color: '#5A6358' }}>
+              {totalOpenBags} bags ·{' '}
               {headlineOrder.status === 'out_for_delivery'
                 ? 'Out for delivery'
                 : headlineOrder.status === 'pending'
                   ? 'Payment pending'
                   : headlineRouteDate
-                    ? `Arrives ${headlineRouteDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`
-                    : 'Queued for delivery'}
+                    ? formatPickupDay(headlineRouteDate, now)
+                    : 'Queued'}
             </div>
+            <div
+              style={{
+                fontSize: 14,
+                fontWeight: 700,
+                color: SS.inkSoft,
+                marginTop: 6,
+              }}
+            >
+              {nextPickupDate
+                ? `Pickup ${formatPickupDay(nextPickupDate, now)}`
+                : 'No pickup scheduled yet.'}
+            </div>
+          </Link>
+        ) : nextPickupDate ? (
+          <>
+            <div
+              style={{
+                fontSize: 24,
+                fontWeight: 900,
+                letterSpacing: -0.7,
+                color: SS.ink,
+                lineHeight: 1.1,
+              }}
+            >
+              Pickup {formatPickupDay(nextPickupDate, now)}
+            </div>
+            <div
+              style={{
+                fontSize: 14,
+                fontWeight: 700,
+                color: SS.inkSoft,
+                marginTop: 6,
+              }}
+            >
+              Set bags at the curb by 5:30 PM.
+            </div>
+          </>
+        ) : (
+          <>
+            <div
+              style={{ fontSize: 24, fontWeight: 900, letterSpacing: -0.7, color: SS.ink }}
+            >
+              Nothing scheduled
+            </div>
+            <div
+              style={{
+                fontSize: 14,
+                fontWeight: 700,
+                color: SS.inkSoft,
+                marginTop: 6,
+              }}
+            >
+              Order bags to join the next route.
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Sky — reward progress */}
+      <div style={{ background: SS.sky, padding: '24px 20px' }}>
+        <SSEyebrow style={{ marginBottom: 8 }}>Next $10 gift card</SSEyebrow>
+        <div
+          style={{
+            fontSize: 56,
+            fontWeight: 900,
+            letterSpacing: -2,
+            color: SS.ink,
+            lineHeight: 0.95,
+            marginBottom: 4,
+          }}
+        >
+          {pct >= 1 ? 'Ready!' : formatPoints(ptsToGo)}
+        </div>
+        <div
+          style={{
+            fontSize: 16,
+            fontWeight: 800,
+            color: SS.ink,
+            marginBottom: 14,
+            opacity: 0.75,
+          }}
+        >
+          {pct >= 1 ? 'Tap rewards to cash out.' : 'points to your next $10 gift card'}
+        </div>
+        <div
+          style={{
+            height: 14,
+            background: '#fff',
+            borderRadius: 999,
+            overflow: 'hidden',
+            border: `2px solid ${SS.ink}`,
+          }}
+        >
+          <div style={{ height: '100%', width: `${pct * 100}%`, background: SS.brand }} />
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            marginTop: 8,
+          }}
+        >
+          <div style={{ fontSize: 13, fontWeight: 800, color: SS.ink, opacity: 0.7 }}>
+            {formatPoints(pointsBalance)} / {formatPoints(GIFT_CARD_POINTS)} pts
           </div>
-          <IconChevR size={16} color="#5A6358" />
-        </Link>
-      )}
+          <div style={{ fontSize: 14, fontWeight: 900, color: SS.brand }}>
+            {Math.round(pct * 100)}%
+          </div>
+        </div>
+      </div>
 
-      {/* Next pickup / empty state — only here when not today (today renders above CTA) */}
-      {!pickupIsToday && pickupCard}
-
-      {/* Contribution */}
-      <section
-        className="mb-4 py-5"
-        style={{ borderTop: '1px solid #D9D2C2', borderBottom: '1px solid #D9D2C2' }}
-      >
-        <div className="eco-eyebrow mb-3.5">Your contribution</div>
-        <div className="grid grid-cols-2 gap-4">
-          {[
-            { Ic: IconRecycle, value: 0, label: 'lbs recycled' },
-            { Ic: IconLeaf, value: 0, label: 'trees saved' },
-            { Ic: IconDroplet, value: 0, label: 'gal water' },
-            { Ic: IconCloud, value: 0, label: 'lbs CO₂' },
-          ].map(({ Ic, value, label }) => (
-            <div key={label} className="flex items-center gap-2.5">
-              <Ic size={18} color="#2D5A3D" stroke={1.5} />
-              <div>
-                <div
-                  style={{
-                    fontFamily: 'var(--eco-serif)',
-                    fontSize: 18,
-                    color: '#1F2A22',
-                    lineHeight: 1,
-                  }}
-                >
-                  {value}
-                </div>
-                <div
-                  className="mt-1"
-                  style={{ fontSize: 10, color: '#5A6358', letterSpacing: 0.3 }}
-                >
-                  {label}
-                </div>
+      {/* Mint — how it works */}
+      <div style={{ background: SS.mint, padding: '28px 20px' }}>
+        <div
+          style={{
+            fontSize: 26,
+            fontWeight: 900,
+            letterSpacing: -0.8,
+            marginBottom: 18,
+            color: SS.ink,
+          }}
+        >
+          How it works
+        </div>
+        {[
+          ['Order bags', 'Pick a sheet of 10 bags. Free shipping over $20.'],
+          ['Fill & set out', 'Clean recyclables. Place bags at the curb by 5:30pm.'],
+          ['Return & redeem', 'Points convert to gift cards. Cash out anytime.'],
+        ].map(([t, sub], i) => (
+          <div
+            key={t}
+            style={{
+              display: 'flex',
+              gap: 14,
+              padding: '14px 0',
+              alignItems: 'flex-start',
+            }}
+          >
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: '50%',
+                background: SS.ink,
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 18,
+                fontWeight: 900,
+                flexShrink: 0,
+              }}
+            >
+              {i + 1}
+            </div>
+            <div style={{ flex: 1, paddingTop: 4 }}>
+              <div
+                style={{
+                  fontSize: 19,
+                  fontWeight: 900,
+                  color: SS.ink,
+                  letterSpacing: -0.3,
+                }}
+              >
+                {t}
+              </div>
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: SS.ink,
+                  marginTop: 2,
+                  lineHeight: 1.35,
+                  opacity: 0.7,
+                }}
+              >
+                {sub}
               </div>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Calculator footer link */}
-      <Link
-        href="/resident/calculator"
-        className="flex items-center justify-between py-2"
-      >
-        <div>
-          <div
-            className="italic"
-            style={{ fontFamily: 'var(--eco-serif)', fontSize: 16, color: '#1F2A22' }}
-          >
-            What is your trash worth?
           </div>
-          <div className="mt-0.5" style={{ fontSize: 11, color: '#5A6358' }}>
-            Current rates · 7 commodities
-          </div>
-        </div>
-        <IconArrow size={18} color="#2D5A3D" />
-      </Link>
-    </main>
+        ))}
+      </div>
+    </SSScreen>
   );
 }

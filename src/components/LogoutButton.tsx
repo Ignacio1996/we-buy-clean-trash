@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { logout } from '@/lib/auth/client';
+import { SS } from '@/components/resident/ss/SS';
 
 export function LogoutButton() {
   const router = useRouter();
@@ -24,7 +25,21 @@ export function LogoutButton() {
       type="button"
       onClick={handleClick}
       disabled={busy}
-      className="rounded border border-gray-300 px-3 py-1 text-sm disabled:opacity-50"
+      style={{
+        width: '100%',
+        background: '#fff',
+        color: SS.brand,
+        border: `2px solid ${SS.brand}`,
+        borderRadius: 999,
+        padding: '18px 24px',
+        fontFamily: SS.sans,
+        fontSize: 17,
+        fontWeight: 900,
+        letterSpacing: -0.2,
+        boxShadow: `0 4px 0 ${SS.brand}`,
+        cursor: busy ? 'not-allowed' : 'pointer',
+        opacity: busy ? 0.5 : 1,
+      }}
     >
       {busy ? 'Signing out…' : 'Sign out'}
     </button>

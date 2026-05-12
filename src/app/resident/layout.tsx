@@ -7,9 +7,9 @@ export default async function ResidentLayout({ children }: { children: React.Rea
   const account = await loadResidentAccount(session.uid);
   const items = account.accountType === 'commercial_site' ? COMMERCIAL_ITEMS : CONSUMER_ITEMS;
   return (
-    <div className="eco-grain min-h-dvh text-[#1F2A22]">
+    <div className="min-h-dvh" style={{ background: '#fff', color: '#111' }}>
       <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col sm:max-w-xl lg:max-w-2xl">
-        <div className="flex-1 pb-24">{children}</div>
+        <div className="flex-1">{children}</div>
         <BottomNav items={items} />
       </div>
     </div>

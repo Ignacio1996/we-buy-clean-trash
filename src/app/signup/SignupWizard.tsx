@@ -1,21 +1,18 @@
 'use client';
 
-import {
-  useMemo,
-  useState,
-  type ChangeEvent,
-  type CSSProperties,
-  type ReactNode,
-} from 'react';
+import { useMemo, useState, type ChangeEvent, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getFreshIdToken, signupWithEmail } from '@/lib/auth/client';
 import { PresignupScanBanner } from '@/components/PresignupScanBanner';
 import {
-  IconArrow,
-  IconArrowLeft,
-  IconCheck,
-} from '@/components/icons/EcoIcons';
+  SS,
+  SSDots,
+  SSEyebrow,
+  SSPillButton,
+  SSStickerCard,
+  SSStatusBarSpacer,
+} from '@/components/resident/ss/SS';
 import {
   BAG_SHEET_UNIT_PRICE_DOLLARS,
   FREE_SHIPPING_THRESHOLD,
@@ -23,13 +20,7 @@ import {
   calculateBagOrderTotal,
 } from '@/lib/logic/calculateBagOrderTotal';
 
-type Step =
-  | 'splash'
-  | 'address'
-  | 'how'
-  | 'account'
-  | 'password'
-  | 'first';
+type Step = 'splash' | 'address' | 'how' | 'account' | 'password' | 'first';
 
 const FLOW: Step[] = ['splash', 'address', 'how', 'account', 'password', 'first'];
 
@@ -67,7 +58,17 @@ export function SignupWizard() {
   const [error, setError] = useState<string | null>(null);
 
   const idx = Math.max(0, FLOW.indexOf(step));
-  const total = FLOW.length;
+  // Step 0 (splash) shows no dot bar; dots run 0..3 across the remaining 4 "decision" steps
+  // (address, account, password, first). "How" is informational — keep step indicator on
+  // the prior dot.
+  const dotStepByStep: Record<Step, number> = {
+    splash: 0,
+    address: 0,
+    how: 0,
+    account: 1,
+    password: 2,
+    first: 3,
+  };
 
   function go(next: Step) {
     setError(null);
@@ -85,8 +86,7 @@ export function SignupWizard() {
     address.state.trim() !== '' &&
     address.postalCode.trim() !== '';
 
-  const accountValid =
-    name.trim() !== '' && /^\S+@\S+\.\S+$/.test(email.trim());
+  const accountValid = name.trim() !== '' && /^\S+@\S+\.\S+$/.test(email.trim());
 
   async function completeSignup() {
     setBusy(true);
@@ -153,14 +153,32 @@ export function SignupWizard() {
   }
 
   return (
-    <div style={shellStyle}>
-      <Grain />
+    <div
+      style={{
+        background: SS.bg,
+        minHeight: '100dvh',
+        color: SS.ink,
+        fontFamily: SS.sans,
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <SSStatusBarSpacer />
 
       {step !== 'splash' && (
-        <TopBar idx={idx} total={total} onBack={goBack} />
+        <StepBar onBack={goBack} step={dotStepByStep[step]} total={4} />
       )}
 
-      <div style={contentStyle}>
+      <div
+        style={{
+          flex: 1,
+          maxWidth: 480,
+          width: '100%',
+          margin: '0 auto',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         {step === 'splash' && <SplashStep onNext={() => go('address')} />}
         {step === 'address' && (
           <AddressStep
@@ -168,9 +186,10 @@ export function SignupWizard() {
             onChange={setAddress}
             onNext={() => go('how')}
             valid={addressValid}
+            idx={idx}
           />
         )}
-        {step === 'how' && <HowStep onNext={() => go('account')} />}
+        {step === 'how' && <HowStep onNext={() => go('account')} idx={idx} />}
         {step === 'account' && (
           <AccountStep
             name={name}
@@ -183,6 +202,7 @@ export function SignupWizard() {
             onNotify={setNotify}
             valid={accountValid}
             onNext={() => go('password')}
+            idx={idx}
           />
         )}
         {step === 'password' && (
@@ -196,6 +216,7 @@ export function SignupWizard() {
             onNext={completeSignup}
             busy={busy}
             error={error}
+            idx={idx}
           />
         )}
         {step === 'first' && (
@@ -206,6 +227,7 @@ export function SignupWizard() {
             onSkip={skipBagOrder}
             busy={busy}
             error={error}
+            idx={idx}
           />
         )}
       </div>
@@ -213,158 +235,140 @@ export function SignupWizard() {
   );
 }
 
-// ─── Step 1: Splash ──────────────────────────────────────────────
+// ─── Step 1 · Splash ─────────────────────────────────────────────
 function SplashStep({ onNext }: { onNext: () => void }) {
   return (
-    <div style={{ paddingTop: 28, display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
-      <div style={{ borderBottom: '1px solid var(--line)', paddingBottom: 10, marginBottom: 28 }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div
+        style={{
+          padding: '32px 24px 28px',
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 18,
+        }}
+      >
+        <SSEyebrow style={{ color: SS.ink, opacity: 0.7, letterSpacing: 1.6 }}>
+          We Buy Clean Trash
+        </SSEyebrow>
         <div
           style={{
-            fontFamily: 'var(--eco-mono, ui-monospace, monospace)',
-            fontSize: 9,
-            color: 'var(--ink-soft)',
-            letterSpacing: 2,
+            fontSize: 42,
+            fontWeight: 900,
+            letterSpacing: -1.6,
+            lineHeight: 0.95,
+            color: SS.ink,
           }}
         >
-          VOL. I · NO. 01
+          Your trash is <span style={{ color: SS.green }}>worth money.</span>
         </div>
-      </div>
+        <div
+          style={{
+            fontSize: 17,
+            fontWeight: 700,
+            color: SS.ink,
+            opacity: 0.75,
+            lineHeight: 1.4,
+          }}
+        >
+          We pick up your clean recyclables at the curb and pay you in gift cards. No sorting
+          machines. No bins to lug.
+        </div>
 
-      <div
-        className="italic"
-        style={{
-          fontFamily: 'var(--eco-serif)',
-          fontSize: 22,
-          color: 'var(--green)',
-          lineHeight: 1.1,
-          marginBottom: 14,
-        }}
-      >
-        We Buy
-        <br />
-        Clean Trash
-      </div>
-
-      <h1
-        style={{
-          fontFamily: 'var(--eco-serif)',
-          fontSize: 38,
-          lineHeight: 1.05,
-          fontWeight: 400,
-          letterSpacing: -0.8,
-          marginBottom: 18,
-          color: 'var(--ink)',
-        }}
-      >
-        Turn what you
-        <br />
-        throw away
-        <br />
-        into <em style={{ color: 'var(--green)' }}>cash</em>.
-      </h1>
-
-      <p
-        className="italic"
-        style={{
-          fontSize: 13,
-          color: 'var(--ink-soft)',
-          lineHeight: 1.5,
-          fontFamily: 'var(--eco-serif)',
-          marginBottom: 22,
-        }}
-      >
-        Fill our bags with cleaned bottles, cans and paper. We pick them up. Points
-        become gift cards.
-      </p>
-
-      <div className="mb-6">
         <PresignupScanBanner />
-      </div>
 
-      <div style={{ borderTop: '1px solid var(--line)', marginBottom: 28 }}>
-        {[
-          ['Avg. earnings', '$5–$12 / pickup'],
-          ['Pickup cadence', 'Weekly · curbside'],
-          ['Materials', '7 commodities'],
-        ].map(([label, value]) => (
+        <SSStickerCard style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <div
-            key={label}
             style={{
+              width: 56,
+              height: 56,
+              borderRadius: 14,
+              background: SS.green,
+              color: '#fff',
               display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'baseline',
-              padding: '11px 0',
-              borderBottom: '1px solid var(--line-soft)',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 28,
+              fontWeight: 900,
             }}
           >
-            <span style={eyebrowStyle}>{label}</span>
-            <span
-              style={{
-                fontFamily: 'var(--eco-serif)',
-                fontSize: 14,
-                color: 'var(--ink)',
-              }}
-            >
-              {value}
-            </span>
+            $
           </div>
-        ))}
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 22, fontWeight: 900, color: SS.ink, letterSpacing: -0.5 }}>
+              $10 gift card
+            </div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: SS.inkSoft }}>
+              ≈ 4 weeks of pickups
+            </div>
+          </div>
+        </SSStickerCard>
       </div>
 
-      <div style={{ flex: 1 }} />
-
-      <PrimaryButton onClick={onNext}>Get started</PrimaryButton>
-
-      <p style={{ textAlign: 'center', fontSize: 11, color: 'var(--ink-soft)', marginTop: 14 }}>
-        Already a member?{' '}
-        <Link href="/login" style={{ color: 'var(--green)', fontWeight: 600 }}>
-          Sign in
-        </Link>
-      </p>
+      <div style={{ background: '#fff', padding: '20px 24px 28px' }}>
+        <SSPillButton onClick={onNext} variant="primary">
+          Get started
+        </SSPillButton>
+        <div
+          style={{
+            textAlign: 'center',
+            fontSize: 13,
+            fontWeight: 700,
+            color: SS.inkSoft,
+            marginTop: 16,
+          }}
+        >
+          Have an account?{' '}
+          <Link
+            href="/login"
+            style={{ color: SS.ink, textDecoration: 'underline', fontWeight: 900 }}
+          >
+            Sign in
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
 
-// ─── Step 2: Address ─────────────────────────────────────────────
+// ─── Step 2 · Address ────────────────────────────────────────────
 function AddressStep({
   address,
   onChange,
   onNext,
   valid,
+  idx,
 }: {
   address: AddressForm;
   onChange: (a: AddressForm) => void;
   onNext: () => void;
   valid: boolean;
+  idx: number;
 }) {
   function update<K extends keyof AddressForm>(key: K, value: string) {
     onChange({ ...address, [key]: key === 'state' ? value.toUpperCase() : value });
   }
   return (
-    <div>
+    <>
       <StepHeading
-        eyebrow="Step one · Service area"
-        title={
-          <>
-            Where shall we <em style={{ color: 'var(--green)' }}>collect</em>?
-          </>
-        }
-        lede="We need a curbside address. Service runs in select neighborhoods."
+        eyebrow={`Step ${idx} · Service area`}
+        title="Where do you live?"
+        lede="We need your address so our driver can find your bags."
       />
-
-      <div style={{ borderTop: '1px solid var(--line)', marginBottom: 14 }}>
+      <div style={{ padding: '20px 24px', flex: 1 }}>
         <FormInput
           label="Street"
           value={address.street}
           onChange={(v) => update('street', v)}
           placeholder="312 Almanac Way"
           autoComplete="address-line1"
+          background={SS.mint}
         />
         <FormInput
-          label="Apt / Unit"
+          label="Apt / Unit (optional)"
           value={address.unit}
           onChange={(v) => update('unit', v)}
-          placeholder="Optional"
+          placeholder="Apt 3B"
           autoComplete="address-line2"
         />
         <FormInput
@@ -374,134 +378,144 @@ function AddressStep({
           placeholder="Portland"
           autoComplete="address-level2"
         />
-        <div style={{ display: 'flex', gap: 12 }}>
-          <div style={{ flex: 1 }}>
-            <FormInput
-              label="State"
-              value={address.state}
-              onChange={(v) => update('state', v)}
-              placeholder="OR"
-              maxLength={2}
-              autoComplete="address-level1"
-            />
-          </div>
-          <div style={{ flex: 1 }}>
-            <FormInput
-              label="ZIP"
-              value={address.postalCode}
-              onChange={(v) => update('postalCode', v)}
-              placeholder="97214"
-              autoComplete="postal-code"
-              mono
-            />
-          </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 12 }}>
+          <FormInput
+            label="State"
+            value={address.state}
+            onChange={(v) => update('state', v)}
+            placeholder="OR"
+            maxLength={2}
+            autoComplete="address-level1"
+          />
+          <FormInput
+            label="ZIP"
+            value={address.postalCode}
+            onChange={(v) => update('postalCode', v)}
+            placeholder="97214"
+            autoComplete="postal-code"
+            background={SS.sky}
+            mono
+          />
         </div>
-      </div>
-
-      {valid && (
-        <div
-          style={{
-            display: 'flex',
-            gap: 10,
-            alignItems: 'flex-start',
-            background: 'var(--green-soft)',
-            border: '1px solid rgba(45,90,61,0.2)',
-            borderRadius: 12,
-            padding: 12,
-            marginBottom: 18,
-          }}
-        >
-          <IconCheck size={18} color="var(--green)" stroke={2} />
-          <div>
-            <div style={{ fontFamily: 'var(--eco-serif)', fontSize: 14, color: 'var(--green)' }}>
-              You&rsquo;re in service.
-            </div>
-            <div style={{ fontSize: 11, color: 'var(--ink-soft)', marginTop: 2 }}>
-              We&rsquo;ll confirm your pickup day after sign-up.
-            </div>
-          </div>
-        </div>
-      )}
-
-      <PrimaryButton onClick={onNext} disabled={!valid}>
-        Continue
-      </PrimaryButton>
-    </div>
-  );
-}
-
-// ─── Step 3: How it works ────────────────────────────────────────
-function HowStep({ onNext }: { onNext: () => void }) {
-  const steps = [
-    { n: 'I', title: 'Order bags', body: 'Reusable, labeled by material. Free shipping over $20.' },
-    { n: 'II', title: 'Fill clean', body: 'Rinse what goes in. Caps off bottles. No glass shards.' },
-    { n: 'III', title: 'Set out by 5:30', body: 'On your pickup day. We weigh, sort, and credit points.' },
-    { n: 'IV', title: 'Redeem', body: 'Cash out for gift cards once you reach $10.' },
-  ];
-  return (
-    <div>
-      <StepHeading
-        eyebrow="Step two · A short almanac"
-        title={
-          <>
-            How <em style={{ color: 'var(--green)' }}>it works</em>.
-          </>
-        }
-        lede="Four simple things. Read once, do weekly."
-      />
-
-      <div style={{ borderTop: '1px solid var(--line)' }}>
-        {steps.map((s) => (
+        {valid && (
           <div
-            key={s.n}
             style={{
+              background: SS.mint,
+              border: `2px solid ${SS.ink}`,
+              borderRadius: 14,
+              padding: '14px 16px',
               display: 'flex',
-              gap: 14,
-              padding: '14px 0',
-              borderBottom: '1px solid var(--line-soft)',
-              alignItems: 'flex-start',
+              alignItems: 'center',
+              gap: 10,
+              marginTop: 8,
             }}
           >
             <div
-              className="italic"
               style={{
-                fontFamily: 'var(--eco-serif)',
-                fontSize: 18,
-                color: 'var(--green)',
-                width: 28,
-                flexShrink: 0,
-                paddingTop: 1,
+                width: 24,
+                height: 24,
+                borderRadius: '50%',
+                background: SS.ink,
+                color: SS.mint,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 14,
+                fontWeight: 900,
               }}
             >
-              {s.n}.
+              ✓
             </div>
-            <div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: SS.ink }}>
+              You&rsquo;re in service. We&rsquo;ll confirm your pickup day after sign-up.
+            </div>
+          </div>
+        )}
+      </div>
+      <FooterBar>
+        <SSPillButton variant="primary" disabled={!valid} onClick={onNext}>
+          Continue
+        </SSPillButton>
+      </FooterBar>
+    </>
+  );
+}
+
+// ─── Step 3 · How it works ───────────────────────────────────────
+function HowStep({ onNext, idx }: { onNext: () => void; idx: number }) {
+  const steps = [
+    ['Order bags', 'Reusable, labeled by material. Free shipping over $20.'],
+    ['Fill clean', 'Rinse what goes in. Caps off bottles. No glass shards.'],
+    ['Set out by 5:30', 'On your pickup day. We weigh, sort, and credit points.'],
+    ['Redeem', 'Cash out for gift cards once you reach $10.'],
+  ];
+  return (
+    <>
+      <StepHeading
+        eyebrow={`Step ${idx} · How it works`}
+        title="Four simple things."
+        lede="Read once, do weekly."
+      />
+      <div style={{ background: SS.mint, padding: '24px 20px', flex: 1 }}>
+        {steps.map(([t, sub], i) => (
+          <div
+            key={t}
+            style={{ display: 'flex', gap: 14, padding: '12px 0', alignItems: 'flex-start' }}
+          >
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: '50%',
+                background: SS.ink,
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 18,
+                fontWeight: 900,
+                flexShrink: 0,
+              }}
+            >
+              {i + 1}
+            </div>
+            <div style={{ flex: 1, paddingTop: 4 }}>
               <div
                 style={{
-                  fontFamily: 'var(--eco-serif)',
-                  fontSize: 16,
-                  color: 'var(--ink)',
-                  marginBottom: 2,
+                  fontSize: 19,
+                  fontWeight: 900,
+                  color: SS.ink,
+                  letterSpacing: -0.3,
                 }}
               >
-                {s.title}
+                {t}
               </div>
-              <div style={{ fontSize: 12, color: 'var(--ink-soft)', lineHeight: 1.5 }}>
-                {s.body}
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: SS.ink,
+                  marginTop: 2,
+                  lineHeight: 1.35,
+                  opacity: 0.75,
+                }}
+              >
+                {sub}
               </div>
             </div>
           </div>
         ))}
       </div>
-
-      <div style={{ marginTop: 22 }}>
-        <PrimaryButton onClick={onNext}>Continue</PrimaryButton>
-      </div>
-    </div>
+      <FooterBar>
+        <SSPillButton variant="primary" onClick={onNext}>
+          Continue
+        </SSPillButton>
+      </FooterBar>
+    </>
   );
 }
 
-// ─── Step 4: Account ─────────────────────────────────────────────
+// ─── Step 4 · Account ────────────────────────────────────────────
 function AccountStep({
   name,
   email,
@@ -513,6 +527,7 @@ function AccountStep({
   onNotify,
   valid,
   onNext,
+  idx,
 }: {
   name: string;
   email: string;
@@ -524,6 +539,7 @@ function AccountStep({
   onNotify: (v: NotifyPref) => void;
   valid: boolean;
   onNext: () => void;
+  idx: number;
 }) {
   const options: Array<{ k: NotifyPref; label: string }> = [
     { k: 'sms', label: 'SMS' },
@@ -531,18 +547,13 @@ function AccountStep({
     { k: 'both', label: 'Both' },
   ];
   return (
-    <div>
+    <>
       <StepHeading
-        eyebrow="Step three · Your account"
-        title={
-          <>
-            A name to <em style={{ color: 'var(--green)' }}>credit</em>.
-          </>
-        }
+        eyebrow={`Step ${idx} · Your account`}
+        title="A name to credit."
         lede="We'll use this on your account and pickup roster."
       />
-
-      <div style={{ borderTop: '1px solid var(--line)', marginBottom: 18 }}>
+      <div style={{ padding: '20px 24px', flex: 1 }}>
         <FormInput
           label="Full name"
           value={name}
@@ -559,65 +570,65 @@ function AccountStep({
           autoComplete="email"
         />
         <FormInput
-          label="Phone"
+          label="Phone (optional)"
           value={phone}
           onChange={onPhone}
           placeholder="(503) 555-0117"
           type="tel"
           autoComplete="tel"
-          mono
         />
+
+        <SSEyebrow style={{ marginTop: 6, marginBottom: 10 }}>Pickup reminders</SSEyebrow>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+          {options.map(({ k, label }) => {
+            const active = notify === k;
+            return (
+              <button
+                key={k}
+                type="button"
+                onClick={() => onNotify(k)}
+                style={{
+                  padding: '14px 0',
+                  textAlign: 'center',
+                  border: `2px solid ${SS.ink}`,
+                  background: active ? SS.yellow : '#fff',
+                  color: SS.ink,
+                  borderRadius: 14,
+                  fontFamily: SS.sans,
+                  fontSize: 15,
+                  fontWeight: 900,
+                  cursor: 'pointer',
+                  boxShadow: active ? `0 4px 0 ${SS.ink}` : 'none',
+                }}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+
+        <p
+          style={{
+            fontSize: 12,
+            fontWeight: 700,
+            color: SS.inkSoft,
+            lineHeight: 1.5,
+            marginTop: 18,
+          }}
+        >
+          By continuing you agree to our terms and a privacy policy that fits on a postcard.
+        </p>
       </div>
-
-      <div style={{ ...eyebrowStyle, marginBottom: 8 }}>Pickup reminders</div>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 22 }}>
-        {options.map(({ k, label }) => {
-          const active = notify === k;
-          return (
-            <button
-              key={k}
-              type="button"
-              onClick={() => onNotify(k)}
-              style={{
-                flex: 1,
-                padding: '10px 0',
-                textAlign: 'center',
-                border: `1px solid ${active ? 'var(--green)' : 'var(--line)'}`,
-                background: active ? 'var(--green-soft)' : 'var(--paper)',
-                color: active ? 'var(--green)' : 'var(--ink)',
-                borderRadius: 10,
-                fontFamily: 'var(--eco-serif)',
-                fontSize: 13,
-                cursor: 'pointer',
-              }}
-            >
-              {label}
-            </button>
-          );
-        })}
-      </div>
-
-      <p
-        className="italic"
-        style={{
-          fontSize: 11,
-          color: 'var(--ink-soft)',
-          lineHeight: 1.5,
-          marginBottom: 14,
-          fontFamily: 'var(--eco-serif)',
-        }}
-      >
-        By continuing you agree to our terms and a privacy policy that fits on a postcard.
-      </p>
-
-      <PrimaryButton onClick={onNext} disabled={!valid}>
-        Create account
-      </PrimaryButton>
-    </div>
+      <FooterBar>
+        <SSPillButton variant="primary" disabled={!valid} onClick={onNext}>
+          Create account
+        </SSPillButton>
+      </FooterBar>
+    </>
   );
 }
 
-// ─── Step 5: Password ────────────────────────────────────────────
+// ─── Step 5 · Password ───────────────────────────────────────────
 function PasswordStep({
   password,
   confirm,
@@ -628,6 +639,7 @@ function PasswordStep({
   onNext,
   busy,
   error,
+  idx,
 }: {
   password: string;
   confirm: string;
@@ -638,6 +650,7 @@ function PasswordStep({
   onNext: () => void;
   busy: boolean;
   error: string | null;
+  idx: number;
 }) {
   const rules = [
     { ok: password.length >= 8, label: 'At least 8 characters' },
@@ -650,18 +663,13 @@ function PasswordStep({
   const allOk = rules.every((r) => r.ok);
 
   return (
-    <div>
+    <>
       <StepHeading
-        eyebrow="Step four · A password"
-        title={
-          <>
-            Set a <em style={{ color: 'var(--green)' }}>password</em>.
-          </>
-        }
+        eyebrow={`Step ${idx} · Password`}
+        title="Set a password."
         lede="Used only to sign back in. Choose a phrase, not a puzzle."
       />
-
-      <div style={{ borderTop: '1px solid var(--line)', marginBottom: 14 }}>
+      <div style={{ padding: '20px 24px', flex: 1 }}>
         <PasswordRow
           label="Password"
           value={password}
@@ -680,55 +688,59 @@ function PasswordStep({
           autoComplete="new-password"
           placeholder="Re-enter password"
         />
-      </div>
 
-      <div style={{ marginBottom: 22 }}>
-        {rules.map((r) => (
-          <div
-            key={r.label}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              padding: '8px 0',
-              borderBottom: '1px solid var(--line-soft)',
-            }}
-          >
+        <SSStickerCard style={{ marginTop: 6 }}>
+          <SSEyebrow style={{ marginBottom: 10 }}>Rules</SSEyebrow>
+          {rules.map((r, i) => (
             <div
+              key={r.label}
               style={{
-                width: 16,
-                height: 16,
-                borderRadius: '50%',
-                border: `1px solid ${r.ok ? 'var(--green)' : 'var(--line)'}`,
-                background: r.ok ? 'var(--green)' : 'transparent',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
+                gap: 10,
+                padding: '8px 0',
+                borderTop: i ? `1px solid ${SS.line}` : 'none',
               }}
             >
-              {r.ok && <IconCheck size={10} color="var(--paper)" stroke={2.5} />}
+              <div
+                style={{
+                  width: 22,
+                  height: 22,
+                  borderRadius: '50%',
+                  border: `2px solid ${SS.ink}`,
+                  background: r.ok ? SS.green : '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  color: '#fff',
+                  fontSize: 13,
+                  fontWeight: 900,
+                }}
+              >
+                {r.ok ? '✓' : ''}
+              </div>
+              <span
+                style={{
+                  fontSize: 14,
+                  fontWeight: 800,
+                  color: r.ok ? SS.ink : SS.inkSoft,
+                }}
+              >
+                {r.label}
+              </span>
             </div>
-            <span
-              style={{
-                fontFamily: 'var(--eco-serif)',
-                fontSize: 13,
-                color: r.ok ? 'var(--ink)' : 'var(--ink-soft)',
-                fontStyle: r.ok ? 'normal' : 'italic',
-              }}
-            >
-              {r.label}
-            </span>
-          </div>
-        ))}
+          ))}
+        </SSStickerCard>
+
+        {error && <ErrorNotice>{error}</ErrorNotice>}
       </div>
-
-      {error && <ErrorNotice>{error}</ErrorNotice>}
-
-      <PrimaryButton onClick={onNext} disabled={!allOk || busy}>
-        {busy ? 'Creating account…' : 'Continue'}
-      </PrimaryButton>
-    </div>
+      <FooterBar>
+        <SSPillButton variant="primary" disabled={!allOk || busy} onClick={onNext}>
+          {busy ? 'Creating account…' : 'Continue'}
+        </SSPillButton>
+      </FooterBar>
+    </>
   );
 }
 
@@ -752,48 +764,26 @@ function PasswordRow({
   placeholder?: string;
 }) {
   return (
-    <div
+    <label
       style={{
-        padding: '12px 0',
-        borderBottom: '1px solid var(--line-soft)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: 12,
+        display: 'block',
+        background: '#fff',
+        border: `2px solid ${SS.ink}`,
+        borderRadius: 14,
+        padding: '12px 16px',
+        marginBottom: 12,
+        cursor: 'text',
       }}
     >
-      <span style={{ ...eyebrowStyle, flexShrink: 0 }}>{label}</span>
       <div
         style={{
           display: 'flex',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          gap: 10,
-          flex: 1,
-          justifyContent: 'flex-end',
+          marginBottom: 4,
         }}
       >
-        <input
-          type={show ? 'text' : 'password'}
-          value={value}
-          autoComplete={autoComplete}
-          placeholder={placeholder}
-          onChange={(e) => onChange(e.target.value)}
-          style={{
-            border: 'none',
-            outline: 'none',
-            background: 'transparent',
-            fontFamily:
-              value && show ? 'ui-monospace, "SF Mono", Menlo, monospace' : 'var(--eco-serif)',
-            fontSize: value && show ? 13 : value ? 16 : 14,
-            color: value ? 'var(--ink)' : 'var(--ink-faint)',
-            fontStyle: value ? 'normal' : 'italic',
-            textAlign: 'right',
-            padding: 0,
-            minWidth: 0,
-            flex: 1,
-            letterSpacing: value && !show ? 1 : 0,
-          }}
-        />
+        <SSEyebrow>{label}</SSEyebrow>
         {showToggle && (
           <button
             type="button"
@@ -802,23 +792,42 @@ function PasswordRow({
               border: 'none',
               background: 'transparent',
               cursor: 'pointer',
-              padding: 2,
-              fontSize: 10,
-              color: 'var(--green)',
+              fontFamily: SS.sans,
+              fontSize: 11,
+              fontWeight: 900,
+              letterSpacing: 1,
+              color: SS.brand,
               textTransform: 'uppercase',
-              letterSpacing: 1.4,
-              fontWeight: 600,
             }}
           >
             {show ? 'Hide' : 'Show'}
           </button>
         )}
       </div>
-    </div>
+      <input
+        type={show ? 'text' : 'password'}
+        value={value}
+        autoComplete={autoComplete}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          width: '100%',
+          background: 'transparent',
+          border: 'none',
+          outline: 'none',
+          padding: 0,
+          fontFamily: SS.sans,
+          fontSize: 18,
+          fontWeight: 800,
+          color: SS.ink,
+          letterSpacing: show ? 0 : 4,
+        }}
+      />
+    </label>
   );
 }
 
-// ─── Step 6: First bag order ─────────────────────────────────────
+// ─── Step 6 · First bag ──────────────────────────────────────────
 function FirstBagStep({
   qty,
   onQty,
@@ -826,6 +835,7 @@ function FirstBagStep({
   onSkip,
   busy,
   error,
+  idx,
 }: {
   qty: number;
   onQty: (v: number) => void;
@@ -833,222 +843,209 @@ function FirstBagStep({
   onSkip: () => void;
   busy: boolean;
   error: string | null;
+  idx: number;
 }) {
   const breakdown = useMemo(
     () => calculateBagOrderTotal({ quantity: qty, unitPrice: BAG_SHEET_UNIT_PRICE_DOLLARS }),
     [qty],
   );
   return (
-    <div>
+    <>
       <StepHeading
-        eyebrow="Step five · First batch"
-        title={
-          <>
-            Order your <em style={{ color: 'var(--green)' }}>first sheet</em>.
-          </>
-        }
-        lede={`Ten reusable bags per sheet. Free shipping over $${FREE_SHIPPING_THRESHOLD}.`}
+        eyebrow={`Step ${idx} · First batch`}
+        title="Order your bags."
+        lede={`10 bags per sheet. Free shipping over $${FREE_SHIPPING_THRESHOLD}.`}
       />
-
-      <div
-        style={{
-          background: 'var(--paper)',
-          border: '1px solid var(--line)',
-          borderRadius: 14,
-          padding: 16,
-          marginBottom: 14,
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-          <div>
-            <div style={{ fontFamily: 'var(--eco-serif)', fontSize: 16, color: 'var(--ink)' }}>
-              Bag sheets
-            </div>
-            <div style={{ fontSize: 11, color: 'var(--ink-soft)', marginTop: 2 }}>
-              10 bags · ${BAG_SHEET_UNIT_PRICE_DOLLARS.toFixed(2)} / sheet
-            </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <button
-              type="button"
-              onClick={() => onQty(Math.max(1, qty - 1))}
-              disabled={busy || qty <= 1}
-              style={stepperStyle}
-              aria-label="Decrease quantity"
-            >
-              −
-            </button>
-            <span
-              style={{
-                fontFamily: 'var(--eco-serif)',
-                fontSize: 22,
-                minWidth: 18,
-                textAlign: 'center',
-              }}
-            >
-              {qty}
-            </span>
-            <button
-              type="button"
-              onClick={() => onQty(Math.min(20, qty + 1))}
-              disabled={busy || qty >= 20}
-              style={stepperStyle}
-              aria-label="Increase quantity"
-            >
-              +
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ marginBottom: 22 }}>
-        <Ledger label="Subtotal" value={`$${breakdown.subtotal.toFixed(2)}`} />
-        <Ledger
-          label="Shipping"
-          value={breakdown.freeShipping ? 'Free' : `$${SHIPPING_FEE.toFixed(2)}`}
-          italic={breakdown.freeShipping}
-        />
-        <Ledger label="Estimated arrival" value="3–5 days" />
+      <div style={{ padding: '20px 24px', flex: 1 }}>
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'baseline',
-            padding: '14px 0 4px',
-            borderTop: '1px solid var(--line)',
+            background: SS.sky,
+            border: `2px solid ${SS.ink}`,
+            borderRadius: 22,
+            padding: '24px 22px',
+            boxShadow: `0 4px 0 ${SS.ink}`,
           }}
         >
-          <span
-            className="italic"
-            style={{ fontFamily: 'var(--eco-serif)', fontSize: 14, color: 'var(--ink)' }}
-          >
-            Total
-          </span>
-          <span
+          <div
             style={{
-              fontFamily: 'var(--eco-serif)',
-              fontSize: 24,
-              color: 'var(--green)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 12,
             }}
           >
-            ${breakdown.total.toFixed(2)}
-          </span>
+            <div style={{ fontSize: 14, fontWeight: 900, color: SS.ink }}>Sheets of bags</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <button
+                type="button"
+                onClick={() => onQty(Math.max(1, qty - 1))}
+                disabled={busy || qty <= 1}
+                aria-label="Decrease"
+                style={stepBtnStyle(false)}
+              >
+                −
+              </button>
+              <div
+                style={{
+                  fontSize: 32,
+                  fontWeight: 900,
+                  color: SS.ink,
+                  minWidth: 24,
+                  textAlign: 'center',
+                  letterSpacing: -0.8,
+                }}
+              >
+                {qty}
+              </div>
+              <button
+                type="button"
+                onClick={() => onQty(Math.min(20, qty + 1))}
+                disabled={busy || qty >= 20}
+                aria-label="Increase"
+                style={stepBtnStyle(true)}
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              borderTop: `1px dashed ${SS.ink}`,
+              paddingTop: 12,
+              marginTop: 4,
+            }}
+          >
+            <div style={{ fontSize: 13, fontWeight: 800, color: SS.ink }}>
+              {qty * 10} bags · {breakdown.freeShipping ? 'free shipping' : `+$${SHIPPING_FEE.toFixed(2)} ship`}
+            </div>
+            <div
+              style={{ fontSize: 22, fontWeight: 900, color: SS.ink, letterSpacing: -0.5 }}
+            >
+              ${breakdown.total.toFixed(2)}
+            </div>
+          </div>
         </div>
+
+        <div style={{ marginTop: 14 }}>
+          <div
+            style={{
+              background: SS.mint,
+              border: `2px solid ${SS.ink}`,
+              borderRadius: 14,
+              padding: 14,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+            }}
+          >
+            <div
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                background: SS.green,
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 18,
+                fontWeight: 900,
+                flexShrink: 0,
+              }}
+            >
+              +
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: SS.ink, lineHeight: 1.3 }}>
+              <span style={{ color: SS.green }}>+10,000 pts signup bonus</span> credited after
+              your first pickup.
+            </div>
+          </div>
+        </div>
+
         {!breakdown.freeShipping && (
           <p
-            className="italic"
             style={{
-              fontFamily: 'var(--eco-serif)',
               fontSize: 12,
-              color: 'var(--ink-soft)',
-              marginTop: 8,
+              fontWeight: 700,
+              color: SS.inkSoft,
+              marginTop: 12,
+              padding: '0 4px',
             }}
           >
             Add ${(FREE_SHIPPING_THRESHOLD - breakdown.subtotal).toFixed(2)} more to unlock free
             shipping.
           </p>
         )}
+
+        {error && <ErrorNotice>{error}</ErrorNotice>}
       </div>
-
-      {error && <ErrorNotice>{error}</ErrorNotice>}
-
-      <PrimaryButton onClick={onPlace} disabled={busy}>
-        {busy ? 'Placing order…' : 'Place order'}
-      </PrimaryButton>
-      <button
-        type="button"
-        onClick={onSkip}
-        disabled={busy}
-        style={{
-          background: 'var(--paper)',
-          border: '1px solid var(--line)',
-          borderRadius: 14,
-          width: '100%',
-          textAlign: 'center',
-          fontSize: 14,
-          fontWeight: 600,
-          letterSpacing: 0.3,
-          color: 'var(--ink)',
-          marginTop: 10,
-          fontFamily: 'var(--eco-sans)',
-          cursor: busy ? 'default' : 'pointer',
-          padding: '14px 18px',
-        }}
-      >
-        Skip — I&rsquo;ll order later
-      </button>
-    </div>
+      <FooterBar>
+        <SSPillButton variant="primary" disabled={busy} onClick={onPlace}>
+          {busy ? 'Placing order…' : 'Pay & continue'}
+        </SSPillButton>
+        <button
+          type="button"
+          onClick={onSkip}
+          disabled={busy}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: SS.inkSoft,
+            fontFamily: SS.sans,
+            fontSize: 13,
+            fontWeight: 900,
+            textDecoration: 'underline',
+            marginTop: 12,
+            cursor: busy ? 'not-allowed' : 'pointer',
+            width: '100%',
+          }}
+        >
+          Skip — I&rsquo;ll order later
+        </button>
+      </FooterBar>
+    </>
   );
 }
 
 // ─── Shared bits ─────────────────────────────────────────────────
-function TopBar({
-  idx,
-  total,
+function StepBar({
   onBack,
+  step,
+  total,
 }: {
-  idx: number;
-  total: number;
   onBack: () => void;
+  step: number;
+  total: number;
 }) {
   return (
     <div
       style={{
-        position: 'relative',
-        zIndex: 2,
-        padding: '20px 20px 12px',
+        padding: '16px 20px 0',
         display: 'flex',
-        alignItems: 'baseline',
         justifyContent: 'space-between',
-        borderBottom: '1px solid var(--line)',
+        alignItems: 'center',
       }}
     >
       <button
         type="button"
         onClick={onBack}
+        aria-label="Back"
         style={{
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
+          fontSize: 22,
+          fontWeight: 900,
+          color: SS.ink,
           background: 'transparent',
           border: 'none',
-          padding: 0,
-          color: 'var(--ink-soft)',
+          cursor: 'pointer',
+          fontFamily: SS.sans,
         }}
       >
-        <IconArrowLeft size={14} color="var(--ink-soft)" />
-        <span
-          style={{
-            fontSize: 11,
-            color: 'var(--ink-soft)',
-            textTransform: 'uppercase',
-            letterSpacing: 1.4,
-          }}
-        >
-          Back
-        </span>
+        ←
       </button>
-      <div
-        className="italic"
-        style={{
-          fontFamily: 'var(--eco-serif)',
-          fontSize: 13,
-          color: 'var(--green)',
-        }}
-      >
-        We Buy Clean Trash
-      </div>
-      <div
-        style={{
-          fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-          fontSize: 10,
-          color: 'var(--ink-soft)',
-          letterSpacing: 1,
-        }}
-      >
-        {String(idx).padStart(2, '0')} / {String(total - 1).padStart(2, '0')}
-      </div>
+      <SSDots step={step} total={total} />
+      <div style={{ width: 22 }} />
     </div>
   );
 }
@@ -1063,34 +1060,34 @@ function StepHeading({
   lede: string;
 }) {
   return (
-    <>
-      <div style={{ ...eyebrowStyle, marginBottom: 8 }}>{eyebrow}</div>
+    <div style={{ padding: '28px 24px 8px' }}>
+      <SSEyebrow style={{ color: SS.brand, marginBottom: 8 }}>{eyebrow}</SSEyebrow>
       <h1
         style={{
-          fontFamily: 'var(--eco-serif)',
-          fontSize: 28,
-          lineHeight: 1.1,
-          fontWeight: 400,
-          letterSpacing: -0.5,
-          marginBottom: 8,
-          color: 'var(--ink)',
+          fontSize: 38,
+          fontWeight: 900,
+          letterSpacing: -1.4,
+          lineHeight: 0.95,
+          color: SS.ink,
+          marginBottom: 10,
+          margin: 0,
         }}
       >
         {title}
       </h1>
       <p
-        className="italic"
         style={{
-          fontFamily: 'var(--eco-serif)',
-          fontSize: 13,
-          color: 'var(--ink-soft)',
-          lineHeight: 1.5,
-          marginBottom: 22,
+          fontSize: 15,
+          fontWeight: 700,
+          color: SS.inkSoft,
+          lineHeight: 1.4,
+          marginTop: 10,
+          marginBottom: 0,
         }}
       >
         {lede}
       </p>
-    </>
+    </div>
   );
 }
 
@@ -1102,6 +1099,7 @@ function FormInput({
   autoComplete,
   type = 'text',
   maxLength,
+  background = '#fff',
   mono,
 }: {
   label: string;
@@ -1111,20 +1109,22 @@ function FormInput({
   autoComplete?: string;
   type?: string;
   maxLength?: number;
+  background?: string;
   mono?: boolean;
 }) {
   return (
-    <div
+    <label
       style={{
-        padding: '12px 0',
-        borderBottom: '1px solid var(--line-soft)',
-        display: 'flex',
-        alignItems: 'baseline',
-        justifyContent: 'space-between',
-        gap: 12,
+        display: 'block',
+        background,
+        border: `2px solid ${SS.ink}`,
+        borderRadius: 14,
+        padding: '12px 16px',
+        marginBottom: 12,
+        cursor: 'text',
       }}
     >
-      <span style={{ ...eyebrowStyle, flexShrink: 0 }}>{label}</span>
+      <SSEyebrow style={{ marginBottom: 4 }}>{label}</SSEyebrow>
       <input
         type={type}
         value={value}
@@ -1133,111 +1133,40 @@ function FormInput({
         autoComplete={autoComplete}
         maxLength={maxLength}
         style={{
+          width: '100%',
+          background: 'transparent',
           border: 'none',
           outline: 'none',
-          background: 'transparent',
-          fontFamily: mono
-            ? 'ui-monospace, "SF Mono", Menlo, monospace'
-            : 'var(--eco-serif)',
-          fontSize: mono ? 13 : 15,
-          color: value ? 'var(--ink)' : 'var(--ink-faint)',
-          fontStyle: value ? 'normal' : 'italic',
-          textAlign: 'right',
           padding: 0,
-          flex: 1,
-          minWidth: 0,
+          fontFamily: mono ? 'ui-monospace, "SF Mono", Menlo, monospace' : SS.sans,
+          fontSize: 18,
+          fontWeight: 800,
+          color: SS.ink,
+          letterSpacing: mono ? 1 : 0,
         }}
       />
-    </div>
+    </label>
   );
 }
 
-function Ledger({
-  label,
-  value,
-  italic,
-}: {
-  label: string;
-  value: string;
-  italic?: boolean;
-}) {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'baseline',
-        padding: '10px 0',
-        borderBottom: '1px solid var(--line-soft)',
-      }}
-    >
-      <span style={eyebrowStyle}>{label}</span>
-      <span
-        style={{
-          fontFamily: 'var(--eco-serif)',
-          fontSize: 14,
-          color: 'var(--ink)',
-          fontStyle: italic ? 'italic' : 'normal',
-        }}
-      >
-        {value}
-      </span>
-    </div>
-  );
-}
-
-function PrimaryButton({
-  children,
-  onClick,
-  disabled,
-  type = 'button',
-}: {
-  children: ReactNode;
-  onClick?: () => void;
-  disabled?: boolean;
-  type?: 'button' | 'submit';
-}) {
-  return (
-    <button
-      type={type}
-      onClick={onClick}
-      disabled={disabled}
-      style={{
-        width: '100%',
-        background: disabled ? 'var(--line)' : 'var(--green)',
-        color: disabled ? 'var(--ink-faint)' : 'var(--paper)',
-        border: 'none',
-        borderRadius: 14,
-        padding: '15px 18px',
-        fontFamily: 'var(--eco-sans)',
-        fontSize: 14,
-        fontWeight: 600,
-        letterSpacing: 0.3,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        cursor: disabled ? 'default' : 'pointer',
-        transition: 'background 120ms ease',
-      }}
-    >
-      <span>{children}</span>
-      <IconArrow size={16} color={disabled ? 'var(--ink-faint)' : 'var(--paper)'} />
-    </button>
-  );
+function FooterBar({ children }: { children: ReactNode }) {
+  return <div style={{ background: '#fff', padding: '8px 24px 28px' }}>{children}</div>;
 }
 
 function ErrorNotice({ children }: { children: ReactNode }) {
   return (
     <div
       style={{
-        background: '#F0DCC8',
-        border: '1px solid rgba(154,75,38,0.3)',
-        borderRadius: 10,
-        padding: '10px 12px',
-        marginBottom: 14,
-        fontSize: 12,
-        color: '#9A4B26',
-        fontFamily: 'var(--eco-sans)',
+        background: SS.brand,
+        border: `2px solid ${SS.ink}`,
+        borderRadius: 14,
+        padding: 14,
+        color: '#fff',
+        marginTop: 14,
+        fontFamily: SS.sans,
+        fontSize: 14,
+        fontWeight: 900,
+        boxShadow: `0 4px 0 ${SS.ink}`,
       }}
     >
       {children}
@@ -1245,62 +1174,18 @@ function ErrorNotice({ children }: { children: ReactNode }) {
   );
 }
 
-function Grain() {
-  return (
-    <div
-      aria-hidden
-      style={{
-        position: 'absolute',
-        inset: 0,
-        opacity: 0.4,
-        pointerEvents: 'none',
-        backgroundImage:
-          'radial-gradient(circle at 20% 30%, rgba(160,140,100,0.06) 1px, transparent 2px), radial-gradient(circle at 70% 60%, rgba(160,140,100,0.05) 1px, transparent 2px)',
-        backgroundSize: '14px 14px, 22px 22px',
-      }}
-    />
-  );
-}
-
-const eyebrowStyle: CSSProperties = {
-  fontSize: 10,
-  color: 'var(--ink-soft)',
-  textTransform: 'uppercase',
-  letterSpacing: 1.4,
-  fontWeight: 500,
-  fontFamily: 'var(--eco-sans)',
-};
-
-const shellStyle: CSSProperties = {
-  width: '100%',
-  minHeight: '100vh',
-  background: 'var(--paper-bg)',
-  color: 'var(--ink)',
-  fontFamily: 'var(--eco-sans)',
-  position: 'relative',
-  overflow: 'hidden',
-  display: 'flex',
-  flexDirection: 'column',
-};
-
-const contentStyle: CSSProperties = {
-  position: 'relative',
-  zIndex: 2,
-  flex: 1,
-  padding: '24px 22px 28px',
-  maxWidth: 480,
-  margin: '0 auto',
-  width: '100%',
-};
-
-const stepperStyle: CSSProperties = {
-  width: 30,
-  height: 30,
+const stepBtnStyle = (filled: boolean) => ({
+  width: 36,
+  height: 36,
   borderRadius: '50%',
-  border: '1px solid var(--line)',
-  background: 'var(--paper)',
-  color: 'var(--ink)',
-  fontSize: 16,
+  background: filled ? SS.ink : '#fff',
+  color: filled ? '#fff' : SS.ink,
+  border: `2px solid ${SS.ink}`,
+  fontFamily: SS.sans,
+  fontWeight: 900,
+  fontSize: 20,
   cursor: 'pointer',
-  fontFamily: 'serif',
-};
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+});

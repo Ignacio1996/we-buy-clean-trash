@@ -1,10 +1,29 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #f4f0e8;
-  --foreground: #1f2a22;
+  --background: #ffffff;
+  --foreground: #111111;
 
-  /* WBCT Editorial Eco — palette */
+  /* WBCT Sticker Sections — palette */
+  --ss-bg: #ffffff;
+  --ss-ink: #111111;
+  --ss-ink-soft: #6b6b6b;
+  --ss-line: #ececec;
+
+  --ss-brand: #e11d2a;
+  --ss-brand-dark: #a6121c;
+
+  --ss-green: #1f8a4c;
+  --ss-green-dark: #13643a;
+
+  --ss-yellow: #ffeb52;
+  --ss-mint: #d9f2d9;
+  --ss-sky: #e4eefb;
+  --ss-peach: #ffd9c7;
+
+  --ss-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* Legacy Editorial Eco palette — kept for screens not yet migrated to SS */
   --paper-bg: #f4f0e8;
   --paper: #fbf7ee;
   --paper-tint: #f8f3e5;
@@ -27,7 +46,6 @@
   --rust: #9a4b26;
   --rust-soft: #f0dcc8;
 
-  /* Editorial Eco — type */
   --eco-serif: ui-serif, Georgia, 'Iowan Old Style', 'Apple Garamond', serif;
   --eco-sans: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
 }
@@ -42,8 +60,33 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Inter', system-ui, Arial, Helvetica, sans-serif;
+  font-family: var(--ss-sans);
+}
+
+/* WBCT Sticker Sections — utility classes */
+.ss-eyebrow {
+  font-family: var(--ss-sans);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  color: var(--ss-ink-soft);
+}
+.ss-h1 {
+  font-family: var(--ss-sans);
+  font-size: 38px;
+  font-weight: 900;
+  letter-spacing: -1.4px;
+  line-height: 0.95;
+  color: var(--ss-ink);
+}
+.ss-pill-shadow {
+  box-shadow: 0 4px 0 var(--ss-ink);
+}
+@keyframes ss-caret {
+  to {
+    opacity: 0;
+  }
 }
 
 /* WBCT Editorial Eco — semantic typography */

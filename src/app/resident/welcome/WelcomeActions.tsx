@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { clearPresignupScan } from '@/lib/presignup/scan-storage';
-import { IconArrow } from '@/components/icons/EcoIcons';
+import { SS, SSPillButton } from '@/components/resident/ss/SS';
 
 export function WelcomeActions() {
   const router = useRouter();
@@ -22,14 +22,24 @@ export function WelcomeActions() {
   }
 
   return (
-    <button
-      type="button"
-      onClick={dismiss}
-      disabled={busy}
-      className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-[#2D5A3D] px-5 py-3 text-[14px] font-semibold tracking-[0.3px] text-[#FBF7EE] transition-colors hover:bg-[#1F4029] disabled:cursor-not-allowed disabled:opacity-50"
-    >
-      {busy ? 'One sec…' : "Let's go"}
-      {!busy && <IconArrow size={14} color="#FBF7EE" />}
-    </button>
+    <>
+      <SSPillButton onClick={dismiss} disabled={busy} variant="primary">
+        {busy ? 'One sec…' : 'Get started'}
+      </SSPillButton>
+      <div
+        style={{
+          textAlign: 'center',
+          fontSize: 13,
+          fontWeight: 700,
+          color: SS.inkSoft,
+          marginTop: 16,
+        }}
+      >
+        Have an account?{' '}
+        <span style={{ color: SS.ink, textDecoration: 'underline', fontWeight: 900 }}>
+          Sign in
+        </span>
+      </div>
+    </>
   );
 }
