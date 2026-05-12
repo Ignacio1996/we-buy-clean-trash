@@ -2,8 +2,8 @@
   --ink: #111111;
   --inkSoft: #6b6b6b;
   --paper: #ffffff;
-  --brand: #1fa84a;
-  --brandDark: #146b30;
+  --brand: #1f8a4c;
+  --brandDark: #135a32;
   --blue: #0a66e0;
   --yellow: #ffeb52;
   --mint: #d9f2d9;
@@ -27,7 +27,7 @@
   box-sizing: border-box;
 }
 
-.root a {
+:where(.root) a {
   color: inherit;
   text-decoration: none;
 }
