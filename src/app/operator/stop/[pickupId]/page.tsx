@@ -3,15 +3,10 @@ import { requireRole } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
 import { loadOperatorRoute } from '@/lib/auth/operatorAccess';
 import type { PickupDoc } from '@/lib/types/pickup';
-import type { BagDoc } from '@/lib/types/bag';
+import type { BagDoc, DeclaredBagType } from '@/lib/types/bag';
 import type { AddressDoc, UserDoc } from '@/lib/types/user';
 import { ScanConfirmClient } from './ScanConfirmClient';
-import {
-  OP_TOK,
-  OpBackRow,
-  OpEyebrow,
-  OpPage,
-} from '@/components/operator/Op';
+import { SSOpHeader, SSOpShell } from '@/components/operator/SSOp';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,47 +37,33 @@ export default async function ScanConfirmPage({
   const resident = residentSnap.data() as UserDoc | undefined;
 
   const expectedCode = bag?.qrCode ?? bag?.printedNumber ?? '';
-  const declaredType = bag?.declaredType;
+  const declaredType = (bag?.declaredType as DeclaredBagType | null) ?? null;
+
+  const street = address?.street ?? '—';
+  const unitLine = address?.unit ? ` · Unit ${address.unit}` : '';
+  const residentName = resident?.name ?? 'Resident';
 
   return (
-    <OpPage>
-      <OpBackRow label="Back to route" href="/operator" />
+    <SSOpShell active="route" nav={false}>
+      <SSOpHeader
+        kicker="Stop pickup"
+        title={
+          <>
+            Scan
+            <br />
+            the bag.
+          </>
+        }
+        sub={`${street}${unitLine} · ${residentName}`}
+        back="Back to route"
+        backHref="/operator"
+      />
 
-      <header className="mb-6">
-        <OpEyebrow>Pickup</OpEyebrow>
-        <h1
-          className="mt-1.5"
-          style={{
-            fontFamily: OP_TOK.serif,
-            fontSize: 26,
-            color: OP_TOK.ink,
-            letterSpacing: -0.5,
-            lineHeight: 1.15,
-            fontWeight: 400,
-          }}
-        >
-          {address?.street ?? '—'}
-          {address?.unit ? (
-            <span style={{ color: OP_TOK.inkSoft, fontStyle: 'italic' }}>
-              , Unit {address.unit}
-            </span>
-          ) : null}
-        </h1>
-        <div
-          className="mt-1.5 italic"
-          style={{ fontFamily: OP_TOK.serif, fontSize: 12, color: OP_TOK.inkSoft }}
-        >
-          {resident?.name ?? 'Resident'}
-          {declaredType === 'separated' && (
-            <span className="ml-2" style={{ color: OP_TOK.green }}>
-              · separated
-            </span>
-          )}
-          {declaredType === 'mixed' && <span className="ml-2">· mixed</span>}
-        </div>
-      </header>
-
-      <ScanConfirmClient pickupId={pickupId} expectedCode={expectedCode} />
-    </OpPage>
+      <ScanConfirmClient
+        pickupId={pickupId}
+        expectedCode={expectedCode}
+        declaredType={declaredType}
+      />
+    </SSOpShell>
   );
 }

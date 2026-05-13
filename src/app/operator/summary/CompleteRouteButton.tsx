@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { OP_TOK, OpPrimaryButton } from '@/components/operator/Op';
-import { IconCheck } from '@/components/icons/EcoIcons';
+import { SSOP, SSOpError, SSOpPillButton } from '@/components/operator/SSOp';
 
 export function CompleteRouteButton({
   routeId,
@@ -39,37 +38,29 @@ export function CompleteRouteButton({
   }
 
   return (
-    <div className="mt-7">
-      <OpPrimaryButton onClick={handle} disabled={busy}>
-        <IconCheck size={18} color={OP_TOK.paper} stroke={2} />
+    <>
+      <SSOpPillButton
+        variant="brand"
+        size="lg"
+        onClick={handle}
+        disabled={busy}
+        leftIcon={<span>✓</span>}
+      >
         {busy ? 'Closing…' : 'Close route & clock out'}
-      </OpPrimaryButton>
-      <p
-        className="mt-2.5 text-center italic"
+      </SSOpPillButton>
+      <div
         style={{
-          fontFamily: OP_TOK.serif,
+          textAlign: 'center',
           fontSize: 11,
-          color: OP_TOK.inkFaint,
+          fontWeight: 800,
+          color: SSOP.inkSoft,
+          marginTop: 12,
+          fontStyle: 'italic',
         }}
       >
-        You can’t reopen a closed route. Make sure the truck is empty.
-      </p>
-      {error && (
-        <p
-          className="mt-3"
-          style={{
-            background: OP_TOK.rustSoft,
-            border: `1px solid ${OP_TOK.rust}`,
-            color: OP_TOK.rust,
-            borderRadius: 10,
-            padding: '8px 12px',
-            fontFamily: OP_TOK.serif,
-            fontSize: 12,
-          }}
-        >
-          {error}
-        </p>
-      )}
-    </div>
+        You can&rsquo;t reopen a closed route. Make sure the truck is empty.
+      </div>
+      {error && <SSOpError>{error}</SSOpError>}
+    </>
   );
 }

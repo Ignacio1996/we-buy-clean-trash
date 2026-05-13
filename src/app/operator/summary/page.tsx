@@ -7,15 +7,14 @@ import type { BagOrderDoc } from '@/lib/types/bagOrder';
 import type { AddressDoc } from '@/lib/types/user';
 import { CompleteRouteButton } from './CompleteRouteButton';
 import {
-  OP_TOK,
-  OpBackRow,
-  OpEyebrow,
-  OpDisplay,
-  OpPage,
-  OpPaper,
-  SummaryStat,
-} from '@/components/operator/Op';
-import { IconBag } from '@/components/icons/EcoIcons';
+  SSOP,
+  SSOpBadge,
+  SSOpCard,
+  SSOpEyebrow,
+  SSOpHeader,
+  SSOpShell,
+  SSOpStat,
+} from '@/components/operator/SSOp';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,15 +65,32 @@ export default async function OperatorSummaryPage() {
 
   if (!route) {
     return (
-      <OpPage>
-        <OpBackRow label="Back" href="/operator" />
-        <p
-          className="mt-6 italic"
-          style={{ fontFamily: OP_TOK.serif, fontSize: 14, color: OP_TOK.inkSoft }}
+      <SSOpShell active="route" nav={false}>
+        <SSOpHeader
+          kicker="End of route"
+          title={
+            <>
+              Nothing
+              <br />
+              to close.
+            </>
+          }
+          back="Back to operator"
+          backHref="/operator"
+          headerBg={SSOP.mint}
+        />
+        <div
+          style={{
+            padding: '40px 20px',
+            textAlign: 'center',
+            fontSize: 14,
+            fontWeight: 800,
+            color: SSOP.inkSoft,
+          }}
         >
           No route to summarize.
-        </p>
-      </OpPage>
+        </div>
+      </SSOpShell>
     );
   }
 
@@ -91,12 +107,8 @@ export default async function OperatorSummaryPage() {
         )
       : Promise.resolve([]),
   ]);
-  const pickups = pickupSnaps
-    .filter((s) => s.exists)
-    .map((s) => s.data() as PickupDoc);
-  const bagOrders = bagOrderSnaps
-    .filter((s) => s.exists)
-    .map((s) => s.data() as BagOrderDoc);
+  const pickups = pickupSnaps.filter((s) => s.exists).map((s) => s.data() as PickupDoc);
+  const bagOrders = bagOrderSnaps.filter((s) => s.exists).map((s) => s.data() as BagOrderDoc);
 
   const completed = pickups.filter((p) => p.status === 'completed').length;
   const missed = pickups.filter((p) => p.status === 'missed').length;
@@ -118,171 +130,241 @@ export default async function OperatorSummaryPage() {
   const routeIdShort = route.id.slice(-6);
 
   return (
-    <OpPage>
-      <OpBackRow label="Back to route" href="/operator" />
+    <SSOpShell active="route" nav={false}>
+      <SSOpHeader
+        kicker={`End of route · ${dateLabel}`}
+        title={
+          <>
+            A clean
+            <br />
+            day&rsquo;s work.
+          </>
+        }
+        sub={`Route ${routeIdShort} on ${dateLabel}`}
+        back="Back to route"
+        backHref="/operator"
+        headerBg={SSOP.mint}
+      />
 
-      <header className="mb-5">
-        <OpEyebrow>End of route</OpEyebrow>
-        <OpDisplay className="mt-1.5">
-          A clean <em style={{ color: OP_TOK.green, fontStyle: 'italic' }}>day&rsquo;s work</em>.
-        </OpDisplay>
-        <div
-          className="mt-1.5 italic"
-          style={{ fontFamily: OP_TOK.serif, fontSize: 13, color: OP_TOK.inkSoft }}
-        >
-          {dateLabel} · route {routeIdShort}
+      {/* Stats — yellow hero */}
+      <div style={{ background: SSOP.yellow, padding: '24px 20px 26px' }}>
+        <SSOpEyebrow>Today&rsquo;s tally</SSOpEyebrow>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <SSOpStat value={stopsTotal} label="Stops completed" color="#fff" />
+          <SSOpStat value={completed} label="Bags collected" color={SSOP.mint} />
+          <SSOpStat value={missed} label="Missed" color={SSOP.peach} />
+          <SSOpStat value={issues.length} label="Issues" color={SSOP.sky} />
         </div>
-      </header>
+      </div>
 
-      {pickups.length > 0 && (
-        <section
-          className="grid grid-cols-2 gap-x-6 gap-y-5"
-          style={{
-            padding: '22px 0',
-            borderTop: `2px solid ${OP_TOK.ink}`,
-            borderBottom: `1px solid ${OP_TOK.line}`,
-          }}
-        >
-          <SummaryStat label="Stops completed" value={stopsTotal} tone="ink" />
-          <SummaryStat label="Bags collected" value={completed} tone="green" />
-          <SummaryStat label="Missed" value={missed} tone={missed > 0 ? 'amber' : 'ink'} />
-          <SummaryStat
-            label="Issues flagged"
-            value={issues.length}
-            tone={issues.length > 0 ? 'rust' : 'ink'}
-          />
-        </section>
-      )}
-
+      {/* Deliveries — sky */}
       {route.bagOrdersToDeliver.length > 0 && (
-        <section className="mt-5">
-          <OpPaper>
-            <div className="flex items-center gap-2.5">
-              <IconBag size={16} color={OP_TOK.green} stroke={1.5} />
-              <OpEyebrow color={OP_TOK.green}>Deliveries</OpEyebrow>
+        <div style={{ background: SSOP.sky, padding: '20px 20px' }}>
+          <SSOpEyebrow>Bag deliveries</SSOpEyebrow>
+          <SSOpCard pad={'14px 16px'}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 12,
+                  background: SSOP.yellow,
+                  border: `2px solid ${SSOP.ink}`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 18,
+                  fontWeight: 900,
+                }}
+              >
+                📦
+              </div>
+              <div style={{ flex: 1 }}>
+                <div
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 900,
+                    color: SSOP.ink,
+                    letterSpacing: -0.3,
+                  }}
+                >
+                  {bagsDelivered} of {route.bagOrdersToDeliver.length} order
+                  {route.bagOrdersToDeliver.length === 1 ? '' : 's'} fulfilled
+                </div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 800,
+                    color: SSOP.inkSoft,
+                    marginTop: 1,
+                  }}
+                >
+                  Sheets handed to residents at the door
+                </div>
+              </div>
+              {bagsDelivered === route.bagOrdersToDeliver.length ? (
+                <SSOpBadge bg={SSOP.mint}>Done</SSOpBadge>
+              ) : (
+                <SSOpBadge bg={SSOP.peach}>Open</SSOpBadge>
+              )}
             </div>
-            <div
-              className="mt-2"
-              style={{
-                fontFamily: OP_TOK.serif,
-                fontSize: 18,
-                color: OP_TOK.ink,
-                letterSpacing: -0.2,
-              }}
-            >
-              <span style={{ fontFeatureSettings: '"lnum","tnum"' }}>{bagsDelivered}</span> of{' '}
-              {route.bagOrdersToDeliver.length} bag order
-              {route.bagOrdersToDeliver.length === 1 ? '' : 's'} fulfilled
-            </div>
-          </OpPaper>
-        </section>
+          </SSOpCard>
+        </div>
       )}
 
+      {/* Issues — peach */}
       {issues.length > 0 && (
-        <section className="mt-4">
-          <OpPaper
-            style={{
-              background: OP_TOK.rustSoft,
-              border: `1px solid ${OP_TOK.rust}`,
-            }}
-          >
-            <OpEyebrow color={OP_TOK.rust}>Issues flagged</OpEyebrow>
-            <ul className="mt-2.5">
-              {issues.map((p, i) => {
-                const a = addressMap.get(p.addressId);
-                return (
-                  <li
-                    key={p.id}
-                    style={{
-                      padding: '10px 0',
-                      borderBottom:
-                        i < issues.length - 1 ? `1px solid rgba(154,75,38,0.25)` : 'none',
-                    }}
-                  >
+        <div style={{ background: SSOP.peach, padding: '20px 20px' }}>
+          <SSOpEyebrow>Issues flagged</SSOpEyebrow>
+          <SSOpCard>
+            {issues.map((p, i) => {
+              const a = addressMap.get(p.addressId);
+              return (
+                <div
+                  key={p.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '10px 0',
+                    borderBottom:
+                      i < issues.length - 1 ? `1px solid ${SSOP.line}` : 'none',
+                    gap: 12,
+                  }}
+                >
+                  <div>
                     <div
                       style={{
-                        fontFamily: OP_TOK.serif,
-                        fontSize: 14,
-                        color: OP_TOK.ink,
+                        fontSize: 15,
+                        fontWeight: 900,
+                        color: SSOP.ink,
+                        letterSpacing: -0.3,
                       }}
                     >
                       {a ? `${a.street}${a.unit ? ` · Unit ${a.unit}` : ''}` : p.addressId}
                     </div>
                     <div
-                      className="mt-0.5 italic"
                       style={{
-                        fontFamily: OP_TOK.serif,
-                        fontSize: 12,
-                        color: OP_TOK.rust,
+                        fontSize: 11,
+                        fontWeight: 800,
+                        color: SSOP.brand,
+                        marginTop: 1,
                       }}
                     >
                       {p.issue ?? 'other'}
                       {p.issueNote ? ` — ${p.issueNote}` : ''}
                     </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </OpPaper>
-        </section>
-      )}
-
-      <blockquote
-        className="mt-6"
-        style={{
-          padding: '20px 24px',
-          borderLeft: `2px solid ${OP_TOK.green}`,
-          margin: 0,
-        }}
-      >
-        <p
-          className="italic"
-          style={{
-            fontFamily: OP_TOK.serif,
-            fontSize: 16,
-            color: OP_TOK.ink,
-            lineHeight: 1.4,
-            letterSpacing: -0.2,
-          }}
-        >
-          “Drive back to the depot. The closing crew will weigh and sort what you brought in.”
-        </p>
-        <div
-          className="mt-2.5 uppercase"
-          style={{
-            fontFamily: OP_TOK.sans,
-            fontSize: 11,
-            color: OP_TOK.inkSoft,
-            letterSpacing: 1.4,
-          }}
-        >
-          — Dispatcher
+                  </div>
+                  <SSOpBadge bg={SSOP.brand} fg="#fff">
+                    Issue
+                  </SSOpBadge>
+                </div>
+              );
+            })}
+          </SSOpCard>
         </div>
-      </blockquote>
-
-      {!alreadyDone ? (
-        <CompleteRouteButton routeId={route.id} hasPickups={pickups.length > 0} />
-      ) : (
-        <p
-          className="mt-7 text-center italic"
-          style={{
-            fontFamily: OP_TOK.serif,
-            fontSize: 11,
-            color: OP_TOK.inkFaint,
-          }}
-        >
-          Route was closed on{' '}
-          {route.completedAt
-            ? route.completedAt.toDate().toLocaleString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-              })
-            : '—'}
-          .
-        </p>
       )}
-    </OpPage>
+
+      {missed > 0 && (
+        <div style={{ background: SSOP.peach, padding: '0 20px 20px' }}>
+          <SSOpEyebrow>Missed</SSOpEyebrow>
+          <SSOpCard>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div>
+                <div
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 900,
+                    color: SSOP.ink,
+                    letterSpacing: -0.3,
+                  }}
+                >
+                  {missed} bag{missed === 1 ? '' : 's'} not out
+                </div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: SSOP.inkSoft, marginTop: 1 }}>
+                  Marked as skipped during the route
+                </div>
+              </div>
+              <SSOpBadge bg={SSOP.peach}>Skipped</SSOpBadge>
+            </div>
+          </SSOpCard>
+        </div>
+      )}
+
+      {/* Dispatcher quote — mint */}
+      <div style={{ background: SSOP.mint, padding: '22px 20px 24px' }}>
+        <SSOpCard>
+          <div
+            style={{
+              fontSize: 30,
+              lineHeight: 1,
+              color: SSOP.brand,
+              fontFamily: SSOP.sans,
+              fontWeight: 900,
+              marginBottom: 6,
+            }}
+          >
+            &ldquo;
+          </div>
+          <div
+            style={{
+              fontSize: 15,
+              fontWeight: 800,
+              color: SSOP.ink,
+              lineHeight: 1.4,
+              letterSpacing: -0.2,
+            }}
+          >
+            Drive back to the depot. The closing crew will weigh and sort what you brought in.
+          </div>
+          <div
+            style={{
+              fontSize: 10,
+              fontWeight: 900,
+              color: SSOP.inkSoft,
+              letterSpacing: 1.4,
+              textTransform: 'uppercase',
+              marginTop: 10,
+            }}
+          >
+            — Dispatcher
+          </div>
+        </SSOpCard>
+      </div>
+
+      {/* Close — white footer */}
+      <div style={{ background: '#fff', padding: '20px 20px 28px' }}>
+        {!alreadyDone ? (
+          <CompleteRouteButton routeId={route.id} hasPickups={pickups.length > 0} />
+        ) : (
+          <div
+            style={{
+              textAlign: 'center',
+              fontSize: 11,
+              fontWeight: 800,
+              color: SSOP.inkSoft,
+              letterSpacing: 1,
+              textTransform: 'uppercase',
+            }}
+          >
+            Route closed on{' '}
+            {route.completedAt
+              ? route.completedAt.toDate().toLocaleString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                })
+              : '—'}
+          </div>
+        )}
+      </div>
+    </SSOpShell>
   );
 }

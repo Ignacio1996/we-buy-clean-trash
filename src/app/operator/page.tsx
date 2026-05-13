@@ -9,15 +9,12 @@ import type { AddressDoc, UserDoc } from '@/lib/types/user';
 import type { BagOrderDoc } from '@/lib/types/bagOrder';
 import { TodaysRouteClient } from './TodaysRouteClient';
 import {
-  OP_TOK,
-  OpAvatar,
-  OpDisplay,
-  OpEyebrow,
-  OpMasthead,
-  OpPage,
-} from '@/components/operator/Op';
+  SSOP,
+  SSOpEyebrow,
+  SSOpHeader,
+  SSOpShell,
+} from '@/components/operator/SSOp';
 import { LogoutLink } from './LogoutLink';
-import { IconChevR, IconLeaf } from '@/components/icons/EcoIcons';
 
 export const dynamic = 'force-dynamic';
 
@@ -276,41 +273,106 @@ export default async function OperatorHome() {
   const userData = userSnap.exists ? (userSnap.data() as UserDoc) : null;
   const operator = deriveOperator(session.uid, userData?.name, session.email ?? null);
 
+  const allHandled =
+    route &&
+    route.stats.stopsDone === route.stats.stopsTotal &&
+    route.stats.deliveriesPending === 0;
+  const currentStop = route?.stops.find((s) => !s.allDone) ?? null;
+  const idx = (route?.stats.stopsDone ?? 0) + 1;
+
+  // Header content varies by state
+  const headerKicker = `${route?.dateLabel ?? formatTodayLabel()} · Operator`;
+  const headerTitle = route ? (
+    route.status === 'assigned' ? (
+      <>
+        Ready when
+        <br />
+        you are.
+      </>
+    ) : allHandled ? (
+      <>
+        Route
+        <br />
+        handled.
+      </>
+    ) : currentStop ? (
+      <>
+        Stop {String(idx).padStart(2, '0')}
+        <br />
+        <span style={{ color: SSOP.brand }}>{currentStop.street}.</span>
+      </>
+    ) : (
+      <>
+        Today&rsquo;s
+        <br />
+        route.
+      </>
+    )
+  ) : (
+    <>
+      No route
+      <br />
+      today.
+    </>
+  );
+
+  const headerSub = route
+    ? `${route.stats.stopsTotal} stops · ${route.stats.bagsTotal} bags${
+        route.stats.deliveriesTotal > 0
+          ? ` · ${route.stats.deliveriesTotal} delivery${route.stats.deliveriesTotal === 1 ? '' : 's'}`
+          : ''
+      }`
+    : undefined;
+
   return (
-    <OpPage>
-      <OpMasthead
-        date={route?.dateLabel ?? formatTodayLabel()}
-        rightSlot={
-          <OpAvatar
-            name={operator.name}
-            initial={operator.initial}
-            signOutSlot={<LogoutLink />}
-          />
+    <SSOpShell active="route">
+      <SSOpHeader
+        kicker={headerKicker}
+        title={headerTitle}
+        sub={headerSub}
+        right={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                background: SSOP.ink,
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 900,
+                fontSize: 13,
+              }}
+            >
+              {operator.initial}
+            </div>
+            <LogoutLink />
+          </div>
         }
       />
 
       {!route ? (
         <>
-          {compostSiteCount > 0 && (
-            <CompostBanner count={compostSiteCount} />
-          )}
-          <div className="mt-20 text-center">
+          {compostSiteCount > 0 && <CompostBanner count={compostSiteCount} />}
+          <div style={{ padding: '60px 20px', textAlign: 'center' }}>
             <div
               style={{
-                fontFamily: OP_TOK.serif,
-                fontSize: 24,
-                color: OP_TOK.ink,
-                letterSpacing: -0.3,
+                fontSize: 22,
+                fontWeight: 900,
+                color: SSOP.ink,
+                letterSpacing: -0.6,
               }}
             >
               No route assigned.
             </div>
             <div
-              className="mt-2 italic"
               style={{
-                fontFamily: OP_TOK.serif,
-                fontSize: 13,
-                color: OP_TOK.inkSoft,
+                fontSize: 14,
+                fontWeight: 700,
+                color: SSOP.inkSoft,
+                marginTop: 10,
                 lineHeight: 1.5,
               }}
             >
@@ -321,119 +383,84 @@ export default async function OperatorHome() {
           </div>
         </>
       ) : (
-        <RouteHeader route={route} compostSiteCount={compostSiteCount}>
+        <>
+          {compostSiteCount > 0 && <CompostBanner count={compostSiteCount} />}
           <TodaysRouteClient route={route} operatorLabel={operator.displayLabel} />
-        </RouteHeader>
+        </>
       )}
 
-      <p
-        className="mt-10 text-center italic"
+      <div
         style={{
-          fontFamily: OP_TOK.serif,
+          textAlign: 'center',
           fontSize: 11,
-          color: OP_TOK.inkFaint,
+          fontWeight: 800,
+          color: SSOP.inkSoft,
+          padding: '20px 20px 8px',
+          letterSpacing: 1,
+          textTransform: 'uppercase',
+        }}
+      >
+        Signed in as {operator.displayLabel}
+      </div>
+      <div
+        style={{
+          textAlign: 'center',
+          fontSize: 11,
+          fontWeight: 700,
+          color: SSOP.inkSoft,
+          padding: '0 20px 16px',
+          fontStyle: 'italic',
         }}
       >
         Questions during a shift? Slack the dispatcher.
-      </p>
-    </OpPage>
-  );
-}
-
-function RouteHeader({
-  route,
-  compostSiteCount,
-  children,
-}: {
-  route: RouteView;
-  compostSiteCount: number;
-  children: React.ReactNode;
-}) {
-  const allHandled =
-    route.stats.stopsDone === route.stats.stopsTotal &&
-    route.stats.deliveriesPending === 0;
-  const idx = route.stats.stopsDone + 1;
-  const currentStop = route.stops.find((s) => !s.allDone);
-
-  return (
-    <>
-      <div className="mb-5">
-        <OpEyebrow>Today&rsquo;s route</OpEyebrow>
-        <OpDisplay className="mt-1.5">
-          {route.status === 'assigned' ? (
-            <>
-              Ready when{' '}
-              <em style={{ color: OP_TOK.green, fontStyle: 'italic' }}>you are</em>.
-            </>
-          ) : allHandled ? (
-            <>
-              All stops{' '}
-              <em style={{ color: OP_TOK.green, fontStyle: 'italic' }}>handled</em>.
-            </>
-          ) : (
-            <>
-              Stop{' '}
-              <em style={{ color: OP_TOK.green, fontStyle: 'italic' }}>
-                {String(idx).padStart(2, '0')}
-              </em>{' '}
-              &mdash;
-            </>
-          )}
-        </OpDisplay>
-        {route.status === 'in_progress' && currentStop && !allHandled && (
-          <div
-            className="mt-1.5 italic"
-            style={{
-              fontFamily: OP_TOK.serif,
-              fontSize: 13,
-              color: OP_TOK.inkSoft,
-            }}
-          >
-            {currentStop.street}
-            {currentStop.unitLine ? ` · ${currentStop.unitLine}` : ''}
-          </div>
-        )}
       </div>
-
-      {compostSiteCount > 0 && <CompostBanner count={compostSiteCount} className="mb-5" />}
-
-      {children}
-    </>
+    </SSOpShell>
   );
 }
 
-function CompostBanner({ count, className = '' }: { count: number; className?: string }) {
+function CompostBanner({ count }: { count: number }) {
   return (
-    <Link
-      href="/operator/compost"
-      className={`flex items-center justify-between gap-3 ${className}`}
-      style={{
-        background: OP_TOK.amberSoft,
-        border: `1px solid rgba(160,104,42,0.3)`,
-        borderRadius: 12,
-        padding: '12px 14px',
-      }}
-    >
-      <div className="flex items-center gap-3">
+    <div style={{ background: SSOP.peach, padding: '14px 20px', borderBottom: `2px solid ${SSOP.ink}` }}>
+      <Link
+        href="/operator/compost"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          background: '#fff',
+          border: `2px solid ${SSOP.ink}`,
+          borderRadius: 14,
+          padding: '12px 14px',
+          textDecoration: 'none',
+          boxShadow: `0 3px 0 ${SSOP.ink}`,
+        }}
+      >
         <div
-          className="flex h-8 w-8 items-center justify-center rounded-full"
-          style={{ background: '#fff' }}
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 10,
+            background: SSOP.mint,
+            border: `2px solid ${SSOP.ink}`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 16,
+            fontWeight: 900,
+          }}
         >
-          <IconLeaf size={16} color={OP_TOK.amber} stroke={1.5} />
+          C
         </div>
-        <div>
-          <div style={{ fontFamily: OP_TOK.serif, fontSize: 14, color: OP_TOK.ink }}>
-            Compost route &mdash; {count} site{count === 1 ? '' : 's'}
-          </div>
-          <div
-            className="mt-0.5 italic"
-            style={{ fontFamily: OP_TOK.serif, fontSize: 11, color: OP_TOK.amber }}
-          >
-            Tap to view today&rsquo;s commercial pickups.
+        <div style={{ flex: 1 }}>
+          <SSOpEyebrow mb={2} color={SSOP.ink}>
+            Compost route
+          </SSOpEyebrow>
+          <div style={{ fontSize: 14, fontWeight: 900, color: SSOP.ink, letterSpacing: -0.2 }}>
+            {count} site{count === 1 ? '' : 's'} in your zone
           </div>
         </div>
-      </div>
-      <IconChevR size={16} color={OP_TOK.amber} />
-    </Link>
+        <span style={{ fontSize: 22, fontWeight: 900, color: SSOP.ink }}>›</span>
+      </Link>
+    </div>
   );
 }

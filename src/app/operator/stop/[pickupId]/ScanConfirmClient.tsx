@@ -4,15 +4,16 @@ import { useEffect, useRef, useState } from 'react';
 import jsQR from 'jsqr';
 import { useRouter } from 'next/navigation';
 import {
-  OP_TOK,
-  OpEyebrow,
-  OpPaper,
-  OpPrimaryButton,
-  OpRow,
-  StepDots,
-  ToggleRow,
-} from '@/components/operator/Op';
-import { IconArrow, IconCheck, IconScan } from '@/components/icons/EcoIcons';
+  SSOP,
+  SSOpBadge,
+  SSOpCard,
+  SSOpError,
+  SSOpEyebrow,
+  SSOpPillButton,
+  SSOpReviewRow,
+  SSOpSteps,
+  SSOpToggle,
+} from '@/components/operator/SSOp';
 
 const MAX_PHOTO_EDGE = 1024;
 const STORAGE_MOCKED =
@@ -50,9 +51,11 @@ function resizeToBase64(file: File): Promise<{ base64: string; mime: string }> {
 export function ScanConfirmClient({
   pickupId,
   expectedCode,
+  declaredType,
 }: {
   pickupId: string;
   expectedCode: string;
+  declaredType: 'separated' | 'mixed' | null;
 }) {
   const router = useRouter();
   const [step, setStep] = useState<Step>('scan');
@@ -174,7 +177,7 @@ export function ScanConfirmClient({
       setTimeout(() => {
         router.replace('/operator');
         router.refresh();
-      }, 800);
+      }, 900);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'submit_failed');
       setStep('review');
@@ -183,74 +186,178 @@ export function ScanConfirmClient({
 
   if (step === 'done') {
     return (
-      <section className="mt-6">
-        <OpPaper
+      <>
+        <div
           style={{
-            background: OP_TOK.greenSoft,
-            border: `1px solid ${OP_TOK.green}`,
+            background: SSOP.yellow,
+            padding: '40px 20px',
             textAlign: 'center',
-            padding: 24,
+            borderBottom: `2px solid ${SSOP.ink}`,
           }}
         >
           <div
-            className="inline-flex items-center justify-center"
             style={{
-              width: 56,
-              height: 56,
+              width: 120,
+              height: 120,
               borderRadius: '50%',
-              background: OP_TOK.green,
-              color: OP_TOK.paper,
-              marginBottom: 12,
+              background: SSOP.brand,
+              color: '#fff',
+              border: `3px solid ${SSOP.ink}`,
+              boxShadow: `0 6px 0 ${SSOP.ink}`,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 64,
+              fontWeight: 900,
+              transform: 'rotate(-6deg)',
             }}
           >
-            <IconCheck size={28} color={OP_TOK.paper} stroke={2} />
+            ✓
           </div>
           <div
             style={{
-              fontFamily: OP_TOK.serif,
-              fontSize: 22,
-              color: OP_TOK.green,
-              letterSpacing: -0.3,
+              fontSize: 36,
+              fontWeight: 900,
+              letterSpacing: -1.3,
+              color: SSOP.ink,
+              marginTop: 24,
+              lineHeight: 1,
+              textTransform: 'uppercase',
             }}
           >
-            Pickup confirmed.
+            {scannedCode || expectedCode}
+            <br />
+            <span style={{ color: SSOP.brand }}>logged.</span>
           </div>
-          <div
-            className="mt-1.5 italic"
-            style={{
-              fontFamily: OP_TOK.serif,
-              fontSize: 12,
-              color: OP_TOK.green,
-              opacity: 0.85,
-            }}
-          >
-            Loading next stop…
+          <div style={{ fontSize: 14, fontWeight: 800, color: SSOP.ink, opacity: 0.75, marginTop: 10 }}>
+            Resident texted · loading next stop…
           </div>
-        </OpPaper>
-      </section>
+        </div>
+      </>
     );
   }
 
   return (
-    <section className="space-y-4">
-      <StepDots step={step} />
+    <>
+      {/* Step strip — sky */}
+      <div style={{ background: SSOP.sky, padding: '20px 20px 14px' }}>
+        <SSOpSteps step={step} />
+      </div>
 
-      {/* Expected bag */}
-      <OpPaper className="flex items-center justify-between gap-3">
-        <div>
-          <OpEyebrow>Expected bag</OpEyebrow>
+      {/* Expected bag — white */}
+      <div style={{ background: '#fff', padding: '18px 20px 8px' }}>
+        <SSOpCard pad={0}>
           <div
-            className="mt-1.5"
             style={{
-              fontFamily: OP_TOK.mono,
-              fontSize: 18,
-              color: OP_TOK.ink,
-              letterSpacing: 0.4,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '12px 14px',
+              borderBottom: step === 'scan' ? `1px solid ${SSOP.line}` : 'none',
             }}
           >
-            {expectedCode || '—'}
+            <div>
+              <SSOpEyebrow mb={4}>Expected bag</SSOpEyebrow>
+              <div
+                style={{
+                  fontFamily: SSOP.mono,
+                  fontSize: 19,
+                  fontWeight: 800,
+                  color: SSOP.ink,
+                  letterSpacing: 0.6,
+                }}
+              >
+                {expectedCode || '—'}
+              </div>
+            </div>
+            {declaredType === 'separated' ? (
+              <SSOpBadge bg={SSOP.mint}>Separated</SSOpBadge>
+            ) : declaredType === 'mixed' ? (
+              <SSOpBadge bg={SSOP.yellow}>Mixed</SSOpBadge>
+            ) : null}
           </div>
-        </div>
+
+          {step === 'scan' && (
+            <div
+              style={{
+                position: 'relative',
+                aspectRatio: '4/3',
+                background: SSOP.ink,
+                overflow: 'hidden',
+              }}
+            >
+              {cameraOn ? (
+                <video
+                  ref={videoRef}
+                  playsInline
+                  muted
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                  }}
+                />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setError(null);
+                    setCameraOn(true);
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  aria-label="Start scan"
+                >
+                  <ScanReticule />
+                </button>
+              )}
+              <canvas ref={canvasRef} style={{ display: 'none' }} />
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 14,
+                  left: 14,
+                  background: SSOP.yellow,
+                  border: `2px solid ${SSOP.ink}`,
+                  color: SSOP.ink,
+                  borderRadius: 999,
+                  padding: '5px 12px',
+                  fontSize: 10,
+                  fontWeight: 900,
+                  letterSpacing: 1.2,
+                  textTransform: 'uppercase',
+                  boxShadow: `0 2px 0 ${SSOP.ink}`,
+                }}
+              >
+                {cameraOn ? '● Scanning' : 'Tap to scan'}
+              </div>
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 14,
+                  left: 0,
+                  right: 0,
+                  textAlign: 'center',
+                  fontSize: 12,
+                  fontWeight: 800,
+                  color: '#fff',
+                  letterSpacing: 0.3,
+                }}
+              >
+                Center the QR sticker.
+              </div>
+            </div>
+          )}
+        </SSOpCard>
+
         {scannedCode && step !== 'scan' && (
           <button
             type="button"
@@ -259,307 +366,437 @@ export function ScanConfirmClient({
               setScannedCode('');
               setPhoto(null);
             }}
-            className="cursor-pointer p-0 italic underline"
             style={{
+              marginTop: 10,
               background: 'transparent',
               border: 'none',
-              fontFamily: OP_TOK.serif,
+              color: SSOP.brand,
+              fontFamily: SSOP.sans,
               fontSize: 12,
-              color: OP_TOK.green,
-              textDecorationColor: OP_TOK.line,
+              fontWeight: 900,
+              letterSpacing: 1,
+              textTransform: 'uppercase',
+              textDecoration: 'underline',
+              cursor: 'pointer',
+              padding: 0,
             }}
           >
-            Rescan
+            ← Rescan
           </button>
         )}
-      </OpPaper>
 
-      {step === 'scan' && (
-        <OpPaper style={{ padding: 0, overflow: 'hidden' }}>
-          <div
-            style={{
-              aspectRatio: '4/3',
-              background: '#1F2A22',
-              position: 'relative',
-            }}
-          >
-            {cameraOn ? (
-              <video
-                ref={videoRef}
-                playsInline
-                muted
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  setError(null);
-                  setCameraOn(true);
-                }}
-                className="flex h-full w-full cursor-pointer items-center justify-center"
-                style={{ background: 'transparent', border: 'none' }}
-              >
-                <ScanReticule />
-              </button>
-            )}
-            <canvas ref={canvasRef} className="hidden" />
-            <div
-              className="absolute right-0 bottom-3 left-0 text-center italic"
-              style={{
-                fontFamily: OP_TOK.serif,
-                fontSize: 12,
-                color: 'rgba(255,255,255,0.7)',
-              }}
-            >
-              {cameraOn ? 'Center the QR sticker.' : 'Tap to scan.'}
-            </div>
-          </div>
-          <div style={{ padding: 14 }}>
-            <OpPrimaryButton
+        {step === 'scan' && (
+          <div style={{ marginTop: 14 }}>
+            <SSOpPillButton
+              variant="brand"
+              size="lg"
+              leftIcon={<span>📷</span>}
               onClick={() => {
                 setError(null);
                 setCameraOn(true);
               }}
               disabled={cameraOn}
             >
-              <IconScan size={18} color={OP_TOK.paper} stroke={1.75} />
               {cameraOn ? 'Scanning…' : 'Tap to scan'}
-            </OpPrimaryButton>
-            <div className="mt-3.5 flex items-center gap-2">
-              <div style={{ flex: 1, height: 1, background: OP_TOK.lineSoft }} />
+            </SSOpPillButton>
+
+            {/* Manual entry */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                margin: '18px 0 12px',
+              }}
+            >
+              <div style={{ flex: 1, height: 2, background: SSOP.line }} />
               <span
-                className="italic"
                 style={{
-                  fontFamily: OP_TOK.serif,
                   fontSize: 11,
-                  color: OP_TOK.inkSoft,
+                  fontWeight: 800,
+                  color: SSOP.inkSoft,
+                  letterSpacing: 1.2,
+                  textTransform: 'uppercase',
                 }}
               >
                 or type the code
               </span>
-              <div style={{ flex: 1, height: 1, background: OP_TOK.lineSoft }} />
+              <div style={{ flex: 1, height: 2, background: SSOP.line }} />
             </div>
-            <form onSubmit={handleManualSubmit} className="mt-3 flex gap-2">
+            <form onSubmit={handleManualSubmit} style={{ display: 'flex', gap: 8 }}>
               <input
                 value={manual}
                 onChange={(e) => setManual(e.target.value)}
-                placeholder="Printed number"
+                placeholder="A24-_ _ _"
                 style={{
                   flex: 1,
-                  padding: '12px 14px',
-                  border: `1px solid ${OP_TOK.line}`,
-                  borderRadius: 10,
-                  fontFamily: OP_TOK.mono,
-                  fontSize: 14,
-                  background: OP_TOK.paper,
-                  color: OP_TOK.ink,
+                  padding: '14px 16px',
+                  background: '#fff',
+                  border: `2px solid ${SSOP.ink}`,
+                  borderRadius: 999,
+                  fontFamily: SSOP.mono,
+                  fontSize: 15,
+                  color: SSOP.ink,
                   outline: 'none',
+                  boxShadow: `0 3px 0 ${SSOP.ink}`,
+                  boxSizing: 'border-box',
                 }}
               />
               <button
                 type="submit"
                 disabled={!manual.trim()}
-                className="cursor-pointer disabled:opacity-50"
                 style={{
-                  padding: '12px 18px',
-                  background: manual.trim() ? OP_TOK.ink : OP_TOK.lineSoft,
-                  color: manual.trim() ? OP_TOK.paper : OP_TOK.inkFaint,
-                  border: 'none',
-                  borderRadius: 10,
-                  fontFamily: OP_TOK.serif,
+                  padding: '14px 22px',
+                  background: SSOP.ink,
+                  color: '#fff',
+                  border: `2px solid ${SSOP.ink}`,
+                  borderRadius: 999,
+                  fontFamily: SSOP.sans,
                   fontSize: 14,
+                  fontWeight: 900,
+                  boxShadow: `0 3px 0 ${SSOP.ink}`,
+                  cursor: manual.trim() ? 'pointer' : 'not-allowed',
+                  opacity: manual.trim() ? 1 : 0.4,
                 }}
               >
                 Use
               </button>
             </form>
           </div>
-        </OpPaper>
-      )}
+        )}
+      </div>
 
       {step === 'condition' && (
         <>
-          <OpPaper>
-            <OpEyebrow>Condition check</OpEyebrow>
-            <div className="mt-2">
-              <ToggleRow label="Bag sealed properly" value={sealed} onChange={setSealed} />
-              <ToggleRow
-                label="Visible contamination"
-                value={contamination}
-                onChange={setContamination}
-                tone="rust"
-              />
-            </div>
-            <p
-              className="mt-3.5 italic"
+          <div style={{ background: '#fff', padding: '8px 20px 20px' }}>
+            <SSOpCard>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '6px 0',
+                  borderBottom: `1px solid ${SSOP.line}`,
+                }}
+              >
+                <div style={{ flex: 1, paddingRight: 12 }}>
+                  <div
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 900,
+                      color: SSOP.ink,
+                      letterSpacing: -0.3,
+                    }}
+                  >
+                    Bag sealed properly
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 800,
+                      color: SSOP.inkSoft,
+                      marginTop: 2,
+                    }}
+                  >
+                    Twist-tie or knot present, no tears
+                  </div>
+                </div>
+                <SSOpToggle on={sealed} onChange={setSealed} label="Sealed" />
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '14px 0 4px',
+                }}
+              >
+                <div style={{ flex: 1, paddingRight: 12 }}>
+                  <div
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 900,
+                      color: SSOP.ink,
+                      letterSpacing: -0.3,
+                    }}
+                  >
+                    Visible contamination
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 800,
+                      color: SSOP.inkSoft,
+                      marginTop: 2,
+                    }}
+                  >
+                    Food, liquid, or non-recyclable items
+                  </div>
+                </div>
+                <SSOpToggle
+                  on={contamination}
+                  onChange={setContamination}
+                  label="Contamination"
+                  danger
+                />
+              </div>
+            </SSOpCard>
+
+            <div
               style={{
-                fontFamily: OP_TOK.serif,
-                fontSize: 12,
-                color: OP_TOK.inkSoft,
-                lineHeight: 1.5,
+                marginTop: 14,
+                background: SSOP.mint,
+                border: `2px solid ${SSOP.ink}`,
+                borderRadius: 14,
+                padding: '14px 16px',
+                boxShadow: `0 4px 0 ${SSOP.ink}`,
               }}
             >
-              {contamination
-                ? 'We’ll log this and the depot will sort it out at intake. The pickup still counts.'
-                : 'We’ll log these notes against the bag for the depot.'}
-            </p>
-          </OpPaper>
-          <OpPrimaryButton onClick={() => setStep('photo')}>
-            Continue
-            <IconArrow size={16} color={OP_TOK.paper} />
-          </OpPrimaryButton>
+              <div
+                style={{
+                  fontSize: 13,
+                  fontWeight: 800,
+                  color: SSOP.ink,
+                  lineHeight: 1.5,
+                }}
+              >
+                {contamination
+                  ? 'We&rsquo;ll log this and the depot will sort it out at intake. The pickup still counts.'
+                  : 'We&rsquo;ll log these notes against the bag for the depot.'}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ background: SSOP.peach, padding: '20px 20px 28px' }}>
+            <SSOpPillButton variant="brand" size="lg" onClick={() => setStep('photo')}>
+              Continue
+            </SSOpPillButton>
+          </div>
         </>
       )}
 
       {step === 'photo' && (
         <>
-          <OpPaper>
-            <div className="flex items-center justify-between">
-              <OpEyebrow>Doorstep photo</OpEyebrow>
-              {STORAGE_MOCKED && (
-                <span
-                  style={{
-                    background: OP_TOK.amberSoft,
-                    color: OP_TOK.amber,
-                    fontFamily: OP_TOK.sans,
-                    fontSize: 9,
-                    fontWeight: 500,
-                    letterSpacing: 1.2,
-                    textTransform: 'uppercase',
-                    padding: '3px 8px',
-                    borderRadius: 999,
-                  }}
-                >
-                  Demo mode
-                </span>
-              )}
-            </div>
-            <p
-              className="mt-1 italic"
+          <div style={{ background: '#fff', padding: '8px 20px 20px' }}>
+            <div
               style={{
-                fontFamily: OP_TOK.serif,
-                fontSize: 12,
-                color: OP_TOK.inkSoft,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: 10,
               }}
             >
-              Proof of pickup. Saved with the route record.
-            </p>
-            {photo ? (
-              <div className="mt-3.5">
-                <div
-                  style={{
-                    aspectRatio: '4/3',
-                    borderRadius: 12,
-                    overflow: 'hidden',
-                  }}
-                >
+              <SSOpEyebrow mb={0}>Proof of pickup</SSOpEyebrow>
+              {STORAGE_MOCKED && <SSOpBadge bg={SSOP.amber} fg="#fff">Demo mode</SSOpBadge>}
+            </div>
+
+            <SSOpCard pad={0} style={{ overflow: 'hidden' }}>
+              {photo ? (
+                <div style={{ aspectRatio: '4/3', position: 'relative' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={photo.previewUrl}
                     alt=""
-                    className="h-full w-full object-cover"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
-                </div>
-                <div className="mt-2.5 text-center">
-                  <button
-                    type="button"
-                    onClick={() => setPhoto(null)}
-                    className="cursor-pointer p-0 italic underline"
+                  <div
                     style={{
-                      background: 'transparent',
-                      border: 'none',
-                      fontFamily: OP_TOK.serif,
-                      fontSize: 12,
-                      color: OP_TOK.inkSoft,
-                      textDecorationColor: OP_TOK.line,
+                      position: 'absolute',
+                      top: 12,
+                      left: 12,
+                      background: SSOP.ink,
+                      color: '#fff',
+                      border: `2px solid ${SSOP.ink}`,
+                      borderRadius: 999,
+                      padding: '5px 12px',
+                      fontSize: 10,
+                      fontWeight: 900,
+                      letterSpacing: 1.2,
+                      textTransform: 'uppercase',
+                      boxShadow: `0 2px 0 ${SSOP.ink}`,
                     }}
                   >
-                    Retake
-                  </button>
+                    ● Captured
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <label
-                className="mt-3.5 flex w-full cursor-pointer flex-col items-center justify-center gap-2.5"
-                style={{
-                  aspectRatio: '4/3',
-                  background: OP_TOK.paperTint,
-                  border: `1px dashed ${OP_TOK.line}`,
-                  borderRadius: 12,
-                  color: OP_TOK.inkSoft,
-                }}
-              >
-                <IconScan size={32} stroke={1.5} />
-                <span
-                  className="italic"
-                  style={{ fontFamily: OP_TOK.serif, fontSize: 14 }}
+              ) : (
+                <label
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 10,
+                    aspectRatio: '4/3',
+                    background: SSOP.sky,
+                    cursor: 'pointer',
+                    color: SSOP.ink,
+                  }}
                 >
-                  Tap to take photo
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={handlePhoto}
-                  className="hidden"
-                />
-              </label>
+                  <span style={{ fontSize: 36, fontWeight: 900 }}>📷</span>
+                  <span
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 900,
+                      letterSpacing: -0.2,
+                    }}
+                  >
+                    Tap to take photo
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handlePhoto}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+              )}
+            </SSOpCard>
+
+            {photo && (
+              <div style={{ marginTop: 12, display: 'flex', gap: 10 }}>
+                <button
+                  type="button"
+                  onClick={() => setPhoto(null)}
+                  style={{
+                    flex: 1,
+                    background: '#fff',
+                    border: `2px solid ${SSOP.ink}`,
+                    color: SSOP.ink,
+                    borderRadius: 999,
+                    padding: '12px 16px',
+                    fontSize: 14,
+                    fontWeight: 900,
+                    letterSpacing: -0.2,
+                    fontFamily: SSOP.sans,
+                    boxShadow: `0 3px 0 ${SSOP.ink}`,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ↻ Retake
+                </button>
+              </div>
             )}
-          </OpPaper>
-          <OpPrimaryButton onClick={() => setStep('review')} disabled={!photo}>
-            Continue
-            <IconArrow size={16} color={OP_TOK.paper} />
-          </OpPrimaryButton>
+          </div>
+
+          <div style={{ background: SSOP.peach, padding: '20px 20px 28px' }}>
+            <SSOpPillButton
+              variant="brand"
+              size="lg"
+              onClick={() => setStep('review')}
+              disabled={!photo}
+            >
+              Continue
+            </SSOpPillButton>
+          </div>
         </>
       )}
 
       {(step === 'review' || step === 'submitting') && (
         <>
-          <OpPaper>
-            <OpEyebrow>Review &amp; submit</OpEyebrow>
-            <div className="mt-3">
-              <OpRow
+          <div style={{ background: '#fff', padding: '8px 20px 20px' }}>
+            <SSOpCard>
+              <SSOpReviewRow label="Bag code" value={scannedCode || expectedCode} />
+              {declaredType && (
+                <SSOpReviewRow
+                  label="Declared"
+                  value={declaredType === 'separated' ? 'Separated' : 'Mixed'}
+                  color={declaredType === 'separated' ? SSOP.green : SSOP.ink}
+                />
+              )}
+              <SSOpReviewRow
                 label="Sealed"
                 value={sealed ? 'Yes' : 'No'}
+                color={sealed ? SSOP.ink : SSOP.brand}
                 onEdit={() => setStep('condition')}
               />
-              <OpRow
+              <SSOpReviewRow
                 label="Contamination"
                 value={contamination ? 'Flagged' : 'None'}
-                valueTone={contamination ? 'rust' : 'ink'}
+                color={contamination ? SSOP.brand : SSOP.green}
                 onEdit={() => setStep('condition')}
               />
-              <OpRow
+              <SSOpReviewRow
                 label="Photo"
                 value={photo ? 'Captured' : '—'}
                 onEdit={() => setStep('photo')}
+                last
               />
+            </SSOpCard>
+          </div>
+
+          <div style={{ background: SSOP.mint, padding: '20px 20px' }}>
+            <div
+              style={{
+                background: '#fff',
+                border: `2px solid ${SSOP.ink}`,
+                borderRadius: 14,
+                padding: '14px 16px',
+                boxShadow: `0 4px 0 ${SSOP.ink}`,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+              }}
+            >
+              <div
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: '50%',
+                  background: SSOP.green,
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 16,
+                  fontWeight: 900,
+                  border: `2px solid ${SSOP.ink}`,
+                }}
+              >
+                ✓
+              </div>
+              <div style={{ flex: 1 }}>
+                <div
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 900,
+                    color: SSOP.ink,
+                    letterSpacing: -0.2,
+                  }}
+                >
+                  Pickup will credit the resident
+                </div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 800,
+                    color: SSOP.inkSoft,
+                    marginTop: 1,
+                  }}
+                >
+                  Final amount confirmed at depot weigh-in
+                </div>
+              </div>
             </div>
-          </OpPaper>
-          <OpPrimaryButton onClick={handleConfirm} disabled={!photo || step === 'submitting'}>
-            <IconCheck size={18} color={OP_TOK.paper} stroke={2} />
-            {step === 'submitting' ? 'Submitting…' : 'Confirm pickup'}
-          </OpPrimaryButton>
+          </div>
+
+          <div style={{ background: SSOP.peach, padding: '20px 20px 28px' }}>
+            <SSOpPillButton
+              variant="brand"
+              size="lg"
+              leftIcon={<span>✓</span>}
+              onClick={handleConfirm}
+              disabled={!photo || step === 'submitting'}
+            >
+              {step === 'submitting' ? 'Submitting…' : 'Confirm pickup'}
+            </SSOpPillButton>
+          </div>
         </>
       )}
 
-      {error && (
-        <p
-          style={{
-            background: OP_TOK.rustSoft,
-            border: `1px solid ${OP_TOK.rust}`,
-            color: OP_TOK.rust,
-            borderRadius: 10,
-            padding: '8px 12px',
-            fontFamily: OP_TOK.serif,
-            fontSize: 12,
-          }}
-        >
-          {error}
-        </p>
-      )}
-    </section>
+      {error && <SSOpError>{error}</SSOpError>}
+    </>
   );
 }
 
@@ -569,46 +806,46 @@ function ScanReticule() {
     left?: number;
     right?: number;
     bottom?: number;
-    borderTop?: boolean;
-    borderLeft?: boolean;
-    borderRight?: boolean;
-    borderBottom?: boolean;
+    bT?: boolean;
+    bL?: boolean;
+    bR?: boolean;
+    bB?: boolean;
   };
   const corners: Corner[] = [
-    { top: 0, left: 0, borderTop: true, borderLeft: true },
-    { top: 0, right: 0, borderTop: true, borderRight: true },
-    { bottom: 0, left: 0, borderBottom: true, borderLeft: true },
-    { bottom: 0, right: 0, borderBottom: true, borderRight: true },
+    { top: 0, left: 0, bT: true, bL: true },
+    { top: 0, right: 0, bT: true, bR: true },
+    { bottom: 0, left: 0, bB: true, bL: true },
+    { bottom: 0, right: 0, bB: true, bR: true },
   ];
   return (
-    <div className="relative" style={{ width: 200, height: 200 }}>
+    <div style={{ width: 200, height: 200, position: 'relative' }}>
       {corners.map((c, i) => (
         <div
           key={i}
           style={{
             position: 'absolute',
-            width: 28,
-            height: 28,
+            width: 36,
+            height: 36,
             top: c.top,
             left: c.left,
             right: c.right,
             bottom: c.bottom,
-            borderTop: c.borderTop ? `2px solid ${OP_TOK.paper}` : undefined,
-            borderLeft: c.borderLeft ? `2px solid ${OP_TOK.paper}` : undefined,
-            borderRight: c.borderRight ? `2px solid ${OP_TOK.paper}` : undefined,
-            borderBottom: c.borderBottom ? `2px solid ${OP_TOK.paper}` : undefined,
+            borderTop: c.bT ? `4px solid ${SSOP.yellow}` : undefined,
+            borderLeft: c.bL ? `4px solid ${SSOP.yellow}` : undefined,
+            borderRight: c.bR ? `4px solid ${SSOP.yellow}` : undefined,
+            borderBottom: c.bB ? `4px solid ${SSOP.yellow}` : undefined,
           }}
         />
       ))}
       <div
         style={{
           position: 'absolute',
-          left: 4,
-          right: 4,
+          left: 8,
+          right: 8,
           top: '50%',
-          height: 1,
-          background: `linear-gradient(90deg, transparent, ${OP_TOK.green}, transparent)`,
-          opacity: 0.7,
+          height: 2,
+          background: SSOP.brand,
+          boxShadow: `0 0 14px ${SSOP.brand}`,
         }}
       />
     </div>

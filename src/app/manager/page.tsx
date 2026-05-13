@@ -4,11 +4,22 @@ import { adminDb } from '@/lib/firebase/admin';
 import { loadManagerDepots } from '@/lib/auth/managerAccess';
 import { MATERIAL_DISPLAY_NAMES, type MaterialId } from '@/lib/types/material';
 import type { InventoryDoc } from '@/lib/types/inventory';
+import {
+  SSMG,
+  SSMgEyebrow,
+  SSMgHeader,
+  SSMgShell,
+  SSMgStat,
+  SSMgStatusBadge,
+  type MgStatus,
+} from '@/components/manager/SSMg';
+import { ManagerLogout } from '@/components/manager/ManagerLogout';
 
 export const dynamic = 'force-dynamic';
 
 const DEPOT_CAPACITY_LBS_PER_MATERIAL = 1500;
 const CRITICAL_PCT = 95;
+const LOW_PCT = 25;
 
 export default async function ManagerHome() {
   const session = await requireRole('depot_manager');
@@ -16,9 +27,31 @@ export default async function ManagerHome() {
 
   if (depots.length === 0) {
     return (
-      <section className="mt-8 rounded-xl border border-white/10 bg-white/5 p-5 text-sm text-gray-300">
-        No depots are assigned to your account yet. Ask an admin to link a depot to you.
-      </section>
+      <SSMgShell active="depots">
+        <SSMgHeader
+          kicker="Depot manager"
+          title={
+            <>
+              No depots
+              <br />
+              assigned.
+            </>
+          }
+          right={<ManagerLogout />}
+        />
+        <div style={{ padding: '40px 20px', textAlign: 'center' }}>
+          <div
+            style={{
+              fontSize: 14,
+              fontWeight: 800,
+              color: SSMG.inkSoft,
+              lineHeight: 1.5,
+            }}
+          >
+            Ask an admin to link a depot to your account.
+          </div>
+        </div>
+      </SSMgShell>
     );
   }
 
@@ -26,7 +59,16 @@ export default async function ManagerHome() {
     depots.map((d) => adminDb.collection('inventory').where('depotId', '==', d.id).get()),
   );
 
-  const rows = depots.map((depot, i) => {
+  type Row = {
+    depot: (typeof depots)[number];
+    total: number;
+    critical: { id: MaterialId; pct: number }[];
+    minPct: number;
+    minMaterial: MaterialId | null;
+    status: MgStatus;
+  };
+
+  const rows: Row[] = depots.map((depot, i) => {
     const invMap = new Map<MaterialId, number>();
     invSnaps[i].docs.forEach((snap) => {
       const doc = snap.data() as InventoryDoc;
@@ -34,74 +76,191 @@ export default async function ManagerHome() {
     });
     const total = Array.from(invMap.values()).reduce((a, b) => a + b, 0);
     const critical: { id: MaterialId; pct: number }[] = [];
+    let minPct = 200;
+    let minMaterial: MaterialId | null = null;
     invMap.forEach((w, id) => {
       const pct = Math.round((w / DEPOT_CAPACITY_LBS_PER_MATERIAL) * 100);
       if (pct >= CRITICAL_PCT) critical.push({ id, pct });
+      if (pct < minPct) {
+        minPct = pct;
+        minMaterial = id;
+      }
     });
-    return { depot, total, critical };
+    const status: MgStatus =
+      critical.length > 0 ? 'FULL' : minPct <= LOW_PCT ? 'LOW' : 'OK';
+    return { depot, total, critical, minPct: minPct === 200 ? 0 : minPct, minMaterial, status };
   });
 
   const totalAllDepots = rows.reduce((a, r) => a + r.total, 0);
+  const totalTons = totalAllDepots / 2000;
+  const urgent = rows.find((r) => r.critical.length > 0);
 
   return (
-    <section className="mt-5 space-y-4">
-      <div>
-        <div className="text-[10px] uppercase tracking-[0.2em] text-gray-500">
-          We Buy Clean Trash · Depot Mgr
-        </div>
-        <h1 className="mt-0.5 text-lg font-semibold text-white">Your depots</h1>
-        <div className="mt-0.5 text-xs text-gray-500">
-          {depots.length} location{depots.length === 1 ? '' : 's'} managed
-        </div>
-      </div>
+    <SSMgShell active="depots">
+      <SSMgHeader
+        kicker="Depot manager"
+        title={
+          <>
+            Your
+            <br />
+            depots.
+          </>
+        }
+        sub={`${depots.length} location${depots.length === 1 ? '' : 's'} · ${totalTons.toFixed(1)}t in stock`}
+        right={<ManagerLogout />}
+      />
 
-      <div className="grid grid-cols-2 gap-2">
-        <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-          <div className="text-[10px] uppercase tracking-wide text-gray-500">Depots</div>
-          <div className="mt-1 text-2xl font-bold text-white">{depots.length}</div>
+      {/* KPI sticker row — sky */}
+      <div style={{ background: SSMG.sky, padding: '20px 20px' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr 1fr',
+            gap: 10,
+          }}
+        >
+          <SSMgStat value={depots.length} label="Depots" />
+          <SSMgStat
+            value={`${totalTons.toFixed(1)}t`}
+            label="In stock"
+            color={SSMG.yellow}
+          />
+          <SSMgStat value={rows.filter((r) => r.critical.length > 0).length} label="Full" />
         </div>
-        <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-          <div className="text-[10px] uppercase tracking-wide text-gray-500">In stock</div>
-          <div className="mt-1 text-2xl font-bold text-white">
-            {(totalAllDepots / 2000).toFixed(1)}t
-          </div>
-        </div>
-      </div>
 
-      <div className="space-y-2">
-        {rows.map(({ depot, total, critical }) => (
-          <Link
-            key={depot.id}
-            href={`/manager/depots/${depot.id}`}
-            className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3 transition-colors hover:bg-white/10"
+        {urgent && (
+          <div
+            style={{
+              marginTop: 14,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              background: '#fff',
+              border: `2px solid ${SSMG.brand}`,
+              borderRadius: 14,
+              padding: '12px 14px',
+              boxShadow: `0 4px 0 ${SSMG.brand}`,
+            }}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-lg">
-              🏭
+            <div
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: '50%',
+                background: SSMG.brand,
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 900,
+                fontSize: 18,
+                flexShrink: 0,
+              }}
+            >
+              !
             </div>
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-medium text-white">{depot.name}</div>
-              <div className="truncate text-xs text-gray-400">
-                {total.toLocaleString(undefined, { maximumFractionDigits: 0 })} lbs in stock
-                {critical.length > 0 && (
-                  <>
-                    {' '}
-                    · {MATERIAL_DISPLAY_NAMES[critical[0].id]} at {critical[0].pct}%
-                  </>
-                )}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 900,
+                  color: SSMG.ink,
+                  letterSpacing: -0.2,
+                }}
+              >
+                {MATERIAL_DISPLAY_NAMES[urgent.critical[0].id]} near capacity at {urgent.depot.name}.
+              </div>
+              <div
+                style={{
+                  fontSize: 11,
+                  fontWeight: 800,
+                  color: SSMG.inkSoft,
+                  marginTop: 2,
+                }}
+              >
+                Schedule a mill pickup today.
               </div>
             </div>
-            <span
-              className={`rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
-                critical.length > 0
-                  ? 'bg-red-500/15 text-red-300'
-                  : 'bg-white/10 text-gray-400'
-              }`}
-            >
-              {critical.length > 0 ? 'Full' : 'OK'}
-            </span>
-          </Link>
-        ))}
+          </div>
+        )}
       </div>
-    </section>
+
+      {/* List — white */}
+      <div style={{ background: '#fff', padding: '18px 20px 24px' }}>
+        <SSMgEyebrow>Locations</SSMgEyebrow>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {rows.map((r, i) => {
+            const swatch = [SSMG.peach, SSMG.sky, SSMG.mint, SSMG.yellow][i % 4];
+            const subtitle =
+              r.critical.length > 0
+                ? `${MATERIAL_DISPLAY_NAMES[r.critical[0].id]} ${r.critical[0].pct}%`
+                : r.status === 'LOW' && r.minMaterial
+                  ? `${MATERIAL_DISPLAY_NAMES[r.minMaterial]} ${r.minPct}%`
+                  : 'All normal';
+            return (
+              <Link
+                key={r.depot.id}
+                href={`/manager/depots/${r.depot.id}`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  background: '#fff',
+                  border: `2px solid ${SSMG.ink}`,
+                  borderRadius: 16,
+                  padding: 14,
+                  boxShadow: `0 4px 0 ${SSMG.ink}`,
+                  textDecoration: 'none',
+                }}
+              >
+                <div
+                  style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 12,
+                    background: swatch,
+                    border: `2px solid ${SSMG.ink}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 14,
+                    fontWeight: 900,
+                    flexShrink: 0,
+                  }}
+                >
+                  {String(i + 1).padStart(2, '0')}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 900,
+                      color: SSMG.ink,
+                      letterSpacing: -0.3,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {r.depot.name}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: SSMG.inkSoft,
+                      marginTop: 2,
+                    }}
+                  >
+                    {r.total.toLocaleString(undefined, { maximumFractionDigits: 0 })} lbs · {subtitle}
+                  </div>
+                </div>
+                <SSMgStatusBadge status={r.status} />
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    </SSMgShell>
   );
 }

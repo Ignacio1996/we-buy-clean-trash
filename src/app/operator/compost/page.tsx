@@ -5,13 +5,12 @@ import type { CommercialAccountDoc } from '@/lib/types/commercialAccount';
 import { COLLECTION_DAY_LABELS } from '@/lib/types/commercialAccount';
 import type { UserDoc } from '@/lib/types/user';
 import {
-  OP_TOK,
-  OpBackRow,
-  OpDisplay,
-  OpEyebrow,
-  OpPage,
-} from '@/components/operator/Op';
-import { IconChevR } from '@/components/icons/EcoIcons';
+  SSOP,
+  SSOpBadge,
+  SSOpEyebrow,
+  SSOpHeader,
+  SSOpShell,
+} from '@/components/operator/SSOp';
 
 export const dynamic = 'force-dynamic';
 
@@ -84,217 +83,127 @@ export default async function OperatorCompostPage() {
   const session = await requireRole('operator');
   const sites = await loadSites(session.uid);
   const todayCount = sites.filter((s) => s.scheduledToday).length;
-  const todayDate = new Date().getDate();
 
   return (
-    <OpPage>
-      <OpBackRow label="Today's residential route" href="/operator" />
-
-      <header className="mb-5">
-        <OpEyebrow>Compost route</OpEyebrow>
-        <OpDisplay className="mt-1.5">
-          {todayCount > 0 ? (
+    <SSOpShell active="compost">
+      <SSOpHeader
+        kicker="Compost route"
+        title={
+          todayCount > 0 ? (
             <>
-              <em style={{ color: OP_TOK.green, fontStyle: 'italic' }}>{todayCount}</em> site
-              {todayCount === 1 ? '' : 's'} on today.
+              {todayCount} site{todayCount === 1 ? '' : 's'}
+              <br />
+              on today.
             </>
           ) : (
             <>
-              No sites <em style={{ color: OP_TOK.inkSoft, fontStyle: 'italic' }}>scheduled</em>{' '}
+              No sites
+              <br />
               today.
             </>
-          )}
-        </OpDisplay>
-        <div
-          className="mt-1.5 italic"
-          style={{ fontFamily: OP_TOK.serif, fontSize: 13, color: OP_TOK.inkSoft }}
-        >
-          {sites.length} active site{sites.length === 1 ? '' : 's'} in your zone.
-        </div>
-      </header>
+          )
+        }
+        sub={`${sites.length} active site${sites.length === 1 ? '' : 's'} in your zone`}
+        back="Back to route"
+        backHref="/operator"
+        headerBg={SSOP.mint}
+      />
 
       {sites.length === 0 ? (
-        <div
-          className="mt-4 rounded-[14px] px-4 py-5 text-center italic"
-          style={{
-            background: OP_TOK.paper,
-            border: `1px solid ${OP_TOK.line}`,
-            fontFamily: OP_TOK.serif,
-            fontSize: 14,
-            color: OP_TOK.inkSoft,
-          }}
-        >
-          No commercial sites in your zone yet.
+        <div style={{ padding: '40px 20px', textAlign: 'center' }}>
+          <div
+            style={{
+              fontSize: 16,
+              fontWeight: 800,
+              color: SSOP.inkSoft,
+              fontStyle: 'italic',
+            }}
+          >
+            No commercial sites in your zone yet.
+          </div>
         </div>
       ) : (
-        <div style={{ borderTop: `2px solid ${OP_TOK.ink}` }}>
-          {sites.map((s, i) => (
-            <SiteRow
-              key={s.id}
-              site={s}
-              divider={i < sites.length - 1}
-              todayDate={todayDate}
-            />
-          ))}
+        <div style={{ background: '#fff', padding: '22px 20px' }}>
+          <SSOpEyebrow>Sites</SSOpEyebrow>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {sites.map((site) => (
+              <SiteCard key={site.id} site={site} />
+            ))}
+          </div>
         </div>
       )}
-    </OpPage>
+    </SSOpShell>
   );
 }
 
-function SiteRow({
-  site,
-  divider,
-  todayDate,
-}: {
-  site: SiteRow;
-  divider: boolean;
-  todayDate: number;
-}) {
+function SiteCard({ site }: { site: SiteRow }) {
   return (
     <Link
       href={`/operator/compost/${site.id}`}
-      className="flex items-start gap-3.5"
       style={{
-        padding: '16px 0',
-        borderBottom: divider ? `1px solid ${OP_TOK.lineSoft}` : 'none',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        background: '#fff',
+        border: `2px solid ${SSOP.ink}`,
+        borderRadius: 14,
+        padding: '14px 14px',
+        boxShadow: `0 3px 0 ${SSOP.ink}`,
         textDecoration: 'none',
       }}
     >
-      {/* Day strip */}
-      <div className="text-center" style={{ width: 56, paddingTop: 2 }}>
-        {site.scheduledToday ? (
-          <>
-            <div
-              className="uppercase"
-              style={{
-                fontFamily: OP_TOK.sans,
-                fontSize: 9,
-                color: OP_TOK.green,
-                letterSpacing: 1.4,
-                fontWeight: 600,
-              }}
-            >
-              Today
-            </div>
-            <div
-              style={{
-                fontFamily: OP_TOK.serif,
-                fontSize: 22,
-                color: OP_TOK.green,
-                marginTop: 2,
-                letterSpacing: -0.5,
-                fontFeatureSettings: '"lnum","tnum"',
-              }}
-            >
-              {todayDate}
-            </div>
-          </>
-        ) : (
-          <div
-            className="italic"
-            style={{
-              fontFamily: OP_TOK.serif,
-              fontSize: 11,
-              color: OP_TOK.inkFaint,
-              paddingTop: 8,
-            }}
-          >
-            {site.scheduledDaysShort}
-          </div>
-        )}
+      <div
+        style={{
+          width: 48,
+          height: 48,
+          borderRadius: 12,
+          background: site.scheduledToday ? SSOP.yellow : SSOP.sky,
+          border: `2px solid ${SSOP.ink}`,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: SSOP.sans,
+          flexShrink: 0,
+        }}
+      >
+        <span style={{ fontSize: 9, fontWeight: 900, letterSpacing: 1, textTransform: 'uppercase', color: SSOP.ink }}>
+          {site.scheduledToday ? 'Today' : site.scheduledDaysShort}
+        </span>
       </div>
-
-      {/* Body */}
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2">
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            flexWrap: 'wrap',
+          }}
+        >
           <div
             style={{
-              fontFamily: OP_TOK.serif,
-              fontSize: 17,
-              color: OP_TOK.ink,
-              letterSpacing: -0.2,
+              fontSize: 16,
+              fontWeight: 900,
+              color: SSOP.ink,
+              letterSpacing: -0.3,
             }}
           >
             {site.businessName}
           </div>
           {site.affiliationId && (
-            <span
-              className="uppercase"
-              style={{
-                fontFamily: OP_TOK.sans,
-                fontSize: 9,
-                color: OP_TOK.amber,
-                background: OP_TOK.amberSoft,
-                padding: '2px 6px',
-                borderRadius: 999,
-                letterSpacing: 1.2,
-                fontWeight: 500,
-              }}
-            >
+            <SSOpBadge bg={SSOP.amber} fg="#fff">
               {site.affiliationId}
-            </span>
+            </SSOpBadge>
           )}
         </div>
-        <div
-          className="mt-1 italic"
-          style={{ fontFamily: OP_TOK.serif, fontSize: 12, color: OP_TOK.inkSoft }}
-        >
-          {site.street}
+        <div style={{ fontSize: 11, fontWeight: 800, color: SSOP.inkSoft, marginTop: 1 }}>
+          {site.street} · {site.cityLine}
         </div>
-        <div
-          className="mt-0.5"
-          style={{ fontFamily: OP_TOK.sans, fontSize: 11, color: OP_TOK.inkFaint }}
-        >
-          {site.cityLine}
-        </div>
-
-        <div className="mt-2 flex gap-3.5">
-          <Meta label="Bins" value={String(site.binCount)} />
-          <Meta label="Per week" value={String(site.pickupsPerWeek)} />
-          <Meta label="Days" value={site.scheduledDays} muted />
+        <div style={{ fontSize: 11, fontWeight: 800, color: SSOP.inkSoft, marginTop: 4 }}>
+          {site.binCount} bin{site.binCount === 1 ? '' : 's'} · {site.pickupsPerWeek}× / wk · {site.scheduledDays}
         </div>
       </div>
-
-      <IconChevR size={14} color={OP_TOK.inkFaint} style={{ marginTop: 18 }} />
+      <span style={{ fontSize: 22, fontWeight: 900, color: SSOP.ink }}>›</span>
     </Link>
-  );
-}
-
-function Meta({
-  label,
-  value,
-  muted = false,
-}: {
-  label: string;
-  value: string;
-  muted?: boolean;
-}) {
-  return (
-    <div>
-      <div
-        className="uppercase"
-        style={{
-          fontFamily: OP_TOK.sans,
-          fontSize: 9,
-          color: OP_TOK.inkFaint,
-          letterSpacing: 1.2,
-        }}
-      >
-        {label}
-      </div>
-      <div
-        className="mt-0.5"
-        style={{
-          fontFamily: OP_TOK.serif,
-          fontSize: muted ? 11 : 13,
-          color: muted ? OP_TOK.inkSoft : OP_TOK.ink,
-          fontStyle: muted ? 'italic' : 'normal',
-          fontFeatureSettings: '"lnum","tnum"',
-        }}
-      >
-        {value}
-      </div>
-    </div>
   );
 }

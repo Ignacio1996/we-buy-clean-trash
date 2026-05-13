@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireRole } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
@@ -12,16 +11,18 @@ import type { InventoryDoc } from '@/lib/types/inventory';
 import type { MillShipmentDoc } from '@/lib/types/millShipment';
 import { ScheduleMillPickupForm } from './ScheduleMillPickupForm';
 import { ShipmentsList } from './ShipmentsList';
+import {
+  SSMG,
+  SSMgBar,
+  SSMgEyebrow,
+  SSMgHeader,
+  SSMgShell,
+} from '@/components/manager/SSMg';
+import { ManagerLogout } from '@/components/manager/ManagerLogout';
 
 export const dynamic = 'force-dynamic';
 
 const DEPOT_CAPACITY_LBS_PER_MATERIAL = 1500;
-
-function barColor(pct: number): string {
-  if (pct >= 95) return 'bg-red-500';
-  if (pct >= 80) return 'bg-amber-400';
-  return 'bg-white';
-}
 
 interface PageProps {
   params: Promise<{ depotId: string }>;
@@ -54,6 +55,7 @@ export default async function DepotDetailPage({ params }: PageProps) {
     const pct = Math.min(100, Math.round((weight / DEPOT_CAPACITY_LBS_PER_MATERIAL) * 100));
     return { id, weight, pct };
   });
+  rows.sort((a, b) => b.pct - a.pct);
 
   const critical = rows.filter((r) => r.pct >= 95);
   const totalLbs = rows.reduce((a, r) => a + r.weight, 0);
@@ -74,59 +76,149 @@ export default async function DepotDetailPage({ params }: PageProps) {
   ) as Record<MaterialId, number>;
 
   return (
-    <section className="mt-5 space-y-4">
-      <div>
-        <Link
-          href="/manager"
-          className="text-[11px] uppercase tracking-wide text-gray-500 hover:text-gray-300"
-        >
-          ← Depots
-        </Link>
-        <h1 className="mt-1 text-lg font-semibold text-white">{depot.name}</h1>
-        <div className="text-xs text-gray-500">
-          {depot.street}, {depot.city}, {depot.state} {depot.postalCode}
-        </div>
-      </div>
+    <SSMgShell active="depots">
+      <SSMgHeader
+        kicker={`Depot · ${depot.name.split('—')[0].trim()}`}
+        title={
+          <>
+            {depot.name.split('—')[1]?.trim() || depot.name}.
+          </>
+        }
+        sub={`${depot.street}, ${depot.city}, ${depot.state} ${depot.postalCode}`}
+        back="All depots"
+        backHref="/manager"
+        right={<ManagerLogout />}
+      />
 
+      {/* Alert — peach */}
       {critical.length > 0 && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-center text-sm font-semibold text-red-300">
-          ⚠️ {critical.map((r) => MATERIAL_DISPLAY_NAMES[r.id]).join(', ')} near capacity —
-          schedule a truck
+        <div style={{ background: SSMG.peach, padding: '16px 20px' }}>
+          <div
+            style={{
+              background: '#fff',
+              border: `2px solid ${SSMG.brand}`,
+              borderRadius: 16,
+              padding: 16,
+              boxShadow: `0 4px 0 ${SSMG.brand}`,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+            }}
+          >
+            <div
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: '50%',
+                background: SSMG.brand,
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 900,
+                fontSize: 22,
+                flexShrink: 0,
+              }}
+            >
+              !
+            </div>
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  fontSize: 16,
+                  fontWeight: 900,
+                  color: SSMG.ink,
+                  letterSpacing: -0.3,
+                }}
+              >
+                {critical.map((r) => MATERIAL_DISPLAY_NAMES[r.id]).join(', ')} at {critical[0].pct}%.
+              </div>
+              <div
+                style={{
+                  fontSize: 12,
+                  fontWeight: 800,
+                  color: SSMG.inkSoft,
+                  marginTop: 2,
+                }}
+              >
+                Schedule a mill truck within 48 hrs.
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <div className="flex items-center justify-between">
-          <div className="text-[11px] uppercase tracking-wide text-gray-400">
-            Current stock (lbs)
-          </div>
-          <div className="text-xs text-gray-500">
-            Total {totalLbs.toLocaleString(undefined, { maximumFractionDigits: 0 })} lbs
+      {/* Stock — sky */}
+      <div style={{ background: SSMG.sky, padding: '22px 20px' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            marginBottom: 14,
+          }}
+        >
+          <SSMgEyebrow mb={0}>Current stock</SSMgEyebrow>
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 900,
+              color: SSMG.ink,
+              fontFamily: SSMG.mono,
+            }}
+          >
+            {totalLbs.toLocaleString(undefined, { maximumFractionDigits: 0 })} lbs total
           </div>
         </div>
-        <div className="mt-3 space-y-3">
-          {rows.map((row) => (
-            <div key={row.id}>
-              <div className="flex items-center justify-between text-xs text-gray-300">
-                <span>{MATERIAL_DISPLAY_NAMES[row.id]}</span>
-                <span className={row.weight > 0 ? 'text-white' : 'text-gray-500'}>
-                  {row.weight.toFixed(1)} lbs
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {rows.map((m) => (
+            <div key={m.id}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'baseline',
+                  marginBottom: 6,
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 900,
+                    color: SSMG.ink,
+                    letterSpacing: -0.2,
+                  }}
+                >
+                  {MATERIAL_DISPLAY_NAMES[m.id]}
+                </span>
+                <span
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 900,
+                    color: m.pct >= 95 ? SSMG.brand : SSMG.ink,
+                    fontFamily: SSMG.mono,
+                  }}
+                >
+                  {m.weight.toLocaleString(undefined, { maximumFractionDigits: 0 })} lbs · {m.pct}%
                 </span>
               </div>
-              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-white/10">
-                <div
-                  className={`h-full ${barColor(row.pct)}`}
-                  style={{ width: `${row.pct}%` }}
-                />
-              </div>
+              <SSMgBar pct={m.pct} />
             </div>
           ))}
         </div>
       </div>
 
-      <ScheduleMillPickupForm depotId={depotId} inventory={inventoryByMaterial} />
+      {/* Schedule form — white */}
+      <div style={{ background: '#fff', padding: '20px 20px 8px' }}>
+        <SSMgEyebrow>Mill pickup</SSMgEyebrow>
+        <ScheduleMillPickupForm depotId={depotId} inventory={inventoryByMaterial} />
+      </div>
 
-      <ShipmentsList shipments={shipments} />
-    </section>
+      {/* Shipments — mint */}
+      <div style={{ background: SSMG.mint, padding: '20px 20px 28px' }}>
+        <SSMgEyebrow>Recent shipments</SSMgEyebrow>
+        <ShipmentsList shipments={shipments} />
+      </div>
+    </SSMgShell>
   );
 }
