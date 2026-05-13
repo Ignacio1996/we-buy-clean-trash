@@ -4,6 +4,7 @@ import { adminDb } from '@/lib/firebase/admin';
 import { LogoutButton } from '@/components/LogoutButton';
 import { PhoneField } from './PhoneField';
 import { pointsToDollars } from '@/lib/logic/pointsToDollars';
+import { ReferFriend } from '@/components/resident/ReferFriend';
 import {
   SS,
   SSEyebrow,
@@ -106,6 +107,45 @@ export default async function ProfilePage() {
   return (
     <SSScreen>
       <SSStatusBarSpacer />
+
+      {/* Back to home */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '12px 20px 4px',
+        }}
+      >
+        <Link
+          href="/resident"
+          aria-label="Back to home"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            fontSize: 14,
+            fontWeight: 900,
+            letterSpacing: -0.2,
+            color: SS.ink,
+            textDecoration: 'none',
+          }}
+        >
+          <span style={{ fontSize: 20, lineHeight: 1 }}>←</span>
+          <span>Home</span>
+        </Link>
+        <div
+          style={{
+            fontSize: 11,
+            fontWeight: 900,
+            letterSpacing: 1.4,
+            textTransform: 'uppercase',
+            color: SS.inkSoft,
+          }}
+        >
+          Profile
+        </div>
+      </div>
 
       {/* Yellow header block */}
       <div style={{ background: SS.yellow, padding: '24px 20px 26px' }}>
@@ -266,6 +306,9 @@ export default async function ProfilePage() {
           <span style={{ fontSize: 18, fontWeight: 900, color: SS.ink }}>›</span>
         </Link>
       </div>
+
+      {/* Refer a friend */}
+      <ReferFriend referralCode={uid} />
 
       {/* Sign out */}
       <div style={{ padding: '24px 20px 28px' }}>

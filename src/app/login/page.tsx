@@ -74,10 +74,9 @@ function LoginForm() {
           alignItems: 'center',
         }}
       >
-        <button
-          type="button"
-          onClick={() => router.back()}
-          aria-label="Back"
+        <Link
+          href="/"
+          aria-label="Back to home"
           style={{
             fontSize: 22,
             fontWeight: 900,
@@ -86,22 +85,38 @@ function LoginForm() {
             border: 'none',
             cursor: 'pointer',
             fontFamily: SS.sans,
+            textDecoration: 'none',
           }}
         >
           ←
-        </button>
-        <div
+        </Link>
+        <Link
+          href="/"
+          aria-label="We Buy Clean Trash home"
           style={{
             fontSize: 14,
             fontWeight: 900,
             letterSpacing: -0.4,
             color: SS.ink,
             textTransform: 'uppercase',
+            textDecoration: 'none',
           }}
         >
           We Buy Clean <span style={{ color: SS.brand }}>Trash.</span>
-        </div>
-        <div style={{ width: 22 }} />
+        </Link>
+        <Link
+          href="/"
+          style={{
+            fontSize: 12,
+            fontWeight: 900,
+            letterSpacing: 1.2,
+            color: SS.inkSoft,
+            textTransform: 'uppercase',
+            textDecoration: 'none',
+          }}
+        >
+          Home
+        </Link>
       </div>
 
       <div

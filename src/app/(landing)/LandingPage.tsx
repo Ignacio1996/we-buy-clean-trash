@@ -135,9 +135,14 @@ export function LandingPage() {
           <a href="#impact">Impact</a>
           <a href="#faq">FAQ</a>
         </nav>
-        <Link href="/signup" className={styles.topbarCta}>
-          Get started <span className={styles.arrow}>→</span>
-        </Link>
+        <div className={styles.topbarActions}>
+          <Link href="/login" className={styles.topbarSignIn}>
+            Sign in
+          </Link>
+          <Link href="/signup" className={styles.topbarCta}>
+            Get started <span className={styles.arrow}>→</span>
+          </Link>
+        </div>
       </div>
 
       {/* Marquee */}
