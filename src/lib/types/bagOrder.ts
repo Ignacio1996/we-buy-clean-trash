@@ -16,6 +16,10 @@ export interface BagOrderDoc {
   addressId: string;
   quantity: number;
   unitPrice: number;
+  /** Number of sheets that were free on this order (welcome credit, etc.). */
+  freeSheetCredits: number;
+  /** Dollar value of credits applied; subtotal already reflects this. */
+  discount: number;
   subtotal: number;
   shipping: number;
   total: number;

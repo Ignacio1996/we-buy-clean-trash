@@ -2,8 +2,14 @@ import { notFound } from 'next/navigation';
 import { getSession } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
 import type { BagOrderDoc } from '@/lib/types/bagOrder';
-import { EcoMasthead, EcoH1, EcoButton } from '@/components/resident/eco/Eco';
-import { IconBox, IconBell, IconGift } from '@/components/icons/EcoIcons';
+import {
+  SS,
+  SSEyebrow,
+  SSPillLink,
+  SSScreen,
+  SSStatusBarSpacer,
+  SSStickerCard,
+} from '@/components/resident/ss/SS';
 
 function formatDollars(n: number) {
   return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -23,105 +29,146 @@ export default async function OrderBagsSuccessPage({
   const order = snap.data() as BagOrderDoc;
   if (order.residentId !== session!.uid) notFound();
 
-  return (
-    <main className="relative px-5 pt-12 sm:px-8 sm:pt-14">
-      <EcoMasthead title="Order placed" backHref="/resident" />
+  const totalBags = order.quantity * 10;
+  const sheetLabel = `${order.quantity} sheet${order.quantity === 1 ? '' : 's'}`;
 
-      <section
-        className="mb-5 rounded-[14px] border p-5 text-center"
+  const steps: Array<[string, string]> = [
+    ['Bags arrive', 'Delivered on your next pickup route.'],
+    ['Set out by 5:30 PM', 'Place filled bags at the curb on your pickup day.'],
+    ['Points credited', 'Each bag earns points after weigh-in.'],
+  ];
+
+  return (
+    <SSScreen>
+      <SSStatusBarSpacer />
+
+      <div
         style={{
-          background: '#E8EFE6',
-          borderColor: 'rgba(45,90,61,0.3)',
+          padding: '60px 24px 24px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
         }}
       >
-        <div className="eco-eyebrow" style={{ color: '#2D5A3D' }}>
-          Confirmed
-        </div>
-        <EcoH1 className="mt-2">Order placed</EcoH1>
-        <p
-          className="mt-2 italic"
+        <div
           style={{
-            fontFamily: 'var(--eco-serif)',
-            fontSize: 14,
-            color: '#1F2A22',
+            width: 120,
+            height: 120,
+            borderRadius: '50%',
+            background: SS.green,
+            color: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 60,
+            fontWeight: 900,
+            margin: '0 auto 28px',
+            border: `4px solid ${SS.ink}`,
+            boxShadow: `0 6px 0 ${SS.ink}`,
           }}
         >
-          {order.quantity} sheet{order.quantity === 1 ? '' : 's'} ({order.quantity * 10}{' '}
-          bags) · {formatDollars(order.total)}
-        </p>
-      </section>
-
-      <div className="mb-5 rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] p-4">
-        <div className="eco-eyebrow mb-3">What happens next</div>
-        <ul className="space-y-3">
-          <li className="flex items-start gap-3">
-            <span
-              className="mt-0.5 flex size-8 flex-shrink-0 items-center justify-center rounded-[10px]"
-              style={{ background: '#E8EFE6' }}
-            >
-              <IconBox size={16} color="#2D5A3D" stroke={1.5} />
-            </span>
-            <div
-              style={{
-                fontFamily: 'var(--eco-serif)',
-                fontSize: 14,
-                color: '#1F2A22',
-                lineHeight: 1.4,
-              }}
-            >
-              Your bags and stickers will be delivered on your next pickup route.
-            </div>
-          </li>
-          <li className="flex items-start gap-3">
-            <span
-              className="mt-0.5 flex size-8 flex-shrink-0 items-center justify-center rounded-[10px]"
-              style={{ background: '#E8EFE6' }}
-            >
-              <IconBell size={16} color="#2D5A3D" stroke={1.5} />
-            </span>
-            <div
-              style={{
-                fontFamily: 'var(--eco-serif)',
-                fontSize: 14,
-                color: '#1F2A22',
-                lineHeight: 1.4,
-              }}
-            >
-              You&rsquo;ll get a text when the driver is on the way (feature pending).
-            </div>
-          </li>
-          <li className="flex items-start gap-3">
-            <span
-              className="mt-0.5 flex size-8 flex-shrink-0 items-center justify-center rounded-[10px]"
-              style={{ background: '#E8EFE6' }}
-            >
-              <IconGift size={16} color="#2D5A3D" stroke={1.5} />
-            </span>
-            <div
-              style={{
-                fontFamily: 'var(--eco-serif)',
-                fontSize: 14,
-                color: '#1F2A22',
-                lineHeight: 1.4,
-              }}
-            >
-              Start filling bags — each one earns points after processing.
-            </div>
-          </li>
-        </ul>
+          ✓
+        </div>
+        <SSEyebrow style={{ color: SS.green, marginBottom: 10 }}>Confirmed</SSEyebrow>
+        <h1
+          style={{
+            fontSize: 48,
+            fontWeight: 900,
+            letterSpacing: -2,
+            lineHeight: 0.92,
+            color: SS.ink,
+            textAlign: 'center',
+            margin: 0,
+          }}
+        >
+          Order placed!
+        </h1>
+        <div
+          style={{
+            fontSize: 16,
+            fontWeight: 800,
+            color: SS.ink,
+            opacity: 0.75,
+            textAlign: 'center',
+            lineHeight: 1.4,
+            marginTop: 14,
+          }}
+        >
+          {sheetLabel} · {totalBags} bags · {formatDollars(order.total)}
+        </div>
       </div>
 
-      <div className="flex justify-center">
-        <EcoButton href="/resident" variant="primary" className="w-full">
+      <div style={{ padding: '0 20px' }}>
+        <SSStickerCard>
+          <SSEyebrow style={{ marginBottom: 12 }}>What happens next</SSEyebrow>
+          {steps.map(([when, what], i) => (
+            <div
+              key={when}
+              style={{
+                display: 'flex',
+                gap: 12,
+                padding: '12px 0',
+                borderTop: i > 0 ? `1px solid ${SS.line}` : 'none',
+                alignItems: 'flex-start',
+              }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  background: i === 0 ? SS.brand : SS.ink,
+                  marginTop: 8,
+                  flexShrink: 0,
+                }}
+              />
+              <div style={{ flex: 1 }}>
+                <div
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 900,
+                    letterSpacing: 1,
+                    textTransform: 'uppercase',
+                    color: SS.inkSoft,
+                  }}
+                >
+                  {when}
+                </div>
+                <div
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 900,
+                    color: SS.ink,
+                    letterSpacing: -0.3,
+                    marginTop: 2,
+                  }}
+                >
+                  {what}
+                </div>
+              </div>
+            </div>
+          ))}
+        </SSStickerCard>
+      </div>
+
+      <div style={{ padding: '24px 24px 28px' }}>
+        <SSPillLink href="/resident" variant="dark">
           Back to home
-        </EcoButton>
+        </SSPillLink>
+        <div
+          style={{
+            textAlign: 'center',
+            fontSize: 11,
+            fontWeight: 700,
+            color: SS.inkSoft,
+            letterSpacing: 1,
+            textTransform: 'uppercase',
+            marginTop: 16,
+          }}
+        >
+          Order ID · {order.id}
+        </div>
       </div>
-      <p
-        className="mt-3 text-center italic"
-        style={{ fontFamily: 'var(--eco-serif)', fontSize: 11, color: '#8A8A7A' }}
-      >
-        Order ID: {order.id}
-      </p>
-    </main>
+    </SSScreen>
   );
 }

@@ -126,6 +126,7 @@ export async function POST(request: Request) {
       addressId: addressRef.id,
       depotId: null,
       pointsBalance: SIGNUP_BONUS_POINTS,
+      freeSheetClaimed: false,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });

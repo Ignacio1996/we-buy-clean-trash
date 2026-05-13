@@ -28,6 +28,12 @@ export interface UserDoc {
   addressId: string | null;
   depotId: string | null;
   pointsBalance: number;
+  /**
+   * Whether this resident has already redeemed their free welcome sheet of
+   * 10 bags. Flipped true inside the bag-orders transaction the first time
+   * a credit is applied. Absent on legacy docs — treat as false.
+   */
+  freeSheetClaimed?: boolean;
   /** Defaults to 'resident' for legacy docs — see resolveAccountType. */
   accountType?: AccountType;
   /** When set, this user is the portal contact for a commercialAccount. */

@@ -1,0 +1,110 @@
+Draft follow-up email — May 13, 2026
+=====================================
+
+To:   Tia Johnson <info@freshbloombins.com>
+Cc:   Kirk Goode <kgoode@usrefuse.com>, Veronica Goode <vgoode@usrefuse.com>
+Subj: Re: webuycleantrash.com — round one of changes is live
+
+---
+
+Hi Tia, Kirk, Veronica,
+
+Thank you for the depth of feedback this week. It's already changed the
+shape of the site. Quick rundown of what's now live on
+webuycleantrash.com, and a short list of things I need from each of
+you to keep moving.
+
+WHAT'S LIVE NOW
+---------------
+
+Veronica's three asks (all done last commit):
+  1. Back-to-home from the sign-in screen and the user profile.
+  2. "Sign in" button next to "Get started" in the top bar.
+  3. Refer-a-friend section in the resident profile — copy link, SMS,
+     email, X, Facebook, QR code, and the native share sheet.
+
+Tia's quick copy fixes:
+  4. Hero headline → "We pay you for your CLEAN trash."
+  5. Tagline kept as "Curbside · zero commission · weekly" (it already
+     matched what Kirk relayed).
+
+Bigger trust-and-clarity work from Tia's full review:
+  6. Removed the live activity ticker entirely — you were right, it was
+     reading as manufactured.
+  7. Removed the unverifiable stat block ($840k paid, 3.4M lbs, "Since
+     launch · 2023", "Internal sort report · Q1 2026"). We're pre-launch
+     and those numbers were aspirational; better to be honest about it.
+  8. Added a "Pilot launching summer 2026 in Oakland" strip near the top
+     so the framing is up-front instead of buried.
+  9. New section: "Why this works" — pulled the moat out of the FAQ and
+     made it the centerpiece. Four cards: single-stream is dirty →
+     clean streams are valuable → bag-tagging closes the gap → you
+     share the upside. This is the answer to "how can they possibly pay
+     me?", which you both flagged as the real psychological question.
+ 10. New section: "How bag-tagging works" with a visual of a bag + QR
+     sticker + the three-step intake flow. The QR mechanic is no longer
+     a mystery.
+ 11. New section: "Service reliability" — pickup window, rain policy,
+     miss guarantee. (Currently placeholder values; see below.)
+ 12. Added "Cash out anytime for Amazon, Walmart, Target, Visa, REI,
+     and 40+ more" right under the hero so the gift-card question gets
+     answered before someone scrolls.
+ 13. The bag-pricing friction Tia flagged is solved: the first sheet of
+     10 bags is now free on signup. Wired all the way through — the
+     bag-order API applies a welcome credit, skips Stripe entirely if
+     the total is $0, and atomically flips a "claimed" flag so it can't
+     be double-redeemed.
+ 14. Footer expanded with Pilot area, Contact (email/phone/address),
+     and PBC/state-of-incorporation line — currently placeholders.
+
+WHAT I NEED FROM YOU TO KEEP GOING
+----------------------------------
+
+A few of Tia's recommendations need real content I don't have yet.
+Rather than fabricate placeholders (which would re-create the exact
+trust gap she identified), I've held them back. Anything you can share
+here unblocks the next round:
+
+From the business side (mainly Kirk / Veronica):
+  • Confirmed registered entity name and state of incorporation
+    (currently "We Buy Clean Trash, PBC · Delaware" as a placeholder).
+  • A real business mailing address for the footer.
+  • A support email and phone number we can publish.
+  • Final pickup day + window (currently "Thursdays · 6 AM – 2 PM" as
+    a placeholder).
+  • Wet-weather policy and miss guarantee wording — I have placeholder
+    language; you can rewrite it or tell me to swap in the operations
+    standard.
+  • Any city, county, hauler, or downstream-recycler partner we can
+    name on the site. Even a soft partnership citation would carry a
+    lot of weight — Tia's point about "internal sort report" stands.
+
+For the human/operations layer (anyone):
+  • Founder bio (1–2 paragraphs) and a real headshot. I'd like to put
+    a "Meet the team" section live before launch.
+  • Permission to photograph trucks, depot, scales, baled aluminum,
+    drivers on routes — even one shoot day of real operational photos
+    would let me replace the placeholder-y vibe across the site.
+  • As soon as we have pilot residents, I'd love 3–5 first-name +
+    photo + neighborhood + real-earnings quotes. Tia's example —
+    "We earned $18 our first month just from sparkling water cans." —
+    Sarah M., Oakland — is exactly the format I want to fill.
+
+Tia, specifically:
+  • Happy to send you a preview link before public push if you want to
+    spot-check the rewrites against your notes.
+  • If you have any sustainability blogs, recyclers, or municipal
+    folks you'd suggest we approach for a "Seen In" partnerships row,
+    I'd take the intro.
+
+Next steps on my side once the above lands:
+  • Drop in real numbers as soon as we have any pilot operations to
+    cite.
+  • Stand up a city-partnership / press-mention bar if a partner says
+    yes.
+  • Add neighborhood leaderboard + environmental-impact-certificate
+    features (Tia's "later" bucket) post-pilot.
+
+Thanks again — this round was a clear net-positive for the site.
+
+— Nicolas

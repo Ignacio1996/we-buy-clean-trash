@@ -221,7 +221,7 @@
   padding: 80px 48px 96px;
 }
 .heroInner {
-  max-width: 1280px;
+  max-width: 1440px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1.3fr 1fr;
@@ -258,6 +258,7 @@
   border-radius: 14px;
   display: inline-block;
   line-height: 1;
+  white-space: nowrap;
   box-shadow: 0 6px 0 var(--brandDark);
   transform: rotate(-1deg);
 }
@@ -273,6 +274,56 @@
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
+}
+.heroBrandsRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: var(--pill);
+  padding: 10px 18px 10px 14px;
+  box-shadow: 0 3px 0 var(--ink);
+  margin-bottom: 24px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.1px;
+  max-width: 100%;
+}
+.heroBrandsLabel {
+  background: var(--ink);
+  color: var(--yellow);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 5px 10px;
+  border-radius: var(--pill);
+  white-space: nowrap;
+}
+.heroBrandsList {
+  color: var(--ink);
+  opacity: 0.85;
+  letter-spacing: -0.1px;
+}
+.heroFreeBags {
+  margin-top: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: -0.2px;
+  color: var(--brandDark);
+  background: #fff;
+  border: 2px solid var(--brand);
+  border-radius: var(--pill);
+  padding: 8px 14px;
+  box-shadow: 0 3px 0 var(--brandDark);
+}
+.heroFreeBagsDot {
+  color: var(--brand);
+  font-size: 14px;
 }
 
 /* hero right — receipt card with rotated stamp */
@@ -343,6 +394,66 @@
   box-shadow: 0 4px 0 var(--ink);
 }
 
+/* ---------- Pilot strip ---------- */
+.pilotStrip {
+  background: var(--ink);
+  color: #fff;
+  padding: 22px 28px;
+  border-bottom: 2px solid var(--ink);
+}
+.pilotInner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+.pilotTag {
+  background: var(--yellow);
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 1.6px;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 6px 12px;
+  border-radius: var(--pill);
+  flex-shrink: 0;
+}
+.pilotBody {
+  flex: 1;
+  min-width: 260px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #f0f0f0;
+}
+.pilotBody strong {
+  color: #fff;
+  font-weight: 900;
+}
+.pilotCta {
+  background: var(--yellow);
+  color: var(--ink);
+  border: 2px solid var(--yellow);
+  border-radius: var(--pill);
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: -0.2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 3px 0 #b89c00;
+  transition:
+    transform 80ms ease,
+    box-shadow 80ms ease;
+}
+.pilotCta:hover {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #b89c00;
+}
+
 /* ---------- Section base ---------- */
 .section {
   padding: 96px 48px;
@@ -395,6 +506,9 @@
 }
 .sectionPeach {
   background: var(--peach);
+}
+.sectionYellow {
+  background: var(--yellow);
 }
 
 /* ---------- How it works (3 step cards) ---------- */
@@ -534,170 +648,70 @@
   letter-spacing: -0.5px;
 }
 
-/* ---------- Ticker (dark) ---------- */
-.tickerSection {
-  background: var(--ink);
-  color: #fff;
-  padding: 96px 48px;
-}
-.tickerSection .sectionInner {
-  max-width: 1280px;
-  margin: 0 auto;
-}
-.tickerKicker {
-  background: var(--yellow);
-  color: var(--ink);
-  border-color: var(--ink);
-}
-.tickerH2 {
-  color: #fff;
-}
-.tickerH2 em {
-  font-style: normal;
-  color: var(--yellow);
-  background: none;
-  padding: 0;
-  box-shadow: none;
-  transform: none;
-  display: inline;
-  border-radius: 0;
-}
-.tickerList {
-  margin-top: 32px;
-  background: #1a1a1a;
-  border-radius: var(--radius);
-  border: 2px solid #2a2a2a;
-  overflow: hidden;
-}
-.tickerItem {
+/* ---------- Why this works (sky) ---------- */
+.whyGrid {
   display: grid;
-  grid-template-columns: 88px 1fr auto auto;
-  gap: 16px;
-  align-items: center;
-  padding: 18px 22px;
-  border-bottom: 1px solid #2a2a2a;
-  font-size: 16px;
-}
-.tickerItem:last-child {
-  border-bottom: none;
-}
-.tickerWhen {
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 700;
-  color: #888;
-  letter-spacing: 0.4px;
-}
-.tickerWho {
-  font-weight: 800;
-}
-.tickerCity {
-  color: #888;
-  font-weight: 600;
-  margin-left: 8px;
-}
-.tickerWhat {
-  background: rgba(255, 255, 255, 0.08);
-  padding: 6px 12px;
-  border-radius: var(--pill);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-.tickerPts {
-  font-size: 22px;
-  font-weight: 900;
-  color: var(--yellow);
-  letter-spacing: -0.5px;
-  font-variant-numeric: tabular-nums;
-  min-width: 110px;
-  text-align: right;
-}
-.tickerFooter {
-  margin-top: 22px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  color: #888;
-}
-.tickerLive {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #fff;
-}
-.tickerLive::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  background: #4ade80;
-  border-radius: 50%;
-  box-shadow: 0 0 8px #4ade80;
-  animation: pulse 1.4s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
-}
-
-/* ---------- Impact (sky) ---------- */
-.impactGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
 }
-.impactCell {
+.whyCard {
   background: #fff;
   border: 2px solid var(--ink);
   border-radius: var(--radius);
-  padding: 32px 24px;
+  padding: 30px 28px;
   box-shadow: 0 6px 0 var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
 }
-.impactCell:nth-child(1) {
+.whyCard:nth-child(1) {
   background: var(--yellow);
 }
-.impactCell:nth-child(2) {
+.whyCard:nth-child(2) {
+  background: var(--mint);
+}
+.whyCard:nth-child(3) {
+  background: var(--peach);
+}
+.whyCard:nth-child(4) {
   background: var(--brand);
   color: #fff;
   border-color: var(--brand);
   box-shadow: 0 6px 0 var(--brandDark);
 }
-.impactCell:nth-child(2) .impactLabel {
-  color: rgba(255, 255, 255, 0.85);
+.whyCard:nth-child(4) .whyNum {
+  color: rgba(255, 255, 255, 0.55);
 }
-.impactCell:nth-child(3) {
-  background: var(--mint);
+.whyCard:nth-child(4) .whyP strong {
+  color: var(--yellow);
 }
-.impactCell:nth-child(4) {
-  background: #fff;
-}
-.impactCell:nth-child(4) .impactNum {
-  color: var(--blue);
-}
-.impactNum {
-  font-size: clamp(48px, 5.6vw, 76px);
-  font-weight: 900;
-  letter-spacing: -3px;
-  line-height: 0.9;
-}
-.impactLabel {
-  font-size: 12px;
-  font-weight: 900;
+.whyNum {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 800;
   letter-spacing: 1.4px;
-  text-transform: uppercase;
-  color: var(--ink);
-  opacity: 0.7;
-  margin-top: 12px;
+  color: var(--inkSoft);
+  opacity: 0.6;
+}
+.whyH {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.8px;
+  line-height: 1.05;
+  margin: 0;
+  text-transform: none;
+}
+.whyP {
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 600;
+  margin: 0;
+  opacity: 0.88;
+}
+.whyP strong {
+  font-weight: 900;
+  color: var(--brand);
 }
 .impactPullquote {
   margin-top: 40px;
@@ -722,6 +736,264 @@
   letter-spacing: 1.4px;
   text-transform: uppercase;
   color: var(--inkSoft);
+}
+
+/* ---------- Bag-tagging explainer (peach) ---------- */
+.bagExplainer {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 56px;
+  align-items: center;
+  margin-top: 16px;
+}
+.bagVisual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.bagShape {
+  position: relative;
+  width: 280px;
+  height: 340px;
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 18px 18px 26px 26px;
+  box-shadow: 10px 10px 0 var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-3deg);
+}
+.bagHandle {
+  position: absolute;
+  top: -36px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 130px;
+  height: 70px;
+  border: 2px solid var(--ink);
+  border-bottom: none;
+  border-radius: 80px 80px 0 0;
+  background: transparent;
+}
+.bagHandle::before {
+  content: '';
+  position: absolute;
+  top: 70px;
+  left: -2px;
+  width: 134px;
+  height: 14px;
+  background: var(--ink);
+  border-radius: 4px;
+}
+.bagTagSticker {
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  padding: 14px 16px 12px;
+  width: 180px;
+  box-shadow: 4px 4px 0 var(--ink);
+  transform: rotate(2deg);
+}
+.bagTagLabel {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-align: center;
+  margin-bottom: 8px;
+}
+.bagTagQr {
+  width: 130px;
+  height: 130px;
+  margin: 0 auto;
+  background: #fff;
+  border: 2px solid var(--ink);
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  padding: 6px;
+  gap: 2px;
+}
+.bagTagQrOn {
+  background: var(--ink);
+  border-radius: 1px;
+}
+.bagTagQrOff {
+  background: transparent;
+}
+.bagTagId {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+  margin-top: 10px;
+  color: var(--ink);
+  letter-spacing: 0.4px;
+}
+.bagSteps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.bagSteps li {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 18px;
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  box-shadow: 0 4px 0 var(--ink);
+  align-items: start;
+}
+.bagStepNum {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  border: 2px solid var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+.bagSteps h4 {
+  margin: 0 0 4px;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: -0.4px;
+}
+.bagSteps p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  font-weight: 600;
+  color: var(--ink);
+  opacity: 0.78;
+}
+
+/* ---------- Refer a friend (yellow) ---------- */
+.referGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 8px;
+}
+.referCard {
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 32px 28px 30px;
+  box-shadow: 0 8px 0 var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+}
+.referCardFriend {
+  background: var(--ink);
+  color: #fff;
+}
+.referCardFriend p {
+  color: rgba(255, 255, 255, 0.85);
+}
+.referCardFriend .referBadge {
+  background: var(--yellow);
+  color: var(--ink);
+}
+.referBadge {
+  align-self: flex-start;
+  background: var(--ink);
+  color: var(--yellow);
+  padding: 6px 14px;
+  border-radius: var(--pill);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+}
+.referBig {
+  font-size: clamp(38px, 4.8vw, 60px);
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 0.95;
+  color: var(--brand);
+}
+.referCardFriend .referBig {
+  color: var(--yellow);
+}
+.referCard p {
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 600;
+  margin: 0;
+  opacity: 0.82;
+}
+.referCta {
+  margin-top: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+.referFinePrint {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  opacity: 0.75;
+  max-width: 580px;
+  line-height: 1.5;
+}
+
+/* ---------- Service reliability (mint) ---------- */
+.reliabilityGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.reliabilityCard {
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 28px 26px;
+  box-shadow: 0 6px 0 var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.reliabilityCard:nth-child(2) {
+  background: var(--yellow);
+}
+.reliabilityKicker {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--inkSoft);
+}
+.reliabilityBig {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.6px;
+  line-height: 1.1;
+  color: var(--ink);
+}
+.reliabilityCard p {
+  font-size: 14px;
+  line-height: 1.55;
+  font-weight: 600;
+  color: var(--ink);
+  opacity: 0.78;
+  margin: 0;
 }
 
 /* ---------- FAQ ---------- */
@@ -863,6 +1135,10 @@
   font-size: 14px;
   font-weight: 700;
 }
+.footerAddr {
+  line-height: 1.45;
+  opacity: 0.8;
+}
 .cityDot {
   display: inline-block;
   width: 7px;
@@ -893,6 +1169,187 @@
   color: #888;
 }
 
+/* ---------- Waitlist modal ---------- */
+.waitlistOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 17, 17, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: waitlistFadeIn 140ms ease-out;
+}
+@keyframes waitlistFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.waitlistModal {
+  position: relative;
+  background: #fff;
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: 12px 12px 0 var(--ink);
+  width: 100%;
+  max-width: 460px;
+  padding: 36px 32px 28px;
+  font-family: var(--sans);
+  animation: waitlistPop 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes waitlistPop {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.waitlistClose {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 80ms ease;
+}
+.waitlistClose:hover {
+  background: var(--line);
+}
+.waitlistForm,
+.waitlistSuccess {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.waitlistTag {
+  align-self: flex-start;
+  background: var(--yellow);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: var(--pill);
+  box-shadow: 0 2px 0 var(--ink);
+}
+.waitlistModal h3 {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -1.2px;
+  line-height: 1;
+  margin: 4px 0 0;
+  text-transform: uppercase;
+}
+.waitlistLede {
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--ink);
+  opacity: 0.75;
+  margin: 0 0 4px;
+}
+.waitlistField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.waitlistField span {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--inkSoft);
+}
+.waitlistField input {
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  padding: 14px 16px;
+  width: 100%;
+  outline: none;
+  transition: box-shadow 80ms ease;
+}
+.waitlistField input::placeholder {
+  color: var(--inkSoft);
+  opacity: 0.5;
+  font-weight: 600;
+}
+.waitlistField input:focus {
+  box-shadow: 0 0 0 3px var(--yellow);
+}
+.waitlistSubmit {
+  margin-top: 6px;
+  background: var(--brand);
+  color: #fff;
+  border: 2px solid var(--brand);
+  border-radius: var(--pill);
+  padding: 16px 22px;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -0.2px;
+  box-shadow: 0 4px 0 var(--brandDark);
+  transition:
+    transform 80ms ease,
+    box-shadow 80ms ease;
+}
+.waitlistSubmit:hover:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--brandDark);
+}
+.waitlistSubmit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+.waitlistError {
+  background: #fde2e2;
+  border: 2px solid #b3261e;
+  color: #b3261e;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.waitlistFinePrint {
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--inkSoft);
+  margin: 4px 0 0;
+}
+.waitlistSuccess p {
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 600;
+  color: var(--ink);
+  opacity: 0.8;
+  margin: 0;
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 980px) {
   .topbarNav {
@@ -909,7 +1366,6 @@
     font-size: 72px;
   }
   .section,
-  .tickerSection,
   .ctaStrip {
     padding: 72px 24px;
   }
@@ -919,16 +1375,22 @@
   .commodities {
     grid-template-columns: 1fr 1fr;
   }
-  .impactGrid {
-    grid-template-columns: 1fr 1fr;
+  .whyGrid {
+    grid-template-columns: 1fr;
   }
-  .tickerItem {
-    grid-template-columns: 60px 1fr auto;
-    gap: 12px;
-    padding: 14px 16px;
+  .bagExplainer {
+    grid-template-columns: 1fr;
+    gap: 40px;
   }
-  .tickerWhat {
-    display: none;
+  .reliabilityGrid {
+    grid-template-columns: 1fr;
+  }
+  .referGrid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .pilotInner {
+    gap: 14px;
   }
   .footer {
     padding: 56px 24px 24px;
@@ -941,8 +1403,7 @@
   .heroTitle {
     letter-spacing: -2px;
   }
-  .commodities,
-  .impactGrid {
+  .commodities {
     grid-template-columns: 1fr;
   }
   .topbar {

@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { calculateBagOrderTotal } from '@/lib/logic/calculateBagOrderTotal';
+import { calculateBagOrderTotal, FREE_SHIPPING_THRESHOLD, SHIPPING_FEE } from '@/lib/logic/calculateBagOrderTotal';
+import { SS, SSPillButton, SSStickerCard } from '@/components/resident/ss/SS';
 
 const MIN_QTY = 1;
 const MAX_QTY = 20;
@@ -11,15 +12,21 @@ function formatDollars(n: number) {
   return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 }
 
-export function OrderBagsForm({ unitPrice }: { unitPrice: number }) {
+export function OrderBagsForm({
+  unitPrice,
+  freeSheetCredits = 0,
+}: {
+  unitPrice: number;
+  freeSheetCredits?: number;
+}) {
   const router = useRouter();
-  const [quantity, setQuantity] = useState(4);
+  const [quantity, setQuantity] = useState(freeSheetCredits > 0 ? 1 : 4);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const breakdown = useMemo(
-    () => calculateBagOrderTotal({ quantity, unitPrice }),
-    [quantity, unitPrice],
+    () => calculateBagOrderTotal({ quantity, unitPrice, freeSheetCredits }),
+    [quantity, unitPrice, freeSheetCredits],
   );
 
   function adjust(delta: number) {
@@ -45,145 +52,186 @@ export function OrderBagsForm({ unitPrice }: { unitPrice: number }) {
   }
 
   return (
-    <section className="mt-4 space-y-4">
-      <div className="rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] p-4">
+    <div style={{ padding: '20px 20px 8px' }}>
+      <SSStickerCard background={SS.sky} style={{ padding: '24px 22px', borderRadius: 22 }}>
         <div
-          className="uppercase"
-          style={{ fontSize: 11, color: '#5A6358', letterSpacing: 1.4 }}
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 12,
+          }}
         >
-          Quantity
-        </div>
-        <div className="mt-3 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => adjust(-1)}
-            disabled={quantity <= MIN_QTY || busy}
-            className="flex size-11 items-center justify-center rounded-full border border-[#D9D2C2] bg-[#FBF7EE] text-xl text-[#1F2A22] transition-colors hover:bg-[#E8EFE6] disabled:opacity-30"
-            aria-label="Decrease quantity"
-          >
-            −
-          </button>
-          <div className="text-center">
+          <div style={{ fontSize: 14, fontWeight: 900, color: SS.ink }}>Sheets of bags</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <button
+              type="button"
+              onClick={() => adjust(-1)}
+              disabled={busy || quantity <= MIN_QTY}
+              aria-label="Decrease"
+              style={stepBtnStyle(false, busy || quantity <= MIN_QTY)}
+            >
+              −
+            </button>
             <div
               style={{
-                fontFamily: 'var(--eco-serif)',
-                fontSize: 40,
-                fontWeight: 400,
-                color: '#1F2A22',
-                lineHeight: 1,
-                letterSpacing: -0.5,
+                fontSize: 32,
+                fontWeight: 900,
+                color: SS.ink,
+                minWidth: 24,
+                textAlign: 'center',
+                letterSpacing: -0.8,
               }}
             >
               {quantity}
             </div>
-            <div
-              className="mt-1 italic"
-              style={{
-                fontFamily: 'var(--eco-serif)',
-                fontSize: 12,
-                color: '#5A6358',
-              }}
+            <button
+              type="button"
+              onClick={() => adjust(1)}
+              disabled={busy || quantity >= MAX_QTY}
+              aria-label="Increase"
+              style={stepBtnStyle(true, busy || quantity >= MAX_QTY)}
             >
-              {quantity * 10} bags · {quantity} sheet{quantity === 1 ? '' : 's'}
+              +
+            </button>
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            borderTop: `1px dashed ${SS.ink}`,
+            paddingTop: 12,
+            marginTop: 4,
+          }}
+        >
+          <div style={{ fontSize: 13, fontWeight: 800, color: SS.ink }}>Bags</div>
+          <div style={{ fontSize: 15, fontWeight: 900, color: SS.ink }}>
+            {formatDollars(quantity * unitPrice)}
+          </div>
+        </div>
+
+        {breakdown.freeSheetCredits > 0 && (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'baseline',
+              borderTop: `1px dashed ${SS.ink}`,
+              paddingTop: 10,
+              marginTop: 8,
+            }}
+          >
+            <div style={{ fontSize: 13, fontWeight: 900, color: SS.green }}>
+              Welcome credit · 1 sheet
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 900, color: SS.green, fontStyle: 'italic' }}>
+              −{formatDollars(breakdown.discount)}
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => adjust(1)}
-            disabled={quantity >= MAX_QTY || busy}
-            className="flex size-11 items-center justify-center rounded-full border border-[#D9D2C2] bg-[#FBF7EE] text-xl text-[#1F2A22] transition-colors hover:bg-[#E8EFE6] disabled:opacity-30"
-            aria-label="Increase quantity"
-          >
-            +
-          </button>
-        </div>
-      </div>
-
-      <div className="rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] p-4 text-sm">
-        <div className="flex items-baseline justify-between border-b border-[#E8E2D0] py-2">
-          <span
-            className="uppercase"
-            style={{ fontSize: 11, color: '#5A6358', letterSpacing: 1.4 }}
-          >
-            Subtotal
-          </span>
-          <span
-            style={{
-              fontFamily: 'var(--eco-serif)',
-              fontSize: 15,
-              color: '#1F2A22',
-            }}
-          >
-            {formatDollars(breakdown.subtotal)}
-          </span>
-        </div>
-        <div className="flex items-baseline justify-between border-b border-[#E8E2D0] py-2">
-          <span
-            className="uppercase"
-            style={{ fontSize: 11, color: '#5A6358', letterSpacing: 1.4 }}
-          >
-            Shipping
-          </span>
-          <span
-            style={{
-              fontFamily: 'var(--eco-serif)',
-              fontSize: 15,
-              color: breakdown.freeShipping ? '#2D5A3D' : '#1F2A22',
-              fontStyle: breakdown.freeShipping ? 'italic' : 'normal',
-            }}
-          >
-            {breakdown.freeShipping ? 'Free' : formatDollars(breakdown.shipping)}
-          </span>
-        </div>
-        <div className="mt-1 flex items-baseline justify-between pt-3">
-          <span
-            className="uppercase"
-            style={{ fontSize: 11, color: '#1F2A22', letterSpacing: 1.4, fontWeight: 600 }}
-          >
-            Total
-          </span>
-          <span
-            style={{
-              fontFamily: 'var(--eco-serif)',
-              fontSize: 28,
-              fontWeight: 400,
-              color: '#1F2A22',
-              letterSpacing: -0.5,
-            }}
-          >
-            {formatDollars(breakdown.total)}
-          </span>
-        </div>
-        {!breakdown.freeShipping && (
-          <div
-            className="mt-2 italic"
-            style={{ fontFamily: 'var(--eco-serif)', fontSize: 12, color: '#5A6358' }}
-          >
-            Add {formatDollars(20 - breakdown.subtotal)} more to unlock free shipping.
-          </div>
         )}
-      </div>
 
-      <button
-        type="button"
-        onClick={handleCheckout}
-        disabled={busy}
-        className="w-full rounded-full bg-[#2D5A3D] px-4 py-3.5 text-[14px] font-semibold tracking-[0.3px] text-[#FBF7EE] transition-colors hover:bg-[#1F4029] disabled:opacity-50"
-      >
-        {busy ? 'Placing order…' : `Place order — ${formatDollars(breakdown.total)}`}
-      </button>
-      <p
-        className="text-center italic"
-        style={{ fontFamily: 'var(--eco-serif)', fontSize: 11, color: '#8A8A7A' }}
-      >
-        Pilot uses a mocked Stripe checkout — no card is charged.
-      </p>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            borderTop: `1px dashed ${SS.ink}`,
+            paddingTop: 10,
+            marginTop: 8,
+          }}
+        >
+          <div style={{ fontSize: 13, fontWeight: 800, color: SS.ink }}>
+            {quantity * 10} bags ·{' '}
+            {breakdown.freeShipping ? 'free shipping' : `+$${SHIPPING_FEE.toFixed(2)} ship`}
+          </div>
+          <div style={{ fontSize: 22, fontWeight: 900, color: SS.ink, letterSpacing: -0.5 }}>
+            {formatDollars(breakdown.total)}
+          </div>
+        </div>
+      </SSStickerCard>
 
-      {error && (
-        <p className="rounded-[10px] border border-[rgba(154,75,38,0.3)] bg-[#F0DCC8] px-3 py-2 text-sm text-[#9A4B26]">
-          {error}
+      {!breakdown.freeShipping && breakdown.subtotal > 0 && breakdown.subtotal < FREE_SHIPPING_THRESHOLD && (
+        <p
+          style={{
+            fontSize: 12,
+            fontWeight: 700,
+            color: SS.inkSoft,
+            marginTop: 12,
+            padding: '0 4px',
+          }}
+        >
+          Add {formatDollars(FREE_SHIPPING_THRESHOLD - breakdown.subtotal)} more to unlock free
+          shipping.
         </p>
       )}
-    </section>
+
+      <div style={{ marginTop: 20 }}>
+        <SSPillButton variant="primary" disabled={busy} onClick={handleCheckout}>
+          {busy
+            ? 'Placing order…'
+            : breakdown.total === 0
+              ? 'Claim your free sheet'
+              : `Place order — ${formatDollars(breakdown.total)}`}
+        </SSPillButton>
+      </div>
+
+      {breakdown.total > 0 && (
+        <div
+          style={{
+            textAlign: 'center',
+            fontSize: 11,
+            fontWeight: 700,
+            color: SS.inkSoft,
+            letterSpacing: 1,
+            textTransform: 'uppercase',
+            marginTop: 14,
+          }}
+        >
+          Pilot · mock Stripe — no card is charged
+        </div>
+      )}
+
+      {error && (
+        <div
+          style={{
+            background: SS.brand,
+            border: `2px solid ${SS.ink}`,
+            borderRadius: 14,
+            padding: 14,
+            color: '#fff',
+            marginTop: 14,
+            fontFamily: SS.sans,
+            fontSize: 14,
+            fontWeight: 900,
+            boxShadow: `0 4px 0 ${SS.ink}`,
+          }}
+        >
+          {error}
+        </div>
+      )}
+    </div>
   );
 }
+
+function stepBtnStyle(filled: boolean, disabled: boolean) {
+  return {
+    width: 36,
+    height: 36,
+    borderRadius: '50%',
+    background: filled ? SS.ink : '#fff',
+    color: filled ? '#fff' : SS.ink,
+    border: `2px solid ${SS.ink}`,
+    fontFamily: SS.sans,
+    fontWeight: 900 as const,
+    fontSize: 20,
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    opacity: disabled ? 0.4 : 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  };
+}
+

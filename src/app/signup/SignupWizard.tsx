@@ -165,7 +165,9 @@ export function SignupWizard() {
     >
       <SSStatusBarSpacer />
 
-      {step !== 'splash' && (
+      {step === 'splash' ? (
+        <SplashHeader />
+      ) : (
         <StepBar onBack={goBack} step={dotStepByStep[step]} total={4} />
       )}
 
@@ -846,7 +848,14 @@ function FirstBagStep({
   idx: number;
 }) {
   const breakdown = useMemo(
-    () => calculateBagOrderTotal({ quantity: qty, unitPrice: BAG_SHEET_UNIT_PRICE_DOLLARS }),
+    () =>
+      calculateBagOrderTotal({
+        quantity: qty,
+        unitPrice: BAG_SHEET_UNIT_PRICE_DOLLARS,
+        // Brand-new signups always get the welcome credit. The bag-orders API
+        // verifies and atomically claims the credit on the server.
+        freeSheetCredits: 1,
+      }),
     [qty],
   );
   return (
@@ -854,7 +863,7 @@ function FirstBagStep({
       <StepHeading
         eyebrow={`Step ${idx} · First batch`}
         title="Order your bags."
-        lede={`10 bags per sheet. Free shipping over $${FREE_SHIPPING_THRESHOLD}.`}
+        lede="Your first sheet of 10 bags is on us. Add more if you'd like."
       />
       <div style={{ padding: '20px 24px', flex: 1 }}>
         <div
@@ -908,6 +917,26 @@ function FirstBagStep({
               </button>
             </div>
           </div>
+          {breakdown.freeSheetCredits > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                borderTop: `1px dashed ${SS.ink}`,
+                paddingTop: 12,
+                marginTop: 4,
+              }}
+            >
+              <div style={{ fontSize: 13, fontWeight: 900, color: SS.green }}>
+                Welcome credit · 1 sheet
+              </div>
+              <div
+                style={{ fontSize: 14, fontWeight: 900, color: SS.green, fontStyle: 'italic' }}
+              >
+                −${breakdown.discount.toFixed(2)}
+              </div>
+            </div>
+          )}
           <div
             style={{
               display: 'flex',
@@ -964,7 +993,7 @@ function FirstBagStep({
           </div>
         </div>
 
-        {!breakdown.freeShipping && (
+        {!breakdown.freeShipping && breakdown.subtotal > 0 && (
           <p
             style={{
               fontSize: 12,
@@ -983,7 +1012,11 @@ function FirstBagStep({
       </div>
       <FooterBar>
         <SSPillButton variant="primary" disabled={busy} onClick={onPlace}>
-          {busy ? 'Placing order…' : 'Pay & continue'}
+          {busy
+            ? 'Placing order…'
+            : breakdown.total === 0
+              ? 'Claim my free sheet & continue'
+              : 'Pay & continue'}
         </SSPillButton>
         <button
           type="button"
@@ -1010,6 +1043,60 @@ function FirstBagStep({
 }
 
 // ─── Shared bits ─────────────────────────────────────────────────
+function SplashHeader() {
+  return (
+    <div
+      style={{
+        padding: '16px 20px 0',
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+      }}
+    >
+      <Link
+        href="/"
+        aria-label="Back to home"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '8px 14px 8px 12px',
+          background: '#fff',
+          border: `2px solid ${SS.ink}`,
+          borderRadius: 999,
+          boxShadow: `0 3px 0 ${SS.ink}`,
+          fontFamily: SS.sans,
+          fontSize: 12,
+          fontWeight: 900,
+          color: SS.ink,
+          textDecoration: 'none',
+          letterSpacing: 1,
+          textTransform: 'uppercase',
+        }}
+      >
+        <span
+          style={{
+            width: 22,
+            height: 22,
+            borderRadius: '50%',
+            background: SS.ink,
+            color: '#fff',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 14,
+            fontWeight: 900,
+            lineHeight: 1,
+          }}
+        >
+          ←
+        </span>
+        Home
+      </Link>
+    </div>
+  );
+}
+
 function StepBar({
   onBack,
   step,

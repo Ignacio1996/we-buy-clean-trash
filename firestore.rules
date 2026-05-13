@@ -156,6 +156,12 @@ service cloud.firestore {
     match /invites/{token} {
       allow read, write: if false;
     }
+    // Pre-launch waitlist captured from the landing page. Writes go through
+    // /api/waitlist (Admin SDK). Reads will be exposed via an admin export
+    // later; no client should read these directly.
+    match /waitlist/{id} {
+      allow read, write: if false;
+    }
 
     // ---- Default deny ----
     // Any collection not explicitly allowed above is denied. New collections

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import styles from './landing.module.css';
-import { LiveTicker } from './LiveTicker';
+import { WaitlistButton } from './WaitlistButton';
 
 const MARQUEE_ITEMS = [
   'Aluminum $1.42 / lb',
@@ -105,7 +105,7 @@ const FAQS = [
   },
   {
     q: 'Do bags cost money?',
-    a: '$8 per sheet of 10 bags. Free shipping over $20. Your first sheet pays for itself in about 4 weeks of normal household recycling.',
+    a: 'Your first sheet of 10 bags is free — on us, as a welcome. After that, sheets are $8 with free shipping over $20. A typical sheet pays for itself in about 4 weeks of normal household recycling.',
   },
   {
     q: 'What if my bag has the wrong stuff in it?',
@@ -132,7 +132,9 @@ export function LandingPage() {
         <nav className={styles.topbarNav}>
           <a href="#how">How it works</a>
           <a href="#accept">What we take</a>
-          <a href="#impact">Impact</a>
+          <a href="#bags">Bag-tagging</a>
+          <a href="#why">Why this works</a>
+          <a href="#refer">Refer</a>
           <a href="#faq">FAQ</a>
         </nav>
         <div className={styles.topbarActions}>
@@ -162,19 +164,28 @@ export function LandingPage() {
             <h1 className={styles.heroTitle}>
               We pay you
               <br />
-              for your <em>trash.</em>
+              for your <em>clean trash.</em>
             </h1>
             <p className={styles.lede}>
               Bag your aluminum, PET, glass, and cardboard. We pick it up at the curb every week and
               pay you in gift cards. No sorting centers. No bins to lug.
             </p>
+            <div className={styles.heroBrandsRow}>
+              <span className={styles.heroBrandsLabel}>Cash out anytime</span>
+              <span className={styles.heroBrandsList}>
+                Amazon · Walmart · Target · Visa · REI · 40+ more
+              </span>
+            </div>
             <div className={styles.ctaRow}>
               <Link href="/signup" className={`${styles.btn} ${styles.btnLg} ${styles.btnBrand}`}>
                 Get started <span className={styles.arrow}>→</span>
               </Link>
               <Link href="/scan" className={`${styles.btn} ${styles.btnLg}`}>
-                Check your zip <span className={styles.arrow}>→</span>
+                See how much your trash is worth <span className={styles.arrow}>→</span>
               </Link>
+            </div>
+            <div className={styles.heroFreeBags}>
+              <span className={styles.heroFreeBagsDot}>★</span> Your first 10 bags are on us.
             </div>
           </div>
           <div className={styles.heroCard}>
@@ -213,6 +224,19 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* Pilot banner */}
+      <section className={styles.pilotStrip} id="pilot">
+        <div className={styles.pilotInner}>
+          <div className={styles.pilotTag}>Pilot</div>
+          <div className={styles.pilotBody}>
+            <strong>Launching summer 2026 in Oakland.</strong> We&apos;re showing the work as we
+            build — early signups shape the routes, the bag design, and the rewards. Be one of the
+            first 200 households.
+          </div>
+          <WaitlistButton label="Join the waitlist" />
+        </div>
+      </section>
+
       {/* How it works */}
       <section className={`${styles.section} ${styles.sectionMint}`} id="how">
         <div className={styles.sectionInner}>
@@ -224,10 +248,11 @@ export function LandingPage() {
           <div className={styles.steps}>
             <div className={styles.step}>
               <div className={styles.stepNum}>1</div>
-              <span className={styles.stepTag}>5 minutes</span>
-              <h3>Order bags</h3>
+              <span className={styles.stepTag}>5 minutes · free</span>
+              <h3>Get your first 10 bags free</h3>
               <p>
-                Pick a sheet of 10 bags from the app. Free shipping over $20. Bags arrive in 3 days.
+                We send your first sheet of 10 tagged bags on us. Bags arrive in 3 days. Reorder
+                sheets later for $8 — they pay for themselves in about 4 weeks.
               </p>
             </div>
             <div className={styles.step}>
@@ -286,61 +311,224 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Live ticker */}
-      <section className={styles.tickerSection} id="ticker">
+      {/* Bag-tagging explainer */}
+      <section className={`${styles.section} ${styles.sectionPeach}`} id="bags">
         <div className={styles.sectionInner}>
-          <div className={`${styles.kicker} ${styles.tickerKicker}`}>
-            Live · across the network
-          </div>
-          <h2 className={`${styles.h2} ${styles.tickerH2}`}>
-            Right now, somebody is
+          <div className={styles.kicker}>How bag-tagging works</div>
+          <h2 className={styles.h2}>
+            Every bag has
             <br />
-            turning trash into <em>cash.</em>
+            a <em>unique ID.</em>
           </h2>
-          <LiveTicker />
-          <div className={styles.tickerFooter}>
-            <div className={styles.tickerLive}>Live feed · 1,284 pickups today</div>
-            <div>Updated every 12 seconds</div>
+          <p className={styles.intro}>
+            Normal recycling bags are anonymous — nobody can tell whose bag was clean and whose was
+            contaminated. We print a QR code on every bag so weight, sort quality, and points all
+            tie back to your account.
+          </p>
+          <div className={styles.bagExplainer}>
+            <div className={styles.bagVisual} aria-hidden="true">
+              <div className={styles.bagShape}>
+                <div className={styles.bagHandle}></div>
+                <div className={styles.bagTagSticker}>
+                  <div className={styles.bagTagLabel}>WBCT</div>
+                  <div className={styles.bagTagQr}>
+                    {Array.from({ length: 49 }).map((_, i) => (
+                      <span
+                        key={i}
+                        className={
+                          [0, 1, 2, 4, 6, 7, 9, 11, 12, 13, 15, 17, 19, 20, 23, 24, 26, 28, 30, 32, 33, 35, 37, 39, 41, 42, 44, 46, 48].includes(i)
+                            ? styles.bagTagQrOn
+                            : styles.bagTagQrOff
+                        }
+                      />
+                    ))}
+                  </div>
+                  <div className={styles.bagTagId}>#AL-0824-3F2</div>
+                </div>
+              </div>
+            </div>
+            <ol className={styles.bagSteps}>
+              <li>
+                <div className={styles.bagStepNum}>1</div>
+                <div>
+                  <h4>Printed at the depot.</h4>
+                  <p>
+                    Every sheet of 10 bags gets a fresh batch of QR IDs. The codes are printed on a
+                    thermal label so they survive rain, soda, and a week on the curb.
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div className={styles.bagStepNum}>2</div>
+                <div>
+                  <h4>Scanned at intake.</h4>
+                  <p>
+                    When your bag arrives at the depot, we scan the code, weigh it, and rate sort
+                    quality. Everything — clean weight, contamination notes, photos — ties to your
+                    bag.
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div className={styles.bagStepNum}>3</div>
+                <div>
+                  <h4>Points tied to your account.</h4>
+                  <p>
+                    Clean material credits your points balance the next morning. A bad bag gets a
+                    photo SMS so you can fix it for next week — no guessing.
+                  </p>
+                </div>
+              </li>
+            </ol>
           </div>
         </div>
       </section>
 
-      {/* Impact */}
-      <section className={`${styles.section} ${styles.sectionSky}`} id="impact">
+      {/* Why this works */}
+      <section className={`${styles.section} ${styles.sectionSky}`} id="why">
         <div className={styles.sectionInner}>
-          <div className={styles.kicker}>Since launch · 2023</div>
+          <div className={styles.kicker}>Why this works</div>
           <h2 className={styles.h2}>
-            The pile we
+            How we can pay you
             <br />
-            didn&apos;t bury.
+            for <em>trash.</em>
           </h2>
           <p className={styles.intro}>
-            Every bag we pick up is one that didn&apos;t go to landfill or get burned. Here&apos;s
-            the running total.
+            Recycling is only expensive when it&apos;s mixed. Clean, sorted commodities trade for
+            real money. Here&apos;s the gap — and how we split it with you.
           </p>
-          <div className={styles.impactGrid}>
-            <div className={styles.impactCell}>
-              <div className={styles.impactNum}>3.4M</div>
-              <div className={styles.impactLabel}>lbs recycled</div>
+          <div className={styles.whyGrid}>
+            <div className={styles.whyCard}>
+              <div className={styles.whyNum}>01</div>
+              <h3 className={styles.whyH}>Single-stream is dirty.</h3>
+              <p className={styles.whyP}>
+                Roughly <strong>1 in 4 lbs</strong> of curbside recycling is contaminated by food,
+                liquid, or trash. Mixed loads get sold at a steep discount — or sent to landfill.
+              </p>
             </div>
-            <div className={styles.impactCell}>
-              <div className={styles.impactNum}>$840k</div>
-              <div className={styles.impactLabel}>paid to residents</div>
+            <div className={styles.whyCard}>
+              <div className={styles.whyNum}>02</div>
+              <h3 className={styles.whyH}>Clean streams are valuable.</h3>
+              <p className={styles.whyP}>
+                Separated aluminum, PET, HDPE, cardboard, and paper trade at full commodity prices.
+                The gap between dirty and clean is <strong>real money sitting on the curb.</strong>
+              </p>
             </div>
-            <div className={styles.impactCell}>
-              <div className={styles.impactNum}>18,420</div>
-              <div className={styles.impactLabel}>trees saved</div>
+            <div className={styles.whyCard}>
+              <div className={styles.whyNum}>03</div>
+              <h3 className={styles.whyH}>Bag-tagging closes the gap.</h3>
+              <p className={styles.whyP}>
+                Every bag has a unique QR code. We trace contamination back to the source and coach
+                residents — pulling the stream <strong>from ~25% contamination toward under 2%.</strong>
+              </p>
             </div>
-            <div className={styles.impactCell}>
-              <div className={styles.impactNum}>5.6M</div>
-              <div className={styles.impactLabel}>gal water saved</div>
+            <div className={styles.whyCard}>
+              <div className={styles.whyNum}>04</div>
+              <h3 className={styles.whyH}>You share the upside.</h3>
+              <p className={styles.whyP}>
+                That price gap is what pays you. <strong>No commission, no middlemen.</strong>{' '}
+                Roughly half of every dollar we earn on commodities goes back to residents as gift
+                cards.
+              </p>
             </div>
           </div>
           <div className={styles.impactPullquote}>
-            &ldquo;Single-stream recycling has a 25% contamination rate on average.{' '}
-            <em>Our bag-tagged stream sits at 1.8%.</em> Clean material is worth real money — we
-            just give it back to you.&rdquo;
-            <div className={styles.impactCite}>— Internal sort report · Q1 2026</div>
+            &ldquo;Clean material is worth real money. <em>We just give it back to you.&rdquo;</em>
+            <div className={styles.impactCite}>— The whole business model, in one sentence</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Service reliability */}
+      <section className={`${styles.section} ${styles.sectionMint}`} id="reliability">
+        <div className={styles.sectionInner}>
+          <div className={styles.kicker}>What you can count on</div>
+          <h2 className={styles.h2}>
+            Same day,
+            <br />
+            every week.
+          </h2>
+          <p className={styles.intro}>
+            Curbside pickup is only useful if we show up. Here&apos;s what we commit to — and what
+            happens when something goes sideways.
+          </p>
+          <div className={styles.reliabilityGrid}>
+            <div className={styles.reliabilityCard}>
+              <div className={styles.reliabilityKicker}>Pickup window</div>
+              <div className={styles.reliabilityBig}>
+                {/* TODO: confirm pickup day + window */}
+                Thursdays · 6&nbsp;AM – 2&nbsp;PM
+              </div>
+              <p>
+                Set your bag at the curb the night before. We text you a confirmation when it&apos;s
+                been picked up.
+              </p>
+            </div>
+            <div className={styles.reliabilityCard}>
+              <div className={styles.reliabilityKicker}>Rain or shine</div>
+              <div className={styles.reliabilityBig}>
+                {/* TODO: confirm wet-weather policy */}
+                We pick up in any weather
+              </div>
+              <p>
+                Bags are sealable and weather-tested. If a storm forces a route delay, you&apos;ll
+                get an SMS the morning of with the new window.
+              </p>
+            </div>
+            <div className={styles.reliabilityCard}>
+              <div className={styles.reliabilityKicker}>If we miss you</div>
+              <div className={styles.reliabilityBig}>
+                {/* TODO: confirm miss guarantee */}
+                Free bag credit + same-week return
+              </div>
+              <p>
+                If we don&apos;t pick up your bag by the end of the window, we credit you a free
+                bag and route a truck back within 48 hours.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Refer a friend */}
+      <section className={`${styles.section} ${styles.sectionYellow}`} id="refer">
+        <div className={styles.sectionInner}>
+          <div className={styles.kicker}>Bring a friend</div>
+          <h2 className={styles.h2}>
+            Refer a friend.
+            <br />
+            <em>Get free bags.</em>
+          </h2>
+          <p className={styles.intro}>
+            The pilot is better with neighbors. When someone you refer completes their first
+            pickup, you both walk away with an extra sheet of 10 bags — on us.
+          </p>
+          <div className={styles.referGrid}>
+            <div className={styles.referCard}>
+              <div className={styles.referBadge}>You</div>
+              <div className={styles.referBig}>+10 free bags</div>
+              <p>
+                Credited the day your friend&apos;s first bag is picked up. Stackable — refer five
+                neighbors, earn five sheets.
+              </p>
+            </div>
+            <div className={`${styles.referCard} ${styles.referCardFriend}`}>
+              <div className={styles.referBadge}>Your friend</div>
+              <div className={styles.referBig}>First sheet on us</div>
+              <p>
+                They join with a free welcome sheet of 10 bags. Same offer everyone gets — no
+                catch, no commitment.
+              </p>
+            </div>
+          </div>
+          <div className={styles.referCta}>
+            <Link href="/signup" className={`${styles.btn} ${styles.btnLg} ${styles.btnInk}`}>
+              Sign up & get your link <span className={styles.arrow}>→</span>
+            </Link>
+            <div className={styles.referFinePrint}>
+              Your personal referral link lives in your profile after you sign up — share via SMS,
+              email, QR, or any social network.
+            </div>
           </div>
         </div>
       </section>
@@ -394,57 +582,72 @@ export function LandingPage() {
               Clean Trash<span className={styles.footerDot}>.</span>
             </div>
             <div className={styles.footerTag}>
-              Curbside, zero-commission residential recycling. Founded 2023 · Oakland, CA.
+              Curbside, zero-commission residential recycling. Pilot launching summer 2026 in
+              Oakland, CA.
             </div>
           </div>
           <div>
-            <h5>Service area</h5>
+            <h5>Pilot area</h5>
             <ul>
               <li>
-                <span className={styles.cityDot}></span>Oakland
-              </li>
-              <li>
-                <span className={styles.cityDot}></span>Berkeley
-              </li>
-              <li>
-                <span className={styles.cityDot}></span>Emeryville
-              </li>
-              <li>
-                <span className={styles.cityDot}></span>Alameda
+                <span className={styles.cityDot}></span>Oakland · summer 2026
               </li>
               <li className={styles.citySoon}>
-                <span className={`${styles.cityDot} ${styles.cityDotSoon}`}></span>Sacramento ·
-                Jul &apos;26
+                <span className={`${styles.cityDot} ${styles.cityDotSoon}`}></span>Berkeley · TBD
               </li>
               <li className={styles.citySoon}>
-                <span className={`${styles.cityDot} ${styles.cityDotSoon}`}></span>San Jose · Sep
-                &apos;26
+                <span className={`${styles.cityDot} ${styles.cityDotSoon}`}></span>Emeryville · TBD
+              </li>
+              <li className={styles.citySoon}>
+                <span className={`${styles.cityDot} ${styles.cityDotSoon}`}></span>Alameda · TBD
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h5>Contact</h5>
+            <ul>
+              <li>
+                {/* TODO: support email */}
+                support@webuycleantrash.com
+              </li>
+              <li>
+                {/* TODO: support phone */}
+                (510) 555-0000
+              </li>
+              <li className={styles.footerAddr}>
+                {/* TODO: business mailing address */}
+                123 Pilot St.
+                <br />
+                Oakland, CA 94607
               </li>
             </ul>
           </div>
           <div>
             <h5>Product</h5>
             <ul>
-              <li>How it works</li>
-              <li>What we accept</li>
-              <li>Live rates</li>
-              <li>For property managers</li>
-              <li>For municipalities</li>
-            </ul>
-          </div>
-          <div>
-            <h5>Company</h5>
-            <ul>
-              <li>About</li>
-              <li>Careers</li>
-              <li>Press</li>
-              <li>Contact</li>
-              <li>Help center</li>
+              <li>
+                <a href="#how">How it works</a>
+              </li>
+              <li>
+                <a href="#accept">What we accept</a>
+              </li>
+              <li>
+                <a href="#bags">Bag-tagging</a>
+              </li>
+              <li>
+                <a href="#why">Why this works</a>
+              </li>
+              <li>
+                <a href="#faq">FAQ</a>
+              </li>
             </ul>
           </div>
         </div>
         <div className={styles.legal}>
-          <div>© 2026 We Buy Clean Trash, PBC.</div>
+          <div>
+            {/* TODO: confirm registered entity name + state of incorporation */}
+            © 2026 We Buy Clean Trash, PBC · Delaware
+          </div>
           <div>Privacy · Terms · Accessibility</div>
         </div>
       </footer>

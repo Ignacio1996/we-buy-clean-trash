@@ -1,10 +1,16 @@
+import Link from 'next/link';
 import { getSession } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
 import type { BagOrderDoc, BagOrderStatus } from '@/lib/types/bagOrder';
 import type { RouteDoc } from '@/lib/types/route';
-import { EcoMasthead, EcoH1, EcoEmpty, EcoButton } from '@/components/resident/eco/Eco';
-import { IconBox, IconTruck, IconClock } from '@/components/icons/EcoIcons';
-import type { ReactNode } from 'react';
+import {
+  SS,
+  SSEyebrow,
+  SSPillLink,
+  SSScreen,
+  SSStatusBarSpacer,
+  SSStickerCard,
+} from '@/components/resident/ss/SS';
 
 function formatDollars(dollars: number): string {
   return dollars.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -29,32 +35,18 @@ function statusLabel(status: BagOrderStatus): string {
   }
 }
 
-function statusIcon(status: BagOrderStatus): ReactNode {
+function statusChip(status: BagOrderStatus): { bg: string; fg: string; border: string } {
   switch (status) {
     case 'delivered':
-      return <IconBox size={18} color="#2D5A3D" stroke={1.5} />;
-    case 'cancelled':
-      return <IconBox size={18} color="#8A8A7A" stroke={1.5} />;
+      return { bg: SS.green, fg: '#fff', border: SS.ink };
     case 'out_for_delivery':
-      return <IconTruck size={18} color="#2D5A3D" stroke={1.5} />;
-    case 'pending':
-      return <IconClock size={18} color="#A0682A" stroke={1.5} />;
-    default:
-      return <IconBox size={18} color="#5A6358" stroke={1.5} />;
-  }
-}
-
-function statusTone(status: BagOrderStatus): string {
-  switch (status) {
-    case 'delivered':
-      return '#2D5A3D';
-    case 'cancelled':
-      return '#8A8A7A';
-    case 'out_for_delivery':
+      return { bg: SS.yellow, fg: SS.ink, border: SS.ink };
     case 'queued':
-      return '#2D5A3D';
+      return { bg: SS.sky, fg: SS.ink, border: SS.ink };
     case 'pending':
-      return '#A0682A';
+      return { bg: SS.peach, fg: SS.ink, border: SS.ink };
+    case 'cancelled':
+      return { bg: '#fff', fg: SS.inkSoft, border: SS.line };
   }
 }
 
@@ -92,37 +84,115 @@ export default async function OrderHistoryPage() {
   }
 
   return (
-    <main className="relative px-5 pt-12 sm:px-8 sm:pt-14">
-      <EcoMasthead title="Order history" backHref="/resident" />
+    <SSScreen>
+      <SSStatusBarSpacer />
 
-      <section className="mb-5">
-        <EcoH1>Order history</EcoH1>
-        <p
-          className="mt-2 italic"
+      <div
+        style={{
+          padding: '16px 20px 0',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Link
+          href="/resident"
+          aria-label="Back"
           style={{
-            fontFamily: 'var(--eco-serif)',
-            fontSize: 13,
-            color: '#5A6358',
+            fontSize: 22,
+            fontWeight: 900,
+            color: SS.ink,
+            textDecoration: 'none',
+            fontFamily: SS.sans,
+          }}
+        >
+          ←
+        </Link>
+        <Link
+          href="/resident/order-bags"
+          style={{
+            fontSize: 11,
+            fontWeight: 900,
+            color: SS.ink,
+            letterSpacing: 1.2,
+            textTransform: 'uppercase',
+            textDecoration: 'underline',
+          }}
+        >
+          New order
+        </Link>
+      </div>
+
+      <div style={{ padding: '28px 24px 8px' }}>
+        <SSEyebrow style={{ color: SS.brand, marginBottom: 8 }}>Bags</SSEyebrow>
+        <h1
+          style={{
+            fontSize: 38,
+            fontWeight: 900,
+            letterSpacing: -1.4,
+            lineHeight: 0.95,
+            color: SS.ink,
+            margin: 0,
+          }}
+        >
+          Order history.
+        </h1>
+        <p
+          style={{
+            fontSize: 15,
+            fontWeight: 700,
+            color: SS.inkSoft,
+            lineHeight: 1.4,
+            marginTop: 10,
+            marginBottom: 0,
           }}
         >
           All your bag orders — newest first.
         </p>
-      </section>
+      </div>
 
       {orders.length === 0 ? (
-        <>
-          <EcoEmpty
-            title="No orders yet."
-            body="When you order bags, they'll show up here."
-          />
-          <div className="mt-4 flex justify-center">
-            <EcoButton href="/resident/order-bags" variant="primary">
+        <div style={{ padding: '24px 20px' }}>
+          <SSStickerCard>
+            <SSEyebrow style={{ marginBottom: 10 }}>Nothing here yet</SSEyebrow>
+            <div
+              style={{
+                fontSize: 22,
+                fontWeight: 900,
+                color: SS.ink,
+                letterSpacing: -0.6,
+                lineHeight: 1.05,
+              }}
+            >
+              No orders yet.
+            </div>
+            <div
+              style={{
+                fontSize: 14,
+                fontWeight: 700,
+                color: SS.inkSoft,
+                marginTop: 8,
+                lineHeight: 1.4,
+              }}
+            >
+              When you order bags, they&rsquo;ll show up here.
+            </div>
+          </SSStickerCard>
+          <div style={{ marginTop: 20 }}>
+            <SSPillLink href="/resident/order-bags" variant="primary">
               Order bags
-            </EcoButton>
+            </SSPillLink>
           </div>
-        </>
+        </div>
       ) : (
-        <ul className="space-y-2">
+        <div
+          style={{
+            padding: '20px 20px 8px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+          }}
+        >
           {orders.map((o) => {
             const placed = o.createdAt?.toDate?.();
             const delivered = o.deliveredAt?.toDate?.();
@@ -133,56 +203,98 @@ export default async function OrderHistoryPage() {
                 ? `Arrives ${formatDate(routeDate)}`
                 : o.status === 'cancelled'
                   ? ''
-                  : 'Delivery date TBD';
+                  : 'Delivery TBD';
+            const chip = statusChip(o.status);
             return (
-              <li
+              <SSStickerCard
                 key={o.id}
-                className="rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] px-4 py-3"
+                style={{ padding: '16px 18px', boxShadow: `0 3px 0 ${SS.ink}` }}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <span
-                      className="flex size-8 items-center justify-center rounded-[10px]"
-                      style={{ background: '#E8EFE6' }}
-                    >
-                      {statusIcon(o.status)}
-                    </span>
-                    <div
-                      style={{
-                        fontFamily: 'var(--eco-serif)',
-                        fontSize: 15,
-                        color: '#1F2A22',
-                      }}
-                    >
-                      {o.quantity} sheet{o.quantity === 1 ? '' : 's'} · {o.quantity * 10} bags
-                    </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'baseline',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: 20,
+                      fontWeight: 900,
+                      color: SS.ink,
+                      letterSpacing: -0.4,
+                    }}
+                  >
+                    {o.quantity} sheet{o.quantity === 1 ? '' : 's'} · {o.quantity * 10} bags
                   </div>
                   <div
                     style={{
-                      fontFamily: 'var(--eco-serif)',
-                      fontSize: 15,
-                      color: '#1F2A22',
+                      fontSize: 20,
+                      fontWeight: 900,
+                      color: SS.ink,
+                      letterSpacing: -0.5,
                     }}
                   >
                     {formatDollars(o.total)}
                   </div>
                 </div>
-                <div className="mt-2 flex items-center justify-between text-[11px]">
-                  <span style={{ color: statusTone(o.status), fontWeight: 500 }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginTop: 12,
+                    gap: 10,
+                  }}
+                >
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      background: chip.bg,
+                      color: chip.fg,
+                      border: `2px solid ${chip.border}`,
+                      borderRadius: 999,
+                      padding: '4px 10px',
+                      fontSize: 11,
+                      fontWeight: 900,
+                      letterSpacing: 1,
+                      textTransform: 'uppercase',
+                    }}
+                  >
                     {statusLabel(o.status)}
                   </span>
-                  <span style={{ color: '#5A6358' }}>{rightLabel}</span>
+                  {rightLabel && (
+                    <span
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 800,
+                        color: SS.inkSoft,
+                        textAlign: 'right',
+                      }}
+                    >
+                      {rightLabel}
+                    </span>
+                  )}
                 </div>
                 {placed && (
-                  <div className="mt-1 text-[10px]" style={{ color: '#8A8A7A' }}>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 800,
+                      color: SS.inkSoft,
+                      letterSpacing: 0.6,
+                      textTransform: 'uppercase',
+                      marginTop: 8,
+                    }}
+                  >
                     Placed {formatDate(placed)}
                   </div>
                 )}
-              </li>
+              </SSStickerCard>
             );
           })}
-        </ul>
+        </div>
       )}
-    </main>
+    </SSScreen>
   );
 }

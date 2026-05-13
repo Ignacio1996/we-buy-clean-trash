@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
 import type { ScanResult, ScannedItem } from '@/lib/ai/scan';
 import {
@@ -8,7 +8,12 @@ import {
   readPresignupScan,
   writePresignupScan,
 } from '@/lib/presignup/scan-storage';
-import { IconArrow, IconScan } from '@/components/icons/EcoIcons';
+import {
+  SS,
+  SSEyebrow,
+  SSPillLink,
+  SSStickerCard,
+} from '@/components/resident/ss/SS';
 
 const MAX_PHOTO_EDGE = 1024;
 
@@ -160,29 +165,77 @@ export function ScanClient() {
   const hasItems = items.length > 0;
 
   return (
-    <div style={shellStyle}>
-      <Grain />
+    <div
+      style={{
+        flex: 1,
+        maxWidth: 480,
+        width: '100%',
+        margin: '0 auto',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      {/* Header — eyebrow + close chip */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '14px 20px',
+        }}
+      >
+        <SSEyebrow style={{ color: SS.ink, opacity: 0.7 }}>Try before you join</SSEyebrow>
+        <Link
+          href="/"
+          aria-label="Close"
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: '50%',
+            background: SS.ink,
+            color: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 22,
+            fontWeight: 900,
+            textDecoration: 'none',
+          }}
+        >
+          ×
+        </Link>
+      </div>
 
-      <div style={contentStyle}>
-        {/* Masthead — double-rule with VOL · wordmark · EST */}
-        <div style={mastheadStyle}>
-          <span style={mastheadMetaStyle}>VOL. I · NO. 01</span>
-          <span style={mastheadWordmarkStyle}>We Buy Clean Trash</span>
-          <span style={mastheadMetaStyle}>EST. 2025</span>
-        </div>
-
-        {/* Hero */}
-        <div style={eyebrowStyle}>Try before you join</div>
-        <h1 style={heroTitleStyle}>
-          What is your
-          <br />
-          trash <em style={{ fontStyle: 'italic', color: 'var(--green)' }}>worth</em>?
+      {/* Title */}
+      <div style={{ padding: '4px 20px 0' }}>
+        <h1
+          style={{
+            fontSize: 34,
+            fontWeight: 900,
+            letterSpacing: -1.2,
+            lineHeight: 0.95,
+            color: SS.ink,
+            margin: 0,
+          }}
+        >
+          What&rsquo;s your <br />
+          <span style={{ color: SS.brand }}>trash worth?</span>
         </h1>
-        <p style={leadStyle}>
-          Point your camera. We&rsquo;ll tally a price. No account needed.
-        </p>
+        <div
+          style={{
+            fontSize: 14,
+            fontWeight: 700,
+            color: SS.inkSoft,
+            marginTop: 10,
+            lineHeight: 1.4,
+          }}
+        >
+          Point your camera at any recyclable. We&rsquo;ll tally a price. No account needed.
+        </div>
+      </div>
 
-        {/* Camera card — three states */}
+      {/* Camera card */}
+      <div style={{ padding: '20px 20px 0' }}>
         <CameraCard
           cameraOn={cameraOn}
           scanning={scanning}
@@ -194,97 +247,210 @@ export function ScanClient() {
           onCapture={captureFromCamera}
           onPickFile={() => fileInputRef.current?.click()}
         />
+      </div>
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleFile}
-          style={{ display: 'none' }}
-        />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFile}
+        style={{ display: 'none' }}
+      />
 
-        {error && (
+      {error && (
+        <div style={{ padding: '14px 20px 0' }}>
           <div
             role="alert"
             style={{
-              marginTop: 14,
-              padding: '10px 12px',
-              border: '1px solid rgba(154,75,38,0.3)',
-              background: 'var(--rust-soft)',
-              borderRadius: 12,
-              fontFamily: 'var(--eco-serif)',
-              fontStyle: 'italic',
-              fontSize: 13,
-              color: 'var(--rust)',
+              background: SS.brand,
+              border: `2px solid ${SS.ink}`,
+              borderRadius: 18,
+              padding: 16,
+              color: '#fff',
+              boxShadow: `0 4px 0 ${SS.ink}`,
             }}
           >
-            {error}
+            <SSEyebrow style={{ color: '#fff', opacity: 0.85, marginBottom: 4 }}>Error</SSEyebrow>
+            <div style={{ fontSize: 15, fontWeight: 900, lineHeight: 1.3 }}>{error}</div>
           </div>
-        )}
+        </div>
+      )}
 
+      <div
+        style={{
+          padding: '20px 20px 0',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 14,
+        }}
+      >
         {hasItems ? (
           <>
-            {/* Running total — masthead-style */}
-            <div style={tallyBlockStyle}>
-              <div style={{ ...eyebrowStyle, marginBottom: 6, letterSpacing: 1.6 }}>
+            {/* Running total */}
+            <SSStickerCard background={SS.sky}>
+              <SSEyebrow style={{ marginBottom: 8 }}>
                 Estimated earnings · {items.length} item{items.length === 1 ? '' : 's'}
+              </SSEyebrow>
+              <div
+                style={{
+                  fontSize: 56,
+                  fontWeight: 900,
+                  letterSpacing: -2.4,
+                  lineHeight: 0.9,
+                  color: SS.ink,
+                }}
+              >
+                ${totalDollars.toFixed(2)}
               </div>
-              <div style={tallyAmountStyle}>
-                <em style={{ fontStyle: 'italic' }}>${totalDollars.toFixed(2)}</em>
-              </div>
-              <div style={tallySubStyle}>
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 800,
+                  color: SS.ink,
+                  opacity: 0.75,
+                  marginTop: 6,
+                }}
+              >
                 {formatPoints(totalPoints)} points · saved if you sign up.
               </div>
-            </div>
+            </SSStickerCard>
 
-            {/* Itemized ledger */}
-            <div style={{ marginBottom: 18 }}>
+            {/* Itemized breakdown */}
+            <SSStickerCard>
               <div
                 style={{
                   display: 'flex',
                   justifyContent: 'space-between',
-                  alignItems: 'baseline',
-                  marginBottom: 6,
+                  alignItems: 'center',
+                  marginBottom: 10,
                 }}
               >
-                <span style={{ ...eyebrowStyle, marginBottom: 0 }}>Itemized</span>
+                <SSEyebrow>Itemized</SSEyebrow>
                 <button
                   type="button"
                   onClick={() => setItems([])}
-                  style={clearBtnStyle}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    fontFamily: SS.sans,
+                    fontSize: 12,
+                    fontWeight: 900,
+                    color: SS.brand,
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    padding: 0,
+                  }}
                 >
                   Clear
                 </button>
               </div>
-              <div>
-                {items.map((it, i) => (
-                  <div key={`${it.label}-${i}`} style={ledgerRowStyle}>
-                    <span style={ledgerLabelStyle}>{it.label}</span>
-                    <span style={ledgerValueStyle}>
-                      ${it.estimatedDollars.toFixed(2)} · {formatPoints(it.estimatedPoints)} pts
+              {items.map((it, i) => (
+                <div
+                  key={`${it.label}-${i}`}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'baseline',
+                    padding: '10px 0',
+                    borderTop: i === 0 ? 'none' : `1px solid ${SS.line}`,
+                    fontSize: 14,
+                    fontWeight: 800,
+                    color: SS.ink,
+                  }}
+                >
+                  <span>{it.label}</span>
+                  <span>
+                    ${it.estimatedDollars.toFixed(2)}
+                    <span style={{ color: SS.inkSoft, marginLeft: 8, fontWeight: 700 }}>
+                      +{formatPoints(it.estimatedPoints)} pts
                     </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+                  </span>
+                </div>
+              ))}
+            </SSStickerCard>
           </>
         ) : (
-          // Almanac fact box — only when empty
-          <AlmanacBox />
+          // Empty-state example card
+          <SSStickerCard background={SS.mint}>
+            <SSEyebrow style={{ marginBottom: 10 }}>What we pay</SSEyebrow>
+            <div
+              style={{
+                fontSize: 18,
+                fontWeight: 900,
+                letterSpacing: -0.4,
+                color: SS.ink,
+                lineHeight: 1.25,
+                marginBottom: 14,
+              }}
+            >
+              About 100 cans a week earns a $10 gift card every month.
+            </div>
+            {(
+              [
+                ['Aluminum', '$0.05 / can'],
+                ['PET (32oz)', '$0.10 / bottle'],
+                ['Glass', '$0.06 / bottle'],
+              ] as Array<[string, string]>
+            ).map(([l, v], i) => (
+              <div
+                key={l}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  padding: '8px 0',
+                  borderTop: i === 0 ? `1px solid ${SS.ink}` : `1px solid ${SS.line}`,
+                  fontSize: 14,
+                  fontWeight: 800,
+                  color: SS.ink,
+                }}
+              >
+                <span>{l}</span>
+                <span
+                  style={{
+                    fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
+                    fontWeight: 800,
+                  }}
+                >
+                  {v}
+                </span>
+              </div>
+            ))}
+          </SSStickerCard>
         )}
+      </div>
 
-        {/* CTA — sign up */}
-        <Link href="/signup" style={signUpBtnStyle}>
-          <span>{hasItems ? 'Sign up & save these earnings' : 'Sign up to start earning'}</span>
-          <IconArrow size={16} color="var(--paper)" />
-        </Link>
-
-        <p style={signInLinkStyle}>
+      {/* CTA */}
+      <div
+        style={{
+          padding: '20px 20px 28px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
+        }}
+      >
+        <SSPillLink href="/signup" variant="primary">
+          {hasItems ? 'Sign up & save these earnings' : 'Sign up to start earning'}
+        </SSPillLink>
+        <div
+          style={{
+            textAlign: 'center',
+            fontSize: 13,
+            fontWeight: 800,
+            color: SS.inkSoft,
+          }}
+        >
           Already a member?{' '}
-          <Link href="/login" style={{ color: 'var(--green)', fontWeight: 600, fontStyle: 'normal' }}>
+          <Link
+            href="/login"
+            style={{
+              color: SS.ink,
+              fontWeight: 900,
+              textDecoration: 'underline',
+            }}
+          >
             Sign in
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );
@@ -305,9 +471,19 @@ function CameraCard({
   onCapture: () => void;
   onPickFile: () => void;
 }) {
-  if (cameraOn) {
-    return (
-      <div style={cameraOnCardStyle}>
+  return (
+    <div
+      style={{
+        position: 'relative',
+        borderRadius: 24,
+        overflow: 'hidden',
+        background: '#222',
+        border: `2px solid ${SS.ink}`,
+        boxShadow: `0 6px 0 ${SS.ink}`,
+        aspectRatio: '3 / 4',
+      }}
+    >
+      {cameraOn ? (
         <video
           ref={videoRef}
           playsInline
@@ -320,450 +496,226 @@ function CameraCard({
             objectFit: 'cover',
           }}
         />
-        {/* dim grain overlay */}
+      ) : (
         <div
           aria-hidden
           style={{
             position: 'absolute',
             inset: 0,
-            opacity: 0.4,
-            pointerEvents: 'none',
             backgroundImage:
-              'radial-gradient(circle at 20% 30%, rgba(255,255,255,0.04) 1px, transparent 2px), radial-gradient(circle at 70% 60%, rgba(255,255,255,0.03) 1px, transparent 2px)',
-            backgroundSize: '8px 8px, 14px 14px',
+              'repeating-linear-gradient(45deg, #2c2c2c 0 12px, #292929 12px 24px)',
           }}
         />
-        {/* reticule */}
+      )}
+
+      {/* Reticule corners */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 220,
+          height: 220,
+        }}
+      >
+        {(
+          [
+            { top: 0, left: 0 },
+            { top: 0, right: 0 },
+            { bottom: 0, left: 0 },
+            { bottom: 0, right: 0 },
+          ] as CSSProperties[]
+        ).map((p, i) => (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              ...p,
+              width: 40,
+              height: 40,
+              borderTop: p.top === 0 ? `4px solid ${SS.yellow}` : undefined,
+              borderBottom: p.bottom === 0 ? `4px solid ${SS.yellow}` : undefined,
+              borderLeft: p.left === 0 ? `4px solid ${SS.yellow}` : undefined,
+              borderRight: p.right === 0 ? `4px solid ${SS.yellow}` : undefined,
+            }}
+          />
+        ))}
+        {cameraOn && (
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              left: 8,
+              right: 8,
+              top: '50%',
+              height: 3,
+              background: SS.brand,
+              boxShadow: `0 0 16px ${SS.brand}`,
+            }}
+          />
+        )}
+      </div>
+
+      {/* Status pill — only when camera is on */}
+      {cameraOn && (
         <div
-          aria-hidden
           style={{
             position: 'absolute',
-            inset: '12% 14% 28%',
-            border: '1px solid rgba(251,247,238,0.33)',
-            borderRadius: 6,
+            top: 16,
+            left: 16,
+            right: 16,
+            background: 'rgba(0,0,0,0.6)',
+            backdropFilter: 'blur(4px)',
+            borderRadius: 14,
+            padding: '10px 14px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}
         >
-          <ReticuleCorner pos="tl" />
-          <ReticuleCorner pos="tr" />
-          <ReticuleCorner pos="bl" />
-          <ReticuleCorner pos="br" />
-        </div>
-        {/* status pill */}
-        <div style={scanningChipStyle}>{scanning ? 'ANALYZING…' : 'SCANNING…'}</div>
-        {/* capture button */}
-        <button
-          type="button"
-          onClick={onCapture}
-          disabled={scanning}
-          style={{
-            ...captureBtnStyle,
-            opacity: scanning ? 0.7 : 1,
-            cursor: scanning ? 'default' : 'pointer',
-          }}
-        >
-          <IconScan size={14} color="var(--paper)" />
-          <span>{scanning ? 'Scanning…' : 'Capture'}</span>
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div style={cameraEmptyCardStyle}>
-      <div style={cameraIconCircleStyle}>
-        <IconScan size={26} color="var(--green)" stroke={1.5} />
-      </div>
-      <div style={cameraEmptyTitleStyle}>Point at any recyclable.</div>
-      <div style={cameraEmptyLedeStyle}>
-        Cans, bottles, jars — we&rsquo;ll guess the price.
-      </div>
-      <button type="button" onClick={onOpen} style={openCameraBtnStyle}>
-        <IconScan size={14} color="var(--paper)" />
-        <span>Open camera</span>
-      </button>
-      <button type="button" onClick={onPickFile} style={uploadLinkStyle}>
-        or upload a photo
-      </button>
-    </div>
-  );
-}
-
-function ReticuleCorner({ pos }: { pos: 'tl' | 'tr' | 'bl' | 'br' }) {
-  const base: CSSProperties = {
-    position: 'absolute',
-    width: 14,
-    height: 14,
-  };
-  const pe: CSSProperties = {
-    ...base,
-    ...(pos === 'tl' && {
-      top: -1,
-      left: -1,
-      borderTop: '2px solid var(--green)',
-      borderLeft: '2px solid var(--green)',
-    }),
-    ...(pos === 'tr' && {
-      top: -1,
-      right: -1,
-      borderTop: '2px solid var(--green)',
-      borderRight: '2px solid var(--green)',
-    }),
-    ...(pos === 'bl' && {
-      bottom: -1,
-      left: -1,
-      borderBottom: '2px solid var(--green)',
-      borderLeft: '2px solid var(--green)',
-    }),
-    ...(pos === 'br' && {
-      bottom: -1,
-      right: -1,
-      borderBottom: '2px solid var(--green)',
-      borderRight: '2px solid var(--green)',
-    }),
-  };
-  return <div style={pe} aria-hidden />;
-}
-
-function AlmanacBox() {
-  const rows: Array<[string, string]> = [
-    ['Aluminum', '$0.05 / can'],
-    ['PET (32oz)', '$0.10 / bottle'],
-    ['Glass', '$0.06 / bottle'],
-  ];
-  return (
-    <div style={almanacBoxStyle}>
-      <div style={almanacQuoteStyle}>
-        &ldquo;About 100 cans a week earns a $10 gift card every month.&rdquo;
-      </div>
-      <div style={{ borderTop: '1px solid var(--line-soft)' }}>
-        {rows.map(([l, v]) => (
-          <div key={l} style={almanacRowStyle}>
-            <span style={{ ...eyebrowStyle, marginBottom: 0 }}>{l}</span>
-            <span style={almanacValueStyle}>{v}</span>
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 900,
+              letterSpacing: 1.2,
+              textTransform: 'uppercase',
+              color: '#fff',
+            }}
+          >
+            {scanning ? 'Analyzing…' : 'Looking for items…'}
           </div>
-        ))}
-      </div>
+          <div
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              background: scanning ? SS.brand : SS.yellow,
+            }}
+          />
+        </div>
+      )}
+
+      {/* Bottom controls */}
+      {cameraOn ? (
+        <div
+          style={{
+            position: 'absolute',
+            left: 16,
+            right: 16,
+            bottom: 16,
+            display: 'flex',
+            gap: 10,
+            alignItems: 'center',
+          }}
+        >
+          <button
+            type="button"
+            onClick={onCapture}
+            disabled={scanning}
+            style={{
+              flex: 1,
+              background: SS.green,
+              color: '#fff',
+              border: 'none',
+              borderRadius: 999,
+              padding: '16px 22px',
+              fontFamily: SS.sans,
+              fontSize: 17,
+              fontWeight: 900,
+              letterSpacing: -0.2,
+              boxShadow: `0 4px 0 ${SS.greenDark}`,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              cursor: scanning ? 'not-allowed' : 'pointer',
+              opacity: scanning ? 0.7 : 1,
+            }}
+          >
+            <span>{scanning ? 'Scanning…' : 'Capture'}</span>
+            <span style={{ fontSize: 20 }}>→</span>
+          </button>
+          <button
+            type="button"
+            onClick={onPickFile}
+            aria-label="Upload photo"
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: '50%',
+              background: '#fff',
+              border: `2px solid ${SS.ink}`,
+              boxShadow: `0 4px 0 ${SS.ink}`,
+              fontSize: 22,
+              fontWeight: 900,
+              cursor: 'pointer',
+              fontFamily: SS.sans,
+              color: SS.ink,
+              flexShrink: 0,
+            }}
+          >
+            ⤴
+          </button>
+        </div>
+      ) : (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            padding: '0 20px 22px',
+            gap: 10,
+          }}
+        >
+          <button
+            type="button"
+            onClick={onOpen}
+            style={{
+              width: '100%',
+              background: SS.yellow,
+              color: SS.ink,
+              border: `2px solid ${SS.ink}`,
+              borderRadius: 999,
+              padding: '16px 22px',
+              fontFamily: SS.sans,
+              fontSize: 17,
+              fontWeight: 900,
+              letterSpacing: -0.2,
+              boxShadow: `0 4px 0 ${SS.ink}`,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            <span>Open camera</span>
+            <span style={{ fontSize: 20 }}>→</span>
+          </button>
+          <button
+            type="button"
+            onClick={onPickFile}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              fontFamily: SS.sans,
+              fontSize: 12,
+              fontWeight: 900,
+              color: '#fff',
+              opacity: 0.85,
+              cursor: 'pointer',
+              padding: 6,
+              textDecoration: 'underline',
+              textUnderlineOffset: 3,
+            }}
+          >
+            or upload a photo
+          </button>
+        </div>
+      )}
     </div>
   );
 }
-
-function Grain(): ReactNode {
-  return (
-    <div
-      aria-hidden
-      style={{
-        position: 'absolute',
-        inset: 0,
-        opacity: 0.4,
-        pointerEvents: 'none',
-        backgroundImage:
-          'radial-gradient(circle at 20% 30%, rgba(160,140,100,0.06) 1px, transparent 2px), radial-gradient(circle at 70% 60%, rgba(160,140,100,0.05) 1px, transparent 2px)',
-        backgroundSize: '14px 14px, 22px 22px',
-      }}
-    />
-  );
-}
-
-const shellStyle: CSSProperties = {
-  width: '100%',
-  minHeight: '100dvh',
-  background: 'var(--paper-bg)',
-  color: 'var(--ink)',
-  fontFamily: 'var(--eco-sans)',
-  position: 'relative',
-  overflow: 'hidden',
-};
-
-const contentStyle: CSSProperties = {
-  position: 'relative',
-  zIndex: 2,
-  padding: '20px 22px 24px',
-  maxWidth: 480,
-  margin: '0 auto',
-  width: '100%',
-  boxSizing: 'border-box',
-};
-
-const mastheadStyle: CSSProperties = {
-  borderTop: '2px solid var(--ink)',
-  borderBottom: '1px solid var(--line)',
-  padding: '8px 0 10px',
-  marginBottom: 14,
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'baseline',
-  gap: 8,
-};
-
-const mastheadMetaStyle: CSSProperties = {
-  fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-  fontSize: 9,
-  color: 'var(--ink-soft)',
-  letterSpacing: 2,
-};
-
-const mastheadWordmarkStyle: CSSProperties = {
-  fontFamily: 'var(--eco-serif)',
-  fontStyle: 'italic',
-  fontSize: 14,
-  color: 'var(--green)',
-  flex: 1,
-  textAlign: 'center',
-};
-
-const eyebrowStyle: CSSProperties = {
-  fontSize: 10,
-  color: 'var(--ink-soft)',
-  textTransform: 'uppercase',
-  letterSpacing: 1.6,
-  fontWeight: 500,
-  fontFamily: 'var(--eco-sans)',
-  marginBottom: 8,
-};
-
-const heroTitleStyle: CSSProperties = {
-  fontFamily: 'var(--eco-serif)',
-  fontSize: 26,
-  lineHeight: 1.05,
-  fontWeight: 400,
-  letterSpacing: -0.6,
-  margin: '0 0 6px',
-  color: 'var(--ink)',
-};
-
-const leadStyle: CSSProperties = {
-  fontFamily: 'var(--eco-serif)',
-  fontStyle: 'italic',
-  fontSize: 13,
-  color: 'var(--ink-soft)',
-  lineHeight: 1.45,
-  margin: '0 0 14px',
-};
-
-const cameraEmptyCardStyle: CSSProperties = {
-  position: 'relative',
-  borderRadius: 14,
-  overflow: 'hidden',
-  border: '1px dashed var(--line)',
-  background: 'var(--paper)',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '18px 20px 16px',
-  textAlign: 'center',
-};
-
-const cameraIconCircleStyle: CSSProperties = {
-  width: 44,
-  height: 44,
-  borderRadius: '50%',
-  background: 'var(--green-soft)',
-  color: 'var(--green)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginBottom: 10,
-};
-
-const cameraEmptyTitleStyle: CSSProperties = {
-  fontFamily: 'var(--eco-serif)',
-  fontSize: 16,
-  color: 'var(--ink)',
-  marginBottom: 4,
-};
-
-const cameraEmptyLedeStyle: CSSProperties = {
-  fontFamily: 'var(--eco-serif)',
-  fontStyle: 'italic',
-  fontSize: 12,
-  color: 'var(--ink-soft)',
-  lineHeight: 1.4,
-  marginBottom: 12,
-};
-
-const openCameraBtnStyle: CSSProperties = {
-  background: 'var(--green)',
-  color: 'var(--paper)',
-  border: 'none',
-  padding: '11px 22px',
-  borderRadius: 999,
-  fontSize: 13,
-  fontWeight: 600,
-  fontFamily: 'var(--eco-sans)',
-  letterSpacing: 0.4,
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  gap: 8,
-};
-
-const uploadLinkStyle: CSSProperties = {
-  fontSize: 11,
-  color: 'var(--ink-soft)',
-  marginTop: 12,
-  fontFamily: 'var(--eco-serif)',
-  fontStyle: 'italic',
-  background: 'transparent',
-  border: 'none',
-  padding: 4,
-  cursor: 'pointer',
-};
-
-const cameraOnCardStyle: CSSProperties = {
-  position: 'relative',
-  borderRadius: 14,
-  overflow: 'hidden',
-  border: '1px solid var(--line)',
-  background: '#1a1f1c',
-  aspectRatio: '4 / 3',
-};
-
-const scanningChipStyle: CSSProperties = {
-  position: 'absolute',
-  top: 12,
-  left: 12,
-  fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-  fontSize: 9,
-  color: 'var(--paper)',
-  letterSpacing: 1.5,
-  background: 'rgba(0,0,0,0.4)',
-  padding: '4px 8px',
-  borderRadius: 4,
-};
-
-const captureBtnStyle: CSSProperties = {
-  position: 'absolute',
-  left: '50%',
-  bottom: 16,
-  transform: 'translateX(-50%)',
-  background: 'var(--green)',
-  color: 'var(--paper)',
-  border: 'none',
-  padding: '12px 28px',
-  borderRadius: 999,
-  fontSize: 13,
-  fontWeight: 600,
-  fontFamily: 'var(--eco-sans)',
-  letterSpacing: 0.4,
-  display: 'flex',
-  alignItems: 'center',
-  gap: 8,
-};
-
-const tallyBlockStyle: CSSProperties = {
-  borderTop: '1px solid var(--line)',
-  borderBottom: '1px solid var(--line)',
-  padding: '14px 0',
-  margin: '20px 0 14px',
-  textAlign: 'center',
-};
-
-const tallyAmountStyle: CSSProperties = {
-  fontFamily: 'var(--eco-serif)',
-  fontSize: 44,
-  lineHeight: 1,
-  color: 'var(--green)',
-  fontWeight: 400,
-  letterSpacing: -1,
-};
-
-const tallySubStyle: CSSProperties = {
-  fontFamily: 'var(--eco-serif)',
-  fontStyle: 'italic',
-  fontSize: 12,
-  color: 'var(--ink-soft)',
-  marginTop: 8,
-};
-
-const clearBtnStyle: CSSProperties = {
-  fontFamily: 'var(--eco-serif)',
-  fontStyle: 'italic',
-  fontSize: 11,
-  color: 'var(--green)',
-  cursor: 'pointer',
-  background: 'transparent',
-  border: 'none',
-  padding: 0,
-};
-
-const ledgerRowStyle: CSSProperties = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'baseline',
-  padding: '10px 0',
-  borderBottom: '1px solid var(--line-soft)',
-};
-
-const ledgerLabelStyle: CSSProperties = {
-  fontFamily: 'var(--eco-serif)',
-  fontSize: 14,
-  color: 'var(--ink)',
-};
-
-const ledgerValueStyle: CSSProperties = {
-  fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-  fontSize: 12,
-  color: 'var(--ink-soft)',
-};
-
-const almanacBoxStyle: CSSProperties = {
-  background: 'var(--paper)',
-  border: '1px solid var(--line)',
-  borderRadius: 14,
-  padding: 14,
-  marginTop: 12,
-  marginBottom: 14,
-};
-
-const almanacQuoteStyle: CSSProperties = {
-  fontFamily: 'var(--eco-serif)',
-  fontStyle: 'italic',
-  fontSize: 13,
-  color: 'var(--ink)',
-  lineHeight: 1.45,
-  marginBottom: 12,
-};
-
-const almanacRowStyle: CSSProperties = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'baseline',
-  padding: '8px 0',
-  borderBottom: '1px solid var(--line-soft)',
-};
-
-const almanacValueStyle: CSSProperties = {
-  fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-  fontSize: 12,
-  color: 'var(--ink)',
-};
-
-const signUpBtnStyle: CSSProperties = {
-  width: '100%',
-  background: 'var(--green)',
-  color: 'var(--paper)',
-  border: 'none',
-  borderRadius: 14,
-  padding: '14px 18px',
-  fontFamily: 'var(--eco-sans)',
-  fontSize: 14,
-  fontWeight: 600,
-  letterSpacing: 0.3,
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  cursor: 'pointer',
-  marginTop: 4,
-  marginBottom: 10,
-  textDecoration: 'none',
-  boxSizing: 'border-box',
-};
-
-const signInLinkStyle: CSSProperties = {
-  textAlign: 'center',
-  fontSize: 11,
-  color: 'var(--ink-soft)',
-  fontFamily: 'var(--eco-serif)',
-  fontStyle: 'italic',
-};

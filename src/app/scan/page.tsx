@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/session';
 import { ROLE_HOME_PATH } from '@/lib/types/role';
+import { SS, SSStatusBarSpacer } from '@/components/resident/ss/SS';
 import { ScanClient } from './ScanClient';
 
 export const metadata = {
@@ -13,5 +14,19 @@ export default async function ScanPage() {
   const session = await getSession();
   if (session) redirect(ROLE_HOME_PATH[session.role]);
 
-  return <ScanClient />;
+  return (
+    <div
+      style={{
+        background: SS.bg,
+        minHeight: '100dvh',
+        color: SS.ink,
+        fontFamily: SS.sans,
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <SSStatusBarSpacer />
+      <ScanClient />
+    </div>
+  );
 }
