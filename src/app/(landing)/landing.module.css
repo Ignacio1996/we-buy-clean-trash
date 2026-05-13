@@ -142,6 +142,21 @@
 .topbarNav a:hover {
   color: var(--brand);
 }
+.topbarActions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.topbarSignIn {
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: -0.2px;
+  padding: 10px 4px;
+  color: var(--ink);
+}
+.topbarSignIn:hover {
+  color: var(--brand);
+}
 .topbarCta {
   background: var(--brand);
   color: #fff;
