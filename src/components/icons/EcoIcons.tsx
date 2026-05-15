@@ -181,3 +181,16 @@ export const IconArrowLeft = (p: IconProps) => (
     <path d="M19 12H5M11 18l-6-6 6-6" />
   </Svg>
 );
+
+export const IconSparkle = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M12 3v6M12 15v6M3 12h6M15 12h6M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3" />
+  </Svg>
+);
+
+export const IconCoin = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M9.5 9h4a1.5 1.5 0 0 1 0 3H10a1.5 1.5 0 0 0 0 3h4M12 7v10" />
+  </Svg>
+);

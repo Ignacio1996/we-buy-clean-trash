@@ -19,6 +19,16 @@ import {
   SSScreen,
   SSStatusBarSpacer,
 } from '@/components/resident/ss/SS';
+import {
+  IconArrow,
+  IconBag,
+  IconCoin,
+  IconGift,
+  IconRecycle,
+  IconScan,
+  IconSparkle,
+  IconTruck,
+} from '@/components/icons/EcoIcons';
 
 const GIFT_CARD_POINTS = 100_000;
 
@@ -159,7 +169,10 @@ export default async function ResidentHome() {
 
       {/* Yellow points hero */}
       <div style={{ background: SS.yellow, padding: '24px 20px' }}>
-        <SSEyebrow style={{ color: SS.ink, opacity: 0.7, marginBottom: 6 }}>
+        <SSEyebrow
+          icon={<IconSparkle size={13} stroke={2.5} />}
+          style={{ color: SS.ink, opacity: 0.7, marginBottom: 6 }}
+        >
           Hello, {firstName}
         </SSEyebrow>
         <div
@@ -173,8 +186,19 @@ export default async function ResidentHome() {
         >
           {formatDollars(dollarValue)}
         </div>
-        <div style={{ fontSize: 15, fontWeight: 800, color: SS.ink, marginTop: 6 }}>
-          {formatPoints(pointsBalance)} points earned
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            color: SS.ink,
+            marginTop: 6,
+          }}
+        >
+          <IconCoin size={16} stroke={2.25} />
+          <div style={{ fontSize: 15, fontWeight: 800 }}>
+            {formatPoints(pointsBalance)} points earned
+          </div>
         </div>
       </div>
 
@@ -183,6 +207,8 @@ export default async function ResidentHome() {
         <SSPillLink
           href="/resident/scan-bag"
           variant="red"
+          leadingIcon={<IconScan size={24} stroke={2.5} />}
+          iconArrow={<IconArrow size={24} stroke={2.5} />}
           style={{ fontSize: 22, padding: '22px 24px' }}
         >
           Scan bags
@@ -191,6 +217,8 @@ export default async function ResidentHome() {
         <SSPillLink
           href="/resident/order-bags"
           variant="outline"
+          leadingIcon={<IconBag size={22} stroke={2.5} />}
+          iconArrow={<IconArrow size={22} stroke={2.5} />}
           style={{ fontSize: 20, padding: '20px 24px' }}
         >
           {hasEverOrdered ? 'Order more bags' : 'Order bags'}
@@ -240,7 +268,12 @@ export default async function ResidentHome() {
           marginTop: 12,
         }}
       >
-        <SSEyebrow style={{ marginBottom: 8 }}>Next delivery</SSEyebrow>
+        <SSEyebrow
+          icon={<IconTruck size={14} stroke={2.25} />}
+          style={{ marginBottom: 8 }}
+        >
+          Next delivery
+        </SSEyebrow>
         {headlineOrder ? (
           <Link
             href="/resident/order-bags/history"
@@ -324,7 +357,12 @@ export default async function ResidentHome() {
 
       {/* Sky — reward progress */}
       <div style={{ background: SS.sky, padding: '24px 20px' }}>
-        <SSEyebrow style={{ marginBottom: 8 }}>Next $10 gift card</SSEyebrow>
+        <SSEyebrow
+          icon={<IconGift size={14} stroke={2.25} />}
+          style={{ marginBottom: 8 }}
+        >
+          Next $10 gift card
+        </SSEyebrow>
         <div
           style={{
             fontSize: 56,
@@ -390,12 +428,24 @@ export default async function ResidentHome() {
           How it works
         </div>
         {[
-          ['Order bags', 'Pick a sheet of 10 bags. Free shipping over $20.'],
-          ['Fill & set out', 'Clean recyclables. Place bags at the curb by 5:30pm.'],
-          ['Return & redeem', 'Points convert to gift cards. Cash out anytime.'],
-        ].map(([t, sub], i) => (
+          {
+            Icon: IconBag,
+            title: 'Order bags',
+            body: 'Pick a sheet of 10 bags. Free shipping over $20.',
+          },
+          {
+            Icon: IconRecycle,
+            title: 'Fill & set out',
+            body: 'Clean recyclables. Place bags at the curb by 5:30pm.',
+          },
+          {
+            Icon: IconCoin,
+            title: 'Return & redeem',
+            body: 'Points convert to gift cards. Cash out anytime.',
+          },
+        ].map(({ Icon, title, body }, i) => (
           <div
-            key={t}
+            key={title}
             style={{
               display: 'flex',
               gap: 14,
@@ -405,20 +455,39 @@ export default async function ResidentHome() {
           >
             <div
               style={{
-                width: 40,
-                height: 40,
+                width: 44,
+                height: 44,
                 borderRadius: '50%',
                 background: SS.ink,
                 color: '#fff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 18,
-                fontWeight: 900,
                 flexShrink: 0,
+                position: 'relative',
               }}
             >
-              {i + 1}
+              <Icon size={22} stroke={2.25} color="#fff" />
+              <div
+                style={{
+                  position: 'absolute',
+                  top: -4,
+                  right: -4,
+                  width: 20,
+                  height: 20,
+                  borderRadius: '50%',
+                  background: SS.brand,
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 11,
+                  fontWeight: 900,
+                  border: '2px solid #fff',
+                }}
+              >
+                {i + 1}
+              </div>
             </div>
             <div style={{ flex: 1, paddingTop: 4 }}>
               <div
@@ -429,7 +498,7 @@ export default async function ResidentHome() {
                   letterSpacing: -0.3,
                 }}
               >
-                {t}
+                {title}
               </div>
               <div
                 style={{
@@ -441,7 +510,7 @@ export default async function ResidentHome() {
                   opacity: 0.7,
                 }}
               >
-                {sub}
+                {body}
               </div>
             </div>
           </div>

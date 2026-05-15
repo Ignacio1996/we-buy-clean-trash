@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import type { CSSProperties, ReactNode } from 'react';
 
+import { IconBell } from '@/components/icons/EcoIcons';
+
 /**
  * Sticker Sections — shared primitives for the WBCT resident app.
  * White base broken into pastel section blocks (yellow / mint / sky / peach).
@@ -91,6 +93,37 @@ export function SSHeader({
       }}
     >
       <SSWordmark inline />
+      {/* Notification bell — visual only, matches the design's static dot. */}
+      <div
+        aria-hidden
+        style={{
+          width: 32,
+          height: 32,
+          borderRadius: '50%',
+          border: `2px solid ${SS.ink}`,
+          background: '#fff',
+          color: SS.ink,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+          position: 'relative',
+        }}
+      >
+        <IconBell size={16} stroke={2.25} />
+        <div
+          style={{
+            position: 'absolute',
+            top: -2,
+            right: -2,
+            width: 9,
+            height: 9,
+            borderRadius: '50%',
+            background: SS.brand,
+            border: '2px solid #fff',
+          }}
+        />
+      </div>
       <Link
         href={href}
         style={{
@@ -178,25 +211,38 @@ export function SSDots({ step, total }: { step: number; total: number }) {
 export function SSEyebrow({
   children,
   color = SS.inkSoft,
+  icon,
   style,
 }: {
   children: ReactNode;
   color?: string;
+  icon?: ReactNode;
   style?: CSSProperties;
 }) {
+  const text: CSSProperties = {
+    fontSize: 11,
+    fontWeight: 900,
+    letterSpacing: 1.4,
+    textTransform: 'uppercase',
+  };
+  if (icon) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          color,
+          ...style,
+        }}
+      >
+        {icon}
+        <span style={text}>{children}</span>
+      </div>
+    );
+  }
   return (
-    <div
-      style={{
-        fontSize: 11,
-        fontWeight: 900,
-        letterSpacing: 1.4,
-        textTransform: 'uppercase',
-        color,
-        ...style,
-      }}
-    >
-      {children}
-    </div>
+    <div style={{ ...text, color, ...style }}>{children}</div>
   );
 }
 
@@ -282,7 +328,39 @@ interface SSPillCommon {
   children: ReactNode;
   variant?: PillVariant;
   arrow?: boolean;
+  /** Optional icon rendered before the label, in a flex row with 12px gap. */
+  leadingIcon?: ReactNode;
+  /** Replaces the text `→` with a custom node (e.g. a stroke arrow icon). */
+  iconArrow?: ReactNode;
   style?: CSSProperties;
+}
+
+function PillLabel({
+  leadingIcon,
+  children,
+}: {
+  leadingIcon?: ReactNode;
+  children: ReactNode;
+}) {
+  if (!leadingIcon) return <span>{children}</span>;
+  return (
+    <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      {leadingIcon}
+      {children}
+    </span>
+  );
+}
+
+function PillArrow({
+  arrow,
+  iconArrow,
+}: {
+  arrow: boolean;
+  iconArrow?: ReactNode;
+}) {
+  if (!arrow) return null;
+  if (iconArrow) return <>{iconArrow}</>;
+  return <span style={{ fontSize: 22 }}>→</span>;
 }
 
 export function SSPillLink({
@@ -290,12 +368,14 @@ export function SSPillLink({
   children,
   variant = 'primary',
   arrow = true,
+  leadingIcon,
+  iconArrow,
   style,
 }: SSPillCommon & { href: string }) {
   return (
     <Link href={href} style={{ ...pillStyle(variant), ...style }}>
-      <span>{children}</span>
-      {arrow && <span style={{ fontSize: 22 }}>→</span>}
+      <PillLabel leadingIcon={leadingIcon}>{children}</PillLabel>
+      <PillArrow arrow={arrow} iconArrow={iconArrow} />
     </Link>
   );
 }
@@ -307,6 +387,8 @@ export function SSPillButton({
   children,
   variant = 'primary',
   arrow = true,
+  leadingIcon,
+  iconArrow,
   style,
 }: SSPillCommon & {
   type?: 'button' | 'submit';
@@ -325,8 +407,8 @@ export function SSPillButton({
         ...style,
       }}
     >
-      <span>{children}</span>
-      {arrow && <span style={{ fontSize: 22 }}>→</span>}
+      <PillLabel leadingIcon={leadingIcon}>{children}</PillLabel>
+      <PillArrow arrow={arrow} iconArrow={iconArrow} />
     </button>
   );
 }

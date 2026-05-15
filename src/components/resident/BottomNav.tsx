@@ -3,7 +3,23 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import {
+  IconBag,
+  IconGift,
+  IconHome,
+  IconScan,
+  IconUser,
+} from '@/components/icons/EcoIcons';
+
 import { SS } from './ss/SS';
+
+const NAV_ICONS = {
+  home: IconHome,
+  scan: IconScan,
+  bags: IconBag,
+  rewards: IconGift,
+  profile: IconUser,
+} as const;
 
 export interface BottomNavItem {
   href: string;
@@ -43,6 +59,7 @@ export function BottomNav({ items }: { items?: readonly BottomNavItem[] }) {
           pathname === item.href ||
           (item.href !== '/resident' && pathname.startsWith(item.href));
         const color = active ? SS.brand : SS.ink;
+        const Icon = NAV_ICONS[item.key];
         return (
           <Link
             key={item.href}
@@ -57,15 +74,7 @@ export function BottomNav({ items }: { items?: readonly BottomNavItem[] }) {
               textDecoration: 'none',
             }}
           >
-            <div
-              style={{
-                width: 22,
-                height: 22,
-                borderRadius: 6,
-                background: active ? SS.brand : 'transparent',
-                border: `2px solid ${color}`,
-              }}
-            />
+            <Icon size={22} stroke={active ? 2.5 : 2} color={color} />
             <span
               style={{
                 fontSize: 11,
