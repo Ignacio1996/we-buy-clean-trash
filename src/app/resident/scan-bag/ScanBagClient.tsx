@@ -670,12 +670,13 @@ export function ScanBagClient() {
       />
       <div
         style={{
-          margin: '24px 20px',
+          margin: '24px auto',
+          width: 'min(70%, 260px)',
           borderRadius: 24,
           overflow: 'hidden',
           background: '#222',
           position: 'relative',
-          aspectRatio: '3 / 4',
+          aspectRatio: '1 / 1',
         }}
       >
         {cameraOn ? (
@@ -707,8 +708,8 @@ export function ScanBagClient() {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%,-50%)',
-            width: 220,
-            height: 220,
+            width: 150,
+            height: 150,
           }}
         >
           {[
@@ -722,8 +723,8 @@ export function ScanBagClient() {
               style={{
                 position: 'absolute',
                 ...p,
-                width: 40,
-                height: 40,
+                width: 28,
+                height: 28,
                 borderTop: p.top === 0 ? `4px solid ${SS.yellow}` : undefined,
                 borderBottom: p.bottom === 0 ? `4px solid ${SS.yellow}` : undefined,
                 borderLeft: p.left === 0 ? `4px solid ${SS.yellow}` : undefined,
