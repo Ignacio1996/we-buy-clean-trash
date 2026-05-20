@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { calculateBagOrderTotal, FREE_SHIPPING_THRESHOLD, SHIPPING_FEE } from '@/lib/logic/calculateBagOrderTotal';
+import { startBagCheckout } from '@/lib/payments/stripe-client';
 import { SS, SSPillButton, SSStickerCard } from '@/components/resident/ss/SS';
 
 const MIN_QTY = 1;
@@ -37,6 +38,8 @@ export function OrderBagsForm({
     setBusy(true);
     setError(null);
     try {
+      // 1. Server creates the bagOrders doc as `pending` (no route enqueue,
+      //    no welcome credit consumed yet — that happens at confirm time).
       const res = await fetch('/api/bag-orders', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -44,7 +47,22 @@ export function OrderBagsForm({
       });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body.error ?? 'order_failed');
-      router.replace(body.checkoutUrl);
+
+      // 2. $0 (welcome-credit-only) order: nothing to charge. Jump to the
+      //    success page; its server-side confirm flips status to queued.
+      if (body.total === 0) {
+        router.replace(`/resident/order-bags/success?order=${body.orderId}`);
+        return;
+      }
+
+      // 3. Paid order: hand off to the firestore-stripe-payments extension,
+      //    which writes a checkout_sessions doc and returns the Stripe URL.
+      //    startBagCheckout() does window.location.assign — flow leaves SPA.
+      await startBagCheckout({
+        orderId: body.orderId,
+        billableQuantity: body.billableQuantity,
+        includeShipping: !body.freeShipping,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'order_failed');
       setBusy(false);
@@ -190,7 +208,7 @@ export function OrderBagsForm({
             marginTop: 14,
           }}
         >
-          Pilot · mock Stripe — no card is charged
+          Secure checkout · Stripe (test mode)
         </div>
       )}
 

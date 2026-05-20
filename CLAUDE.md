@@ -49,12 +49,25 @@ src/middleware.ts      # role-based route gating
 
 Several integrations are stubbed for the pilot. The rule: **build the typed interface first, wire a stub that logs + writes to Firestore, leave a clear TODO for the real swap.** Business logic must not import vendor SDKs directly — go through a thin adapter (e.g. `lib/payments/stripe.ts` exposes `createCheckoutSession()`; pilot returns a mock success, real impl swaps in later).
 
-| Integration                             | Pilot stub                                               |
-| --------------------------------------- | -------------------------------------------------------- |
-| Stripe (bag orders)                     | Mock checkout returns simulated success                  |
-| Twilio SMS                              | `sendSMS()` → console.log + write to `smsLog` collection |
-| Amazon/Walmart gift cards               | Admin-fulfilled queue (`redemptions` collection)         |
-| "Pay Trash Bill" / "Donate" redemptions | Disabled stub buttons                                    |
+| Integration                             | Pilot status                                                                                                                              |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Stripe (bag orders)                     | **Real**, via the "Run Payments with Stripe" Firebase Extension + `@invertase/firestore-stripe-payments` client SDK. See "Stripe wiring." |
+| Twilio SMS                              | `sendSMS()` → console.log + write to `smsLog` collection                                                                                  |
+| Amazon/Walmart gift cards               | Admin-fulfilled queue (`redemptions` collection)                                                                                          |
+| "Pay Trash Bill" / "Donate" redemptions | Disabled stub buttons                                                                                                                     |
+
+### Stripe wiring
+
+Bag-order checkout deviates from the "all privileged writes via Admin SDK API routes" trust boundary by design — the Invertase extension is client-driven. Flow:
+
+1. `POST /api/bag-orders` (server) creates the `bagOrders` doc as `status: 'pending'`. No route enqueue, no welcome-credit consumption yet.
+2. `OrderBagsForm` calls `startBagCheckout()` (`src/lib/payments/stripe-client.ts`), which uses `@invertase/firestore-stripe-payments` to write `customers/{uid}/checkout_sessions`. The extension's Cloud Function calls Stripe and fills in `url`; the browser redirects to Stripe-hosted checkout.
+3. Stripe `success_url` → `/resident/order-bags/success?order=…` → `confirmBagOrder()` (`src/lib/payments/confirmBagOrder.ts`, server-only, Admin SDK) verifies the synced session's `payment_status === 'paid'` (matched by `metadata.orderId`), then in one transaction flips the order to `queued`, enqueues onto the next pending route, and consumes the welcome credit. Idempotent.
+4. If the Stripe webhook hasn't synced yet at success-page load, the page shows a "Confirming payment…" state with a client poller hitting `POST /api/bag-orders/[id]/confirm` until the order reconciles.
+
+`firestore.rules` includes the extension's required paths (`customers/{uid}/checkout_sessions|payments|subscriptions`, `products/{id}/prices`) — must be deployed for the extension to function under this repo's central rules.
+
+Env vars: `NEXT_PUBLIC_STRIPE_BAG_SHEET_PRICE_ID`, `NEXT_PUBLIC_STRIPE_SHIPPING_PRICE_ID` (Stripe Price IDs synced into Firestore by the extension; must match `BAG_SHEET_UNIT_PRICE_DOLLARS` and `SHIPPING_FEE`). $0 orders (welcome credit fully covers cart) skip Stripe and go straight to confirm.
 
 ## Points math (single source of truth)
 

@@ -3,9 +3,20 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export function InviteRowActions({ token, canRevoke }: { token: string; canRevoke: boolean }) {
+type EmailState = 'idle' | 'sending' | 'sent' | 'error';
+
+export function InviteRowActions({
+  token,
+  canRevoke,
+  canEmail,
+}: {
+  token: string;
+  canRevoke: boolean;
+  canEmail: boolean;
+}) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const [emailState, setEmailState] = useState<EmailState>('idle');
 
   async function handleCopy() {
     const url = `${window.location.origin}/invite/${token}`;
@@ -13,6 +24,16 @@ export function InviteRowActions({ token, canRevoke }: { token: string; canRevok
       await navigator.clipboard.writeText(url);
     } catch {
       window.prompt('Copy invite URL:', url);
+    }
+  }
+
+  async function handleEmail() {
+    setEmailState('sending');
+    try {
+      const res = await fetch(`/api/invites/${token}/send-email`, { method: 'POST' });
+      setEmailState(res.ok ? 'sent' : 'error');
+    } catch {
+      setEmailState('error');
     }
   }
 
@@ -27,6 +48,15 @@ export function InviteRowActions({ token, canRevoke }: { token: string; canRevok
     }
   }
 
+  const emailLabel =
+    emailState === 'sending'
+      ? 'Sending…'
+      : emailState === 'sent'
+        ? 'Sent ✓'
+        : emailState === 'error'
+          ? 'Failed — retry'
+          : 'Email link';
+
   return (
     <div className="flex justify-end gap-2">
       <button
@@ -36,6 +66,20 @@ export function InviteRowActions({ token, canRevoke }: { token: string; canRevok
       >
         Copy link
       </button>
+      {canEmail && (
+        <button
+          type="button"
+          onClick={handleEmail}
+          disabled={emailState === 'sending' || emailState === 'sent'}
+          className={`rounded border px-2 py-1 text-[11px] disabled:opacity-50 ${
+            emailState === 'error'
+              ? 'border-red-500/30 text-red-400 hover:bg-red-500/10'
+              : 'border-white/15 text-gray-300 hover:bg-white/10'
+          }`}
+        >
+          {emailLabel}
+        </button>
+      )}
       {canRevoke && (
         <button
           type="button"

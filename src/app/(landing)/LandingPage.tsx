@@ -3,19 +3,18 @@ import styles from './landing.module.css';
 import { WaitlistButton } from './WaitlistButton';
 
 const MARQUEE_ITEMS = [
-  'Aluminum $1.42 / lb',
-  'PET $0.18 / lb',
-  'HDPE $0.22 / lb',
-  'Cardboard $0.06 / lb',
-  'Glass $0.04 / lb',
-  'Steel $0.09 / lb',
-  'Mixed paper $0.05 / lb',
+  '♻ Aluminum Cans · 120 Points',
+  '♻ Plastic Bottles · 40 Points',
+  '♻ Milk Jugs · 100 Points',
+  '♻ Cardboard · 25 Points',
+  '♻ Glass Bottles · 60 Points',
+  '♻ Clean Bag Bonus · +50 Points',
 ];
 
 type Commodity = {
-  code: string;
+  emoji: string;
   name: string;
-  price: string;
+  points: string;
   unit: string;
   accept: string;
   bg: string;
@@ -26,67 +25,67 @@ type Commodity = {
 
 const COMMODITIES: Commodity[] = [
   {
-    code: 'Al',
-    name: 'Aluminum',
-    price: '$1.42',
-    unit: 'per lb',
-    accept: 'Cans · foil · trays',
+    emoji: '🥤',
+    name: 'Aluminum Cans',
+    points: '120',
+    unit: 'points per can',
+    accept: 'Soda · seltzer · beer cans',
     bg: '#ECECEC',
   },
   {
-    code: 'P1',
-    name: 'PET (#1)',
-    price: '$0.18',
-    unit: 'per lb',
+    emoji: '🧴',
+    name: 'Plastic Bottles',
+    points: '40',
+    unit: 'points per bottle',
     accept: 'Water · soda · juice bottles',
     bg: 'var(--sky)',
   },
   {
-    code: 'P2',
-    name: 'HDPE (#2)',
-    price: '$0.22',
-    unit: 'per lb',
-    accept: 'Milk jugs · detergent · shampoo',
+    emoji: '🥛',
+    name: 'Milk Jugs',
+    points: '100',
+    unit: 'points per jug',
+    accept: 'Milk · detergent · shampoo',
     bg: 'var(--mint)',
   },
   {
-    code: 'Cb',
+    emoji: '📦',
     name: 'Cardboard',
-    price: '$0.06',
-    unit: 'per lb',
+    points: '25',
+    unit: 'points per box',
     accept: 'Flattened only · no wax coating',
     bg: 'var(--peach)',
   },
   {
-    code: 'Gl',
-    name: 'Glass',
-    price: '$0.04',
-    unit: 'per lb',
+    emoji: '🍾',
+    name: 'Glass Bottles',
+    points: '60',
+    unit: 'points per bottle',
     accept: 'Clear · brown · green bottles',
     bg: 'var(--yellow)',
   },
   {
-    code: 'St',
-    name: 'Steel',
-    price: '$0.09',
-    unit: 'per lb',
-    accept: 'Soup cans · food tins · empty aerosol',
+    emoji: '🥫',
+    name: 'Steel Cans',
+    points: '30',
+    unit: 'points per can',
+    accept: 'Soup · food tins · empty aerosol',
     bg: '#ECECEC',
   },
   {
-    code: 'Mp',
-    name: 'Mixed paper',
-    price: '$0.05',
-    unit: 'per lb',
+    emoji: '📰',
+    name: 'Paper',
+    points: '15',
+    unit: 'points per stack',
     accept: 'Newspaper · office · magazines',
     bg: 'var(--sky)',
   },
   {
-    code: '×',
-    name: 'Not yet',
-    price: "Coming '26",
-    unit: 'on the roadmap',
-    accept: 'E-waste · textiles · #5 polypropylene',
+    emoji: '✨',
+    name: 'Clean Bag Bonus',
+    points: '+50',
+    unit: 'points per bag',
+    accept: 'Awarded when your bag is sorted clean',
     bg: 'var(--brand)',
     fg: '#fff',
     soon: true,
@@ -126,8 +125,11 @@ export function LandingPage() {
     <div className={styles.root}>
       {/* Top bar */}
       <div className={styles.topbar}>
-        <div className={styles.topbarWord}>
-          We Buy Clean Trash<span className={styles.topbarDot}>.</span>
+        <div className={styles.topbarBrand}>
+          <div className={styles.topbarWord}>
+            We Buy Clean Trash<span className={styles.topbarDot}>.</span>
+          </div>
+          <div className={styles.topbarTagline}>Turning recyclables into rewards.</div>
         </div>
         <nav className={styles.topbarNav}>
           <a href="#how">How it works</a>
@@ -160,16 +162,23 @@ export function LandingPage() {
       <section className={styles.hero}>
         <div className={styles.heroInner}>
           <div>
-            <div className={styles.eyebrow}>Curbside · zero commission · weekly</div>
+            <div className={styles.eyebrow}>Door side · zero commission · weekly</div>
             <h1 className={styles.heroTitle}>
               We pay you
               <br />
               for your <em>clean trash.</em>
             </h1>
             <p className={styles.lede}>
-              Bag your aluminum, PET, glass, and cardboard. We pick it up at the curb every week and
-              pay you in gift cards. No sorting centers. No bins to lug.
+              Separate your clean cans, bottles, and cardboard into pickup bags. Leave them door
+              side and earn rewards with every pickup.
             </p>
+            <div className={styles.heroTrust}>
+              <span className={styles.heroTrustBadge}>40+ yrs</span>
+              <span>
+                Built by operators with <strong>40+ years</strong> in recycling and waste
+                collection.
+              </span>
+            </div>
             <div className={styles.heroBrandsRow}>
               <span className={styles.heroBrandsLabel}>Cash out anytime</span>
               <span className={styles.heroBrandsList}>
@@ -205,7 +214,7 @@ export function LandingPage() {
               <span className={styles.heroCardV}>+$8.52</span>
             </div>
             <div className={styles.heroCardRow}>
-              <span>PET · 4.2 lbs</span>
+              <span>Plastic bottles · 4.2 lbs</span>
               <span className={styles.heroCardV}>+$0.76</span>
             </div>
             <div className={styles.heroCardRow}>
@@ -261,7 +270,7 @@ export function LandingPage() {
               <h3>Fill &amp; set out</h3>
               <p>
                 Clean, dry recyclables only. Tap &ldquo;set out for pickup&rdquo; the night before.
-                Curb by 5:30 PM.
+                Leave it door side by 5:30 PM.
               </p>
             </div>
             <div className={styles.step}>
@@ -280,17 +289,17 @@ export function LandingPage() {
       {/* Commodities */}
       <section className={`${styles.section} ${styles.sectionCream}`} id="accept">
         <div className={styles.sectionInner}>
-          <div className={styles.kicker}>Live rates · updated daily</div>
+          <div className={styles.kicker}>Earn points with every pickup</div>
           <h2 className={styles.h2}>What we take.</h2>
           <p className={styles.intro}>
-            Seven commodities, clean only. Rinse it out and let it dry — that&apos;s it. We don&apos;t
-            take anything contaminated by food, oil, or paint.
+            Rinse it. Let it dry. Drop it in the bag. Every clean item earns points — and a fully
+            clean bag earns a bonus on top.
           </p>
           <div className={styles.commodities}>
             {COMMODITIES.map((c) => (
               <div
                 key={c.name}
-                className={`${styles.commodity}${c.soon ? ` ${styles.commoditySoon}` : ''}`}
+                className={`${styles.commodity}${c.soon ? ` ${styles.commodityBonus}` : ''}`}
               >
                 <div
                   className={styles.commodityIcon}
@@ -299,15 +308,22 @@ export function LandingPage() {
                     ...(c.fg ? { color: c.fg } : {}),
                   }}
                 >
-                  {c.code}
+                  <span className={styles.commodityEmoji}>{c.emoji}</span>
                 </div>
                 <h4>{c.name}</h4>
-                <div className={styles.commodityPrice}>{c.price}</div>
+                <div className={styles.commodityPrice}>
+                  {c.points}
+                  <span className={styles.commodityPts}> pts</span>
+                </div>
                 <div className={styles.commodityUnit}>{c.unit}</div>
                 <div className={styles.commodityAccept}>{c.accept}</div>
               </div>
             ))}
           </div>
+          <p className={styles.commodityFootnote}>
+            100,000 points = $10 gift card. Point values shown are typical per item — actual points
+            depend on bag weight and sort quality.
+          </p>
         </div>
       </section>
 
@@ -402,7 +418,7 @@ export function LandingPage() {
               <div className={styles.whyNum}>01</div>
               <h3 className={styles.whyH}>Single-stream is dirty.</h3>
               <p className={styles.whyP}>
-                Roughly <strong>1 in 4 lbs</strong> of curbside recycling is contaminated by food,
+                Roughly <strong>1 in 4 lbs</strong> of mixed-bin recycling is contaminated by food,
                 liquid, or trash. Mixed loads get sold at a steep discount — or sent to landfill.
               </p>
             </div>
@@ -410,8 +426,9 @@ export function LandingPage() {
               <div className={styles.whyNum}>02</div>
               <h3 className={styles.whyH}>Clean streams are valuable.</h3>
               <p className={styles.whyP}>
-                Separated aluminum, PET, HDPE, cardboard, and paper trade at full commodity prices.
-                The gap between dirty and clean is <strong>real money sitting on the curb.</strong>
+                Separated aluminum cans, plastic bottles, milk jugs, and cardboard sell at full
+                market prices. The gap between dirty and clean is{' '}
+                <strong>real money sitting at your door.</strong>
               </p>
             </div>
             <div className={styles.whyCard}>
@@ -449,7 +466,7 @@ export function LandingPage() {
             every week.
           </h2>
           <p className={styles.intro}>
-            Curbside pickup is only useful if we show up. Here&apos;s what we commit to — and what
+            Door-side pickup is only useful if we show up. Here&apos;s what we commit to — and what
             happens when something goes sideways.
           </p>
           <div className={styles.reliabilityGrid}>
@@ -460,8 +477,8 @@ export function LandingPage() {
                 Thursdays · 6&nbsp;AM – 2&nbsp;PM
               </div>
               <p>
-                Set your bag at the curb the night before. We text you a confirmation when it&apos;s
-                been picked up.
+                Set your bag at your door the night before. We text you a confirmation when
+                it&apos;s been picked up.
               </p>
             </div>
             <div className={styles.reliabilityCard}>
@@ -582,8 +599,8 @@ export function LandingPage() {
               Clean Trash<span className={styles.footerDot}>.</span>
             </div>
             <div className={styles.footerTag}>
-              Curbside, zero-commission residential recycling. Pilot launching summer 2026 in
-              Oakland, CA.
+              Turning recyclables into rewards. Door-side, zero-commission residential recycling.
+              Pilot launching summer 2026 in Oakland, CA.
             </div>
           </div>
           <div>

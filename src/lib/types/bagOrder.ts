@@ -23,10 +23,14 @@ export interface BagOrderDoc {
   subtotal: number;
   shipping: number;
   total: number;
+  /** Stripe Checkout Session id, stamped during /confirm reconcile. */
   stripeSessionId: string | null;
+  /** Vestigial — was true for $0 stub orders before real Stripe; always false now. */
   stripeStubSuccess: boolean;
   status: BagOrderStatus;
   deliveryRouteId: string | null;
   createdAt: Timestamp;
+  /** Set when /api/bag-orders/[id]/confirm flips status `pending` → `queued`. */
+  paidAt: Timestamp | null;
   deliveredAt: Timestamp | null;
 }

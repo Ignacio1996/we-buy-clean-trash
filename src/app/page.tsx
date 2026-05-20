@@ -4,9 +4,9 @@ import { ROLE_HOME_PATH } from '@/lib/types/role';
 import { LandingPage } from './(landing)/LandingPage';
 
 export const metadata = {
-  title: 'We Buy Clean Trash — We pay you for your recyclables.',
+  title: 'We Buy Clean Trash — Turning recyclables into rewards.',
   description:
-    'Curbside, zero-commission residential recycling. Bag your aluminum, PET, glass, and cardboard — we pick it up weekly and pay you in gift cards.',
+    'Separate your clean cans, bottles, and cardboard into pickup bags. Leave them door side and earn rewards with every pickup. Built by operators with 40+ years in recycling.',
 };
 
 export default async function Home() {

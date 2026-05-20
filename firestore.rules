@@ -163,6 +163,37 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // ---- Stripe (firestore-stripe-payments extension) ----
+    // The "Run Payments with Stripe" extension and its client SDK
+    // (@invertase/firestore-stripe-payments) require these specific paths.
+    // Bag-order checkout: OrderBagsForm calls createCheckoutSession() in the
+    // browser, which writes to customers/{uid}/checkout_sessions; the
+    // extension's Cloud Function fills in `url`, the client redirects to
+    // Stripe, and the Stripe webhook syncs payments back. The server-side
+    // reconcile in /api/bag-orders/[id]/confirm reads checkout_sessions via
+    // the Admin SDK (bypassing these rules) to flip the order to `queued`.
+    match /products/{id} {
+      allow read: if true;
+      match /prices/{priceId} {
+        allow read: if true;
+      }
+      match /tax_rates/{taxId} {
+        allow read: if true;
+      }
+    }
+    match /customers/{uid} {
+      allow read: if isSelf(uid);
+      match /checkout_sessions/{id} {
+        allow read, write: if isSelf(uid);
+      }
+      match /subscriptions/{id} {
+        allow read: if isSelf(uid);
+      }
+      match /payments/{id} {
+        allow read: if isSelf(uid);
+      }
+    }
+
     // ---- Default deny ----
     // Any collection not explicitly allowed above is denied. New collections
     // must be added here before the client can read them.

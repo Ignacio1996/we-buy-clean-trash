@@ -32,11 +32,10 @@ import {
 
 const GIFT_CARD_POINTS = 100_000;
 
-const OPEN_ORDER_STATUSES: readonly BagOrderStatus[] = [
-  'pending',
-  'queued',
-  'out_for_delivery',
-];
+// `pending` is intentionally excluded — those are unpaid bagOrders sitting
+// between /api/bag-orders and the Stripe confirm. Surfacing them on the
+// dashboard would make abandoned checkouts look like real deliveries.
+const OPEN_ORDER_STATUSES: readonly BagOrderStatus[] = ['queued', 'out_for_delivery'];
 
 function formatPoints(points: number): string {
   return points.toLocaleString('en-US');

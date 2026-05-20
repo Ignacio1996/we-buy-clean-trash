@@ -108,7 +108,11 @@ export default async function AdminInvitesPage() {
                   <td className="px-4 py-3 text-gray-400">{formatTimestamp(inv.expiresAt)}</td>
                   <td className={`px-4 py-3 ${status.tone}`}>{status.label}</td>
                   <td className="px-4 py-3 text-right">
-                    <InviteRowActions token={inv.token} canRevoke={canRevoke} />
+                    <InviteRowActions
+                      token={inv.token}
+                      canRevoke={canRevoke}
+                      canEmail={canRevoke}
+                    />
                   </td>
                 </tr>
               ))
