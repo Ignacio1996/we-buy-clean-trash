@@ -4,6 +4,7 @@ export const SMS_PURPOSES = [
   'driver_on_the_way',
   'bag_processed',
   'contamination_warning',
+  'invite',
   'other',
 ] as const;
 export type SmsPurpose = (typeof SMS_PURPOSES)[number];

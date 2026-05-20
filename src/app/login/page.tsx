@@ -161,7 +161,7 @@ function LoginForm() {
             onChange={setEmail}
             type="email"
             autoComplete="email"
-            placeholder="aguirre@example.com"
+            placeholder="you@example.com"
             required
             background={SS.mint}
           />

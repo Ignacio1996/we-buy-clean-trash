@@ -3,20 +3,23 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-type EmailState = 'idle' | 'sending' | 'sent' | 'error';
+type SendState = 'idle' | 'sending' | 'sent' | 'error';
 
 export function InviteRowActions({
   token,
   canRevoke,
   canEmail,
+  canSms,
 }: {
   token: string;
   canRevoke: boolean;
   canEmail: boolean;
+  canSms: boolean;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
-  const [emailState, setEmailState] = useState<EmailState>('idle');
+  const [emailState, setEmailState] = useState<SendState>('idle');
+  const [smsState, setSmsState] = useState<SendState>('idle');
 
   async function handleCopy() {
     const url = `${window.location.origin}/invite/${token}`;
@@ -37,6 +40,16 @@ export function InviteRowActions({
     }
   }
 
+  async function handleSms() {
+    setSmsState('sending');
+    try {
+      const res = await fetch(`/api/invites/${token}/send-sms`, { method: 'POST' });
+      setSmsState(res.ok ? 'sent' : 'error');
+    } catch {
+      setSmsState('error');
+    }
+  }
+
   async function handleRevoke() {
     if (!confirm('Revoke this invite?')) return;
     setBusy(true);
@@ -48,14 +61,12 @@ export function InviteRowActions({
     }
   }
 
-  const emailLabel =
-    emailState === 'sending'
-      ? 'Sending…'
-      : emailState === 'sent'
-        ? 'Sent ✓'
-        : emailState === 'error'
-          ? 'Failed — retry'
-          : 'Email link';
+  function sendLabel(state: SendState, baseLabel: string): string {
+    if (state === 'sending') return 'Sending…';
+    if (state === 'sent') return 'Sent ✓';
+    if (state === 'error') return 'Failed — retry';
+    return baseLabel;
+  }
 
   return (
     <div className="flex justify-end gap-2">
@@ -77,7 +88,21 @@ export function InviteRowActions({
               : 'border-white/15 text-gray-300 hover:bg-white/10'
           }`}
         >
-          {emailLabel}
+          {sendLabel(emailState, 'Email link')}
+        </button>
+      )}
+      {canSms && (
+        <button
+          type="button"
+          onClick={handleSms}
+          disabled={smsState === 'sending' || smsState === 'sent'}
+          className={`rounded border px-2 py-1 text-[11px] disabled:opacity-50 ${
+            smsState === 'error'
+              ? 'border-red-500/30 text-red-400 hover:bg-red-500/10'
+              : 'border-white/15 text-gray-300 hover:bg-white/10'
+          }`}
+        >
+          {sendLabel(smsState, 'SMS link')}
         </button>
       )}
       {canRevoke && (

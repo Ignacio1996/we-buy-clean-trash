@@ -16,6 +16,14 @@ const ROLE_LABELS: Record<InvitableRole, string> = {
   admin: 'Admin',
 };
 
+type Channel = 'email' | 'phone' | 'both';
+
+interface Delivery {
+  channel: 'email' | 'sms';
+  ok: boolean;
+  error?: string;
+}
+
 interface Props {
   zones: ZoneView[];
   depots: DepotView[];
@@ -23,12 +31,14 @@ interface Props {
 
 export function InviteForm({ zones, depots }: Props) {
   const router = useRouter();
+  const [channel, setChannel] = useState<Channel>('email');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [role, setRole] = useState<InvitableRole>('operator');
   const [zoneId, setZoneId] = useState<string>('');
   const [depotId, setDepotId] = useState<string>('');
   const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<{ url: string } | null>(null);
+  const [result, setResult] = useState<{ url: string; deliveries: Delivery[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -41,7 +51,8 @@ export function InviteForm({ zones, depots }: Props) {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
-          email,
+          email: channel === 'phone' ? null : email,
+          phone: channel === 'email' ? null : phone,
           role,
           zoneId: zoneId || null,
           depotId: depotId || null,
@@ -51,8 +62,9 @@ export function InviteForm({ zones, depots }: Props) {
       if (!res.ok) {
         setError(typeof json.error === 'string' ? json.error : 'Failed to create invite.');
       } else {
-        setResult({ url: json.url });
+        setResult({ url: json.url, deliveries: json.deliveries ?? [] });
         setEmail('');
+        setPhone('');
         setZoneId('');
         setDepotId('');
         router.refresh();
@@ -64,6 +76,8 @@ export function InviteForm({ zones, depots }: Props) {
     }
   }
 
+  const showEmail = channel === 'email' || channel === 'both';
+  const showPhone = channel === 'phone' || channel === 'both';
   const showZone = role === 'operator';
   const showDepot = role === 'depot_worker' || role === 'depot_manager';
 
@@ -73,18 +87,52 @@ export function InviteForm({ zones, depots }: Props) {
       className="rounded-xl border border-white/10 bg-white/5 p-5"
     >
       <h2 className="text-sm font-semibold text-white">Send a new invite</h2>
+      <p className="mt-1 text-[11px] text-gray-500">
+        The join link is sent automatically through the selected channel.
+      </p>
+      <div className="mt-4 flex gap-2 text-xs">
+        {(['email', 'phone', 'both'] as const).map((c) => (
+          <button
+            key={c}
+            type="button"
+            onClick={() => setChannel(c)}
+            className={`rounded-lg border px-3 py-1.5 ${
+              channel === c
+                ? 'border-white bg-white text-black'
+                : 'border-white/15 text-gray-300 hover:bg-white/10'
+            }`}
+          >
+            {c === 'email' ? 'Email' : c === 'phone' ? 'Phone' : 'Both'}
+          </button>
+        ))}
+      </div>
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <label className="block">
-          <span className="text-[11px] uppercase tracking-wide text-gray-500">Email</span>
-          <input
-            required
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-gray-600 focus:border-white/30 focus:outline-none"
-            placeholder="person@example.com"
-          />
-        </label>
+        {showEmail && (
+          <label className="block">
+            <span className="text-[11px] uppercase tracking-wide text-gray-500">Email</span>
+            <input
+              required={showEmail}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-gray-600 focus:border-white/30 focus:outline-none"
+              placeholder="person@example.com"
+            />
+          </label>
+        )}
+        {showPhone && (
+          <label className="block">
+            <span className="text-[11px] uppercase tracking-wide text-gray-500">Phone</span>
+            <input
+              required={showPhone}
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-gray-600 focus:border-white/30 focus:outline-none"
+              placeholder="+15551234567"
+            />
+          </label>
+        )}
         <label className="block">
           <span className="text-[11px] uppercase tracking-wide text-gray-500">Role</span>
           <select
@@ -140,13 +188,23 @@ export function InviteForm({ zones, depots }: Props) {
           disabled={busy}
           className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-black disabled:opacity-50"
         >
-          {busy ? 'Creating…' : 'Create invite'}
+          {busy ? 'Sending…' : 'Send invite'}
         </button>
         {error && <span className="text-xs text-red-400">{error}</span>}
       </div>
       {result && (
         <div className="mt-4 rounded-lg border border-green-500/20 bg-green-500/10 p-3 text-xs">
-          <div className="text-green-400">Invite created. Share this link:</div>
+          <div className="text-green-400">Invite created and sent.</div>
+          {result.deliveries.map((d) => (
+            <div
+              key={d.channel}
+              className={`mt-1 ${d.ok ? 'text-green-300' : 'text-red-400'}`}
+            >
+              {d.channel === 'email' ? 'Email' : 'SMS'}:{' '}
+              {d.ok ? 'queued ✓' : `failed — ${d.error ?? 'unknown error'}`}
+            </div>
+          ))}
+          <div className="mt-2 text-gray-400">Share link manually if needed:</div>
           <div className="mt-1 break-all font-mono text-white">{result.url}</div>
         </div>
       )}

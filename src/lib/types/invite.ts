@@ -5,7 +5,8 @@ export type InviteStatus = 'pending' | 'consumed' | 'revoked' | 'expired';
 
 export interface InviteDoc {
   token: string;
-  email: string;
+  email: string | null;
+  phone: string | null;
   role: Exclude<Role, 'resident'>;
   zoneId: string | null;
   depotId: string | null;

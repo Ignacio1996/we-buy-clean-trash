@@ -587,7 +587,7 @@ function AccountStep({
           label="Email"
           value={email}
           onChange={onEmail}
-          placeholder="aguirre@example.com"
+          placeholder="you@example.com"
           type="email"
           autoComplete="email"
         />

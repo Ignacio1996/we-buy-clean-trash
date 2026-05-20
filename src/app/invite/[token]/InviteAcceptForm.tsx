@@ -15,19 +15,21 @@ type Mode = 'new' | 'existing';
 
 export function InviteAcceptForm({
   token,
-  email,
+  email: invitedEmail,
   role,
 }: {
   token: string;
-  email: string;
+  email: string | null;
   role: Exclude<Role, 'resident'>;
 }) {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>('new');
   const [name, setName] = useState('');
+  const [email, setEmail] = useState(invitedEmail ?? '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const emailLocked = !!invitedEmail;
 
   async function submitAccept(idToken: string) {
     const res = await fetch('/api/accept-invite', {
@@ -129,9 +131,16 @@ export function InviteAcceptForm({
         />
         <input
           type="email"
+          required
+          placeholder="Email"
           value={email}
-          readOnly
-          className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 text-gray-600"
+          onChange={(e) => setEmail(e.target.value)}
+          readOnly={emailLocked}
+          className={`w-full rounded border px-3 py-2 ${
+            emailLocked
+              ? 'border-gray-200 bg-gray-50 text-gray-600'
+              : 'border-gray-300'
+          }`}
         />
         <input
           type="password"

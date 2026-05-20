@@ -2,24 +2,13 @@ import 'server-only';
 import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import type { SmsPurpose, SmsDeliveryStatus } from '@/lib/types/smsLog';
+import { toE164 } from '@/lib/phone/normalize';
 
 export interface SendSmsInput {
   toPhone: string;
   body: string;
   purpose: SmsPurpose;
   relatedDocId?: string | null;
-}
-
-// Convert a loose US phone string ("555-123-4567", "(555) 123 4567", "+15551234567")
-// to E.164. Returns null if it can't be safely normalized.
-function toE164(raw: string): string | null {
-  const trimmed = raw.trim();
-  if (!trimmed) return null;
-  if (/^\+\d{8,15}$/.test(trimmed)) return trimmed;
-  const digits = trimmed.replace(/\D/g, '');
-  if (digits.length === 10) return `+1${digits}`;
-  if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
-  return null;
 }
 
 let cachedClient: import('twilio').Twilio | null | undefined;

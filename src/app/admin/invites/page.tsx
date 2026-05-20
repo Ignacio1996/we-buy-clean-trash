@@ -87,7 +87,7 @@ export default async function AdminInvitesPage() {
         <table className="w-full text-left text-sm">
           <thead className="bg-white/5 text-[11px] uppercase tracking-wide text-gray-500">
             <tr>
-              <th className="px-4 py-3 font-medium">Email</th>
+              <th className="px-4 py-3 font-medium">Contact</th>
               <th className="px-4 py-3 font-medium">Role</th>
               <th className="px-4 py-3 font-medium">Sent</th>
               <th className="px-4 py-3 font-medium">Expires</th>
@@ -105,7 +105,13 @@ export default async function AdminInvitesPage() {
             ) : (
               invites.map(({ invite: inv, status, canRevoke }) => (
                 <tr key={inv.token} className="text-gray-300">
-                  <td className="px-4 py-3 text-white">{inv.email}</td>
+                  <td className="px-4 py-3 text-white">
+                    {inv.email && <div>{inv.email}</div>}
+                    {inv.phone && (
+                      <div className={inv.email ? 'text-xs text-gray-400' : ''}>{inv.phone}</div>
+                    )}
+                    {!inv.email && !inv.phone && <span className="text-gray-500">—</span>}
+                  </td>
                   <td className="px-4 py-3 text-gray-400">{roleLabel(inv.role)}</td>
                   <td className="px-4 py-3 text-gray-400">{formatTimestamp(inv.createdAt)}</td>
                   <td className="px-4 py-3 text-gray-400">{formatTimestamp(inv.expiresAt)}</td>
@@ -114,7 +120,8 @@ export default async function AdminInvitesPage() {
                     <InviteRowActions
                       token={inv.token}
                       canRevoke={canRevoke}
-                      canEmail={canRevoke}
+                      canEmail={canRevoke && !!inv.email}
+                      canSms={canRevoke && !!inv.phone}
                     />
                   </td>
                 </tr>
