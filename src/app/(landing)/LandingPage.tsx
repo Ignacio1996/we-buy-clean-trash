@@ -1,6 +1,88 @@
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import styles from './landing.module.css';
 import { WaitlistButton } from './WaitlistButton';
+
+const svgProps = {
+  viewBox: '0 0 24 24',
+  width: 32,
+  height: 32,
+  fill: 'none',
+  stroke: 'var(--ink)',
+  strokeWidth: 2,
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+} as const;
+
+const ICON_ALUMINUM = (
+  <svg {...svgProps} aria-hidden="true">
+    <path d="M7 3.5h10v1.6c0 .6-.4 1-1 1H8c-.6 0-1-.4-1-1V3.5z" />
+    <path d="M7.5 6.1h9v13.4c0 .6-.5 1-1 1H8.5c-.6 0-1-.5-1-1V6.1z" />
+    <path d="M9.5 9.5h5" />
+    <path d="M9.5 12.5h5" />
+  </svg>
+);
+
+const ICON_PET = (
+  <svg {...svgProps} aria-hidden="true">
+    <path d="M10 3h4v1.5h-4z" />
+    <path d="M10 4.5h4v2l1.2 2c.5.8.8 1.8.8 2.7v8.3c0 1.1-.9 2-2 2h-4c-1.1 0-2-.9-2-2v-8.3c0-.9.3-1.9.8-2.7L10 6.5v-2z" />
+    <path d="M8.8 11.2h6.4" />
+  </svg>
+);
+
+const ICON_HDPE = (
+  <svg {...svgProps} aria-hidden="true">
+    <path d="M9 3h4v3H9z" />
+    <path d="M6 6h7v14.5c0 .3-.2.5-.5.5h-6c-.3 0-.5-.2-.5-.5V6z" />
+    <path d="M13 9h3.5c.3 0 .5.2.5.5v4c0 .3-.2.5-.5.5H13" />
+    <path d="M7.5 14h4" />
+  </svg>
+);
+
+const ICON_CARDBOARD = (
+  <svg {...svgProps} aria-hidden="true">
+    <path d="M3 7.5l9-3.5 9 3.5v9.5l-9 3.5-9-3.5V7.5z" />
+    <path d="M3 7.5l9 3.5 9-3.5" />
+    <path d="M12 11v9.5" />
+    <path d="M8 5.7l9 3.5" />
+  </svg>
+);
+
+const ICON_GLASS = (
+  <svg {...svgProps} aria-hidden="true">
+    <path d="M10.5 3h3v3.5h-3z" />
+    <path d="M10.5 6.5h3v2.2l1.5 2c.3.4.5.9.5 1.5v7.3c0 .8-.7 1.5-1.5 1.5h-4c-.8 0-1.5-.7-1.5-1.5v-7.3c0-.6.2-1.1.5-1.5l1.5-2V6.5z" />
+    <rect x="9" y="13" width="6" height="3" />
+  </svg>
+);
+
+const ICON_STEEL = (
+  <svg {...svgProps} aria-hidden="true">
+    <ellipse cx="12" cy="5" rx="6" ry="1.8" />
+    <path d="M6 5v14c0 1 2.7 1.8 6 1.8s6-.8 6-1.8V5" />
+    <path d="M6 9.5c0 1 2.7 1.8 6 1.8s6-.8 6-1.8" />
+    <path d="M8 13.5h8" />
+    <path d="M8 16h5" />
+  </svg>
+);
+
+const ICON_PAPER = (
+  <svg {...svgProps} aria-hidden="true">
+    <path d="M5 6h11v14H5z" />
+    <path d="M16 9h3v10c0 .6-.4 1-1 1h-2" />
+    <path d="M7.5 9h6" />
+    <path d="M7.5 12h6" />
+    <path d="M7.5 15h6" />
+    <path d="M7.5 17.5h4" />
+  </svg>
+);
+
+const ICON_STAR = (
+  <svg {...svgProps} aria-hidden="true" stroke="#fff">
+    <path d="M12 3l2.6 5.5 6 .9-4.4 4.2 1.1 6L12 16.7 6.7 19.6l1.1-6L3.4 9.4l6-.9L12 3z" />
+  </svg>
+);
 
 const MARQUEE_ITEMS = [
   '♻ Aluminum Cans · 120 Points',
@@ -12,7 +94,7 @@ const MARQUEE_ITEMS = [
 ];
 
 type Commodity = {
-  emoji: string;
+  icon: ReactNode;
   name: string;
   points: string;
   unit: string;
@@ -25,7 +107,7 @@ type Commodity = {
 
 const COMMODITIES: Commodity[] = [
   {
-    emoji: '🥤',
+    icon: ICON_ALUMINUM,
     name: 'Aluminum Cans',
     points: '120',
     unit: 'points per can',
@@ -33,7 +115,7 @@ const COMMODITIES: Commodity[] = [
     bg: '#ECECEC',
   },
   {
-    emoji: '🧴',
+    icon: ICON_PET,
     name: 'Plastic Bottles',
     points: '40',
     unit: 'points per bottle',
@@ -41,7 +123,7 @@ const COMMODITIES: Commodity[] = [
     bg: 'var(--sky)',
   },
   {
-    emoji: '🥛',
+    icon: ICON_HDPE,
     name: 'Milk Jugs',
     points: '100',
     unit: 'points per jug',
@@ -49,7 +131,7 @@ const COMMODITIES: Commodity[] = [
     bg: 'var(--mint)',
   },
   {
-    emoji: '📦',
+    icon: ICON_CARDBOARD,
     name: 'Cardboard',
     points: '25',
     unit: 'points per box',
@@ -57,7 +139,7 @@ const COMMODITIES: Commodity[] = [
     bg: 'var(--peach)',
   },
   {
-    emoji: '🍾',
+    icon: ICON_GLASS,
     name: 'Glass Bottles',
     points: '60',
     unit: 'points per bottle',
@@ -65,7 +147,7 @@ const COMMODITIES: Commodity[] = [
     bg: 'var(--yellow)',
   },
   {
-    emoji: '🥫',
+    icon: ICON_STEEL,
     name: 'Steel Cans',
     points: '30',
     unit: 'points per can',
@@ -73,7 +155,7 @@ const COMMODITIES: Commodity[] = [
     bg: '#ECECEC',
   },
   {
-    emoji: '📰',
+    icon: ICON_PAPER,
     name: 'Paper',
     points: '15',
     unit: 'points per stack',
@@ -81,7 +163,7 @@ const COMMODITIES: Commodity[] = [
     bg: 'var(--sky)',
   },
   {
-    emoji: '✨',
+    icon: ICON_STAR,
     name: 'Clean Bag Bonus',
     points: '+50',
     unit: 'points per bag',
@@ -308,7 +390,7 @@ export function LandingPage() {
                     ...(c.fg ? { color: c.fg } : {}),
                   }}
                 >
-                  <span className={styles.commodityEmoji}>{c.emoji}</span>
+                  {c.icon}
                 </div>
                 <h4>{c.name}</h4>
                 <div className={styles.commodityPrice}>
