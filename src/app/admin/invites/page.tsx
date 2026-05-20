@@ -5,6 +5,7 @@ import type { ZoneDoc } from '@/lib/types/zone';
 import type { DepotDoc } from '@/lib/types/depot';
 import { InviteForm } from './InviteForm';
 import { InviteRowActions } from './InviteRowActions';
+import { TestSmsForm } from './TestSmsForm';
 import { GuideLink } from '@/components/admin/GuideLink';
 
 export const dynamic = 'force-dynamic';
@@ -78,6 +79,8 @@ export default async function AdminInvitesPage() {
       </header>
 
       <InviteForm zones={zones} depots={depots} />
+
+      <TestSmsForm />
 
       <h2 className="mt-10 text-sm font-semibold text-white">Recent invites</h2>
       <div className="mt-3 overflow-hidden rounded-xl border border-white/10">
