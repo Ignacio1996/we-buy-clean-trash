@@ -127,6 +127,7 @@ export async function POST(request: Request) {
       depotId: null,
       pointsBalance: SIGNUP_BONUS_POINTS,
       freeSheetClaimed: false,
+      onboardingCompletedAt: FieldValue.serverTimestamp(),
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });

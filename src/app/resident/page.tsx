@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
 import { pointsToDollars } from '@/lib/logic/pointsToDollars';
@@ -78,7 +77,6 @@ export default async function ResidentHome() {
   const uid = session!.uid;
   const userSnap = await adminDb.collection('users').doc(uid).get();
   const user = userSnap.data() ?? {};
-  if (!user.onboardingCompletedAt) redirect('/resident/welcome');
   if (resolveAccountType(user) === 'commercial_site') {
     return (
       <CommercialResidentHome

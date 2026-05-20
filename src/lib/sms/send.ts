@@ -1,7 +1,7 @@
 import 'server-only';
 import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
-import type { SmsPurpose } from '@/lib/types/smsLog';
+import type { SmsPurpose, SmsDeliveryStatus } from '@/lib/types/smsLog';
 
 export interface SendSmsInput {
   toPhone: string;
@@ -10,14 +10,86 @@ export interface SendSmsInput {
   relatedDocId?: string | null;
 }
 
+// Convert a loose US phone string ("555-123-4567", "(555) 123 4567", "+15551234567")
+// to E.164. Returns null if it can't be safely normalized.
+function toE164(raw: string): string | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  if (/^\+\d{8,15}$/.test(trimmed)) return trimmed;
+  const digits = trimmed.replace(/\D/g, '');
+  if (digits.length === 10) return `+1${digits}`;
+  if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
+  return null;
+}
+
+let cachedClient: import('twilio').Twilio | null | undefined;
+
+async function getTwilioClient(): Promise<import('twilio').Twilio | null> {
+  if (cachedClient !== undefined) return cachedClient;
+  const sid = process.env.TWILIO_ACCOUNT_SID;
+  const token = process.env.TWILIO_AUTH_TOKEN;
+  if (!sid || !token) {
+    cachedClient = null;
+    return null;
+  }
+  const { default: twilio } = await import('twilio');
+  cachedClient = twilio(sid, token);
+  return cachedClient;
+}
+
 export async function sendSMS(input: SendSmsInput): Promise<void> {
-  // TODO(phase-post-pilot): replace with Twilio SDK call.
-  console.log(`[sms-stub] to=${input.toPhone} purpose=${input.purpose} body=${input.body}`);
+  const mode = process.env.SMS_MODE === 'twilio' ? 'twilio' : 'stub';
+
+  let status: SmsDeliveryStatus = 'stub';
+  let provider: 'stub' | 'twilio' = 'stub';
+  let messageSid: string | null = null;
+  let errorMessage: string | null = null;
+
+  if (mode === 'twilio') {
+    provider = 'twilio';
+    const from = process.env.TWILIO_FROM_NUMBER;
+    const e164 = toE164(input.toPhone);
+    const client = await getTwilioClient();
+
+    if (!client || !from) {
+      status = 'failed';
+      errorMessage = !client
+        ? 'TWILIO_ACCOUNT_SID/TWILIO_AUTH_TOKEN missing'
+        : 'TWILIO_FROM_NUMBER missing';
+      console.error(`[sms] config error: ${errorMessage}`);
+    } else if (!e164) {
+      status = 'skipped';
+      errorMessage = `unparseable phone "${input.toPhone}"`;
+      console.warn(`[sms] ${errorMessage}`);
+    } else {
+      try {
+        const msg = await client.messages.create({
+          to: e164,
+          from,
+          body: input.body,
+        });
+        status = 'sent';
+        messageSid = msg.sid;
+        console.log(`[sms] sent sid=${msg.sid} to=${e164} purpose=${input.purpose}`);
+      } catch (err) {
+        status = 'failed';
+        errorMessage = err instanceof Error ? err.message : String(err);
+        console.error(`[sms] twilio send failed: ${errorMessage}`);
+      }
+    }
+  } else {
+    console.log(`[sms-stub] to=${input.toPhone} purpose=${input.purpose} body=${input.body}`);
+  }
+
   await adminDb.collection('smsLog').add({
     toPhone: input.toPhone,
     body: input.body,
     purpose: input.purpose,
     relatedDocId: input.relatedDocId ?? null,
+    status,
+    provider,
+    messageSid,
+    errorMessage,
     createdAt: FieldValue.serverTimestamp(),
   });
 }
