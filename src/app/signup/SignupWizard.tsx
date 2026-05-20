@@ -19,6 +19,7 @@ import {
   SHIPPING_FEE,
   calculateBagOrderTotal,
 } from '@/lib/logic/calculateBagOrderTotal';
+import { startBagCheckout } from '@/lib/payments/stripe-client';
 
 type Step = 'splash' | 'address' | 'how' | 'account' | 'password' | 'first';
 
@@ -133,6 +134,9 @@ export function SignupWizard() {
     setBusy(true);
     setError(null);
     try {
+      // 1. Create the bag order as `pending`. The server hasn't enqueued onto
+      //    a route or consumed the welcome credit yet — that happens at
+      //    confirm time (free orders) or after Stripe pays (paid orders).
       const res = await fetch('/api/bag-orders', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -140,7 +144,23 @@ export function SignupWizard() {
       });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body.error ?? 'order_failed');
-      router.replace(body.checkoutUrl ?? '/resident');
+
+      // 2. $0 free-credit order: skip Stripe and go straight to the success
+      //    page, whose server render calls confirmBagOrder and flips the
+      //    order from `pending` → `queued`. Without this hop the order would
+      //    stay `pending` and never appear on the resident home.
+      if (body.total === 0) {
+        router.replace(`/resident/order-bags/success?order=${body.orderId}`);
+        return;
+      }
+
+      // 3. Paid order: hand off to firestore-stripe-payments. Browser leaves
+      //    the SPA; Stripe success_url returns to the same success page.
+      await startBagCheckout({
+        orderId: body.orderId,
+        billableQuantity: body.billableQuantity,
+        includeShipping: !body.freeShipping,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'order_failed');
       setBusy(false);
