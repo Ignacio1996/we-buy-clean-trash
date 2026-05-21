@@ -8,6 +8,7 @@ import {
   type MaterialId,
 } from '@/lib/types/material';
 import { GuideLink } from '@/components/admin/GuideLink';
+import { ResidentInviteCard } from './ResidentInviteCard';
 import {
   loadContaminationAlerts,
   loadOperatorLeaderboard,
@@ -93,7 +94,10 @@ export default async function AdminDashboard() {
           <h1 className="text-2xl font-semibold text-white">Dashboard</h1>
           <p className="mt-1 text-xs text-gray-500">Live counts across all zones · {monthLabel}</p>
         </div>
-        <GuideLink href="/user-guides/phase-9-admin-polish.html" />
+        <div className="flex items-center gap-3">
+          <ResidentInviteCard />
+          <GuideLink href="/user-guides/phase-9-admin-polish.html" />
+        </div>
       </header>
 
       <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">

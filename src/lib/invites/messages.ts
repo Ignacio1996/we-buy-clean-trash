@@ -51,3 +51,22 @@ export function buildInviteSms(args: {
   const role = roleLabel(args.role);
   return `We Buy Clean Trash: you're invited as a ${role}. Accept here: ${args.acceptUrl}`;
 }
+
+export function buildResidentInviteEmail(args: {
+  signupUrl: string;
+}): { subject: string; text: string; html: string } {
+  const subject = 'Join We Buy Clean Trash — sign up and start earning';
+  const text =
+    `You've been invited to join We Buy Clean Trash as a resident.\n\n` +
+    `Sign up here:\n${args.signupUrl}\n\n` +
+    `New members get a 10,000 point welcome bonus.`;
+  const html =
+    `<p>You&rsquo;ve been invited to join <strong>We Buy Clean Trash</strong> as a resident.</p>` +
+    `<p><a href="${args.signupUrl}">Sign up here</a></p>` +
+    `<p style="color:#666;font-size:12px">New members get a 10,000 point welcome bonus.</p>`;
+  return { subject, text, html };
+}
+
+export function buildResidentInviteSms(args: { signupUrl: string }): string {
+  return `We Buy Clean Trash: you're invited to join. Sign up here: ${args.signupUrl}`;
+}
