@@ -3,14 +3,18 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+type LabelSize = '2.25x1.25' | '4x6';
+
 export function PrintBar({
   sheetId,
   sheetNumber,
   printedLabel,
+  size,
 }: {
   sheetId: string;
   sheetNumber: string;
   printedLabel: string | null;
+  size: LabelSize;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -52,6 +56,20 @@ export function PrintBar({
             {error}
           </span>
         )}
+        <div className="flex overflow-hidden rounded-md border border-gray-300 text-xs">
+          <a
+            href={`/admin/bags/${sheetId}/print`}
+            className={`px-2.5 py-1.5 ${size === '2.25x1.25' ? 'bg-black text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+          >
+            2.25 × 1.25
+          </a>
+          <a
+            href={`/admin/bags/${sheetId}/print?size=4x6`}
+            className={`px-2.5 py-1.5 ${size === '4x6' ? 'bg-black text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+          >
+            4 × 6
+          </a>
+        </div>
         <button
           type="button"
           onClick={printAndMark}
