@@ -7,6 +7,7 @@ import { COLLECTION_DAY_LABELS } from '@/lib/types/commercialAccount';
 import { BIN_DISPLAY_NAMES, BIN_SIZES, type BinSize } from '@/lib/logic/binWeightTable';
 import type { MaterialId } from '@/lib/types/material';
 import type { MeasurementMode } from '@/lib/types/material';
+import { AddressAutocompleteField } from '@/components/address/AddressAutocompleteField';
 
 export type CommercialAccountView = Omit<CommercialAccountDoc, 'createdAt' | 'updatedAt'> & {
   binCount?: number;
@@ -437,10 +438,19 @@ function NewAccountForm({
           onChange={(v) => setForm((f) => ({ ...f, contactEmail: v }))}
           className="sm:col-span-2"
         />
-        <Field
+        <AddressAutocompleteField
           label="Street"
           value={form.street}
           onChange={(v) => setForm((f) => ({ ...f, street: v }))}
+          onSelect={(parsed) =>
+            setForm((f) => ({
+              ...f,
+              street: parsed.street || f.street,
+              city: parsed.city || f.city,
+              state: parsed.state || f.state,
+              postalCode: parsed.postalCode || f.postalCode,
+            }))
+          }
           required
           className="sm:col-span-2"
         />

@@ -6,6 +6,7 @@ import type { ZoneDoc } from '@/lib/types/zone';
 import type { DepotDoc } from '@/lib/types/depot';
 import { resolveAcceptedMaterials } from '@/lib/types/depot';
 import { type MaterialId, type PayoutMode } from '@/lib/types/material';
+import { AddressAutocompleteField } from '@/components/address/AddressAutocompleteField';
 
 type ZoneView = Omit<ZoneDoc, 'createdAt'>;
 type DepotView = Omit<DepotDoc, 'createdAt'>;
@@ -257,10 +258,20 @@ function DepotForm() {
           onChange={(v) => setForm((f) => ({ ...f, name: v }))}
           className="sm:col-span-2"
         />
-        <Input
+        <AddressAutocompleteField
           label="Street"
           value={form.street}
           onChange={(v) => setForm((f) => ({ ...f, street: v }))}
+          onSelect={(parsed) =>
+            setForm((f) => ({
+              ...f,
+              street: parsed.street || f.street,
+              city: parsed.city || f.city,
+              state: parsed.state || f.state,
+              postalCode: parsed.postalCode || f.postalCode,
+            }))
+          }
+          required
           className="sm:col-span-2"
         />
         <Input label="City" value={form.city} onChange={(v) => setForm((f) => ({ ...f, city: v }))} />
