@@ -561,8 +561,8 @@ export function ScanConfirmClient({
                 }}
               >
                 {contamination
-                  ? 'We&rsquo;ll log this and the depot will sort it out at intake. The pickup still counts.'
-                  : 'We&rsquo;ll log these notes against the bag for the depot.'}
+                  ? 'We’ll log this and the depot will sort it out at intake. The pickup still counts.'
+                  : 'We’ll log these notes against the bag for the depot.'}
               </div>
             </div>
           </div>
