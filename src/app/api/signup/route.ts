@@ -3,6 +3,8 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { geocodeAddress } from '@/lib/maps/geocode';
 import { normalizePhone } from '@/lib/types/user';
+import { sendEmail } from '@/lib/email/send';
+import { buildResidentWelcomeEmail } from '@/lib/email/welcome';
 
 export const runtime = 'nodejs';
 
@@ -142,6 +144,29 @@ export async function POST(request: Request) {
       createdAt: FieldValue.serverTimestamp(),
     });
   });
+
+  // Fire-and-log the welcome email. The Firestore Send Email extension picks
+  // it up asynchronously, so a failure here must never block signup.
+  if (email) {
+    try {
+      const origin = request.headers.get('origin') ?? new URL(request.url).origin;
+      const { subject, text, html } = buildResidentWelcomeEmail({
+        name: payload.name,
+        dashboardUrl: `${origin}/resident`,
+        orderBagsUrl: `${origin}/resident/order-bags`,
+      });
+      await sendEmail({
+        to: email,
+        subject,
+        text,
+        html,
+        purpose: 'welcome',
+        relatedDocId: uid,
+      });
+    } catch (err) {
+      console.error('[signup] welcome email send failed', err);
+    }
+  }
 
   return NextResponse.json({ ok: true, role: 'resident' });
 }
