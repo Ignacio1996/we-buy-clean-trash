@@ -56,6 +56,42 @@ export function SSOpShell({
   );
 }
 
+function NavIcon({ kind, color }: { kind: 'route' | 'compost' | 'me'; color: string }) {
+  const common = {
+    width: 24,
+    height: 24,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: color,
+    strokeWidth: 2.25,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+  };
+  if (kind === 'route') {
+    return (
+      <svg {...common} aria-hidden="true">
+        <circle cx="6" cy="5" r="2.25" />
+        <circle cx="18" cy="19" r="2.25" />
+        <path d="M8.25 5h7.25a3.25 3.25 0 0 1 0 6.5h-7.5a3.25 3.25 0 0 0 0 6.5h7.75" />
+      </svg>
+    );
+  }
+  if (kind === 'compost') {
+    return (
+      <svg {...common} aria-hidden="true">
+        <path d="M5 20c0-7 5-13 14-13-0.5 8-6 13-14 13Z" />
+        <path d="M5 20c3-4 6-6.5 10-8" />
+      </svg>
+    );
+  }
+  return (
+    <svg {...common} aria-hidden="true">
+      <circle cx="12" cy="8" r="3.75" />
+      <path d="M4.5 20c1.5-3.75 5-5.5 7.5-5.5s6 1.75 7.5 5.5" />
+    </svg>
+  );
+}
+
 export function SSOpNav({ active }: { active: 'route' | 'compost' | 'me' }) {
   const items: Array<{ k: 'route' | 'compost' | 'me'; l: string; href: string }> = [
     { k: 'route', l: 'Route', href: '/operator' },
@@ -79,6 +115,7 @@ export function SSOpNav({ active }: { active: 'route' | 'compost' | 'me' }) {
     >
       {items.map(({ k, l, href }) => {
         const on = active === k;
+        const color = on ? SSOP.brand : SSOP.ink;
         return (
           <Link
             key={k}
@@ -89,19 +126,11 @@ export function SSOpNav({ active }: { active: 'route' | 'compost' | 'me' }) {
               alignItems: 'center',
               gap: 4,
               padding: 6,
-              color: on ? SSOP.brand : SSOP.ink,
+              color,
               textDecoration: 'none',
             }}
           >
-            <div
-              style={{
-                width: 22,
-                height: 22,
-                borderRadius: 6,
-                background: on ? SSOP.brand : 'transparent',
-                border: `2px solid ${on ? SSOP.brand : SSOP.ink}`,
-              }}
-            />
+            <NavIcon kind={k} color={color} />
             <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: 0.2 }}>{l}</span>
           </Link>
         );
