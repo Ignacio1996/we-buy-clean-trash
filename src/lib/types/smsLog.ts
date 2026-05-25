@@ -4,6 +4,7 @@ export const SMS_PURPOSES = [
   'driver_on_the_way',
   'bag_processed',
   'contamination_warning',
+  'delivery_scheduled',
   'invite',
   'other',
 ] as const;

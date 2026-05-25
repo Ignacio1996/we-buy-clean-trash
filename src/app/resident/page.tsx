@@ -64,6 +64,16 @@ function endsInLabel(endsAt: Date, now: Date): string {
   return `${d} day${d === 1 ? '' : 's'}`;
 }
 
+function formatTime12(hhmm: string): string {
+  const [hStr, mStr] = hhmm.split(':');
+  const h = Number(hStr);
+  const m = Number(mStr);
+  if (!Number.isFinite(h) || !Number.isFinite(m)) return hhmm;
+  const period = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return m === 0 ? `${h12} ${period}` : `${h12}:${mStr} ${period}`;
+}
+
 function formatPickupDay(date: Date, now: Date): string {
   if (isSameLocalDay(date, now)) return 'Today';
   const tomorrow = new Date(now);
@@ -131,6 +141,7 @@ export default async function ResidentHome() {
   const pickupRouteIds = scheduledPickups.map((p) => p.routeId);
   const routeIds = Array.from(new Set([...deliveryRouteIds, ...pickupRouteIds]));
   const routeDates = new Map<string, Date>();
+  const routeWindows = new Map<string, { start: string | null; end: string | null }>();
   if (routeIds.length > 0) {
     const routeSnaps = await adminDb.getAll(
       ...routeIds.map((id) => adminDb.collection('routes').doc(id)),
@@ -140,6 +151,10 @@ export default async function ResidentHome() {
       const route = snap.data() as RouteDoc;
       const ts = route.date?.toDate?.();
       if (ts) routeDates.set(snap.id, ts);
+      routeWindows.set(snap.id, {
+        start: route.deliveryWindowStart ?? null,
+        end: route.deliveryWindowEnd ?? null,
+      });
     }
   }
 
@@ -147,6 +162,13 @@ export default async function ResidentHome() {
   const headlineRouteDate = headlineOrder?.deliveryRouteId
     ? (routeDates.get(headlineOrder.deliveryRouteId) ?? null)
     : null;
+  const headlineRouteWindow = headlineOrder?.deliveryRouteId
+    ? (routeWindows.get(headlineOrder.deliveryRouteId) ?? null)
+    : null;
+  const headlineWindowLabel =
+    headlineRouteWindow?.start && headlineRouteWindow.end
+      ? `${formatTime12(headlineRouteWindow.start)}–${formatTime12(headlineRouteWindow.end)}`
+      : null;
 
   const nextPickupDate =
     scheduledPickups
@@ -294,6 +316,18 @@ export default async function ResidentHome() {
                     ? formatPickupDay(headlineRouteDate, now)
                     : 'Queued'}
             </div>
+            {headlineWindowLabel && (
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 800,
+                  color: SS.ink,
+                  marginTop: 6,
+                }}
+              >
+                Between {headlineWindowLabel}
+              </div>
+            )}
             <div
               style={{
                 fontSize: 14,

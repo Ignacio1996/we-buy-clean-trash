@@ -28,10 +28,12 @@ export function RouteBuilderClient({
     date: todayIsoDate(),
     zoneId: zones[0]?.id ?? '',
     operatorId: operators[0]?.id ?? '',
+    deliveryWindowStart: '09:00',
+    deliveryWindowEnd: '17:00',
   });
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<
-    { ok: true; stops: number; bagOrders: number; mocked: boolean } | null
+    { ok: true; stops: number; bagOrders: number; mocked: boolean; notified: number } | null
   >(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,6 +41,14 @@ export function RouteBuilderClient({
     e.preventDefault();
     if (!form.zoneId || !form.operatorId || !form.date) {
       setError('Pick a date, zone, and operator.');
+      return;
+    }
+    if (!form.deliveryWindowStart || !form.deliveryWindowEnd) {
+      setError('Pick a delivery time range.');
+      return;
+    }
+    if (form.deliveryWindowEnd <= form.deliveryWindowStart) {
+      setError('Delivery window end must be after start.');
       return;
     }
     setBusy(true);
@@ -61,6 +71,7 @@ export function RouteBuilderClient({
       stops: json.stops ?? 0,
       bagOrders: json.bagOrders ?? 0,
       mocked: Boolean(json.mocked),
+      notified: typeof json.notified === 'number' ? json.notified : 0,
     });
     router.refresh();
   }
@@ -117,6 +128,28 @@ export function RouteBuilderClient({
             )}
           </select>
         </label>
+        <label className="block">
+          <span className="text-[11px] uppercase tracking-wide text-gray-500">
+            Delivery window start
+          </span>
+          <input
+            type="time"
+            value={form.deliveryWindowStart}
+            onChange={(e) => setForm((f) => ({ ...f, deliveryWindowStart: e.target.value }))}
+            className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white focus:border-white/30 focus:outline-none"
+          />
+        </label>
+        <label className="block">
+          <span className="text-[11px] uppercase tracking-wide text-gray-500">
+            Delivery window end
+          </span>
+          <input
+            type="time"
+            value={form.deliveryWindowEnd}
+            onChange={(e) => setForm((f) => ({ ...f, deliveryWindowEnd: e.target.value }))}
+            className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white focus:border-white/30 focus:outline-none"
+          />
+        </label>
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <button
@@ -138,7 +171,8 @@ export function RouteBuilderClient({
           <span className="text-xs text-green-400">
             Built: {result.stops} stop{result.stops === 1 ? '' : 's'}, {result.bagOrders} bag order
             {result.bagOrders === 1 ? '' : 's'}
-            {result.mocked ? ' (mock ordering)' : ''}
+            {result.mocked ? ' (mock ordering)' : ''} · notified {result.notified} resident
+            {result.notified === 1 ? '' : 's'}
           </span>
         )}
       </div>
