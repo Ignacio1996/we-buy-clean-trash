@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
-import { parseZipCodes } from '@/lib/types/zone';
+import { parsePickupDays, parseZipCodes } from '@/lib/types/zone';
 import {
   assignResidentsToZone,
   unassignResidentsFromZone,
@@ -27,12 +27,15 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
   const updates: Record<string, unknown> = {};
   if (typeof raw.name === 'string' && raw.name.trim()) updates.name = raw.name.trim();
-  if (raw.pickupDayOfWeek !== undefined) {
-    const d = Number(raw.pickupDayOfWeek);
-    if (!Number.isInteger(d) || d < 0 || d > 6) {
-      return NextResponse.json({ error: 'invalid_pickup_day' }, { status: 400 });
+  if (raw.pickupDaysOfWeek !== undefined) {
+    const days = parsePickupDays(raw.pickupDaysOfWeek);
+    if (!days) {
+      return NextResponse.json({ error: 'invalid_pickup_days' }, { status: 400 });
     }
-    updates.pickupDayOfWeek = d;
+    updates.pickupDaysOfWeek = days;
+    // Clear the legacy single-day field on any zone that still has it so the
+    // two never disagree after an edit.
+    updates.pickupDayOfWeek = FieldValue.delete();
   }
   if (raw.zipCodes !== undefined) {
     const text =

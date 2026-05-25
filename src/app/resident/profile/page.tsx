@@ -5,6 +5,7 @@ import { LogoutButton } from '@/components/LogoutButton';
 import { PhoneField } from './PhoneField';
 import { pointsToDollars } from '@/lib/logic/pointsToDollars';
 import { ReferFriend } from '@/components/resident/ReferFriend';
+import { resolvePickupDays } from '@/lib/types/zone';
 import {
   SS,
   SSEyebrow,
@@ -81,8 +82,7 @@ export default async function ProfilePage() {
   ]);
   const address = addressSnap?.data();
   const zone = zoneSnap?.data();
-  const pickupDayIdx =
-    typeof zone?.pickupDayOfWeek === 'number' ? (zone.pickupDayOfWeek as number) : null;
+  const pickupDays = zone ? resolvePickupDays(zone) : [];
   const phone = typeof user.phone === 'string' ? user.phone : null;
 
   const fullName = typeof user.name === 'string' ? user.name : 'Member';
@@ -100,9 +100,11 @@ export default async function ProfilePage() {
   const cityLine =
     address && `${address.city ?? ''}${address.state ? `, ${address.state}` : ''} ${address.postalCode ?? ''}`.trim();
   const pickupDayLabel =
-    pickupDayIdx !== null && pickupDayIdx >= 0 && pickupDayIdx <= 6
-      ? `${DAYS[pickupDayIdx]}s · 6:00 PM`
-      : 'Not assigned yet';
+    pickupDays.length === 0
+      ? 'Not assigned yet'
+      : pickupDays.length === 1
+        ? `${DAYS[pickupDays[0]]}s · 6:00 PM`
+        : `${pickupDays.map((d) => DAYS[d]).join(' & ')} · 6:00 PM`;
 
   return (
     <SSScreen>

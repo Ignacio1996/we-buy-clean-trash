@@ -1,5 +1,5 @@
 import { adminDb } from '@/lib/firebase/admin';
-import type { ZoneDoc } from '@/lib/types/zone';
+import { resolvePickupDays, type ZoneDoc } from '@/lib/types/zone';
 import type { DepotDoc } from '@/lib/types/depot';
 import { loadActiveMaterials } from '@/lib/admin/loadActiveMaterials';
 import { ZonesClient } from './ZonesClient';
@@ -14,8 +14,13 @@ async function loadData() {
     loadActiveMaterials(),
   ]);
   const zones = zonesSnap.docs.map((d) => {
-    const { createdAt: _c, ...rest } = d.data() as ZoneDoc;
-    return { ...rest, zipCodes: Array.isArray(rest.zipCodes) ? rest.zipCodes : [] };
+    const data = d.data() as ZoneDoc & { pickupDayOfWeek?: number };
+    const { createdAt: _c, pickupDayOfWeek: _legacy, ...rest } = data;
+    return {
+      ...rest,
+      zipCodes: Array.isArray(rest.zipCodes) ? rest.zipCodes : [],
+      pickupDaysOfWeek: resolvePickupDays(data),
+    };
   });
   const depots = depotsSnap.docs.map((d) => {
     // Strip Firestore Timestamps — they don't serialize across the server/client

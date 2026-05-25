@@ -28,7 +28,7 @@ const ZONE = {
   id: ZONE_ID,
   name: 'Kirk pilot',
   depotId: DEPOT_ID,
-  pickupDayOfWeek: 3, // Wednesday
+  pickupDaysOfWeek: [3], // Wednesday
   zipCodes: ['80301'],
 };
 

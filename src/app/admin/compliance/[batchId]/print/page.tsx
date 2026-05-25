@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { requireRole } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
 import type { AddressDoc, UserDoc } from '@/lib/types/user';
-import type { ZoneDoc } from '@/lib/types/zone';
+import { resolvePickupDays, type ZoneDoc } from '@/lib/types/zone';
 import type { DepotDoc } from '@/lib/types/depot';
 import type { ComplianceBatchDoc } from '@/lib/types/complianceBatch';
 import { COMPLIANCE_NOTICE_LABELS } from '@/lib/types/complianceBatch';
@@ -102,10 +102,9 @@ export default async function BatchPrintPage({ params }: PageProps) {
     day: 'numeric',
     year: 'numeric',
   });
+  const pickupDays = zone ? resolvePickupDays(zone) : [];
   const pickupDay =
-    zone && zone.pickupDayOfWeek >= 0 && zone.pickupDayOfWeek <= 6
-      ? DAY_NAMES[zone.pickupDayOfWeek]
-      : null;
+    pickupDays.length === 0 ? null : pickupDays.map((d) => DAY_NAMES[d]).join(' & ');
 
   return (
     <div className="mx-auto max-w-[8.5in] bg-white px-0 py-8 text-black print:py-0">
@@ -259,7 +258,7 @@ function Details({
     <div className="mt-4 rounded border border-gray-300 p-4 text-[10.5pt]">
       <div className="font-semibold">Service details</div>
       <dl className="mt-2 grid grid-cols-[140px_1fr] gap-y-1">
-        <dt className="text-gray-600">Pickup day</dt>
+        <dt className="text-gray-600">{pickupDay && pickupDay.includes('&') ? 'Pickup days' : 'Pickup day'}</dt>
         <dd>{pickupDay ?? 'TBD — check app'}</dd>
         <dt className="text-gray-600">Zone</dt>
         <dd>{zone?.name ?? '—'}</dd>

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
-import { parseZipCodes } from '@/lib/types/zone';
+import { parsePickupDays, parseZipCodes } from '@/lib/types/zone';
 import { assignResidentsToZone } from '@/lib/admin/assignResidentsToZone';
 
 export const runtime = 'nodejs';
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   const raw = (json ?? {}) as Record<string, unknown>;
   const name = typeof raw.name === 'string' ? raw.name.trim() : '';
   const depotId = typeof raw.depotId === 'string' ? raw.depotId.trim() : '';
-  const pickupDayOfWeek = Number(raw.pickupDayOfWeek);
+  const pickupDaysOfWeek = parsePickupDays(raw.pickupDaysOfWeek);
   const zipCodesRaw =
     typeof raw.zipCodes === 'string'
       ? raw.zipCodes
@@ -31,13 +31,7 @@ export async function POST(request: Request) {
         : '';
   const zipCodes = parseZipCodes(zipCodesRaw);
 
-  if (
-    !name ||
-    !depotId ||
-    !Number.isInteger(pickupDayOfWeek) ||
-    pickupDayOfWeek < 0 ||
-    pickupDayOfWeek > 6
-  ) {
+  if (!name || !depotId || !pickupDaysOfWeek) {
     return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });
   }
 
@@ -53,7 +47,7 @@ export async function POST(request: Request) {
       id: zoneRef.id,
       name,
       depotId,
-      pickupDayOfWeek,
+      pickupDaysOfWeek,
       zipCodes,
       createdAt: FieldValue.serverTimestamp(),
     });

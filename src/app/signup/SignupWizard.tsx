@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, type ChangeEvent, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ChangeEvent, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getFreshIdToken, signupWithEmail } from '@/lib/auth/client';
@@ -353,6 +353,30 @@ function SplashStep({ onNext }: { onNext: () => void }) {
   );
 }
 
+const DAY_NAMES_FULL = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
+const DAY_NAMES_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+interface ZoneLookup {
+  inService: boolean;
+  zoneName: string | null;
+  pickupDaysOfWeek: number[];
+}
+
+function formatPickupDays(days: number[]): string {
+  if (days.length === 0) return '';
+  if (days.length === 1) return `${DAY_NAMES_FULL[days[0]]}s`;
+  if (days.length <= 3) return days.map((d) => `${DAY_NAMES_FULL[d]}s`).join(' & ');
+  return days.map((d) => DAY_NAMES_SHORT[d]).join(' · ');
+}
+
 // ─── Step 2 · Address ────────────────────────────────────────────
 function AddressStep({
   address,
@@ -370,6 +394,45 @@ function AddressStep({
   function update<K extends keyof AddressForm>(key: K, value: string) {
     onChange({ ...address, [key]: key === 'state' ? value.toUpperCase() : value });
   }
+
+  // Look up the zone for the entered ZIP. Debounced so each keystroke past
+  // 5 digits doesn't fire its own request, and cancellable via AbortController
+  // so a stale slow response can't overwrite the current zip's result.
+  const trimmedZip = address.postalCode.trim();
+  const zipValid = /^\d{5}$/.test(trimmedZip);
+  const [zoneLookup, setZoneLookup] = useState<ZoneLookup | null>(null);
+  const [zoneLookupBusy, setZoneLookupBusy] = useState(false);
+
+  useEffect(() => {
+    if (!zipValid) {
+      setZoneLookup(null);
+      setZoneLookupBusy(false);
+      return;
+    }
+    const ctrl = new AbortController();
+    setZoneLookupBusy(true);
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/zones/lookup?zip=${encodeURIComponent(trimmedZip)}`, {
+          signal: ctrl.signal,
+        });
+        if (!res.ok) {
+          setZoneLookup(null);
+          return;
+        }
+        const body = (await res.json()) as ZoneLookup;
+        setZoneLookup(body);
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') setZoneLookup(null);
+      } finally {
+        setZoneLookupBusy(false);
+      }
+    }, 250);
+    return () => {
+      ctrl.abort();
+      clearTimeout(timer);
+    };
+  }, [trimmedZip, zipValid]);
   return (
     <>
       <StepHeading
@@ -419,40 +482,7 @@ function AddressStep({
             mono
           />
         </div>
-        {valid && (
-          <div
-            style={{
-              background: SS.mint,
-              border: `2px solid ${SS.ink}`,
-              borderRadius: 14,
-              padding: '14px 16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              marginTop: 8,
-            }}
-          >
-            <div
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                background: SS.ink,
-                color: SS.mint,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 14,
-                fontWeight: 900,
-              }}
-            >
-              ✓
-            </div>
-            <div style={{ fontSize: 14, fontWeight: 800, color: SS.ink }}>
-              You&rsquo;re in service. We&rsquo;ll confirm your pickup day after sign-up.
-            </div>
-          </div>
-        )}
+        {valid && <ServiceNotice lookup={zoneLookup} busy={zoneLookupBusy} />}
       </div>
       <FooterBar>
         <SSPillButton variant="primary" disabled={!valid} onClick={onNext}>
@@ -460,6 +490,96 @@ function AddressStep({
         </SSPillButton>
       </FooterBar>
     </>
+  );
+}
+
+function ServiceNotice({ lookup, busy }: { lookup: ZoneLookup | null; busy: boolean }) {
+  // Three states: still checking, out-of-service, in-service.
+  // Checking: neutral chip so the page doesn't flash a misleading state.
+  if (busy && !lookup) {
+    return (
+      <div
+        style={{
+          background: '#fff',
+          border: `2px solid ${SS.ink}`,
+          borderRadius: 14,
+          padding: '14px 16px',
+          marginTop: 8,
+          fontSize: 13,
+          fontWeight: 800,
+          color: SS.inkSoft,
+        }}
+      >
+        Checking your ZIP…
+      </div>
+    );
+  }
+
+  if (lookup && !lookup.inService) {
+    return (
+      <div
+        style={{
+          background: SS.peach,
+          border: `2px solid ${SS.ink}`,
+          borderRadius: 14,
+          padding: '14px 16px',
+          marginTop: 8,
+        }}
+      >
+        <div style={{ fontSize: 14, fontWeight: 900, color: SS.ink }}>
+          Not in service yet
+        </div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: SS.inkSoft, marginTop: 4 }}>
+          We&rsquo;ll add you to the waitlist and email when we reach your area.
+        </div>
+      </div>
+    );
+  }
+
+  const days = lookup?.pickupDaysOfWeek ?? [];
+  const daysLabel = formatPickupDays(days);
+
+  return (
+    <div
+      style={{
+        background: SS.mint,
+        border: `2px solid ${SS.ink}`,
+        borderRadius: 14,
+        padding: '14px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        marginTop: 8,
+      }}
+    >
+      <div
+        style={{
+          width: 24,
+          height: 24,
+          borderRadius: '50%',
+          background: SS.ink,
+          color: SS.mint,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 14,
+          fontWeight: 900,
+          flexShrink: 0,
+        }}
+      >
+        ✓
+      </div>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 14, fontWeight: 900, color: SS.ink }}>
+          You&rsquo;re in service.
+        </div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: SS.inkSoft, marginTop: 2 }}>
+          {daysLabel
+            ? `Pickup ${days.length === 1 ? 'day' : 'days'}: ${daysLabel}`
+            : 'Pickup days confirmed after sign-up.'}
+        </div>
+      </div>
+    </div>
   );
 }
 
