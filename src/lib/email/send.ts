@@ -7,7 +7,7 @@ export interface SendEmailInput {
   subject: string;
   text: string;
   html?: string;
-  purpose: 'invite' | 'other';
+  purpose: 'invite' | 'delivery_scheduled' | 'other';
   relatedDocId?: string | null;
 }
 

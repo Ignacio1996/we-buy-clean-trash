@@ -18,6 +18,10 @@ export interface RouteDoc {
   operatorId: string | null;
   orderedStops: RouteStop[];
   bagOrdersToDeliver: string[];
+  /** Delivery window start, "HH:MM" 24-hour local time. Null on legacy routes. */
+  deliveryWindowStart: string | null;
+  /** Delivery window end, "HH:MM" 24-hour local time. Null on legacy routes. */
+  deliveryWindowEnd: string | null;
   status: RouteStatus;
   createdAt: Timestamp;
   startedAt: Timestamp | null;

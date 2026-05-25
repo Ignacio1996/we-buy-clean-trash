@@ -10,8 +10,38 @@ import type { DepotDoc } from '@/lib/types/depot';
 import type { ZoneDoc } from '@/lib/types/zone';
 import type { PickupDoc } from '@/lib/types/pickup';
 import type { BagOrderDoc } from '@/lib/types/bagOrder';
+import type { UserDoc } from '@/lib/types/user';
+import { sendSMS } from '@/lib/sms/send';
+import { sendEmail } from '@/lib/email/send';
 
 export const runtime = 'nodejs';
+
+function parseTime(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const m = /^(\d{2}):(\d{2})$/.exec(value);
+  if (!m) return null;
+  const h = Number(m[1]);
+  const min = Number(m[2]);
+  if (h < 0 || h > 23 || min < 0 || min > 59) return null;
+  return value;
+}
+
+function formatTime12(hhmm: string): string {
+  const [hStr, mStr] = hhmm.split(':');
+  const h = Number(hStr);
+  const m = Number(mStr);
+  const period = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return m === 0 ? `${h12} ${period}` : `${h12}:${mStr} ${period}`;
+}
+
+function formatRouteDay(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric',
+  });
+}
 
 interface AddressStop {
   addressId: string;
@@ -47,8 +77,13 @@ export async function POST(request: Request) {
   const zoneId = typeof raw.zoneId === 'string' ? raw.zoneId.trim() : '';
   const operatorId = typeof raw.operatorId === 'string' ? raw.operatorId.trim() : '';
   const date = parseDate(raw.date);
-  if (!zoneId || !operatorId || !date) {
+  const deliveryWindowStart = parseTime(raw.deliveryWindowStart);
+  const deliveryWindowEnd = parseTime(raw.deliveryWindowEnd);
+  if (!zoneId || !operatorId || !date || !deliveryWindowStart || !deliveryWindowEnd) {
     return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });
+  }
+  if (deliveryWindowEnd <= deliveryWindowStart) {
+    return NextResponse.json({ error: 'invalid_delivery_window' }, { status: 400 });
   }
 
   const zoneRef = adminDb.collection('zones').doc(zoneId);
@@ -216,6 +251,8 @@ export async function POST(request: Request) {
       operatorId,
       orderedStops,
       bagOrdersToDeliver: bagOrderIds,
+      deliveryWindowStart,
+      deliveryWindowEnd,
       status: 'assigned',
       // serverTimestamp below; cast to satisfy RouteDoc
       createdAt: FieldValue.serverTimestamp() as unknown as RouteDoc['createdAt'],
@@ -238,11 +275,61 @@ export async function POST(request: Request) {
     }
   });
 
+  // Notify every resident with a stop on this route (SMS + email). Errors here
+  // never roll back the route — the write already committed and stops/orders
+  // are linked. We log + best-effort each send.
+  const residentIds = Array.from(new Set(orderedStops.map((s) => s.residentId)));
+  let notified = 0;
+  if (residentIds.length > 0) {
+    const userSnaps = await adminDb.getAll(
+      ...residentIds.map((id) => adminDb.collection('users').doc(id)),
+    );
+    const dayLabel = formatRouteDay(date);
+    const windowLabel = `${formatTime12(deliveryWindowStart)}–${formatTime12(deliveryWindowEnd)}`;
+    for (const snap of userSnaps) {
+      if (!snap.exists) continue;
+      const user = snap.data() as UserDoc;
+      const greetingName = user.name?.split(' ')[0] || 'there';
+      const smsBody = `We Buy Clean Trash: your delivery is scheduled for ${dayLabel} between ${windowLabel}. We'll text again when your driver is on the way.`;
+      const emailSubject = `Your bag delivery is scheduled for ${dayLabel}`;
+      const emailText = `Hi ${greetingName},\n\nYour We Buy Clean Trash bag delivery is scheduled for ${dayLabel} between ${windowLabel}.\n\nWe'll send another message when your driver is on the way.\n\n— We Buy Clean Trash`;
+      const emailHtml = `<p>Hi ${greetingName},</p><p>Your We Buy Clean Trash bag delivery is scheduled for <strong>${dayLabel}</strong> between <strong>${windowLabel}</strong>.</p><p>We'll send another message when your driver is on the way.</p><p>— We Buy Clean Trash</p>`;
+      if (user.phone) {
+        try {
+          await sendSMS({
+            toPhone: user.phone,
+            body: smsBody,
+            purpose: 'delivery_scheduled',
+            relatedDocId: routeRef.id,
+          });
+        } catch (err) {
+          console.error('[route-optimize] sendSMS failed', err);
+        }
+      }
+      if (user.email) {
+        try {
+          await sendEmail({
+            to: user.email,
+            subject: emailSubject,
+            text: emailText,
+            html: emailHtml,
+            purpose: 'delivery_scheduled',
+            relatedDocId: routeRef.id,
+          });
+        } catch (err) {
+          console.error('[route-optimize] sendEmail failed', err);
+        }
+      }
+      notified += 1;
+    }
+  }
+
   return NextResponse.json({
     ok: true,
     routeId: routeRef.id,
     stops: uniqueStops.length,
     bagOrders: bagOrderIds.length,
     mocked: optimized.mocked,
+    notified,
   });
 }
