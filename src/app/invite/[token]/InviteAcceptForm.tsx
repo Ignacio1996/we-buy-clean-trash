@@ -27,6 +27,7 @@ export function InviteAcceptForm({
   const [name, setName] = useState('');
   const [email, setEmail] = useState(invitedEmail ?? '');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const emailLocked = !!invitedEmail;
@@ -59,6 +60,10 @@ export function InviteAcceptForm({
     e.preventDefault();
     if (!name.trim()) {
       setError('name_required');
+      return;
+    }
+    if (mode === 'new' && password !== confirmPassword) {
+      setError('passwords_do_not_match');
       return;
     }
     setBusy(true);
@@ -151,6 +156,17 @@ export function InviteAcceptForm({
           onChange={(e) => setPassword(e.target.value)}
           className="w-full rounded border border-gray-300 px-3 py-2"
         />
+        {mode === 'new' && (
+          <input
+            type="password"
+            required
+            minLength={6}
+            placeholder="Confirm password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full rounded border border-gray-300 px-3 py-2"
+          />
+        )}
         <button
           type="submit"
           disabled={busy}
