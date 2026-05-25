@@ -50,7 +50,11 @@ async function loadIncoming(depotZoneIds: string[]): Promise<RouteRow[]> {
     .limit(50)
     .get();
 
-  const routes = routeSnap.docs.map((d) => d.data() as RouteDoc);
+  // Skip delivery-only routes — if no stop has a pickupId, the operator only
+  // dropped off empty bags and there's nothing for the depot to process.
+  const routes = routeSnap.docs
+    .map((d) => d.data() as RouteDoc)
+    .filter((r) => r.orderedStops.some((s) => s.pickupId !== null));
   if (routes.length === 0) return [];
 
   const operatorIds = Array.from(
