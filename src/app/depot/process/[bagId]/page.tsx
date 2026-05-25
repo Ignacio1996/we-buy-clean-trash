@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireRole } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
@@ -11,17 +12,38 @@ import type { RouteDoc } from '@/lib/types/route';
 import type { UserDoc } from '@/lib/types/user';
 import type { MaterialId, MaterialPricing } from '@/lib/types/material';
 import { resolveAcceptedMaterials } from '@/lib/types/depot';
-import {
-  DP_TOK,
-  DpAlert,
-  DpBackRow,
-  DpMasthead,
-  DpPrimaryButton,
-} from '@/components/depot/Dp';
-import { IconCheck } from '@/components/icons/EcoIcons';
+import { SS, SSPillLink } from '@/components/resident/ss/SS';
 import { ProcessBagForm, type ProcessBagFormProps } from './ProcessBagForm';
 
 export const dynamic = 'force-dynamic';
+
+function BackRow({ label, href }: { label: string; href: string }) {
+  return (
+    <Link
+      href={href}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 8,
+        textDecoration: 'none',
+        color: SS.ink,
+      }}
+    >
+      <span style={{ fontSize: 18, fontWeight: 900 }}>←</span>
+      <span
+        style={{
+          fontSize: 11,
+          fontWeight: 900,
+          letterSpacing: 1.4,
+          textTransform: 'uppercase',
+          color: SS.inkSoft,
+        }}
+      >
+        {label}
+      </span>
+    </Link>
+  );
+}
 
 export default async function ProcessBagPage({
   params,
@@ -40,34 +62,59 @@ export default async function ProcessBagPage({
 
   if (bag.status === 'processed') {
     return (
-      <section className="space-y-5">
-        <DpBackRow label="Incoming" href="/depot/incoming" />
+      <section
+        style={{
+          background: '#fff',
+          padding: '14px 20px 28px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 18,
+        }}
+      >
+        <BackRow label="Queue" href="/depot/incoming" />
         <div
-          className="px-5 py-7 text-center"
           style={{
-            background: DP_TOK.greenSoft,
-            border: `1px solid rgba(45,90,61,0.3)`,
-            borderRadius: 14,
+            background: SS.mint,
+            border: `2px solid ${SS.ink}`,
+            borderRadius: 18,
+            padding: '28px 18px',
+            textAlign: 'center',
+            boxShadow: `0 4px 0 ${SS.ink}`,
           }}
         >
           <div
-            className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full"
-            style={{ background: DP_TOK.green }}
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: '50%',
+              background: SS.green,
+              color: '#fff',
+              border: `3px solid ${SS.ink}`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 14px',
+              fontWeight: 900,
+              fontSize: 26,
+              boxShadow: `0 4px 0 ${SS.ink}`,
+            }}
           >
-            <IconCheck size={20} color={DP_TOK.paper} stroke={2.5} />
+            ✓
           </div>
           <div
             style={{
-              fontFamily: DP_TOK.serif,
-              fontSize: 18,
-              color: DP_TOK.ink,
-              letterSpacing: -0.3,
+              fontSize: 22,
+              fontWeight: 900,
+              letterSpacing: -0.5,
+              color: SS.ink,
             }}
           >
             Bag #{bag.printedNumber} already processed.
           </div>
         </div>
-        <DpPrimaryButton href="/depot/incoming">Back to incoming</DpPrimaryButton>
+        <SSPillLink href="/depot/incoming" variant="primary">
+          Back to queue
+        </SSPillLink>
       </section>
     );
   }
@@ -107,12 +154,32 @@ export default async function ProcessBagPage({
   const visibleMaterials = allMaterials.filter((m) => accepted.has(m.id));
   if (visibleMaterials.length === 0) {
     return (
-      <section className="space-y-5">
-        <DpBackRow label="Incoming" href="/depot/incoming" />
-        <DpAlert tone="rust">
+      <section
+        style={{
+          background: '#fff',
+          padding: '14px 20px 28px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 16,
+        }}
+      >
+        <BackRow label="Queue" href="/depot/incoming" />
+        <div
+          style={{
+            background: SS.brand,
+            color: '#fff',
+            border: `2px solid ${SS.ink}`,
+            borderRadius: 14,
+            padding: '14px 16px',
+            boxShadow: `0 4px 0 ${SS.ink}`,
+            fontSize: 13,
+            fontWeight: 800,
+            lineHeight: 1.45,
+          }}
+        >
           This depot has no accepted materials configured. Ask an admin to enable
-          materials on Zones &amp; Depots before processing.
-        </DpAlert>
+          materials on Zones & Depots before processing.
+        </div>
       </section>
     );
   }
@@ -146,25 +213,48 @@ export default async function ProcessBagPage({
 
   return (
     <section>
-      <DpBackRow label={`Route — ${route.id.slice(0, 6)}`} href={`/depot/incoming/${route.id}`} />
-      <DpMasthead
-        eyebrow="Process bag"
-        title={
-          <>
-            Bag{' '}
-            <em
-              style={{
-                color: DP_TOK.green,
-                fontStyle: 'italic',
-                fontFamily: DP_TOK.mono,
-              }}
-            >
-              #{bag.printedNumber}
-            </em>
-          </>
-        }
-      />
-      <ProcessBagForm {...props} />
+      {/* Back row */}
+      <div style={{ background: '#fff', padding: '14px 20px 0' }}>
+        <BackRow label="Route" href={`/depot/incoming/${route.id}`} />
+      </div>
+
+      {/* Yellow page header */}
+      <div
+        style={{
+          background: SS.yellow,
+          padding: '20px 20px 18px',
+          marginTop: 14,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 11,
+            fontWeight: 900,
+            letterSpacing: 1.4,
+            textTransform: 'uppercase',
+            color: SS.inkSoft,
+          }}
+        >
+          Process bag
+        </div>
+        <div
+          style={{
+            fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
+            fontSize: 30,
+            fontWeight: 900,
+            letterSpacing: -0.4,
+            lineHeight: 1,
+            color: SS.ink,
+            marginTop: 6,
+          }}
+        >
+          #{bag.printedNumber}
+        </div>
+      </div>
+
+      <div style={{ background: '#fff', padding: '16px 20px 28px' }}>
+        <ProcessBagForm {...props} />
+      </div>
     </section>
   );
 }

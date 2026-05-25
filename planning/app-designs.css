@@ -715,4 +715,175 @@
     line-height: 1.55;
   }
 
+  /* ── STICKER SECTIONS PHONE THEME (white base, pastel blocks) ── */
+  .phone.ss {
+    background: #ffffff;
+    border-color: #ECECEC;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #111111;
+    width: 270px;
+  }
+  .phone.ss .ss-status {
+    height: 26px;
+    background: #ffffff;
+    border-bottom: 1px solid #F4F4F4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    font-size: 0.6rem;
+    color: #111;
+    font-weight: 900;
+    letter-spacing: 0.4px;
+  }
+  .phone.ss .ss-wordmark {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px 12px; gap: 10px;
+  }
+  .phone.ss .ss-wordmark .wm {
+    font-size: 0.92rem; font-weight: 900; letter-spacing: -0.4px;
+    line-height: 1; color: #111; text-transform: uppercase; flex: 1;
+  }
+  .phone.ss .ss-wordmark .wm .red { color: #E11D2A; }
+  .phone.ss .ss-avatar {
+    width: 24px; height: 24px; border-radius: 50%; background: #111;
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 0.65rem;
+  }
+  .phone.ss .ss-block { padding: 16px 14px; }
+  .phone.ss .ss-block.yellow { background: #FFEB52; }
+  .phone.ss .ss-block.mint   { background: #D9F2D9; }
+  .phone.ss .ss-block.sky    { background: #E4EEFB; }
+  .phone.ss .ss-block.peach  { background: #FFD9C7; }
+  .phone.ss .ss-block.white  { background: #fff; }
+  .phone.ss .ss-eyebrow {
+    font-size: 0.55rem; font-weight: 900; letter-spacing: 1.2px;
+    text-transform: uppercase; color: #111; opacity: 0.7; margin-bottom: 4px;
+  }
+  .phone.ss .ss-display {
+    font-size: 2rem; font-weight: 900; letter-spacing: -1.4px;
+    line-height: 0.95; color: #111;
+  }
+  .phone.ss .ss-display.huge { font-size: 2.4rem; letter-spacing: -1.6px; }
+  .phone.ss .ss-sub {
+    font-size: 0.78rem; font-weight: 800; color: #111; margin-top: 4px;
+  }
+  .phone.ss .ss-soft {
+    font-size: 0.72rem; font-weight: 700; color: #6B6B6B; margin-top: 4px; line-height: 1.4;
+  }
+  .phone.ss .ss-btn {
+    display: flex; justify-content: space-between; align-items: center;
+    width: 100%; border: none; border-radius: 999px;
+    padding: 14px 16px; font-family: inherit;
+    font-size: 1.05rem; font-weight: 900; letter-spacing: -0.2px;
+    margin-bottom: 8px; cursor: default;
+  }
+  .phone.ss .ss-btn.brand   { background: #E11D2A; color: #fff; box-shadow: 0 3px 0 #A6121C; }
+  .phone.ss .ss-btn.green   { background: #1F8A4C; color: #fff; box-shadow: 0 3px 0 #13643A; }
+  .phone.ss .ss-btn.dark    { background: #111;   color: #fff; box-shadow: 0 3px 0 #000; }
+  .phone.ss .ss-btn.outline { background: #fff;   color: #111; border: 2px solid #111; box-shadow: 0 3px 0 #111; }
+  .phone.ss .ss-btn .arrow { font-size: 1.1rem; }
+  .phone.ss .ss-card {
+    background: #fff; border: 2px solid #111; border-radius: 14px;
+    padding: 12px 14px; box-shadow: 0 3px 0 #111;
+  }
+  .phone.ss .ss-card.flat { box-shadow: none; }
+  .phone.ss .ss-field {
+    background: #fff; border: 2px solid #111; border-radius: 10px;
+    padding: 8px 12px; margin-bottom: 8px;
+  }
+  .phone.ss .ss-field.mint  { background: #D9F2D9; }
+  .phone.ss .ss-field.sky   { background: #E4EEFB; }
+  .phone.ss .ss-field .lbl {
+    font-size: 0.5rem; font-weight: 900; letter-spacing: 1.2px;
+    text-transform: uppercase; color: #6B6B6B; margin-bottom: 2px;
+  }
+  .phone.ss .ss-field .val {
+    font-size: 0.82rem; font-weight: 800; color: #111;
+  }
+  .phone.ss .ss-step-row {
+    display: flex; gap: 10px; padding: 8px 0; align-items: flex-start;
+  }
+  .phone.ss .ss-step-num {
+    width: 28px; height: 28px; border-radius: 50%; background: #111;
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 900; flex-shrink: 0;
+  }
+  .phone.ss .ss-step-t { font-size: 0.88rem; font-weight: 900; color: #111; letter-spacing: -0.2px; }
+  .phone.ss .ss-step-s { font-size: 0.68rem; font-weight: 600; color: #111; opacity: 0.7; margin-top: 1px; line-height: 1.3; }
+  .phone.ss .ss-bar {
+    height: 10px; background: #fff; border: 2px solid #111; border-radius: 999px; overflow: hidden;
+  }
+  .phone.ss .ss-bar-fill { height: 100%; background: #E11D2A; }
+  .phone.ss .ss-dots {
+    display: flex; gap: 4px; justify-content: center; align-items: center;
+  }
+  .phone.ss .ss-dot { width: 6px; height: 6px; border-radius: 3px; background: #ECECEC; }
+  .phone.ss .ss-dot.on { background: #111; width: 18px; }
+  .phone.ss .ss-nav {
+    display: grid; grid-template-columns: repeat(5,1fr);
+    padding: 8px 4px 12px; background: #fff; border-top: 1px solid #ECECEC;
+  }
+  .phone.ss .ss-nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    color: #111; font-size: 0.55rem; font-weight: 800;
+  }
+  .phone.ss .ss-nav-item.active { color: #E11D2A; }
+  .phone.ss .ss-nav-icon {
+    width: 16px; height: 16px; border-radius: 4px; border: 2px solid #111;
+  }
+  .phone.ss .ss-nav-item.active .ss-nav-icon { background: #E11D2A; border-color: #E11D2A; }
+  .phone.ss .ss-divider { border-top: 1px solid #ECECEC; margin: 0 14px; }
+  .phone.ss .ss-stat {
+    background: #fff; border: 2px solid #111; border-radius: 10px;
+    padding: 10px; box-shadow: 0 3px 0 #111;
+  }
+  .phone.ss .ss-stat .v { font-size: 1.2rem; font-weight: 900; letter-spacing: -0.6px; color: #111; line-height: 1; }
+  .phone.ss .ss-stat .l { font-size: 0.52rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: #6B6B6B; margin-top: 4px; }
+  .phone.ss .ss-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 0; border-bottom: 1px solid #ECECEC;
+  }
+  .phone.ss .ss-row:last-child { border-bottom: none; }
+  .phone.ss .ss-row .rl { font-size: 0.65rem; font-weight: 800; color: #6B6B6B; }
+  .phone.ss .ss-row .rv { font-size: 0.82rem; font-weight: 900; color: #111; letter-spacing: -0.2px; margin-top: 1px; }
+  .phone.ss .ss-toggle {
+    width: 36px; height: 20px; border: 2px solid #111; border-radius: 999px;
+    background: #E11D2A; display: flex; align-items: center; justify-content: flex-end;
+    padding: 2px; box-shadow: 0 2px 0 #111;
+  }
+  .phone.ss .ss-toggle.off { background: #fff; justify-content: flex-start; }
+  .phone.ss .ss-toggle .knob { width: 12px; height: 12px; border-radius: 50%; background: #111; }
+  .phone.ss .ss-check {
+    width: 22px; height: 22px; border-radius: 50%; background: #1F8A4C;
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem; font-weight: 900;
+  }
+  .phone.ss .ss-viewfinder {
+    margin: 16px 14px; height: 240px; background: #222;
+    border-radius: 18px; position: relative; overflow: hidden;
+    background-image: repeating-linear-gradient(45deg, #2c2c2c 0 10px, #292929 10px 20px);
+  }
+  .phone.ss .ss-corner {
+    position: absolute; width: 26px; height: 26px;
+  }
+  .phone.ss .ss-corner.tl { top: 32px; left: 36px; border-top: 3px solid #FFEB52; border-left: 3px solid #FFEB52; }
+  .phone.ss .ss-corner.tr { top: 32px; right: 36px; border-top: 3px solid #FFEB52; border-right: 3px solid #FFEB52; }
+  .phone.ss .ss-corner.bl { bottom: 32px; left: 36px; border-bottom: 3px solid #FFEB52; border-left: 3px solid #FFEB52; }
+  .phone.ss .ss-corner.br { bottom: 32px; right: 36px; border-bottom: 3px solid #FFEB52; border-right: 3px solid #FFEB52; }
+  .phone.ss .ss-scanline {
+    position: absolute; top: 50%; left: 36px; right: 36px; height: 2px;
+    background: #E11D2A; box-shadow: 0 0 10px #E11D2A;
+  }
+  .phone.ss .ss-kpad {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 5px;
+    background: #ECECEC; padding: 8px;
+  }
+  .phone.ss .ss-key {
+    padding: 9px 0; background: #fff; border: none; border-radius: 8px;
+    font-family: inherit; font-size: 1.05rem; font-weight: 900; color: #111;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.15);
+  }
+  .status-badge.ss { background: rgba(225,29,42,0.15); color: #fda4af; border-color: rgba(225,29,42,0.45); }
+
   /* Within legacy file: panel switcher uses same .panel + .tab-bar styles */

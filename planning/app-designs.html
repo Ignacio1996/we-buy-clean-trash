@@ -12,6 +12,7 @@
   <h1>App Screens by User Role</h1>
   <p>What each person sees when they open the app · <span style="color:#22c55e;">Implementation status updated April 23, 2026 — all phases complete</span></p>
   <p style="margin-top:8px;color:#fde047;font-size:0.96rem;"><strong>Visual refresh — May 11, 2026 (CURRENT):</strong> resident surface migrated to the <em>Sticker Sections</em> design system — white base, red brand wordmark, pastel section blocks (yellow / mint / sky / peach), chunky Helvetica 900, green primary CTAs with offset shadows. See <code style="background:rgba(255,255,255,0.08);padding:1px 6px;border-radius:4px;">planning/sticker-sections/Sticker Sections - All Screens.html</code> for the canonical mockups. Earlier Editorial-Eco direction is <strong>superseded</strong>.</p>
+  <p style="margin-top:6px;color:#fda4af;font-size:0.92rem;"><strong>+ May 25, 2026:</strong> depot worker surface also migrated to Sticker Sections — four screens (Queue · Scan · Process bag · Inventory). Skipped Editorial-Eco entirely. Depot manager + admin remain on legacy dark UI.</p>
   <p style="margin-top:8px;color:#9ca3af;font-size:0.85rem;">Older mockups in this file (dark, Editorial-Eco) are kept for historical comparison only.</p>
 </div>
 
@@ -29,7 +30,480 @@
 <!-- ═══════════════════════════════════════ -->
 <div class="panel active" id="panel-resident">
   <!-- ════════════════════════════════════════════ -->
-  <!-- EDITORIAL-ECO RESIDENT SCREENS (Apr 30, 2026) -->
+  <!-- STICKER SECTIONS RESIDENT SCREENS (May 11, 2026 — CURRENT) -->
+  <!-- ════════════════════════════════════════════ -->
+  <div style="margin-bottom:16px;padding:14px 18px;background:rgba(225,29,42,0.08);border:1px solid rgba(225,29,42,0.3);border-radius:12px;">
+    <div style="font-size:0.65rem;color:#fda4af;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:4px;">🏷️ Visual Refresh — May 11, 2026 (CURRENT)</div>
+    <div style="font-size:0.78rem;color:#d1d5db;line-height:1.5;">Resident surface migrated to <strong style="color:#fff;">Sticker Sections</strong> — white base, red brand wordmark, pastel section blocks (yellow / mint / sky / peach), chunky Helvetica 900, green primary CTAs with hard offset shadows. Sticker Mule influence. Canonical React mockups live in <code style="background:rgba(255,255,255,0.08);padding:1px 6px;border-radius:4px;">planning/sticker-sections/</code>.</div>
+  </div>
+
+  <!-- 01 · Home (active user) -->
+  <div class="screens-row">
+    <div>
+      <div class="phone ss">
+        <div class="ss-status"><span>9:41</span><span>●●● 100%</span></div>
+        <div class="ss-wordmark">
+          <div class="wm">We Buy Clean <span class="red">Trash.</span></div>
+          <div class="ss-avatar">A</div>
+        </div>
+        <div class="ss-block yellow">
+          <div class="ss-eyebrow">Hello, Aguirre</div>
+          <div class="ss-display huge">$5.43</div>
+          <div class="ss-sub">54,320 points earned</div>
+        </div>
+        <div class="ss-block white" style="padding-bottom:6px;">
+          <button class="ss-btn brand"><span>Scan bags</span><span class="arrow">→</span></button>
+          <button class="ss-btn outline"><span>Order more bags</span><span class="arrow">→</span></button>
+        </div>
+        <div class="ss-block white" style="border-top:1px solid #ECECEC;margin-top:8px;">
+          <div class="ss-eyebrow" style="color:#6B6B6B;">Next delivery</div>
+          <div style="font-size:1.05rem;font-weight:900;letter-spacing:-0.4px;line-height:1.1;color:#111;">20 bags · Mon, Apr 28</div>
+          <div class="ss-soft">Pickup Monday, 6:00 PM</div>
+        </div>
+        <div class="ss-block sky">
+          <div class="ss-eyebrow" style="color:#6B6B6B;">Next $10 gift card</div>
+          <div class="ss-display huge" style="font-size:2.2rem;">45,680</div>
+          <div style="font-size:0.78rem;font-weight:800;color:#111;opacity:0.75;margin:2px 0 10px;">points to your next $10 gift card</div>
+          <div class="ss-bar"><div class="ss-bar-fill" style="width:54%;"></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
+            <div style="font-size:0.62rem;font-weight:800;color:#111;opacity:0.7;">54,320 / 100,000 pts</div>
+            <div style="font-size:0.7rem;font-weight:900;color:#E11D2A;">54%</div>
+          </div>
+        </div>
+        <div class="ss-block mint">
+          <div style="font-size:1.15rem;font-weight:900;letter-spacing:-0.4px;margin-bottom:8px;color:#111;">How it works</div>
+          <div class="ss-step-row"><div class="ss-step-num">1</div><div><div class="ss-step-t">Order bags</div><div class="ss-step-s">Pick a sheet of 10 bags. Free shipping over $20.</div></div></div>
+          <div class="ss-step-row"><div class="ss-step-num">2</div><div><div class="ss-step-t">Fill &amp; set out</div><div class="ss-step-s">Clean recyclables. Place bags at the curb by 5:30pm.</div></div></div>
+          <div class="ss-step-row"><div class="ss-step-num">3</div><div><div class="ss-step-t">Return &amp; redeem</div><div class="ss-step-s">Points convert to gift cards. Cash out anytime.</div></div></div>
+        </div>
+        <div class="ss-nav">
+          <div class="ss-nav-item active"><div class="ss-nav-icon"></div>Home</div>
+          <div class="ss-nav-item"><div class="ss-nav-icon"></div>Scan</div>
+          <div class="ss-nav-item"><div class="ss-nav-icon"></div>Bags</div>
+          <div class="ss-nav-item"><div class="ss-nav-icon"></div>Rewards</div>
+          <div class="ss-nav-item"><div class="ss-nav-icon"></div>Profile</div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#fda4af;">01 · HOME (active user) <span class="status-badge ss">🏷️ STICKER SECTIONS</span></div>
+    </div>
+
+    <!-- 02 · Onboarding — Welcome -->
+    <div>
+      <div class="phone ss">
+        <div class="ss-status"><span>9:41</span><span>●●● 100%</span></div>
+        <div class="ss-block white" style="padding:22px 16px 14px;">
+          <div class="ss-eyebrow" style="letter-spacing:1.6px;margin-bottom:10px;">We Buy Clean Trash</div>
+          <div class="ss-display" style="font-size:1.85rem;">Your trash is <span style="color:#1F8A4C;">worth money.</span></div>
+          <div class="ss-soft" style="font-size:0.78rem;margin-top:10px;">We pick up your clean recyclables at the curb and pay you in gift cards. No sorting machines. No bins to lug.</div>
+        </div>
+        <div style="flex:1;min-height:80px;"></div>
+        <div class="ss-block white">
+          <div class="ss-card" style="display:flex;gap:10px;align-items:center;padding:12px;">
+            <div style="width:42px;height:42px;border-radius:10px;background:#1F8A4C;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;">$</div>
+            <div style="flex:1;">
+              <div style="font-size:1.1rem;font-weight:900;letter-spacing:-0.4px;color:#111;">$10 gift card</div>
+              <div style="font-size:0.65rem;font-weight:700;color:#6B6B6B;">≈ 4 weeks of pickups</div>
+            </div>
+          </div>
+        </div>
+        <div class="ss-block white" style="padding-top:8px;">
+          <button class="ss-btn green"><span>Get started</span><span class="arrow">→</span></button>
+          <div style="text-align:center;font-size:0.7rem;font-weight:700;color:#6B6B6B;margin-top:10px;">Have an account? <span style="color:#111;text-decoration:underline;">Sign in</span></div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#fda4af;">02 · ONBOARDING — WELCOME <span class="status-badge ss">🏷️ STICKER SECTIONS</span></div>
+    </div>
+
+    <!-- 03 · Onboarding — Address -->
+    <div>
+      <div class="phone ss">
+        <div class="ss-status"><span>9:41</span><span>●●● 100%</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;">
+          <div style="font-size:1.1rem;font-weight:900;color:#111;">←</div>
+          <div class="ss-dots"><div class="ss-dot"></div><div class="ss-dot on"></div><div class="ss-dot"></div><div class="ss-dot"></div><div class="ss-dot"></div></div>
+          <div style="font-size:0.65rem;font-weight:800;color:#6B6B6B;">Skip</div>
+        </div>
+        <div class="ss-block white">
+          <div class="ss-eyebrow" style="color:#E11D2A;letter-spacing:1.4px;">Step 1 of 4</div>
+          <div class="ss-display" style="font-size:1.7rem;margin-top:4px;">Where do you live?</div>
+          <div class="ss-soft">We need your address so our driver can find your bags.</div>
+        </div>
+        <div class="ss-block white" style="padding-top:6px;">
+          <div class="ss-field mint"><div class="lbl">Street</div><div class="val">412 Mariposa Ave</div></div>
+          <div class="ss-field"><div class="lbl">Unit (optional)</div><div class="val">Apt 3B</div></div>
+          <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:8px;">
+            <div class="ss-field"><div class="lbl">City</div><div class="val">Oakland</div></div>
+            <div class="ss-field sky"><div class="lbl">Zip</div><div class="val">94610</div></div>
+          </div>
+          <div style="background:#D9F2D9;border:2px solid #111;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px;margin-top:6px;">
+            <div style="width:20px;height:20px;border-radius:50%;background:#111;color:#D9F2D9;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:900;">✓</div>
+            <div style="font-size:0.72rem;font-weight:800;color:#111;">We pick up in Oakland on Mondays.</div>
+          </div>
+        </div>
+        <div class="ss-block white" style="padding-top:6px;">
+          <button class="ss-btn green"><span>Continue</span><span class="arrow">→</span></button>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#fda4af;">03 · ONBOARDING — ADDRESS <span class="status-badge ss">🏷️ STICKER SECTIONS</span></div>
+    </div>
+
+    <!-- 04 · Onboarding — Pickup day -->
+    <div>
+      <div class="phone ss">
+        <div class="ss-status"><span>9:41</span><span>●●● 100%</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;">
+          <div style="font-size:1.1rem;font-weight:900;color:#111;">←</div>
+          <div class="ss-dots"><div class="ss-dot"></div><div class="ss-dot"></div><div class="ss-dot on"></div><div class="ss-dot"></div><div class="ss-dot"></div></div>
+          <div style="width:18px;"></div>
+        </div>
+        <div class="ss-block white">
+          <div class="ss-eyebrow" style="color:#E11D2A;letter-spacing:1.4px;">Step 2 of 4</div>
+          <div class="ss-display" style="font-size:1.7rem;margin-top:4px;">Pick a pickup day.</div>
+          <div class="ss-soft">Set out your bags by 5:30 PM. We come every week.</div>
+        </div>
+        <div class="ss-block white" style="padding-top:8px;display:flex;flex-direction:column;gap:10px;">
+          <div style="background:#FFEB52;border:2px solid #111;border-radius:14px;padding:13px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 3px 0 #111;">
+            <div>
+              <div style="font-size:1.05rem;font-weight:900;letter-spacing:-0.4px;color:#111;">Monday</div>
+              <div style="font-size:0.65rem;font-weight:800;color:#6B6B6B;margin-top:1px;">Set out by 6:00 PM</div>
+            </div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#E11D2A;border:2px solid #111;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;font-weight:900;">✓</div>
+          </div>
+          <div style="background:#fff;border:2px solid #111;border-radius:14px;padding:13px 14px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:1.05rem;font-weight:900;letter-spacing:-0.4px;color:#111;">Wednesday</div>
+              <div style="font-size:0.65rem;font-weight:800;color:#6B6B6B;margin-top:1px;">Set out by 6:00 PM</div>
+            </div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid #111;"></div>
+          </div>
+          <div style="font-size:0.65rem;font-weight:700;color:#6B6B6B;line-height:1.4;padding:4px 2px;">You can skip a week anytime from the Bags tab. We text you the day before.</div>
+        </div>
+        <div class="ss-block white" style="padding-top:4px;">
+          <button class="ss-btn green"><span>Continue</span><span class="arrow">→</span></button>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#fda4af;">04 · ONBOARDING — PICKUP DAY <span class="status-badge ss">🏷️ STICKER SECTIONS</span></div>
+    </div>
+
+    <!-- 05 · Onboarding — First order -->
+    <div>
+      <div class="phone ss">
+        <div class="ss-status"><span>9:41</span><span>●●● 100%</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;">
+          <div style="font-size:1.1rem;font-weight:900;color:#111;">←</div>
+          <div class="ss-dots"><div class="ss-dot"></div><div class="ss-dot"></div><div class="ss-dot"></div><div class="ss-dot on"></div><div class="ss-dot"></div></div>
+          <div style="width:18px;"></div>
+        </div>
+        <div class="ss-block white">
+          <div class="ss-eyebrow" style="color:#E11D2A;letter-spacing:1.4px;">Step 3 of 4</div>
+          <div class="ss-display" style="font-size:1.7rem;margin-top:4px;">Order your bags.</div>
+          <div class="ss-soft">10 bags per sheet. Each one earns up to $1.20 of recyclables.</div>
+        </div>
+        <div class="ss-block white" style="padding-top:6px;">
+          <div style="background:#E4EEFB;border:2px solid #111;border-radius:16px;padding:16px;box-shadow:0 3px 0 #111;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <div style="font-size:0.78rem;font-weight:900;color:#111;">Sheets of bags</div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:26px;height:26px;border-radius:50%;background:#fff;border:2px solid #111;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.9rem;">−</div>
+                <div style="font-size:1.5rem;font-weight:900;color:#111;min-width:20px;text-align:center;letter-spacing:-0.5px;">2</div>
+                <div style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.9rem;">+</div>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed #111;padding-top:10px;">
+              <div style="font-size:0.7rem;font-weight:800;color:#111;">20 bags · free shipping</div>
+              <div style="font-size:1.2rem;font-weight:900;color:#111;letter-spacing:-0.4px;">$16.00</div>
+            </div>
+          </div>
+        </div>
+        <div class="ss-block white" style="padding-top:8px;">
+          <div style="background:#D9F2D9;border:2px solid #111;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px;">
+            <div style="font-size:1.1rem;">🎁</div>
+            <div style="font-size:0.7rem;font-weight:800;color:#111;line-height:1.3;"><span style="color:#E11D2A;">+10,000 pts signup bonus</span> credited after your first pickup.</div>
+          </div>
+        </div>
+        <div class="ss-block white" style="padding-top:6px;">
+          <button class="ss-btn green"><span>Pay &amp; continue</span><span class="arrow">→</span></button>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#fda4af;">05 · ONBOARDING — FIRST ORDER <span class="status-badge ss">🏷️ STICKER SECTIONS</span></div>
+    </div>
+
+    <!-- 06 · Onboarding — Done -->
+    <div>
+      <div class="phone ss">
+        <div class="ss-status"><span>9:41</span><span>●●● 100%</span></div>
+        <div class="ss-block white" style="padding:32px 16px 14px;text-align:center;">
+          <div style="width:80px;height:80px;border-radius:50%;background:#1F8A4C;color:#fff;display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:900;margin:0 auto 18px;border:3px solid #111;box-shadow:0 5px 0 #111;">✓</div>
+          <div style="font-size:2.1rem;font-weight:900;letter-spacing:-1.4px;line-height:0.92;color:#111;margin-bottom:10px;">You're in!</div>
+          <div style="font-size:0.78rem;font-weight:700;color:#111;opacity:0.75;line-height:1.4;">Your bags arrive <strong>Mon, Apr 28</strong>. Set them out by 5:30 PM.</div>
+        </div>
+        <div class="ss-block white" style="padding-top:4px;">
+          <div class="ss-card" style="padding:12px;">
+            <div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.4px;margin-bottom:8px;">What happens next</div>
+            <div style="display:flex;gap:8px;padding:8px 0;align-items:flex-start;">
+              <div style="width:6px;height:6px;border-radius:50%;background:#E11D2A;margin-top:6px;flex-shrink:0;"></div>
+              <div><div style="font-size:0.55rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#6B6B6B;">Mon Apr 28</div><div style="font-size:0.82rem;font-weight:900;color:#111;letter-spacing:-0.2px;margin-top:2px;">Bags arrive at your door</div></div>
+            </div>
+            <div style="display:flex;gap:8px;padding:8px 0;align-items:flex-start;border-top:1px solid #ECECEC;">
+              <div style="width:6px;height:6px;border-radius:50%;background:#111;margin-top:6px;flex-shrink:0;"></div>
+              <div><div style="font-size:0.55rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#6B6B6B;">Mon May 5</div><div style="font-size:0.82rem;font-weight:900;color:#111;letter-spacing:-0.2px;margin-top:2px;">First pickup · set out by 5:30 PM</div></div>
+            </div>
+            <div style="display:flex;gap:8px;padding:8px 0;align-items:flex-start;border-top:1px solid #ECECEC;">
+              <div style="width:6px;height:6px;border-radius:50%;background:#111;margin-top:6px;flex-shrink:0;"></div>
+              <div><div style="font-size:0.55rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#6B6B6B;">Tue May 6</div><div style="font-size:0.82rem;font-weight:900;color:#111;letter-spacing:-0.2px;margin-top:2px;">Points credited to your account</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="ss-block white" style="padding-top:16px;border-top:2px solid #111;margin-top:8px;">
+          <button class="ss-btn dark"><span>Open the app</span><span class="arrow">→</span></button>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#fda4af;">06 · ONBOARDING — DONE <span class="status-badge ss">🏷️ STICKER SECTIONS</span></div>
+    </div>
+  </div>
+
+  <div class="screens-row">
+    <!-- 07 · Scan — Idle viewfinder -->
+    <div>
+      <div class="phone ss">
+        <div class="ss-status"><span>9:41</span><span>●●● 100%</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;">
+          <div style="font-size:0.6rem;font-weight:900;letter-spacing:1.4px;text-transform:uppercase;color:#111;opacity:0.7;">Scan bag tag</div>
+          <div style="width:28px;height:28px;border-radius:50%;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;">×</div>
+        </div>
+        <div style="padding:0 14px;font-size:1.4rem;font-weight:900;letter-spacing:-0.5px;line-height:1.05;color:#111;">Center the QR<br/>on the bag.</div>
+        <div class="ss-viewfinder">
+          <div class="ss-corner tl"></div><div class="ss-corner tr"></div><div class="ss-corner bl"></div><div class="ss-corner br"></div>
+          <div class="ss-scanline"></div>
+          <div style="position:absolute;bottom:14px;left:14px;right:14px;background:rgba(0,0,0,0.65);border-radius:10px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:0.7rem;font-weight:800;color:#fff;">Looking for QR…</div>
+            <div style="width:6px;height:6px;border-radius:50%;background:#FFEB52;"></div>
+          </div>
+        </div>
+        <div class="ss-block white" style="padding-bottom:18px;">
+          <button class="ss-btn green" style="font-size:0.9rem;padding:12px 14px;"><span>Enter bag # manually</span><span class="arrow">→</span></button>
+          <div style="text-align:center;font-size:0.62rem;font-weight:800;color:#6B6B6B;margin-top:4px;">Bag tags are on the back of every bag.</div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#fda4af;">07 · SCAN — IDLE <span class="status-badge ss">🏷️ STICKER SECTIONS</span></div>
+    </div>
+
+    <!-- 08 · Scan — Detected -->
+    <div>
+      <div class="phone ss">
+        <div class="ss-status"><span>9:41</span><span>●●● 100%</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;">
+          <div style="font-size:0.6rem;font-weight:900;letter-spacing:1.4px;text-transform:uppercase;color:#111;opacity:0.7;">Bag detected</div>
+          <div style="width:28px;height:28px;border-radius:50%;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;">×</div>
+        </div>
+        <div style="padding:0 14px;font-size:1.5rem;font-weight:900;letter-spacing:-0.5px;line-height:1.05;color:#111;">Confirm this is yours.</div>
+        <div class="ss-block white" style="padding-top:16px;">
+          <div style="background:#E4EEFB;border:2px solid #111;border-radius:16px;padding:14px;box-shadow:0 4px 0 #111;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.4px;">Bag #</div>
+                <div style="font-size:1.5rem;font-weight:900;letter-spacing:-0.5px;color:#111;margin-top:2px;">A24-104</div>
+              </div>
+              <div class="ss-check" style="width:32px;height:32px;font-size:1rem;">✓</div>
+            </div>
+            <div style="border-top:1px dashed #111;margin-top:10px;padding-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div><div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.2px;">Type</div><div style="font-size:0.78rem;font-weight:900;color:#111;margin-top:2px;">Aluminum &amp; PET</div></div>
+              <div><div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.2px;">Est. weight</div><div style="font-size:0.78rem;font-weight:900;color:#111;margin-top:2px;">2.1 lbs</div></div>
+            </div>
+          </div>
+          <div style="background:#FFEB52;border:2px solid #111;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:8px;margin-top:12px;">
+            <div style="font-size:1.1rem;">🔥</div>
+            <div style="font-size:0.72rem;font-weight:900;color:#111;line-height:1.3;">×2 multiplier on aluminum this week.</div>
+          </div>
+        </div>
+        <div class="ss-block white" style="padding-top:14px;">
+          <button class="ss-btn green"><span>Set out for pickup</span><span class="arrow">→</span></button>
+          <button class="ss-btn" style="background:transparent;border:2px solid #111;color:#111;font-size:0.78rem;padding:10px 14px;box-shadow:none;justify-content:center;">Not my bag</button>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#fda4af;">08 · SCAN — DETECTED <span class="status-badge ss">🏷️ STICKER SECTIONS</span></div>
+    </div>
+
+    <!-- 09 · Scan — Success -->
+    <div>
+      <div class="phone ss">
+        <div class="ss-status"><span>9:41</span><span>●●● 100%</span></div>
+        <div style="display:flex;justify-content:flex-end;padding:10px 14px;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:900;">×</div>
+        </div>
+        <div class="ss-block white" style="padding:14px 16px;text-align:center;">
+          <div style="width:74px;height:74px;border-radius:50%;background:#1F8A4C;color:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900;margin:0 auto 16px;border:3px solid #111;box-shadow:0 5px 0 #111;">✓</div>
+          <div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.4px;margin-bottom:4px;">Bag #A24-104 logged</div>
+          <div style="font-size:2.4rem;font-weight:900;letter-spacing:-1.8px;line-height:0.9;color:#111;">+5,120 pts</div>
+          <div style="font-size:0.8rem;font-weight:800;color:#111;opacity:0.7;margin-top:4px;">≈ $0.51 earned</div>
+        </div>
+        <div class="ss-block white" style="padding-top:14px;">
+          <div class="ss-card" style="padding:12px;">
+            <div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.4px;margin-bottom:6px;">Breakdown</div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:0.75rem;font-weight:800;color:#111;"><span>Aluminum cans</span><span>+3,200</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid #ECECEC;font-size:0.75rem;font-weight:800;color:#111;"><span>PET bottles</span><span>+960</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid #ECECEC;font-size:0.75rem;font-weight:800;color:#111;"><span>×2 weekly bonus</span><span>+960</span></div>
+          </div>
+        </div>
+        <div class="ss-block white" style="padding-top:14px;">
+          <button class="ss-btn green"><span>Scan next bag</span><span class="arrow">→</span></button>
+          <button class="ss-btn outline" style="font-size:0.85rem;padding:11px 14px;">Done — back home</button>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#fda4af;">09 · SCAN — SUCCESS <span class="status-badge ss">🏷️ STICKER SECTIONS</span></div>
+    </div>
+
+    <!-- 10 · Scan — Error -->
+    <div>
+      <div class="phone ss">
+        <div class="ss-status"><span>9:41</span><span>●●● 100%</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;">
+          <div style="font-size:0.6rem;font-weight:900;letter-spacing:1.4px;text-transform:uppercase;color:#111;opacity:0.7;">Couldn't read tag</div>
+          <div style="width:28px;height:28px;border-radius:50%;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;">×</div>
+        </div>
+        <div style="padding:0 14px 4px;font-size:1.4rem;font-weight:900;letter-spacing:-0.5px;line-height:1.05;color:#111;">Try again, or enter it.</div>
+        <div class="ss-block white" style="padding-top:14px;">
+          <div style="background:#E11D2A;border:2px solid #111;border-radius:16px;padding:14px;color:#fff;box-shadow:0 4px 0 #111;">
+            <div style="font-size:0.55rem;font-weight:900;letter-spacing:1.4px;text-transform:uppercase;opacity:0.85;margin-bottom:4px;">Error</div>
+            <div style="font-size:1.15rem;font-weight:900;letter-spacing:-0.5px;line-height:1.05;">QR was too blurry to read.</div>
+            <div style="font-size:0.7rem;font-weight:800;opacity:0.9;margin-top:6px;line-height:1.4;">Move 6–8 inches away, keep the bag flat, and hold steady.</div>
+          </div>
+          <div class="ss-card" style="padding:12px;margin-top:12px;">
+            <div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.4px;margin-bottom:6px;">Tips</div>
+            <div style="display:flex;gap:8px;padding:6px 0;align-items:flex-start;">
+              <div style="width:5px;height:5px;border-radius:50%;background:#E11D2A;margin-top:6px;flex-shrink:0;"></div>
+              <div><div style="font-size:0.72rem;font-weight:900;color:#111;">Bright light</div><div style="font-size:0.62rem;font-weight:700;color:#6B6B6B;">Indoor light or daylight, not direct sun.</div></div>
+            </div>
+            <div style="display:flex;gap:8px;padding:6px 0;align-items:flex-start;">
+              <div style="width:5px;height:5px;border-radius:50%;background:#E11D2A;margin-top:6px;flex-shrink:0;"></div>
+              <div><div style="font-size:0.72rem;font-weight:900;color:#111;">Flatten the bag</div><div style="font-size:0.62rem;font-weight:700;color:#6B6B6B;">Smooth out wrinkles around the tag.</div></div>
+            </div>
+            <div style="display:flex;gap:8px;padding:6px 0;align-items:flex-start;">
+              <div style="width:5px;height:5px;border-radius:50%;background:#E11D2A;margin-top:6px;flex-shrink:0;"></div>
+              <div><div style="font-size:0.72rem;font-weight:900;color:#111;">Steady your hand</div><div style="font-size:0.62rem;font-weight:700;color:#6B6B6B;">Wait for the yellow brackets to lock.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="ss-block white" style="padding-top:14px;">
+          <button class="ss-btn green"><span>Try again</span><span class="arrow">→</span></button>
+          <button class="ss-btn" style="background:transparent;border:2px solid #111;color:#111;font-size:0.78rem;padding:10px 14px;box-shadow:none;justify-content:center;">Enter bag # manually</button>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#fda4af;">10 · SCAN — ERROR <span class="status-badge ss">🏷️ STICKER SECTIONS</span></div>
+    </div>
+
+    <!-- 11 · Scan — Manual entry -->
+    <div>
+      <div class="phone ss">
+        <div class="ss-status"><span>9:41</span><span>●●● 100%</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;">
+          <div style="font-size:1rem;font-weight:900;color:#111;">← Scan</div>
+          <div style="font-size:0.6rem;font-weight:900;letter-spacing:1.4px;text-transform:uppercase;color:#6B6B6B;">Manual entry</div>
+        </div>
+        <div style="padding:6px 14px 0;">
+          <div style="font-size:1.5rem;font-weight:900;letter-spacing:-0.7px;line-height:0.95;color:#111;">Type the bag #</div>
+          <div style="font-size:0.7rem;font-weight:700;color:#6B6B6B;margin-top:4px;">Printed under the QR code, format like A24-104.</div>
+        </div>
+        <div class="ss-block white" style="padding-top:14px;">
+          <div style="background:#FFEB52;border:2px solid #111;border-radius:12px;padding:14px 12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 3px 0 #111;font-family:ui-monospace,SF Mono,Menlo,monospace;">
+            <span style="font-size:1.25rem;font-weight:900;color:#111;">A</span>
+            <span style="font-size:1.25rem;font-weight:900;color:#111;">2</span>
+            <span style="font-size:1.25rem;font-weight:900;color:#111;">4</span>
+            <span style="font-size:1.25rem;font-weight:900;color:#111;">−</span>
+            <span style="font-size:1.25rem;font-weight:900;color:#111;">1</span>
+            <span style="font-size:1.25rem;font-weight:900;color:#111;">0</span>
+            <span style="font-size:1.25rem;font-weight:900;color:#111;">4</span>
+            <span style="width:2px;height:20px;background:#E11D2A;"></span>
+          </div>
+        </div>
+        <div class="ss-kpad">
+          <button class="ss-key">1</button><button class="ss-key">2</button><button class="ss-key">3</button>
+          <button class="ss-key">4</button><button class="ss-key">5</button><button class="ss-key">6</button>
+          <button class="ss-key">7</button><button class="ss-key">8</button><button class="ss-key">9</button>
+          <button class="ss-key">-</button><button class="ss-key">0</button><button class="ss-key">⌫</button>
+        </div>
+        <div class="ss-block white" style="padding-top:10px;padding-bottom:18px;">
+          <button class="ss-btn green"><span>Confirm bag</span><span class="arrow">→</span></button>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#fda4af;">11 · SCAN — MANUAL <span class="status-badge ss">🏷️ STICKER SECTIONS</span></div>
+    </div>
+
+    <!-- 12 · Profile -->
+    <div>
+      <div class="phone ss">
+        <div class="ss-status"><span>9:41</span><span>●●● 100%</span></div>
+        <div class="ss-block yellow" style="padding:18px 14px;">
+          <div class="ss-eyebrow" style="letter-spacing:1.6px;">Profile</div>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:10px;">
+            <div style="width:54px;height:54px;border-radius:50%;background:#E11D2A;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.5rem;border:3px solid #111;box-shadow:0 4px 0 #111;">A</div>
+            <div style="flex:1;">
+              <div style="font-size:1.3rem;font-weight:900;letter-spacing:-0.6px;line-height:1;color:#111;">Aguirre Reyes</div>
+              <div style="font-size:0.65rem;font-weight:800;color:#111;opacity:0.75;margin-top:4px;">Member since Mar 2024</div>
+            </div>
+          </div>
+        </div>
+        <div class="ss-block sky" style="padding:16px 14px;">
+          <div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.4px;margin-bottom:8px;">Lifetime stats</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div class="ss-stat"><div class="v">$184.20</div><div class="l">total earned</div></div>
+            <div class="ss-stat"><div class="v">243</div><div class="l">bags returned</div></div>
+            <div class="ss-stat"><div class="v">1,240 lbs</div><div class="l">recycled</div></div>
+            <div class="ss-stat"><div class="v">7.4</div><div class="l">trees saved</div></div>
+          </div>
+          <div style="background:#D9F2D9;border:2px solid #111;border-radius:10px;padding:10px;margin-top:10px;display:flex;align-items:center;gap:8px;box-shadow:0 3px 0 #111;">
+            <div style="width:30px;height:30px;border-radius:50%;background:#E11D2A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:900;">♻</div>
+            <div style="flex:1;">
+              <div style="font-size:0.72rem;font-weight:900;color:#111;letter-spacing:-0.1px;">Top 8% of recyclers in Oakland.</div>
+              <div style="font-size:0.6rem;font-weight:700;color:#6B6B6B;margin-top:1px;">Based on bags returned this quarter.</div>
+            </div>
+          </div>
+        </div>
+        <div class="ss-block white">
+          <div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.4px;margin-bottom:4px;">Account info</div>
+          <div class="ss-row"><div><div class="rl">Name</div><div class="rv">Aguirre Reyes</div></div><span style="font-size:0.9rem;font-weight:900;">›</span></div>
+          <div class="ss-row"><div><div class="rl">Email</div><div class="rv">aguirre@reyes.co</div></div><span style="font-size:0.9rem;font-weight:900;">›</span></div>
+          <div class="ss-row"><div><div class="rl">Phone</div><div class="rv">(415) 555-0188</div></div><span style="font-size:0.9rem;font-weight:900;">›</span></div>
+          <div class="ss-row"><div><div class="rl">Address</div><div class="rv">412 Mariposa Ave · Apt 3B</div></div><span style="font-size:0.9rem;font-weight:900;">›</span></div>
+        </div>
+        <div class="ss-block peach">
+          <div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.4px;margin-bottom:4px;">Settings</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.08);">
+            <div><div style="font-size:0.82rem;font-weight:900;color:#111;">Push notifications</div><div style="font-size:0.6rem;font-weight:700;color:#6B6B6B;">Pickup reminders, bonuses, payouts</div></div>
+            <div class="ss-toggle"><div class="knob"></div></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.08);">
+            <div><div style="font-size:0.82rem;font-weight:900;color:#111;">SMS reminders</div><div style="font-size:0.6rem;font-weight:700;color:#6B6B6B;">Day-before pickup texts</div></div>
+            <div class="ss-toggle"><div class="knob"></div></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
+            <div><div style="font-size:0.82rem;font-weight:900;color:#111;">Auto-reorder bags</div><div style="font-size:0.6rem;font-weight:700;color:#6B6B6B;">When bags left ≤ 5</div></div>
+            <div class="ss-toggle off"><div class="knob"></div></div>
+          </div>
+        </div>
+        <div class="ss-block white">
+          <button class="ss-btn" style="background:#fff;color:#E11D2A;border:2px solid #E11D2A;box-shadow:0 3px 0 #E11D2A;justify-content:center;font-size:0.85rem;">Sign out</button>
+          <div style="text-align:center;font-size:0.55rem;font-weight:700;color:#6B6B6B;margin-top:10px;letter-spacing:0.4px;">App v2.4.1 · Help &amp; support</div>
+        </div>
+        <div class="ss-nav">
+          <div class="ss-nav-item"><div class="ss-nav-icon"></div>Home</div>
+          <div class="ss-nav-item"><div class="ss-nav-icon"></div>Scan</div>
+          <div class="ss-nav-item"><div class="ss-nav-icon"></div>Bags</div>
+          <div class="ss-nav-item"><div class="ss-nav-icon"></div>Rewards</div>
+          <div class="ss-nav-item active"><div class="ss-nav-icon"></div>Profile</div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#fda4af;">12 · PROFILE <span class="status-badge ss">🏷️ STICKER SECTIONS</span></div>
+    </div>
+  </div>
+
+  <div class="impl-note" style="background:rgba(225,29,42,0.06);border-color:rgba(225,29,42,0.3);color:#fda4af;max-width:1100px;margin:0 auto 32px;">
+    <span class="impl-tag">STICKER SECTIONS · MAY 11</span>
+    The above mockups reflect the canonical <strong style="color:#fff;">Sticker Sections</strong> direction from <code>planning/sticker-sections/Sticker Sections - All Screens.html</code>. White base · red brand wordmark (<code>#E11D2A</code>) · pastel section blocks: yellow <code>#FFEB52</code> / mint <code>#D9F2D9</code> / sky <code>#E4EEFB</code> / peach <code>#FFD9C7</code> · Helvetica Neue 900 type, tight tracking · pill buttons with hard 2-4px offset shadows · green primary CTA <code>#1F8A4C</code> on shadow <code>#13643A</code>. The Editorial-Eco cards below this banner are <strong style="color:#fff;">superseded</strong> and kept only for historical comparison.
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- EDITORIAL-ECO RESIDENT SCREENS (Apr 30, 2026 — SUPERSEDED) -->
   <!-- ════════════════════════════════════════════ -->
   <div style="margin-bottom:16px;padding:14px 18px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.3);border-radius:12px;">
     <div style="font-size:0.65rem;color:#34d399;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:4px;">🌿 Visual Refresh — April 30, 2026</div>
@@ -860,188 +1334,308 @@
 <!-- DEPOT -->
 <!-- ═══════════════════════════════════════ -->
 <div class="panel" id="panel-depot">
+  <!-- ════════════════════════════════════════════ -->
+  <!-- STICKER SECTIONS DEPOT SCREENS (May 25, 2026 — CURRENT) -->
+  <!-- ════════════════════════════════════════════ -->
+  <div style="margin-bottom:16px;padding:14px 18px;background:rgba(225,29,42,0.08);border:1px solid rgba(225,29,42,0.3);border-radius:12px;">
+    <div style="font-size:0.65rem;color:#fda4af;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:4px;">🏷️ Visual Refresh — May 25, 2026 (CURRENT)</div>
+    <div style="font-size:0.78rem;color:#d1d5db;line-height:1.5;">Depot worker surface migrated to <strong style="color:#fff;">Sticker Sections</strong> — white base, red brand wordmark, pastel section blocks, chunky Helvetica 900, hard offset shadows. Same language as the resident app, retuned for the depot-floor workflow (high-contrast, fat tap targets, glove-friendly).</div>
+  </div>
+
   <div class="screens-row">
 
-    <!-- Screen 1: Incoming -->
+    <!-- 13 · Depot — Queue (Incoming Deliveries) -->
     <div>
-      <div class="phone">
-        <div class="phone-status">WE BUY CLEAN TRASH · DEPOT</div>
-        <div class="phone-header">
-          <h4>Incoming Deliveries</h4>
-          <span>Depot #01 — Ohio West</span>
+      <div class="phone ss">
+        <div class="ss-status"><span>9:41</span><span>●●● 100%</span></div>
+        <div class="ss-wordmark">
+          <div class="wm">We Buy Clean <span class="red">Trash.</span></div>
+          <div class="ss-avatar" style="background:#111;">D</div>
         </div>
-        <div class="phone-body">
-          <div class="ui-card" style="border-color:rgba(255,255,255,0.18);">
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(255,255,255,0.12)">🚐</div>
-              <div class="ui-list-text">
-                <div class="primary">Route A — Marcus J.</div>
-                <div class="secondary">32 bags · Arrived 2:14 PM</div>
+        <div class="ss-block yellow">
+          <div class="ss-eyebrow">Depot #01 · Ohio West</div>
+          <div class="ss-display huge">47 / 84</div>
+          <div class="ss-sub">bags processed today</div>
+          <div class="ss-bar" style="margin-top:10px;"><div class="ss-bar-fill" style="width:56%;"></div></div>
+        </div>
+        <div class="ss-block white" style="padding-bottom:6px;">
+          <div class="ss-eyebrow" style="color:#6B6B6B;margin-bottom:8px;">Incoming routes</div>
+          <div style="background:#FFEB52;border:2px solid #111;border-radius:14px;padding:12px 14px;box-shadow:0 3px 0 #111;margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <div style="font-size:0.55rem;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:#E11D2A;">Just arrived</div>
+                <div style="font-size:1.1rem;font-weight:900;letter-spacing:-0.4px;color:#111;margin-top:2px;">Route A · Marcus J.</div>
+                <div style="font-size:0.68rem;font-weight:800;color:#111;opacity:0.75;margin-top:2px;">32 bags · 2:14 PM</div>
               </div>
-              <span class="ui-list-badge" style="background:rgba(255,255,255,0.12);color:#ffffff;">NEW</span>
+              <div style="background:#E11D2A;color:#fff;border:2px solid #111;border-radius:8px;padding:3px 8px;font-size:0.58rem;font-weight:900;letter-spacing:1px;">NEW</div>
             </div>
           </div>
-          <div class="ui-card">
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(160,160,160,0.06)">🚐</div>
-              <div class="ui-list-text">
-                <div class="primary">Route B — Keisha T.</div>
-                <div class="secondary">28 bags · Processing: 19/28</div>
+          <div style="background:#E4EEFB;border:2px solid #111;border-radius:14px;padding:12px 14px;box-shadow:0 3px 0 #111;margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+              <div>
+                <div style="font-size:0.55rem;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:#6B6B6B;">In progress</div>
+                <div style="font-size:1.05rem;font-weight:900;letter-spacing:-0.4px;color:#111;margin-top:2px;">Route B · Keisha T.</div>
+                <div style="font-size:0.68rem;font-weight:800;color:#111;opacity:0.75;margin-top:2px;">19 / 28 done</div>
               </div>
-              <span class="ui-list-badge" style="background:rgba(255,255,255,0.1);color:#a0a0a0;">IN PROGRESS</span>
+              <div style="font-size:1.1rem;font-weight:900;color:#111;">68%</div>
             </div>
-            <div class="progress-bar"><div class="progress-fill" style="width:68%"></div></div>
+            <div class="ss-bar"><div class="ss-bar-fill" style="width:68%;"></div></div>
           </div>
-          <div class="ui-card">
-            <div class="ui-list-item">
-              <div class="ui-list-icon" style="background:rgba(255,255,255,0.06)">🚐</div>
-              <div class="ui-list-text">
-                <div class="primary">Route C — David M.</div>
-                <div class="secondary">24 bags · Completed 11:30 AM</div>
+          <div style="background:#D9F2D9;border:2px solid #111;border-radius:14px;padding:12px 14px;box-shadow:0 3px 0 #111;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-size:0.55rem;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:#1F8A4C;">Done today</div>
+                <div style="font-size:1.05rem;font-weight:900;letter-spacing:-0.4px;color:#111;margin-top:2px;">Route C · David M.</div>
+                <div style="font-size:0.68rem;font-weight:800;color:#111;opacity:0.75;margin-top:2px;">24 bags · finished 11:30 AM</div>
               </div>
-              <span class="ui-list-badge" style="background:rgba(255,255,255,0.06);color:#6b7280;">DONE</span>
+              <div class="ss-check" style="width:28px;height:28px;font-size:0.9rem;">✓</div>
             </div>
           </div>
+        </div>
+        <div class="ss-block white" style="padding-top:6px;">
+          <button class="ss-btn brand"><span>Scan next bag</span><span class="arrow">→</span></button>
+        </div>
+        <div class="ss-nav">
+          <div class="ss-nav-item active"><div class="ss-nav-icon"></div>Queue</div>
+          <div class="ss-nav-item"><div class="ss-nav-icon"></div>Scan</div>
+          <div class="ss-nav-item"><div class="ss-nav-icon"></div>Stock</div>
+          <div class="ss-nav-item"><div class="ss-nav-icon"></div>Profile</div>
         </div>
       </div>
-      <div class="screen-label">INCOMING DELIVERIES <span class="status-badge built">✅ BUILT</span></div>
+      <div class="screen-label" style="color:#fda4af;">13 · DEPOT — QUEUE <span class="status-badge ss">🏷️ STICKER SECTIONS</span></div>
     </div>
 
-    <!-- Screen 2: Process Bag (UPDATED — per-commodity weighing) -->
+    <!-- 14 · Depot — Scan bag QR -->
     <div>
-      <div class="phone" style="border-color:rgba(59,130,246,0.3);">
-        <div class="phone-status">WE BUY CLEAN TRASH · DEPOT</div>
-        <div class="phone-header">
-          <h4>Process Bag #0473</h4>
-          <span style="color:#3b82f6;">UPDATED — Weigh each material separately</span>
+      <div class="phone ss">
+        <div class="ss-status"><span>9:41</span><span>●●● 100%</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;">
+          <div style="font-size:0.6rem;font-weight:900;letter-spacing:1.4px;text-transform:uppercase;color:#111;opacity:0.7;">Scan bag to process</div>
+          <div style="width:28px;height:28px;border-radius:50%;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;">×</div>
         </div>
-        <div class="phone-body">
-          <div class="ui-card" style="border-color:rgba(255,255,255,0.15);">
-            <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:4px;">
-              <span style="color:#9ca3af;">Resident:</span>
-              <span style="color:#ffffff;font-weight:700;">Aguirre Johnson</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:4px;">
-              <span style="color:#9ca3af;">QR:</span>
-              <span style="color:#ffffff;">BAG-2026-0473 · #0473</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:0.75rem;">
-              <span style="color:#9ca3af;">Declared:</span>
-              <span style="color:#ffffff;">Commingled</span>
-            </div>
+        <div style="padding:0 14px;font-size:1.4rem;font-weight:900;letter-spacing:-0.5px;line-height:1.05;color:#111;">Aim at the QR<br/>on the bag.</div>
+        <div class="ss-viewfinder">
+          <div class="ss-corner tl"></div><div class="ss-corner tr"></div><div class="ss-corner bl"></div><div class="ss-corner br"></div>
+          <div class="ss-scanline"></div>
+          <div style="position:absolute;bottom:14px;left:14px;right:14px;background:rgba(0,0,0,0.65);border-radius:10px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:0.7rem;font-weight:800;color:#fff;">Route A · 13 bags left</div>
+            <div style="width:6px;height:6px;border-radius:50%;background:#FFEB52;"></div>
           </div>
-
-          <!-- Contamination check -->
-          <div class="ui-card">
-            <div style="font-size:0.72rem;color:#9ca3af;margin-bottom:6px;">Contamination?</div>
-            <div style="display:flex;gap:6px;">
-              <div class="ui-btn btn-primary" style="flex:1;font-size:0.75rem;padding:8px;">✓ Clean</div>
-              <div class="ui-btn btn-secondary" style="flex:1;font-size:0.75rem;padding:8px;color:#f87171;">✗ Contaminated</div>
-            </div>
-          </div>
-
-          <!-- Per-commodity weighing (NEW) -->
-          <div class="ui-card" style="border-color:rgba(34,197,94,0.15);">
-            <div class="ui-card-title" style="color:#22c55e;">⚖️ Weigh Each Material (NEW)</div>
-            <div style="font-size:0.65rem;color:#6b7280;margin-bottom:8px;">Open bag, sort on table, weigh separately</div>
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-              <span style="font-size:0.75rem;color:#d1d5db;">🧴 PET Plastic</span>
-              <div style="display:flex;align-items:center;gap:4px;">
-                <div style="width:50px;padding:5px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);font-size:0.75rem;color:#fff;text-align:right;">2.1</div>
-                <span style="font-size:0.65rem;color:#6b7280;">lbs</span>
-              </div>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-              <span style="font-size:0.75rem;color:#d1d5db;">🥫 Aluminum</span>
-              <div style="display:flex;align-items:center;gap:4px;">
-                <div style="width:50px;padding:5px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);font-size:0.75rem;color:#fff;text-align:right;">1.4</div>
-                <span style="font-size:0.65rem;color:#6b7280;">lbs</span>
-              </div>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-              <span style="font-size:0.75rem;color:#d1d5db;">🥫 Tin</span>
-              <div style="display:flex;align-items:center;gap:4px;">
-                <div style="width:50px;padding:5px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);font-size:0.75rem;color:#fff;text-align:right;">0.0</div>
-                <span style="font-size:0.65rem;color:#6b7280;">lbs</span>
-              </div>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;">
-              <span style="font-size:0.75rem;color:#d1d5db;">📦 Cardboard</span>
-              <div style="display:flex;align-items:center;gap:4px;">
-                <div style="width:50px;padding:5px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);font-size:0.75rem;color:#fff;text-align:right;">0.6</div>
-                <span style="font-size:0.65rem;color:#6b7280;">lbs</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="ui-card" style="background:rgba(255,255,255,0.04);text-align:center;">
-            <div style="font-size:0.68rem;color:#9ca3af;">Total: 4.1 lbs</div>
-            <div style="font-size:0.85rem;color:#ffffff;font-weight:700;margin-top:2px;">Auto-calculated: +2,180 points for Aguirre</div>
-          </div>
-          <div class="ui-btn btn-primary">✓ Submit &amp; Next Bag</div>
+        </div>
+        <div class="ss-block white" style="padding-bottom:18px;">
+          <button class="ss-btn green" style="font-size:0.9rem;padding:12px 14px;"><span>Enter bag # manually</span><span class="arrow">→</span></button>
+          <div style="text-align:center;font-size:0.62rem;font-weight:800;color:#6B6B6B;margin-top:6px;">Tip: smooth the sticker flat before scanning.</div>
         </div>
       </div>
-      <div class="screen-label" style="color:#3b82f6;">PROCESS BAG (UPDATED) <span class="status-badge built">✅ BUILT</span></div>
+      <div class="screen-label" style="color:#fda4af;">14 · DEPOT — SCAN <span class="status-badge ss">🏷️ STICKER SECTIONS</span></div>
     </div>
 
-    <!-- Screen 3: Inventory -->
+    <!-- 15 · Depot — Process Bag (per-commodity weighing) -->
     <div>
-      <div class="phone">
-        <div class="phone-status">WE BUY CLEAN TRASH · DEPOT</div>
-        <div class="phone-header">
-          <h4>Depot Inventory</h4>
-          <span>Ready for mill shipment</span>
+      <div class="phone ss">
+        <div class="ss-status"><span>9:41</span><span>●●● 100%</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;">
+          <div style="font-size:1rem;font-weight:900;color:#111;">← Queue</div>
+          <div style="font-size:0.6rem;font-weight:900;letter-spacing:1.4px;text-transform:uppercase;color:#6B6B6B;">Process bag</div>
         </div>
-        <div class="phone-body">
-          <div class="ui-card">
-            <div class="ui-card-title">Current Stock (lbs)</div>
-            <div style="margin-bottom:8px;">
-              <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:#b0b8c4;margin-bottom:3px;">
-                <span>📦 Cardboard &amp; Paper</span><span style="color:#ffffff;">1,240 lbs</span>
+
+        <!-- Bag info card -->
+        <div class="ss-block white" style="padding-top:6px;">
+          <div style="background:#E4EEFB;border:2px solid #111;border-radius:16px;padding:14px;box-shadow:0 4px 0 #111;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.4px;">Bag #</div>
+                <div style="font-size:1.4rem;font-weight:900;letter-spacing:-0.5px;color:#111;margin-top:2px;">A24-104</div>
               </div>
-              <div class="mini-bar"><div class="mini-bar-fill" style="width:95%;background:#fbbf24;"></div></div>
+              <div class="ss-check" style="width:30px;height:30px;font-size:0.95rem;">✓</div>
             </div>
-            <div style="margin-bottom:8px;">
-              <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:#b0b8c4;margin-bottom:3px;">
-                <span>🥫 Aluminum</span><span style="color:#ffffff;">820 lbs</span>
-              </div>
-              <div class="mini-bar"><div class="mini-bar-fill" style="width:42%;background:#ffffff;"></div></div>
-            </div>
-            <div style="margin-bottom:8px;">
-              <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:#b0b8c4;margin-bottom:3px;">
-                <span>🧴 PET Plastic</span><span style="color:#a0a0a0;">640 lbs</span>
-              </div>
-              <div class="mini-bar"><div class="mini-bar-fill" style="width:32%;background:#ffffff;"></div></div>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:#b0b8c4;margin-bottom:3px;">
-                <span>🥫 Tin</span><span style="color:#a0a0a0;">312 lbs</span>
-              </div>
-              <div class="mini-bar"><div class="mini-bar-fill" style="width:18%;background:#ffffff;"></div></div>
+            <div style="border-top:1px dashed #111;margin-top:10px;padding-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div><div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.2px;">Resident</div><div style="font-size:0.78rem;font-weight:900;color:#111;margin-top:2px;">Aguirre J.</div></div>
+              <div><div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.2px;">Declared</div><div style="font-size:0.78rem;font-weight:900;color:#111;margin-top:2px;">Commingled</div></div>
             </div>
           </div>
-          <div class="ui-card" style="background:rgba(248,113,113,0.04);border-color:rgba(248,113,113,0.12);">
-            <div style="text-align:center;font-size:0.78rem;color:#f87171;font-weight:600;">
-              ⚠️ Cardboard at 95% — schedule truck
+        </div>
+
+        <!-- Campaign banner -->
+        <div class="ss-block white" style="padding-top:0;padding-bottom:0;">
+          <div style="background:#FFEB52;border:2px solid #111;border-radius:12px;padding:9px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 3px 0 #111;">
+            <div style="font-size:1.1rem;">🔥</div>
+            <div style="font-size:0.7rem;font-weight:900;color:#111;line-height:1.3;">×2 on aluminum this week — applied below.</div>
+          </div>
+        </div>
+
+        <!-- Contamination -->
+        <div class="ss-block white" style="padding-top:10px;padding-bottom:6px;">
+          <div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.4px;margin-bottom:8px;">Contamination</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;">
+            <div style="background:#1F8A4C;color:#fff;border:2px solid #111;border-radius:10px;padding:8px 4px;text-align:center;box-shadow:0 3px 0 #13643A;">
+              <div style="font-size:0.72rem;font-weight:900;letter-spacing:-0.2px;">Clean</div>
+              <div style="font-size:0.55rem;font-weight:800;opacity:0.9;">0%</div>
+            </div>
+            <div style="background:#fff;color:#111;border:2px solid #111;border-radius:10px;padding:8px 4px;text-align:center;">
+              <div style="font-size:0.72rem;font-weight:900;letter-spacing:-0.2px;">Minor</div>
+              <div style="font-size:0.55rem;font-weight:800;color:#6B6B6B;">−30%</div>
+            </div>
+            <div style="background:#fff;color:#111;border:2px solid #111;border-radius:10px;padding:8px 4px;text-align:center;">
+              <div style="font-size:0.72rem;font-weight:900;letter-spacing:-0.2px;">Major</div>
+              <div style="font-size:0.55rem;font-weight:800;color:#6B6B6B;">−60%</div>
+            </div>
+            <div style="background:#fff;color:#111;border:2px solid #111;border-radius:10px;padding:8px 4px;text-align:center;">
+              <div style="font-size:0.72rem;font-weight:900;letter-spacing:-0.2px;">Severe</div>
+              <div style="font-size:0.55rem;font-weight:800;color:#6B6B6B;">−90%</div>
             </div>
           </div>
-          <div class="ui-card">
-            <div class="ui-card-title">Yellow Sheet (this month)</div>
-            <div style="font-size:0.72rem;color:#b0b8c4;">
-              <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span>Aluminum</span><span style="color:#ffffff;">$0.92/lb</span></div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span>PET</span><span style="color:#ffffff;">$0.18/lb</span></div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span>Cardboard</span><span style="color:#ffffff;">$0.08/lb</span></div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span>Paper</span><span style="color:#ffffff;">$0.05/lb</span></div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span>HDPE</span><span style="color:#ffffff;">$0.75/lb</span></div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span>Tin</span><span style="color:#ffffff;">$0.14/lb</span></div>
-              <div style="display:flex;justify-content:space-between;"><span>Mixed Plastic</span><span style="color:#ffffff;">$0.06/lb</span></div>
+        </div>
+
+        <!-- Per-commodity weighing (sticker rows) -->
+        <div class="ss-block mint">
+          <div class="ss-eyebrow" style="margin-bottom:8px;">Weigh each material</div>
+          <div style="background:#fff;border:2px solid #111;border-radius:12px;overflow:hidden;box-shadow:0 3px 0 #111;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #ECECEC;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:1rem;">🥫</span>
+                <span style="font-size:0.82rem;font-weight:900;color:#111;">Aluminum</span>
+                <span style="background:#FFEB52;border:1.5px solid #111;border-radius:6px;padding:1px 5px;font-size:0.5rem;font-weight:900;letter-spacing:1px;">×2</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="background:#FFEB52;border:2px solid #111;border-radius:8px;padding:4px 10px;font-size:0.95rem;font-weight:900;color:#111;font-family:ui-monospace,SF Mono,Menlo,monospace;min-width:48px;text-align:right;">1.4</div>
+                <span style="font-size:0.6rem;font-weight:900;color:#6B6B6B;">lbs</span>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #ECECEC;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:1rem;">🧴</span>
+                <span style="font-size:0.82rem;font-weight:900;color:#111;">PET Plastic</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="background:#fff;border:2px solid #111;border-radius:8px;padding:4px 10px;font-size:0.95rem;font-weight:900;color:#111;font-family:ui-monospace,SF Mono,Menlo,monospace;min-width:48px;text-align:right;">2.1</div>
+                <span style="font-size:0.6rem;font-weight:900;color:#6B6B6B;">lbs</span>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #ECECEC;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:1rem;">📦</span>
+                <span style="font-size:0.82rem;font-weight:900;color:#111;">Cardboard</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="background:#fff;border:2px solid #111;border-radius:8px;padding:4px 10px;font-size:0.95rem;font-weight:900;color:#111;font-family:ui-monospace,SF Mono,Menlo,monospace;min-width:48px;text-align:right;">0.6</div>
+                <span style="font-size:0.6rem;font-weight:900;color:#6B6B6B;">lbs</span>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:1rem;">🥫</span>
+                <span style="font-size:0.82rem;font-weight:900;color:#111;opacity:0.55;">Tin</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="background:#fff;border:2px dashed #111;border-radius:8px;padding:4px 10px;font-size:0.95rem;font-weight:900;color:#111;opacity:0.35;font-family:ui-monospace,SF Mono,Menlo,monospace;min-width:48px;text-align:right;">0.0</div>
+                <span style="font-size:0.6rem;font-weight:900;color:#6B6B6B;">lbs</span>
+              </div>
             </div>
           </div>
+        </div>
+
+        <!-- Total + points -->
+        <div class="ss-block white" style="padding-top:10px;padding-bottom:6px;">
+          <div style="background:#D9F2D9;border:2px solid #111;border-radius:16px;padding:14px;box-shadow:0 4px 0 #111;text-align:center;">
+            <div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.4px;">Total · 4.1 lbs</div>
+            <div style="font-size:2rem;font-weight:900;letter-spacing:-1.4px;line-height:0.95;color:#111;margin-top:4px;">+2,180 pts</div>
+            <div style="font-size:0.7rem;font-weight:800;color:#111;opacity:0.7;margin-top:2px;">credited to Aguirre J.</div>
+          </div>
+        </div>
+
+        <div class="ss-block white" style="padding-top:8px;padding-bottom:18px;">
+          <button class="ss-btn green"><span>Submit &amp; next bag</span><span class="arrow">→</span></button>
+          <button class="ss-btn" style="background:transparent;border:2px solid #111;color:#111;font-size:0.78rem;padding:10px 14px;box-shadow:none;justify-content:center;">Save &amp; pause</button>
         </div>
       </div>
-      <div class="screen-label">INVENTORY &amp; PRICING <span class="status-badge built">✅ BUILT</span></div>
+      <div class="screen-label" style="color:#fda4af;">15 · DEPOT — PROCESS BAG <span class="status-badge ss">🏷️ STICKER SECTIONS</span></div>
     </div>
 
+    <!-- 16 · Depot — Inventory & Yellow Sheet -->
+    <div>
+      <div class="phone ss">
+        <div class="ss-status"><span>9:41</span><span>●●● 100%</span></div>
+        <div class="ss-wordmark">
+          <div class="wm">We Buy Clean <span class="red">Trash.</span></div>
+          <div class="ss-avatar" style="background:#111;">D</div>
+        </div>
+        <div class="ss-block yellow">
+          <div class="ss-eyebrow">Depot stock · ready for mill</div>
+          <div class="ss-display huge">3,012 lbs</div>
+          <div class="ss-sub">across 4 commodities</div>
+        </div>
+
+        <!-- Cardboard alert -->
+        <div class="ss-block white" style="padding-top:10px;padding-bottom:6px;">
+          <div style="background:#E11D2A;border:2px solid #111;border-radius:14px;padding:12px 14px;color:#fff;box-shadow:0 4px 0 #111;display:flex;align-items:center;gap:10px;">
+            <div style="font-size:1.4rem;">⚠️</div>
+            <div style="flex:1;">
+              <div style="font-size:0.55rem;font-weight:900;letter-spacing:1.4px;text-transform:uppercase;opacity:0.9;">Cardboard at 95%</div>
+              <div style="font-size:0.9rem;font-weight:900;letter-spacing:-0.3px;line-height:1.1;margin-top:1px;">Schedule a mill truck.</div>
+            </div>
+            <div style="background:#fff;color:#E11D2A;border:2px solid #111;border-radius:8px;padding:5px 9px;font-size:0.6rem;font-weight:900;letter-spacing:0.6px;">FIX</div>
+          </div>
+        </div>
+
+        <!-- Current stock list -->
+        <div class="ss-block white" style="padding-top:8px;padding-bottom:0;">
+          <div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.4px;margin-bottom:8px;">Current stock</div>
+          <div style="margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;font-weight:900;color:#111;margin-bottom:4px;">
+              <span>📦 Cardboard &amp; Paper</span><span>1,240 lbs</span>
+            </div>
+            <div class="ss-bar"><div class="ss-bar-fill" style="width:95%;background:#E11D2A;"></div></div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;font-weight:900;color:#111;margin-bottom:4px;">
+              <span>🥫 Aluminum</span><span>820 lbs</span>
+            </div>
+            <div class="ss-bar"><div class="ss-bar-fill" style="width:42%;"></div></div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;font-weight:900;color:#111;margin-bottom:4px;">
+              <span>🧴 PET Plastic</span><span>640 lbs</span>
+            </div>
+            <div class="ss-bar"><div class="ss-bar-fill" style="width:32%;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;font-weight:900;color:#111;margin-bottom:4px;">
+              <span>🥫 Tin</span><span>312 lbs</span>
+            </div>
+            <div class="ss-bar"><div class="ss-bar-fill" style="width:18%;"></div></div>
+          </div>
+        </div>
+
+        <!-- Yellow Sheet -->
+        <div class="ss-block sky">
+          <div class="ss-eyebrow" style="color:#6B6B6B;letter-spacing:1.4px;margin-bottom:8px;">Yellow sheet · this month</div>
+          <div style="background:#FFEB52;border:2px solid #111;border-radius:12px;overflow:hidden;box-shadow:0 3px 0 #111;">
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #111;font-size:0.74rem;font-weight:900;color:#111;"><span>Aluminum</span><span>$0.92 / lb</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #111;font-size:0.74rem;font-weight:900;color:#111;"><span>HDPE</span><span>$0.75 / lb</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #111;font-size:0.74rem;font-weight:900;color:#111;"><span>PET</span><span>$0.18 / lb</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #111;font-size:0.74rem;font-weight:900;color:#111;"><span>Tin</span><span>$0.14 / lb</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #111;font-size:0.74rem;font-weight:900;color:#111;"><span>Cardboard</span><span>$0.08 / lb</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #111;font-size:0.74rem;font-weight:900;color:#111;"><span>Mixed Plastic</span><span>$0.06 / lb</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;font-size:0.74rem;font-weight:900;color:#111;"><span>Paper</span><span>$0.05 / lb</span></div>
+          </div>
+        </div>
+
+        <div class="ss-nav">
+          <div class="ss-nav-item"><div class="ss-nav-icon"></div>Queue</div>
+          <div class="ss-nav-item"><div class="ss-nav-icon"></div>Scan</div>
+          <div class="ss-nav-item active"><div class="ss-nav-icon"></div>Stock</div>
+          <div class="ss-nav-item"><div class="ss-nav-icon"></div>Profile</div>
+        </div>
+      </div>
+      <div class="screen-label" style="color:#fda4af;">16 · DEPOT — INVENTORY &amp; YELLOW SHEET <span class="status-badge ss">🏷️ STICKER SECTIONS</span></div>
+    </div>
+
+  </div>
+
+  <div class="impl-note" style="background:rgba(225,29,42,0.06);border-color:rgba(225,29,42,0.3);color:#fda4af;max-width:1100px;margin:0 auto 24px;">
+    <span class="impl-tag">STICKER SECTIONS · MAY 25</span>
+    Depot worker surface now uses the same <strong style="color:#fff;">Sticker Sections</strong> language as the resident app — white base, red brand wordmark (<code>#E11D2A</code>), pastel section blocks (yellow / mint / sky), Helvetica 900, hard 2-4px offset shadows, green primary CTAs. Per-commodity weighing rows are sticker chips with monospace lb inputs; the active material gets the yellow ×N tag when a pricing campaign applies. Contamination is a 4-tile picker matching the contamination penalties in <code>calculatePoints</code>.
   </div>
 
   <div class="role-desc">
@@ -1067,6 +1661,10 @@
       The process form now <strong>only renders material rows the depot is configured to accept</strong> (set per-depot from admin Zones &amp; Depots). The server rejects weights for unaccepted materials.
       A <strong>🔥 Active campaign banner</strong> appears above contamination when global multipliers are running, and the points preview / submit reflect the multiplier. The applied campaigns are snapshotted onto each <code>bagProcessing</code> doc for audit.
       The depot Inventory page now lists <em>any</em> material the depot has actually processed (including custom ones like compost / textile / electronics), not just the canonical 7.
+    </div>
+    <div class="impl-note" style="background:rgba(225,29,42,0.08);border-color:rgba(225,29,42,0.3);color:#fda4af;">
+      <span class="impl-tag" style="color:#fda4af;">STICKER SECTIONS · MAY 25</span>
+      Depot worker surface migrated to Sticker Sections. The four screens above (<strong>Queue</strong> / <strong>Scan</strong> / <strong>Process bag</strong> / <strong>Inventory</strong>) replace the legacy dark UI. Same primitives as the resident app — <code>.ss-block</code> color sections, <code>.ss-btn.green</code> for primary action, <code>.ss-bar</code> for stock + queue progress, <code>.ss-viewfinder</code> for the QR scan view — retuned for a depot-floor context (high-contrast, fat tap targets, glove-friendly buttons).
     </div>
   </div>
 
@@ -1657,6 +2255,26 @@
   <h2 style="color:#ffffff;font-size:1.2rem;margin-bottom:6px;font-weight:700;">Updates &amp; Status</h2>
   <p style="font-size:0.78rem;color:#9ca3af;margin-bottom:18px;line-height:1.5;">Each section below summarises a milestone or meeting. Tap a row to expand the detail.</p>
 
+  <!-- ─── Sticker Sections · depot worker ─── -->
+  <details class="update-group" open>
+    <summary>
+      <div class="update-group-summary-text">
+        <div class="ug-title"><span class="ug-tag" style="background:rgba(225,29,42,0.15);color:#fda4af;border-color:rgba(225,29,42,0.4);">🏷️ MAY 25</span> Sticker Sections — depot worker</div>
+        <div class="ug-blurb">Depot worker surface migrated from legacy dark UI to Sticker Sections — same language as the resident app, retuned for the depot floor.</div>
+      </div>
+    </summary>
+    <div class="update-group-body">
+      <div style="font-size:0.72rem;color:#9ca3af;margin-bottom:8px;line-height:1.5;font-style:italic;">
+        Depot worker skips Editorial-Eco entirely and goes straight to Sticker Sections. The dark theme was originally kept on the assumption it "read fine on the depot floor," but the white-base / high-contrast / fat-tap-target sticker language is actually a better fit for glove-on, well-lit warehouse use. Four screens: <strong>Queue</strong>, <strong>Scan</strong>, <strong>Process bag</strong>, <strong>Inventory &amp; yellow sheet</strong>.
+      </div>
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Depot:</strong> Queue screen — yellow hero shows <code>bags processed today / total</code> with progress bar. Incoming routes render as bordered sticker cards (yellow = NEW, sky = IN PROGRESS w/ % bar, mint = DONE w/ check). Brand primary "Scan next bag" CTA at bottom. Bottom nav: Queue · Scan · Stock · Profile.</div>
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Depot:</strong> Scan screen — reuses the resident <code>.ss-viewfinder</code> primitive (yellow corner brackets, scanline) with a route-progress overlay ("Route A · 13 bags left") instead of "Looking for QR…". Green "Enter bag # manually" fallback CTA below.</div>
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Depot:</strong> Process bag — sky-block bag info card (Bag #, Resident, Declared), yellow 🔥 campaign banner above contamination, contamination as a 4-tile picker (Clean / Minor / Major / Severe with penalty %), and per-commodity rows inside a mint section block. Each row is a sticker chip with a monospace lb input; rows under an active campaign get a tiny yellow ×N tag. Mint "+2,180 pts" total card before the green submit CTA.</div>
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Depot:</strong> Inventory &amp; yellow sheet — yellow hero shows total stock + commodity count. Red sticker alert card when any material hits the truck-schedule threshold (95% cardboard). Stock list uses <code>.ss-bar</code> per material (cardboard fills red when over threshold). Yellow sheet rendered as a yellow card with bordered rows for each commodity rate.</div>
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Platform:</strong> No new primitives needed — depot reuses every <code>.ss-*</code> primitive from the resident app (<code>.ss-block</code>, <code>.ss-btn</code>, <code>.ss-bar</code>, <code>.ss-viewfinder</code>, <code>.ss-check</code>, <code>.ss-eyebrow</code>, <code>.ss-display</code>). Implementation in <code>src/app/depot/*</code> can share the same component set as the resident app.</div>
+    </div>
+  </details>
+
   <!-- ─── Build phases ─── -->
   <details class="update-group">
     <summary>
@@ -1840,7 +2458,8 @@
       <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Operator:</strong> <code>LogoutLink</code> component on the operator masthead — italic serif "Sign out" link, posts to the session-clear endpoint.</div>
       <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Resident (anonymous):</strong> Pre-signup scan (<code>/scan</code> + <code>ScanClient</code>) repainted on the editorial-eco shell — VOL. I · NO. 01 masthead, italic-em "Scan some trash, see how much you'll <em>earn</em>.", ledger-style scanned-item rows with $/pts subtitle, sticky "Sign up &amp; start earning →" green CTA. Session-only state still in localStorage.</div>
       <div style="background:rgba(160,104,42,0.1);border:1px solid rgba(160,104,42,0.3);padding:10px 12px;border-radius:8px;font-size:0.72rem;color:#fbbf24;line-height:1.5;border-bottom:none;">
-        <strong>Out of scope (still legacy dark UI):</strong> depot worker, depot manager, admin. Migration not yet planned — these are operator-internal tools and the dark theme reads fine in a depot-floor / desk context.
+        <strong>Out of scope (still legacy dark UI):</strong> depot manager, admin. Editorial-Eco was never extended to these — they remain on the dark theme, which reads fine in a desk context.<br/>
+        <em style="color:#fda4af;">Update May 25, 2026:</em> depot worker was migrated past Editorial-Eco straight into <strong style="color:#fff;">Sticker Sections</strong> (see Depot panel above).
       </div>
     </div>
   </details>

@@ -3,8 +3,9 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { logout } from '@/lib/auth/client';
+import { SS } from '@/components/resident/ss/SS';
 
-export function LogoutLink() {
+export function SignOutButton() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
 
@@ -24,14 +25,20 @@ export function LogoutLink() {
       type="button"
       onClick={handle}
       disabled={busy}
-      className="cursor-pointer p-0 italic underline disabled:opacity-50"
       style={{
-        background: 'transparent',
-        border: 'none',
-        fontFamily: 'var(--eco-serif)',
-        fontSize: 11,
-        color: '#5A6358',
-        textDecorationColor: '#D9D2C2',
+        width: '100%',
+        background: '#fff',
+        color: SS.brand,
+        border: `2px solid ${SS.brand}`,
+        borderRadius: 999,
+        padding: '14px 20px',
+        fontFamily: SS.sans,
+        fontSize: 16,
+        fontWeight: 900,
+        letterSpacing: -0.2,
+        boxShadow: `0 3px 0 ${SS.brand}`,
+        cursor: busy ? 'not-allowed' : 'pointer',
+        opacity: busy ? 0.5 : 1,
       }}
     >
       {busy ? 'Signing out…' : 'Sign out'}

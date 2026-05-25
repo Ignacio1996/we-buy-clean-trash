@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireRole } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
@@ -6,13 +7,7 @@ import type { RouteDoc } from '@/lib/types/route';
 import type { PickupDoc } from '@/lib/types/pickup';
 import type { BagDoc } from '@/lib/types/bag';
 import type { UserDoc } from '@/lib/types/user';
-import {
-  DP_TOK,
-  DpBackRow,
-  DpEmpty,
-  DpMasthead,
-  DpProgressBar,
-} from '@/components/depot/Dp';
+import { SS } from '@/components/resident/ss/SS';
 import { RouteBagsClient, type RouteBagRow } from './RouteBagsClient';
 
 export const dynamic = 'force-dynamic';
@@ -95,44 +90,134 @@ export default async function RouteDetailPage({
 
   return (
     <section>
-      <DpBackRow label="Incoming" href="/depot/incoming" />
-
-      <DpMasthead
-        eyebrow="Route detail"
-        title={
-          <>
-            <em style={{ color: DP_TOK.green, fontStyle: 'italic' }}>
-              {operatorLabel}
-            </em>
-            &rsquo;s haul.
-          </>
-        }
-      >
-        <div
-          className="mt-2"
+      {/* Back row */}
+      <div style={{ background: '#fff', padding: '14px 20px 0' }}>
+        <Link
+          href="/depot/incoming"
           style={{
-            fontFamily: DP_TOK.serif,
-            fontSize: 13,
-            color: DP_TOK.inkSoft,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            textDecoration: 'none',
+            color: SS.ink,
           }}
         >
-          {processedCount}/{rows.length} bags processed
+          <span style={{ fontSize: 18, fontWeight: 900 }}>←</span>
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 900,
+              letterSpacing: 1.4,
+              textTransform: 'uppercase',
+              color: SS.inkSoft,
+            }}
+          >
+            Queue
+          </span>
+        </Link>
+      </div>
+
+      {/* Yellow hero — route + progress */}
+      <div
+        style={{
+          background: SS.yellow,
+          padding: '20px 20px 22px',
+          marginTop: 14,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 11,
+            fontWeight: 900,
+            letterSpacing: 1.4,
+            textTransform: 'uppercase',
+            color: SS.inkSoft,
+          }}
+        >
+          Route · {operatorLabel}
+        </div>
+        <div
+          style={{
+            fontSize: 36,
+            fontWeight: 900,
+            letterSpacing: -1.4,
+            lineHeight: 1,
+            color: SS.ink,
+            marginTop: 6,
+          }}
+        >
+          {processedCount} / {rows.length}
+        </div>
+        <div
+          style={{
+            fontSize: 13,
+            fontWeight: 800,
+            color: SS.ink,
+            opacity: 0.75,
+            marginTop: 4,
+          }}
+        >
+          bags processed
         </div>
         {rows.length > 0 && (
-          <div className="mt-2">
-            <DpProgressBar pct={progressPct} tone="green" />
+          <div
+            style={{
+              marginTop: 14,
+              height: 8,
+              borderRadius: 999,
+              background: '#fff',
+              border: `2px solid ${SS.ink}`,
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                width: `${progressPct}%`,
+                height: '100%',
+                background: SS.brand,
+              }}
+            />
           </div>
         )}
-      </DpMasthead>
+      </div>
 
-      {rows.length === 0 ? (
-        <DpEmpty
-          title="No completed pickups."
-          body="This route closed without any bags collected."
-        />
-      ) : (
-        <RouteBagsClient rows={rows} />
-      )}
+      <div style={{ background: '#fff', padding: '18px 20px 28px' }}>
+        {rows.length === 0 ? (
+          <div
+            style={{
+              background: '#fff',
+              border: `2px dashed ${SS.ink}`,
+              borderRadius: 16,
+              padding: '28px 18px',
+              textAlign: 'center',
+            }}
+          >
+            <div
+              style={{
+                fontSize: 18,
+                fontWeight: 900,
+                letterSpacing: -0.4,
+                color: SS.ink,
+              }}
+            >
+              No completed pickups.
+            </div>
+            <div
+              style={{
+                fontSize: 13,
+                fontWeight: 700,
+                color: SS.inkSoft,
+                lineHeight: 1.5,
+                marginTop: 6,
+              }}
+            >
+              This route closed without any bags collected.
+            </div>
+          </div>
+        ) : (
+          <RouteBagsClient rows={rows} />
+        )}
+      </div>
     </section>
   );
 }

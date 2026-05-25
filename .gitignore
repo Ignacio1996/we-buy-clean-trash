@@ -48,3 +48,6 @@ service-account*.json
 *.tsbuildinfo
 next-env.d.ts
 .env*.local
+
+# claude worktrees
+.claude/worktrees/

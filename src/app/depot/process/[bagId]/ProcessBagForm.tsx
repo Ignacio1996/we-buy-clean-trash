@@ -10,15 +10,7 @@ import {
   type MaterialPricing,
 } from '@/lib/types/material';
 import type { DeclaredBagType } from '@/lib/types/bag';
-import {
-  DP_TOK,
-  DpAlert,
-  DpEyebrow,
-  DpPaper,
-  DpPrimaryButton,
-  DpRow,
-} from '@/components/depot/Dp';
-import { IconCheck, IconFire } from '@/components/icons/EcoIcons';
+import { SS, SSPillButton } from '@/components/resident/ss/SS';
 
 export interface MaterialDescriptor {
   id: MaterialId;
@@ -67,7 +59,7 @@ function emojiFor(id: MaterialId): string {
 }
 
 const CONTAMINATION_LABEL: Record<ContaminationSeverity, string> = {
-  none: 'None',
+  none: 'Clean',
   minor: 'Minor',
   major: 'Major',
   severe: 'Severe',
@@ -170,36 +162,53 @@ export function ProcessBagForm(props: ProcessBagFormProps) {
   if (step === 'done') {
     return (
       <div
-        className="px-5 py-8 text-center"
         style={{
-          background: DP_TOK.greenSoft,
-          border: `1px solid rgba(45,90,61,0.3)`,
-          borderRadius: 14,
+          background: SS.mint,
+          border: `2px solid ${SS.ink}`,
+          borderRadius: 18,
+          padding: '28px 18px',
+          textAlign: 'center',
+          boxShadow: `0 4px 0 ${SS.ink}`,
         }}
       >
         <div
-          className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full"
-          style={{ background: DP_TOK.green }}
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: '50%',
+            background: SS.green,
+            color: '#fff',
+            border: `3px solid ${SS.ink}`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 14px',
+            fontWeight: 900,
+            fontSize: 26,
+            boxShadow: `0 4px 0 ${SS.ink}`,
+          }}
         >
-          <IconCheck size={20} color={DP_TOK.paper} stroke={2.5} />
+          ✓
         </div>
         <div
           style={{
-            fontFamily: DP_TOK.serif,
-            fontSize: 22,
-            color: DP_TOK.ink,
-            letterSpacing: -0.4,
+            fontSize: 36,
+            fontWeight: 900,
+            letterSpacing: -1.4,
+            lineHeight: 0.95,
+            color: SS.ink,
             fontFeatureSettings: '"lnum","tnum"',
           }}
         >
-          +{(awarded ?? 0).toLocaleString()} points
+          +{(awarded ?? 0).toLocaleString()} pts
         </div>
         <div
-          className="mt-1 italic"
           style={{
-            fontFamily: DP_TOK.serif,
+            marginTop: 6,
             fontSize: 13,
-            color: DP_TOK.green,
+            fontWeight: 800,
+            color: SS.ink,
+            opacity: 0.75,
           }}
         >
           Awarded. Returning to route…
@@ -209,139 +218,304 @@ export function ProcessBagForm(props: ProcessBagFormProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <DpPaper>
-        <DpRow label="Resident" value={props.residentName} />
-        <DpRow label="Bag" value={`#${props.printedNumber}`} valueTone="mono" />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      {/* Bag info card — sky sticker */}
+      <div
+        style={{
+          background: SS.sky,
+          border: `2px solid ${SS.ink}`,
+          borderRadius: 18,
+          padding: 14,
+          boxShadow: `0 4px 0 ${SS.ink}`,
+        }}
+      >
         <div
-          className="flex items-baseline justify-between pt-2.5"
-          style={{ borderBottom: 'none' }}
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            gap: 12,
+          }}
         >
-          <DpEyebrow>Declared</DpEyebrow>
-          <span
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div
+              style={{
+                fontSize: 10,
+                fontWeight: 900,
+                letterSpacing: 1.4,
+                textTransform: 'uppercase',
+                color: SS.inkSoft,
+              }}
+            >
+              Bag #
+            </div>
+            <div
+              style={{
+                fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
+                fontSize: 22,
+                fontWeight: 900,
+                letterSpacing: 0.4,
+                color: SS.ink,
+                marginTop: 2,
+              }}
+            >
+              {props.printedNumber}
+            </div>
+          </div>
+          <div
             style={{
-              fontFamily: DP_TOK.serif,
+              width: 34,
+              height: 34,
+              borderRadius: '50%',
+              background: SS.green,
+              color: '#fff',
+              border: `2px solid ${SS.ink}`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 900,
               fontSize: 15,
-              color:
-                props.declaredType === 'separated' ? DP_TOK.green : DP_TOK.ink,
             }}
           >
-            {props.declaredType === 'separated'
-              ? 'Separated · 2× multiplier'
-              : props.declaredType === 'mixed'
-                ? 'Commingled'
-                : '—'}
-          </span>
+            ✓
+          </div>
         </div>
-      </DpPaper>
+        <div
+          style={{
+            borderTop: `1.5px dashed ${SS.ink}`,
+            marginTop: 12,
+            paddingTop: 12,
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 10,
+          }}
+        >
+          <div>
+            <div
+              style={{
+                fontSize: 10,
+                fontWeight: 900,
+                letterSpacing: 1.2,
+                textTransform: 'uppercase',
+                color: SS.inkSoft,
+              }}
+            >
+              Resident
+            </div>
+            <div
+              style={{
+                fontSize: 14,
+                fontWeight: 900,
+                letterSpacing: -0.2,
+                color: SS.ink,
+                marginTop: 2,
+              }}
+            >
+              {props.residentName}
+            </div>
+          </div>
+          <div>
+            <div
+              style={{
+                fontSize: 10,
+                fontWeight: 900,
+                letterSpacing: 1.2,
+                textTransform: 'uppercase',
+                color: SS.inkSoft,
+              }}
+            >
+              Declared
+            </div>
+            <div
+              style={{
+                fontSize: 14,
+                fontWeight: 900,
+                letterSpacing: -0.2,
+                color:
+                  props.declaredType === 'separated' ? SS.green : SS.ink,
+                marginTop: 2,
+              }}
+            >
+              {props.declaredType === 'separated'
+                ? 'Separated · 2×'
+                : props.declaredType === 'mixed'
+                  ? 'Commingled'
+                  : '—'}
+            </div>
+          </div>
+        </div>
+      </div>
 
+      {/* Campaign banner — yellow */}
+      {props.activeCampaignNotices.length > 0 && (
+        <div
+          style={{
+            background: SS.yellow,
+            border: `2px solid ${SS.ink}`,
+            borderRadius: 12,
+            padding: '10px 12px',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 10,
+            boxShadow: `0 3px 0 ${SS.ink}`,
+          }}
+        >
+          <div style={{ fontSize: 18 }}>🔥</div>
+          <div style={{ flex: 1 }}>
+            <div
+              style={{
+                fontSize: 10,
+                fontWeight: 900,
+                letterSpacing: 1.4,
+                textTransform: 'uppercase',
+                color: SS.brand,
+              }}
+            >
+              Active campaign
+              {props.activeCampaignNotices.length === 1 ? '' : 's'}
+            </div>
+            <ul
+              style={{
+                listStyle: 'none',
+                padding: 0,
+                margin: '4px 0 0',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+              }}
+            >
+              {props.activeCampaignNotices.map((c) => (
+                <li
+                  key={c.id}
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 900,
+                    color: SS.ink,
+                    lineHeight: 1.3,
+                  }}
+                >
+                  ×{c.multiplier} on {c.materialNames.join(', ')}
+                  <span
+                    style={{
+                      fontWeight: 800,
+                      color: SS.inkSoft,
+                      marginLeft: 4,
+                    }}
+                  >
+                    · {c.name}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
+      {/* Commingled toggle — peach */}
       <label
-        className="flex cursor-pointer items-start gap-3"
         style={{
-          background: commingled ? DP_TOK.amberSoft : DP_TOK.paper,
-          border: `1px solid ${commingled ? 'rgba(160,104,42,0.4)' : DP_TOK.line}`,
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 10,
+          background: commingled ? SS.peach : '#fff',
+          border: `2px solid ${SS.ink}`,
           borderRadius: 12,
-          padding: 14,
+          padding: '12px 14px',
+          boxShadow: commingled ? `0 3px 0 ${SS.ink}` : 'none',
+          cursor: 'pointer',
         }}
       >
         <input
           type="checkbox"
           checked={commingled}
           onChange={(e) => setCommingled(e.target.checked)}
-          className="mt-0.5 h-4 w-4 cursor-pointer"
-          style={{ accentColor: DP_TOK.amber }}
+          style={{
+            width: 18,
+            height: 18,
+            marginTop: 2,
+            accentColor: SS.ink,
+            flexShrink: 0,
+          }}
         />
         <div>
           <div
-            style={{ fontFamily: DP_TOK.serif, fontSize: 14, color: DP_TOK.ink }}
+            style={{
+              fontSize: 14,
+              fontWeight: 900,
+              letterSpacing: -0.2,
+              color: SS.ink,
+            }}
           >
             Commingled bag
           </div>
           <div
-            className="mt-1 italic"
             style={{
-              fontFamily: DP_TOK.serif,
               fontSize: 12,
-              color: DP_TOK.inkSoft,
-              lineHeight: 1.5,
+              fontWeight: 700,
+              color: SS.inkSoft,
+              lineHeight: 1.4,
+              marginTop: 2,
             }}
           >
-            Contents can&rsquo;t be sorted (mixed plastic + glass, etc.). Weights
-            are still recorded for landfill-diversion reporting, but no points are
-            paid.
+            Mixed plastic + glass, etc. Weight is recorded for diversion but no
+            points are paid.
           </div>
         </div>
       </label>
 
-      {props.activeCampaignNotices.length > 0 && (
+      {/* Contamination 4-tile picker */}
+      <div>
         <div
-          className="px-4 py-3"
           style={{
-            background: DP_TOK.amberSoft,
-            border: `1px solid rgba(160,104,42,0.3)`,
-            borderRadius: 12,
+            fontSize: 11,
+            fontWeight: 900,
+            letterSpacing: 1.4,
+            textTransform: 'uppercase',
+            color: SS.inkSoft,
+            marginBottom: 8,
           }}
         >
-          <div className="flex items-center gap-2">
-            <IconFire size={14} color={DP_TOK.amber} stroke={1.8} />
-            <DpEyebrow color={DP_TOK.amber}>
-              Active campaign{props.activeCampaignNotices.length === 1 ? '' : 's'}
-            </DpEyebrow>
-          </div>
-          <ul
-            className="mt-2 space-y-1"
-            style={{
-              fontFamily: DP_TOK.serif,
-              fontSize: 13,
-              color: DP_TOK.amber,
-              lineHeight: 1.4,
-            }}
-          >
-            {props.activeCampaignNotices.map((c) => (
-              <li key={c.id}>
-                <strong style={{ fontWeight: 500 }}>×{c.multiplier}</strong> on{' '}
-                {c.materialNames.join(', ')}
-                <span
-                  className="italic"
-                  style={{ color: DP_TOK.inkSoft, marginLeft: 4 }}
-                >
-                  · {c.name}
-                </span>
-              </li>
-            ))}
-          </ul>
+          Contamination
         </div>
-      )}
-
-      <DpPaper>
-        <DpEyebrow>Contamination</DpEyebrow>
-        <div className="mt-3 grid grid-cols-4 gap-2">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: 6,
+          }}
+        >
           {CONTAMINATION_SEVERITIES.map((sev) => {
             const active = sev === contamination;
             const isClean = sev === 'none';
-            const palette = active
+            const bg = active
               ? isClean
-                ? { bg: DP_TOK.green, fg: DP_TOK.paper, border: DP_TOK.green }
-                : { bg: DP_TOK.rust, fg: DP_TOK.paper, border: DP_TOK.rust }
-              : { bg: 'transparent', fg: DP_TOK.ink, border: DP_TOK.line };
+                ? SS.green
+                : SS.brand
+              : '#fff';
+            const fg = active ? '#fff' : SS.ink;
+            const sub = active ? '#fff' : SS.inkSoft;
             return (
               <button
                 key={sev}
                 type="button"
                 onClick={() => setContamination(sev)}
-                className="cursor-pointer transition-colors"
                 style={{
-                  background: palette.bg,
-                  color: palette.fg,
-                  border: `1px solid ${palette.border}`,
+                  background: bg,
+                  color: fg,
+                  border: `2px solid ${SS.ink}`,
                   borderRadius: 10,
                   padding: '8px 4px',
+                  cursor: 'pointer',
+                  boxShadow: active
+                    ? `0 3px 0 ${isClean ? SS.greenDark : SS.brandDark}`
+                    : 'none',
+                  textAlign: 'center',
                 }}
               >
                 <div
                   style={{
-                    fontFamily: DP_TOK.serif,
-                    fontSize: 14,
+                    fontSize: 13,
+                    fontWeight: 900,
                     letterSpacing: -0.2,
                   }}
                 >
@@ -349,10 +523,10 @@ export function ProcessBagForm(props: ProcessBagFormProps) {
                 </div>
                 <div
                   style={{
-                    fontFamily: DP_TOK.sans,
                     fontSize: 10,
-                    letterSpacing: 0.4,
-                    opacity: 0.85,
+                    fontWeight: 900,
+                    opacity: active ? 0.9 : 1,
+                    color: sub,
                     marginTop: 1,
                   }}
                 >
@@ -362,149 +536,232 @@ export function ProcessBagForm(props: ProcessBagFormProps) {
             );
           })}
         </div>
-      </DpPaper>
+      </div>
 
-      <DpPaper
+      {/* Per-commodity weighing — mint section with sticker chip rows */}
+      <div
         style={{
-          background: DP_TOK.paper,
-          border: `1px solid ${DP_TOK.line}`,
+          background: SS.mint,
+          border: `2px solid ${SS.ink}`,
+          borderRadius: 16,
+          padding: 14,
+          boxShadow: `0 4px 0 ${SS.ink}`,
         }}
       >
-        <div className="flex items-center gap-2">
-          <span aria-hidden style={{ fontSize: 14 }}>
-            ⚖️
-          </span>
-          <DpEyebrow color={DP_TOK.green}>Weigh each material</DpEyebrow>
+        <div
+          style={{
+            fontSize: 11,
+            fontWeight: 900,
+            letterSpacing: 1.4,
+            textTransform: 'uppercase',
+            color: SS.ink,
+            marginBottom: 4,
+          }}
+        >
+          Weigh each material
         </div>
         <div
-          className="mt-1 italic"
           style={{
-            fontFamily: DP_TOK.serif,
-            fontSize: 11.5,
-            color: DP_TOK.inkSoft,
+            fontSize: 11,
+            fontWeight: 800,
+            color: SS.ink,
+            opacity: 0.7,
+            marginBottom: 10,
           }}
         >
           Open bag, sort on the table, weigh separately.
         </div>
-        <div className="mt-3">
-          {props.materialList.map((m, i) => (
-            <div
-              key={m.id}
-              className="flex items-center justify-between py-2.5"
-              style={{
-                borderBottom:
-                  i < props.materialList.length - 1
-                    ? `1px solid ${DP_TOK.lineSoft}`
-                    : 'none',
-              }}
-            >
-              <span
-                className="flex items-center gap-2"
+        <div
+          style={{
+            background: '#fff',
+            border: `2px solid ${SS.ink}`,
+            borderRadius: 12,
+            overflow: 'hidden',
+          }}
+        >
+          {props.materialList.map((m, i) => {
+            const multiplier = props.materialMultipliers[m.id] ?? 1;
+            const hasMultiplier = multiplier > 1;
+            const last = i === props.materialList.length - 1;
+            return (
+              <div
+                key={m.id}
                 style={{
-                  fontFamily: DP_TOK.serif,
-                  fontSize: 14,
-                  color: DP_TOK.ink,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '10px 12px',
+                  borderBottom: last ? 'none' : `1px solid ${SS.line}`,
+                  background: hasMultiplier ? '#FFFCEA' : '#fff',
+                  gap: 10,
                 }}
               >
-                <span aria-hidden>{emojiFor(m.id)}</span>
-                {m.name}
-              </span>
-              <div className="flex items-center gap-2">
-                <input
-                  inputMode="decimal"
-                  type="text"
-                  value={weights[m.id] ?? ''}
-                  onChange={(e) =>
-                    setWeights((prev) => ({
-                      ...prev,
-                      [m.id]: e.target.value.replace(/[^0-9.]/g, ''),
-                    }))
-                  }
-                  placeholder="0.0"
-                  className="text-right"
+                <div
                   style={{
-                    width: 64,
-                    background: DP_TOK.paperTint,
-                    border: `1px solid ${DP_TOK.line}`,
-                    borderRadius: 8,
-                    padding: '6px 10px',
-                    fontFamily: DP_TOK.mono,
-                    fontSize: 14,
-                    color: DP_TOK.ink,
-                    fontFeatureSettings: '"lnum","tnum"',
-                  }}
-                />
-                <span
-                  style={{
-                    fontFamily: DP_TOK.sans,
-                    fontSize: 11,
-                    color: DP_TOK.inkFaint,
-                    letterSpacing: 1.2,
-                    textTransform: 'uppercase',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    minWidth: 0,
+                    flex: 1,
                   }}
                 >
-                  lbs
-                </span>
+                  <span aria-hidden style={{ fontSize: 18 }}>
+                    {emojiFor(m.id)}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 900,
+                      color: SS.ink,
+                      letterSpacing: -0.2,
+                    }}
+                  >
+                    {m.name}
+                  </span>
+                  {hasMultiplier && (
+                    <span
+                      style={{
+                        background: SS.yellow,
+                        border: `1.5px solid ${SS.ink}`,
+                        borderRadius: 6,
+                        padding: '1px 5px',
+                        fontSize: 9,
+                        fontWeight: 900,
+                        letterSpacing: 1,
+                        color: SS.ink,
+                      }}
+                    >
+                      ×{multiplier}
+                    </span>
+                  )}
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                  }}
+                >
+                  <input
+                    inputMode="decimal"
+                    type="text"
+                    value={weights[m.id] ?? ''}
+                    onChange={(e) =>
+                      setWeights((prev) => ({
+                        ...prev,
+                        [m.id]: e.target.value.replace(/[^0-9.]/g, ''),
+                      }))
+                    }
+                    placeholder="0.0"
+                    style={{
+                      width: 60,
+                      background: hasMultiplier ? SS.yellow : '#fff',
+                      border: `2px solid ${SS.ink}`,
+                      borderRadius: 8,
+                      padding: '4px 10px',
+                      fontFamily:
+                        'ui-monospace, "SF Mono", Menlo, monospace',
+                      fontSize: 15,
+                      fontWeight: 900,
+                      color: SS.ink,
+                      textAlign: 'right',
+                      outline: 'none',
+                      fontFeatureSettings: '"lnum","tnum"',
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 900,
+                      color: SS.inkSoft,
+                      letterSpacing: 0.4,
+                    }}
+                  >
+                    lbs
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
-      </DpPaper>
+      </div>
 
+      {/* Total + points — mint result */}
       <div
-        className="px-4 py-4 text-center"
         style={{
-          background: commingled ? DP_TOK.paperTint : DP_TOK.greenSoft,
-          border: `1px solid ${commingled ? DP_TOK.line : 'rgba(45,90,61,0.25)'}`,
-          borderRadius: 14,
+          background: commingled ? SS.peach : SS.mint,
+          border: `2px solid ${SS.ink}`,
+          borderRadius: 16,
+          padding: 16,
+          textAlign: 'center',
+          boxShadow: `0 4px 0 ${SS.ink}`,
         }}
       >
-        <DpEyebrow color={commingled ? DP_TOK.inkSoft : DP_TOK.green}>
-          Total {totalWeight.toFixed(1)} lbs
-        </DpEyebrow>
         <div
-          className="mt-1.5"
           style={{
-            fontFamily: DP_TOK.serif,
-            fontSize: 22,
-            color: commingled ? DP_TOK.inkSoft : DP_TOK.green,
-            letterSpacing: -0.4,
+            fontSize: 11,
+            fontWeight: 900,
+            letterSpacing: 1.4,
+            textTransform: 'uppercase',
+            color: SS.inkSoft,
+          }}
+        >
+          Total · {totalWeight.toFixed(1)} lbs
+        </div>
+        <div
+          style={{
+            fontSize: 32,
+            fontWeight: 900,
+            letterSpacing: -1.4,
+            lineHeight: 0.95,
+            color: SS.ink,
+            marginTop: 6,
             fontFeatureSettings: '"lnum","tnum"',
           }}
         >
           {commingled
-            ? 'Diversion only — 0 pts'
+            ? 'Diversion only'
             : `+${previewPoints.toLocaleString()} pts`}
         </div>
-        {!commingled && (
-          <div
-            className="mt-0.5 italic"
-            style={{
-              fontFamily: DP_TOK.serif,
-              fontSize: 11,
-              color: DP_TOK.inkSoft,
-            }}
-          >
-            For {props.residentName}
-          </div>
-        )}
+        <div
+          style={{
+            marginTop: 2,
+            fontSize: 12,
+            fontWeight: 800,
+            color: SS.ink,
+            opacity: 0.7,
+          }}
+        >
+          {commingled ? '0 points awarded' : `credited to ${props.residentName}`}
+        </div>
       </div>
 
-      {error && <DpAlert tone="rust">{error}</DpAlert>}
+      {/* Error */}
+      {error && (
+        <div
+          style={{
+            background: SS.brand,
+            color: '#fff',
+            border: `2px solid ${SS.ink}`,
+            borderRadius: 14,
+            padding: '12px 14px',
+            boxShadow: `0 4px 0 ${SS.ink}`,
+            fontSize: 13,
+            fontWeight: 800,
+            lineHeight: 1.4,
+          }}
+        >
+          {error}
+        </div>
+      )}
 
-      <DpPrimaryButton
+      <SSPillButton
+        variant="primary"
         onClick={handleSubmit}
         disabled={totalWeight <= 0 || step === 'submitting'}
       >
-        {step === 'submitting' ? (
-          'Submitting…'
-        ) : (
-          <>
-            <IconCheck size={16} color={DP_TOK.paper} stroke={2.5} />
-            Submit &amp; next bag
-          </>
-        )}
-      </DpPrimaryButton>
+        {step === 'submitting' ? 'Submitting…' : 'Submit & next bag'}
+      </SSPillButton>
     </div>
   );
 }

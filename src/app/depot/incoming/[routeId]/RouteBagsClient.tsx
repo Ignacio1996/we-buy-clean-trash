@@ -4,12 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { QrScanner } from '@/components/scanner/QrScanner';
-import {
-  DP_TOK,
-  DpAlert,
-  DpPrimaryButton,
-  DpStatusPill,
-} from '@/components/depot/Dp';
+import { SS, SSPillButton } from '@/components/resident/ss/SS';
 import { IconScan } from '@/components/icons/EcoIcons';
 import type { BagStatus, DeclaredBagType } from '@/lib/types/bag';
 
@@ -54,7 +49,7 @@ export function RouteBagsClient({ rows }: { rows: RouteBagRow[] }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       {scanMode ? (
         <QrScanner
           onDetected={handleDetected}
@@ -62,22 +57,61 @@ export function RouteBagsClient({ rows }: { rows: RouteBagRow[] }) {
           manualPlaceholder="Or type the printed number"
         />
       ) : (
-        <DpPrimaryButton
+        <SSPillButton
+          variant="primary"
           onClick={() => {
             setError(null);
             setScanMode(true);
           }}
+          leadingIcon={<IconScan size={20} color="#fff" stroke={2} />}
         >
-          <IconScan size={18} color={DP_TOK.paper} stroke={1.5} />
           Scan a bag
-        </DpPrimaryButton>
+        </SSPillButton>
       )}
 
-      {error && <DpAlert tone="rust">{error}</DpAlert>}
+      {error && (
+        <div
+          style={{
+            background: SS.brand,
+            color: '#fff',
+            border: `2px solid ${SS.ink}`,
+            borderRadius: 14,
+            padding: '12px 14px',
+            boxShadow: `0 4px 0 ${SS.ink}`,
+            fontSize: 13,
+            fontWeight: 800,
+            lineHeight: 1.4,
+          }}
+        >
+          {error}
+        </div>
+      )}
 
-      <ul className="space-y-2.5">
+      <div
+        style={{
+          fontSize: 11,
+          fontWeight: 900,
+          letterSpacing: 1.4,
+          textTransform: 'uppercase',
+          color: SS.inkSoft,
+        }}
+      >
+        Bags on this route
+      </div>
+
+      <ul
+        style={{
+          listStyle: 'none',
+          padding: 0,
+          margin: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10,
+        }}
+      >
         {rows.map((row) => {
           const processed = row.status === 'processed';
+          const bg = processed ? SS.mint : '#fff';
           return (
             <li key={row.bagId}>
               <Link
@@ -85,42 +119,52 @@ export function RouteBagsClient({ rows }: { rows: RouteBagRow[] }) {
                 onClick={(e) => {
                   if (processed) e.preventDefault();
                 }}
-                className="flex items-center justify-between transition-opacity"
                 style={{
-                  background: DP_TOK.paper,
-                  border: `1px solid ${DP_TOK.line}`,
-                  borderRadius: 12,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 12,
+                  background: bg,
+                  border: `2px solid ${SS.ink}`,
+                  borderRadius: 14,
                   padding: '12px 14px',
+                  boxShadow: processed ? 'none' : `0 3px 0 ${SS.ink}`,
                   textDecoration: 'none',
-                  color: DP_TOK.ink,
-                  opacity: processed ? 0.6 : 1,
+                  color: SS.ink,
                   cursor: processed ? 'not-allowed' : 'pointer',
+                  opacity: processed ? 0.85 : 1,
                 }}
               >
-                <div className="min-w-0">
+                <div style={{ minWidth: 0, flex: 1 }}>
                   <div
                     style={{
-                      fontFamily: DP_TOK.mono,
+                      fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
                       fontSize: 13,
-                      color: DP_TOK.ink,
+                      fontWeight: 900,
                       letterSpacing: 0.5,
+                      color: SS.ink,
                     }}
                   >
                     #{row.printedNumber}
                   </div>
                   <div
-                    className="mt-0.5"
-                    style={{ fontFamily: DP_TOK.serif, fontSize: 13, color: DP_TOK.ink }}
+                    style={{
+                      fontSize: 15,
+                      fontWeight: 900,
+                      letterSpacing: -0.2,
+                      color: SS.ink,
+                      marginTop: 2,
+                    }}
                   >
                     {row.residentName}
                   </div>
                   {row.declaredType && (
                     <div
-                      className="mt-0.5 italic"
                       style={{
-                        fontFamily: DP_TOK.serif,
                         fontSize: 11,
-                        color: DP_TOK.inkSoft,
+                        fontWeight: 800,
+                        color: SS.inkSoft,
+                        marginTop: 2,
                       }}
                     >
                       Declared{' '}
@@ -128,7 +172,42 @@ export function RouteBagsClient({ rows }: { rows: RouteBagRow[] }) {
                     </div>
                   )}
                 </div>
-                <DpStatusPill status={processed ? 'processed' : 'pending'} />
+                {processed ? (
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: '50%',
+                      background: SS.green,
+                      color: '#fff',
+                      border: `2px solid ${SS.ink}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 900,
+                      fontSize: 15,
+                      flexShrink: 0,
+                    }}
+                  >
+                    ✓
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      background: SS.yellow,
+                      border: `2px solid ${SS.ink}`,
+                      borderRadius: 8,
+                      padding: '4px 10px',
+                      fontSize: 10,
+                      fontWeight: 900,
+                      letterSpacing: 1,
+                      color: SS.ink,
+                      flexShrink: 0,
+                    }}
+                  >
+                    PENDING
+                  </div>
+                )}
               </Link>
             </li>
           );
