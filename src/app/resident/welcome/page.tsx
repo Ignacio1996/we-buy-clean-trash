@@ -52,8 +52,8 @@ export default async function WelcomePage() {
             lineHeight: 1.4,
           }}
         >
-          We pick up your clean recyclables at the curb and pay you in gift cards. No sorting
-          machines. No bins to lug.
+          We pick up your clean recyclables from your designated spot and pay you in gift cards.
+          No sorting machines. No bins to lug.
         </div>
 
         <PresignupScanBanner />
@@ -99,7 +99,7 @@ export default async function WelcomePage() {
         <div style={{ marginTop: 4 }}>
           {[
             ['Order bags', 'A sheet of 10 QR-coded bags arrives on your next route.'],
-            ['Fill & set out', 'Clean recyclables. Set bags at the curb by 5:30 PM.'],
+            ['Fill & set out', 'Clean recyclables. Leave bags at your designated pickup area.'],
             ['Return & redeem', 'Points convert to Amazon / Walmart gift cards.'],
           ].map(([t, sub], i) => (
             <div

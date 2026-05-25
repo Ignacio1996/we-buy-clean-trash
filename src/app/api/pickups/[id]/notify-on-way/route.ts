@@ -36,7 +36,7 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
   // so we capture the intent. Twilio call is wired post-pilot.
   await sendSMS({
     toPhone: resident?.phone ?? '',
-    body: `Hi ${firstName}! Your We Buy Clean Trash driver is on the way — please make sure your bag is at the curb.`,
+    body: `Hi ${firstName}! Your We Buy Clean Trash driver is on the way — please make sure your bag is at your designated pickup area.`,
     purpose: 'driver_on_the_way',
     relatedDocId: pickup.id,
   });

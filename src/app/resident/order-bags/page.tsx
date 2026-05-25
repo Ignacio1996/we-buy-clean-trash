@@ -123,7 +123,7 @@ export default async function OrderBagsPage() {
               ★
             </div>
             <div style={{ fontSize: 14, fontWeight: 800, color: SS.ink, lineHeight: 1.3 }}>
-              <span style={{ color: SS.green }}>Welcome gift</span> — your first sheet is on
+              <span style={{ color: SS.green }}>Welcome gift</span> — your first box of bags is on
               us, applied automatically.
             </div>
           </div>
@@ -162,8 +162,8 @@ export default async function OrderBagsPage() {
             padding: '0 4px',
           }}
         >
-          Free shipping on orders ≥ ${FREE_SHIPPING_THRESHOLD} · otherwise +$
-          {SHIPPING_FEE.toFixed(2)} shipping.
+          Free delivery on orders ≥ ${FREE_SHIPPING_THRESHOLD} · otherwise +$
+          {SHIPPING_FEE.toFixed(2)} delivery.
         </div>
       </div>
 

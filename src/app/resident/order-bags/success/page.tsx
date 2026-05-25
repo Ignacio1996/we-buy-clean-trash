@@ -127,8 +127,8 @@ export default async function OrderBagsSuccessPage({
   }
 
   const steps: Array<[string, string]> = [
-    ['Bags arrive', 'Delivered on your next pickup route.'],
-    ['Set out by 5:30 PM', 'Place filled bags at the curb on your pickup day.'],
+    ['Bags arrive', 'Free delivery on your next pickup route.'],
+    ['Pickup day', 'Leave filled bags at your designated pickup area.'],
     ['Points credited', 'Each bag earns points after weigh-in.'],
   ];
 

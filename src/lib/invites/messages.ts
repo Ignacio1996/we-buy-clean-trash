@@ -59,11 +59,11 @@ export function buildResidentInviteEmail(args: {
   const text =
     `You've been invited to join We Buy Clean Trash as a resident.\n\n` +
     `Sign up here:\n${args.signupUrl}\n\n` +
-    `New members get a 10,000 point welcome bonus.`;
+    `New members get a 100 point welcome bonus.`;
   const html =
     `<p>You&rsquo;ve been invited to join <strong>We Buy Clean Trash</strong> as a resident.</p>` +
     `<p><a href="${args.signupUrl}">Sign up here</a></p>` +
-    `<p style="color:#666;font-size:12px">New members get a 10,000 point welcome bonus.</p>`;
+    `<p style="color:#666;font-size:12px">New members get a 100 point welcome bonus.</p>`;
   return { subject, text, html };
 }
 

@@ -9,6 +9,7 @@ const ITEMS = [
   { href: '/admin/invites', label: 'Invites', icon: '✉️' },
   { href: '/admin/zones', label: 'Zones & Depots', icon: '🗺️' },
   { href: '/admin/routes', label: 'Routes', icon: '🚚' },
+  { href: '/admin/orders', label: 'Orders', icon: '📦' },
   { href: '/admin/bags', label: 'Bag stickers', icon: '🏷️' },
   { href: '/admin/commercial-accounts', label: 'Commercial sites', icon: '🏢' },
   { href: '/admin/pricing', label: 'Pricing', icon: '💲' },

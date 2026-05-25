@@ -78,10 +78,10 @@ pointsAwarded =
     Σ (weight_i × marketPrice_i × customerPct_i)
     × separatedMultiplier        // 2 if declared-separated, else 1
     × (1 − contaminationPenalty) // 0 / 0.3 / 0.6 / 0.9 (None / Minor / Major / Severe)
-    × 10000                      // $ → points (100,000 pts = $10)
+    × 100                        // $ → points (1,000 pts = $10)
 ```
 
-- Signup bonus: +10,000 pts (written as a `transactions` ledger entry, type `signup_bonus`)
+- Signup bonus: +100 pts (written as a `transactions` ledger entry, type `signup_bonus`)
 - `materials` collection holds `marketPrice` + `customerPct` per commodity (7 total: aluminum, tin/steel, cardboard, paper, PET, HDPE, mixed plastic); admin edits these and snapshots to `priceHistory`
 - Contamination severity set by depot worker at processing time
 

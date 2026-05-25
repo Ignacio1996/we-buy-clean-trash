@@ -4,6 +4,7 @@ import type { RedemptionDoc } from '@/lib/types/redemption';
 import type { UserDoc } from '@/lib/types/user';
 import { RedemptionFulfillButton } from './RedemptionFulfillButton';
 import { GuideLink } from '@/components/admin/GuideLink';
+import { PILOT_GIFT_CARD_CAP } from '@/app/api/redemptions/route';
 
 export const dynamic = 'force-dynamic';
 
@@ -59,10 +60,19 @@ function formatDate(ts: Timestamp | null): string {
 }
 
 export default async function AdminRedemptionsPage() {
-  const [pending, fulfilled] = await Promise.all([
+  const [pending, fulfilled, capCountSnap] = await Promise.all([
     loadRedemptions('pending'),
     loadRedemptions('fulfilled'),
+    adminDb
+      .collection('redemptions')
+      .where('status', 'in', ['pending', 'fulfilled'])
+      .count()
+      .get(),
   ]);
+  const capUsed = capCountSnap.data().count;
+  const capRemaining = Math.max(0, PILOT_GIFT_CARD_CAP - capUsed);
+  const capBudget = PILOT_GIFT_CARD_CAP * 10;
+  const capSpent = capUsed * 10;
 
   return (
     <div>
@@ -75,6 +85,25 @@ export default async function AdminRedemptionsPage() {
         </div>
         <GuideLink href="/user-guides/phase-4-admin.html" />
       </header>
+
+      <section className="mb-6 overflow-hidden rounded-xl border border-white/10 bg-white/5 px-4 py-4">
+        <div className="flex items-baseline justify-between">
+          <div className="text-sm font-semibold text-white">Pilot gift-card budget</div>
+          <div className="text-[11px] uppercase tracking-wide text-gray-500">
+            {capUsed} / {PILOT_GIFT_CARD_CAP} claimed
+          </div>
+        </div>
+        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
+          <div
+            className="h-full rounded-full bg-emerald-400"
+            style={{ width: `${Math.min(100, (capUsed / PILOT_GIFT_CARD_CAP) * 100).toFixed(1)}%` }}
+          />
+        </div>
+        <div className="mt-2 text-[11px] text-gray-400">
+          ${capSpent} of ${capBudget} marketing budget committed · {capRemaining} cards remaining
+          {capRemaining === 0 && ' · new resident redemptions are blocked'}
+        </div>
+      </section>
 
       <h2 className="text-sm font-semibold text-white">
         Pending ({pending.length})

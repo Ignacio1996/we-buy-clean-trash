@@ -64,7 +64,7 @@ function SSObWelcome() {
           Your trash is <span style={{ color: SS_OB.green }}>worth money.</span>
         </div>
         <div style={{ fontSize: 17, fontWeight: 700, color: SS_OB.ink, opacity: 0.75, lineHeight: 1.4 }}>
-          We pick up your clean recyclables at the curb and pay you in gift cards. No sorting machines. No bins to lug.
+          We pick up your clean recyclables from your designated spot and pay you in gift cards. No sorting machines. No bins to lug.
         </div>
         <div style={{ flex: 1 }} />
         <div style={{ background: '#fff', border: `2px solid ${SS_OB.ink}`, borderRadius: 18, padding: 16, display: 'flex', gap: 12, alignItems: 'center', boxShadow: `0 4px 0 ${SS_OB.ink}` }}>
@@ -136,7 +136,7 @@ function SSObPickup() {
       <div style={{ padding: '28px 24px 8px' }}>
         <div style={{ fontSize: 12, fontWeight: 900, letterSpacing: 1.4, textTransform: 'uppercase', color: SS_OB.brand, marginBottom: 8 }}>Step 2 of 4</div>
         <div style={{ fontSize: 38, fontWeight: 900, letterSpacing: -1.4, lineHeight: 0.95, color: SS_OB.ink, marginBottom: 10 }}>Pick a pickup day.</div>
-        <div style={{ fontSize: 15, fontWeight: 700, color: SS_OB.inkSoft, lineHeight: 1.4 }}>Set out your bags by 5:30 PM. We come every week.</div>
+        <div style={{ fontSize: 15, fontWeight: 700, color: SS_OB.inkSoft, lineHeight: 1.4 }}>Leave bags at your designated pickup area. We come every week.</div>
       </div>
       <div style={{ padding: '20px 24px', flex: 1, display: 'flex', flexDirection: 'column', gap: 14 }}>
         {days.map((d) => (
@@ -149,7 +149,7 @@ function SSObPickup() {
           }}>
             <div>
               <div style={{ fontSize: 24, fontWeight: 900, letterSpacing: -0.7, color: SS_OB.ink }}>{d.label}</div>
-              <div style={{ fontSize: 13, fontWeight: 800, color: SS_OB.inkSoft, marginTop: 2 }}>Set out by {d.time}</div>
+              <div style={{ fontSize: 13, fontWeight: 800, color: SS_OB.inkSoft, marginTop: 2 }}>Pickup at designated spot</div>
             </div>
             <div style={{
               width: 28, height: 28, borderRadius: '50%',
@@ -198,7 +198,7 @@ function SSObOrder() {
             </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: `1px dashed ${SS_OB.ink}`, paddingTop: 12, marginTop: 4 }}>
-            <div style={{ fontSize: 13, fontWeight: 800, color: SS_OB.ink }}>{sheets * 10} bags · free shipping</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: SS_OB.ink }}>{sheets * 10} bags · free delivery</div>
             <div style={{ fontSize: 22, fontWeight: 900, color: SS_OB.ink, letterSpacing: -0.5 }}>${(sheets * 8).toFixed(2)}</div>
           </div>
         </div>
@@ -234,13 +234,13 @@ function SSObDone() {
           You're in!
         </div>
         <div style={{ fontSize: 16, fontWeight: 700, color: SS_OB.ink, opacity: 0.75, textAlign: 'center', lineHeight: 1.4, marginBottom: 22 }}>
-          Your bags arrive <strong>Mon, Apr 28</strong>. Set them out by 5:30 PM.
+          Your bags arrive <strong>Mon, Apr 28</strong>. Leave them at your designated pickup area.
         </div>
         <div style={{ background: '#fff', border: `2px solid ${SS_OB.ink}`, borderRadius: 18, padding: 18, boxShadow: `0 4px 0 ${SS_OB.ink}` }}>
           <div style={{ fontSize: 11, fontWeight: 900, letterSpacing: 1.4, textTransform: 'uppercase', color: SS_OB.inkSoft, marginBottom: 12 }}>What happens next</div>
           {[
             ['Mon Apr 28', 'Bags arrive at your door'],
-            ['Mon May 5', 'First pickup · set out by 5:30 PM'],
+            ['Mon May 5', 'First pickup · designated pickup area'],
             ['Tue May 6', 'Points credited to your account'],
           ].map(([when, what], i) => (
             <div key={when} style={{

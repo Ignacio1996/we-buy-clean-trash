@@ -177,7 +177,7 @@ const COMMODITIES: Commodity[] = [
 const FAQS = [
   {
     q: 'How much can I actually make?',
-    a: 'A typical 2-person household earns $8–14 per month. Aluminum-heavy households (lots of seltzer or beer cans) can clear $20+. We pay weekly into points; 100,000 points = $10 gift card.',
+    a: 'A typical 2-person household earns $8–14 per month. Aluminum-heavy households (lots of seltzer or beer cans) can clear $20+. We pay weekly into points; 1,000 points = $10 gift card.',
     open: true,
   },
   {
@@ -186,7 +186,7 @@ const FAQS = [
   },
   {
     q: 'Do bags cost money?',
-    a: 'Your first sheet of 10 bags is free — on us, as a welcome. After that, sheets are $8 with free shipping over $20. A typical sheet pays for itself in about 4 weeks of normal household recycling.',
+    a: 'Your first box of 10 bags is free — on us, as a welcome. After that, sheets are $8 with free delivery over $20. A typical sheet pays for itself in about 4 weeks of normal household recycling.',
   },
   {
     q: 'What if my bag has the wrong stuff in it?',
@@ -342,8 +342,8 @@ export function LandingPage() {
               <span className={styles.stepTag}>5 minutes · free</span>
               <h3>Get your first 10 bags free</h3>
               <p>
-                We send your first sheet of 10 tagged bags on us. Bags arrive in 3 days. Reorder
-                sheets later for $8 — they pay for themselves in about 4 weeks.
+                We send your first box of 10 tagged bags on us. Bags arrive in 3 days. Reorder
+                later for $8 — they pay for themselves in about 4 weeks.
               </p>
             </div>
             <div className={styles.step}>
@@ -352,7 +352,7 @@ export function LandingPage() {
               <h3>Fill &amp; set out</h3>
               <p>
                 Clean, dry recyclables only. Tap &ldquo;set out for pickup&rdquo; the night before.
-                Leave it door side by 5:30 PM.
+                Leave it at your designated pickup area.
               </p>
             </div>
             <div className={styles.step}>
@@ -403,7 +403,7 @@ export function LandingPage() {
             ))}
           </div>
           <p className={styles.commodityFootnote}>
-            100,000 points = $10 gift card. Point values shown are typical per item — actual points
+            1,000 points = $10 gift card. Point values shown are typical per item — actual points
             depend on bag weight and sort quality.
           </p>
         </div>
@@ -452,7 +452,7 @@ export function LandingPage() {
                   <h4>Printed at the depot.</h4>
                   <p>
                     Every sheet of 10 bags gets a fresh batch of QR IDs. The codes are printed on a
-                    thermal label so they survive rain, soda, and a week on the curb.
+                    thermal label so they survive rain, soda, and a week outside.
                   </p>
                 </div>
               </li>
@@ -613,9 +613,9 @@ export function LandingPage() {
             </div>
             <div className={`${styles.referCard} ${styles.referCardFriend}`}>
               <div className={styles.referBadge}>Your friend</div>
-              <div className={styles.referBig}>First sheet on us</div>
+              <div className={styles.referBig}>First box on us</div>
               <p>
-                They join with a free welcome sheet of 10 bags. Same offer everyone gets — no
+                They join with a free welcome box of 10 bags. Same offer everyone gets — no
                 catch, no commitment.
               </p>
             </div>

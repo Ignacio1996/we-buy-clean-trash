@@ -2,10 +2,11 @@ import { getSession } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
 import { pointsToDollars } from '@/lib/logic/pointsToDollars';
 import type { TransactionDoc } from '@/lib/types/transaction';
-import { RedemptionList } from './RedemptionList';
+import { RedemptionList, type PilotGate } from './RedemptionList';
 import { EcoMasthead, EcoH1 } from '@/components/resident/eco/Eco';
+import { PILOT_GIFT_CARD_CAP } from '@/app/api/redemptions/route';
 
-const GIFT_CARD_POINTS = 100_000;
+const GIFT_CARD_POINTS = 1_000;
 
 function formatPoints(n: number) {
   return n.toLocaleString('en-US');
@@ -22,7 +23,7 @@ export default async function RewardsPage() {
   const session = await getSession();
   const uid = session!.uid;
 
-  const [userSnap, txSnap] = await Promise.all([
+  const [userSnap, txSnap, userRedemptionSnap, totalRedemptionSnap] = await Promise.all([
     adminDb.collection('users').doc(uid).get(),
     adminDb
       .collection('transactions')
@@ -30,7 +31,25 @@ export default async function RewardsPage() {
       .orderBy('createdAt', 'desc')
       .limit(20)
       .get(),
+    adminDb
+      .collection('redemptions')
+      .where('userId', '==', uid)
+      .where('status', 'in', ['pending', 'fulfilled'])
+      .limit(1)
+      .get(),
+    adminDb
+      .collection('redemptions')
+      .where('status', 'in', ['pending', 'fulfilled'])
+      .count()
+      .get(),
   ]);
+
+  const totalRedemptions = totalRedemptionSnap.data().count;
+  const pilotGate: PilotGate = !userRedemptionSnap.empty
+    ? 'already_redeemed'
+    : totalRedemptions >= PILOT_GIFT_CARD_CAP
+      ? 'cap_reached'
+      : 'open';
 
   const user = userSnap.data() ?? {};
   const balance = typeof user.pointsBalance === 'number' ? user.pointsBalance : 0;
@@ -87,7 +106,7 @@ export default async function RewardsPage() {
         </div>
       </section>
 
-      <RedemptionList balance={balance} />
+      <RedemptionList balance={balance} pilotGate={pilotGate} />
 
       <section className="mt-5 rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] p-4">
         <div className="eco-eyebrow mb-1">Points history</div>
