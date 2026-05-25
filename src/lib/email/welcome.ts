@@ -29,8 +29,8 @@ const PHYSICAL_ADDRESS =
 const SUPPORT_EMAIL =
   process.env.WBCT_SUPPORT_EMAIL || 'support@webuycleantrash.com';
 
-const SIGNUP_BONUS_POINTS = 10000;
-const SIGNUP_BONUS_DOLLARS = '1.00'; // 100,000 pts = $10  →  10,000 pts = $1
+const SIGNUP_BONUS_POINTS = 100;
+const SIGNUP_BONUS_DOLLARS = '1.00'; // 1,000 pts = $10  →  100 pts = $1
 
 function fmtPts(n: number): string {
   return n.toLocaleString('en-US');
@@ -68,13 +68,13 @@ export function buildResidentWelcomeEmail(args: {
     args.dashboardUrl,
     ``,
     `How it works:`,
-    `  1. Order bags. Your first sheet of 10 is on us.`,
-    `  2. Fill them with clean recyclables and set them at the curb by 5:30 PM`,
-    `     on your pickup day.`,
+    `  1. Order bags. Your first box of 10 is on us.`,
+    `  2. Fill them with clean recyclables and leave them at your designated`,
+    `     pickup area on your pickup day.`,
     `  3. We weigh and grade them at the depot. Points land in your account`,
-    `     within a day. 100,000 points = a $10 gift card.`,
+    `     within a day. 1,000 points = a $10 gift card.`,
     ``,
-    `Order your first sheet of bags:`,
+    `Order your first box of bags:`,
     args.orderBagsUrl,
     ``,
     `Questions? Reply to this email or write us at ${SUPPORT_EMAIL}.`,
@@ -166,7 +166,7 @@ export function buildResidentWelcomeEmail(args: {
                   ${fmtPts(SIGNUP_BONUS_POINTS)} points is a head start.
                 </div>
                 <div style="font-family:${sans};font-size:14px;font-weight:700;color:${ink};opacity:0.75;line-height:1.45;margin:0;">
-                  100,000 points cashes out as a $10 gift card. You are already 10% of the way to your first one.
+                  1,000 points cashes out as a $10 gift card. You are already 10% of the way to your first one.
                 </div>
               </td>
             </tr>
@@ -184,7 +184,7 @@ export function buildResidentWelcomeEmail(args: {
                     </td>
                     <td valign="top" style="padding:6px 0;">
                       <div style="font-family:${sans};font-size:16px;font-weight:900;color:${ink};letter-spacing:-0.2px;">Order bags</div>
-                      <div style="font-family:${sans};font-size:13px;font-weight:600;color:${ink};opacity:0.7;line-height:1.4;">Your first sheet of 10 is on us. Free shipping over $20.</div>
+                      <div style="font-family:${sans};font-size:13px;font-weight:600;color:${ink};opacity:0.7;line-height:1.4;">Your first box of 10 is on us. Free delivery over $20.</div>
                     </td>
                   </tr>
                   <tr>
@@ -193,7 +193,7 @@ export function buildResidentWelcomeEmail(args: {
                     </td>
                     <td valign="top" style="padding:6px 0;">
                       <div style="font-family:${sans};font-size:16px;font-weight:900;color:${ink};letter-spacing:-0.2px;">Fill and set out</div>
-                      <div style="font-family:${sans};font-size:13px;font-weight:600;color:${ink};opacity:0.7;line-height:1.4;">Clean recyclables. Place bags at the curb by 5:30 PM on pickup day.</div>
+                      <div style="font-family:${sans};font-size:13px;font-weight:600;color:${ink};opacity:0.7;line-height:1.4;">Clean recyclables. Leave bags at your designated pickup area on pickup day.</div>
                     </td>
                   </tr>
                   <tr>
@@ -216,7 +216,7 @@ export function buildResidentWelcomeEmail(args: {
                   <tr>
                     <td align="center" style="border-radius:999px;background:#ffffff;border:2px solid ${ink};box-shadow:0 4px 0 ${ink};">
                       <a href="${safeOrderBagsUrl}" style="display:block;padding:16px 24px;font-family:${sans};font-size:16px;font-weight:900;letter-spacing:-0.2px;color:${ink};text-decoration:none;border-radius:999px;">
-                        Order your first sheet &nbsp;&rarr;
+                        Order your first box &nbsp;&rarr;
                       </a>
                     </td>
                   </tr>
