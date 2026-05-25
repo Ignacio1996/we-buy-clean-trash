@@ -244,7 +244,7 @@ export function LandingPage() {
       <section className={styles.hero}>
         <div className={styles.heroInner}>
           <div>
-            <div className={styles.eyebrow}>Door side · zero commission · weekly</div>
+            <div className={styles.eyebrow}>Door side · picked up every week</div>
             <h1 className={styles.heroTitle}>
               We pay you
               <br />
@@ -261,24 +261,16 @@ export function LandingPage() {
                 collection.
               </span>
             </div>
-            <div className={styles.heroBrandsRow}>
-              <span className={styles.heroBrandsLabel}>Cash out anytime</span>
-              <span className={styles.heroBrandsList}>
-                Amazon · Walmart · Target · Visa · REI · 40+ more
-              </span>
-            </div>
             <div className={styles.ctaRow}>
               <Link href="/signup" className={`${styles.btn} ${styles.btnLg} ${styles.btnBrand}`}>
-                Get started <span className={styles.arrow}>→</span>
+                Get started — first 10 bags free <span className={styles.arrow}>→</span>
               </Link>
               <Link href="/scan" className={`${styles.btn} ${styles.btnLg}`}>
                 See how much your trash is worth <span className={styles.arrow}>→</span>
               </Link>
             </div>
-            <div className={styles.heroFreeBags}>
-              <span className={styles.heroFreeBagsDot}>★</span> Your first 10 bags are on us.
-            </div>
           </div>
+          <div className={styles.heroRight}>
           <div className={styles.heroCard}>
             <div className={styles.heroCardStamp}>
               $10
@@ -310,6 +302,13 @@ export function LandingPage() {
             <div className={styles.heroCardRow}>
               <span>×2 weekly bonus</span>
               <span className={styles.heroCardV}>+$0.50</span>
+            </div>
+          </div>
+            <div className={styles.heroBrandsRow}>
+              <span className={styles.heroBrandsLabel}>Cash out anytime</span>
+              <span className={styles.heroBrandsList}>
+                Amazon · Walmart · Target · Visa · REI · 40+ more
+              </span>
             </div>
           </div>
         </div>
