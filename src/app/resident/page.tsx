@@ -29,7 +29,7 @@ import {
   IconTruck,
 } from '@/components/icons/EcoIcons';
 
-const GIFT_CARD_POINTS = 100_000;
+const GIFT_CARD_POINTS = 1_000;
 
 // `pending` is intentionally excluded — those are unpaid bagOrders sitting
 // between /api/bag-orders and the Stripe confirm. Surfacing them on the
@@ -328,7 +328,7 @@ export default async function ResidentHome() {
                 marginTop: 6,
               }}
             >
-              Set bags at the curb by 5:30 PM.
+              Leave bags at your designated pickup area.
             </div>
           </>
         ) : (
@@ -428,12 +428,12 @@ export default async function ResidentHome() {
           {
             Icon: IconBag,
             title: 'Order bags',
-            body: 'Pick a sheet of 10 bags. Free shipping over $20.',
+            body: 'Pick a sheet of 10 bags. Free delivery over $20.',
           },
           {
             Icon: IconRecycle,
             title: 'Fill & set out',
-            body: 'Clean recyclables. Place bags at the curb by 5:30pm.',
+            body: 'Clean recyclables. Leave bags at your designated pickup area.',
           },
           {
             Icon: IconCoin,

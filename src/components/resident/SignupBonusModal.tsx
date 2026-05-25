@@ -93,7 +93,7 @@ export function SignupBonusModal({ uid }: { uid: string }) {
             color: SS.ink,
           }}
         >
-          You earned <span style={{ color: SS.green }}>10,000 points</span>.
+          You earned <span style={{ color: SS.green }}>100 points</span>.
         </h2>
         <p style={{ marginTop: 12, fontSize: 14, fontWeight: 800, color: SS.ink, opacity: 0.75 }}>
           That&rsquo;s worth <span style={{ color: SS.ink, fontWeight: 900 }}>$1</span> toward your
@@ -108,7 +108,7 @@ export function SignupBonusModal({ uid }: { uid: string }) {
             lineHeight: 1.5,
           }}
         >
-          Earn 100,000 pts for a $10 gift card. Order bags to start collecting more.
+          Earn 1,000 pts for a $10 gift card. Order bags to start collecting more.
         </p>
         <button
           type="button"

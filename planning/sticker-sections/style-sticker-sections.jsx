@@ -112,8 +112,8 @@ function SSStyle({ data }) {
       <div style={{ background: SS.mint, padding: '28px 20px 28px' }}>
         <div style={{ fontSize: 26, fontWeight: 900, letterSpacing: -0.8, marginBottom: 18, color: SS.ink }}>How it works</div>
         {[
-          ['Order bags', 'Pick a sheet of 10 bags. Free shipping over $20.'],
-          ['Fill & set out', 'Clean recyclables. Place bags at the curb by 5:30pm.'],
+          ['Order bags', 'Pick a sheet of 10 bags. Free delivery over $20.'],
+          ['Fill & set out', 'Clean recyclables. Leave bags at your designated pickup area.'],
           ['Return & redeem', 'Points convert to gift cards. Cash out anytime.'],
         ].map(([t, sub], i) => (
           <div key={t} style={{ display: 'flex', gap: 14, padding: '14px 0', alignItems: 'flex-start' }}>

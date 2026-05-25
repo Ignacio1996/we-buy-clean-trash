@@ -293,8 +293,8 @@ function SplashStep({ onNext }: { onNext: () => void }) {
             lineHeight: 1.4,
           }}
         >
-          We pick up your clean recyclables at the curb and pay you in gift cards. No sorting
-          machines. No bins to lug.
+          We pick up your clean recyclables from your designated spot and pay you in gift cards.
+          No sorting machines. No bins to lug.
         </div>
 
         <PresignupScanBanner />
@@ -466,9 +466,9 @@ function AddressStep({
 // ─── Step 3 · How it works ───────────────────────────────────────
 function HowStep({ onNext, idx }: { onNext: () => void; idx: number }) {
   const steps = [
-    ['Order bags', 'Reusable, labeled by material. Free shipping over $20.'],
+    ['Order bags', 'Reusable, labeled by material. Free delivery over $20.'],
     ['Fill clean', 'Rinse what goes in. Caps off bottles. No glass shards.'],
-    ['Set out by 5:30', 'On your pickup day. We weigh, sort, and credit points.'],
+    ['Pickup day', 'Leave bags at your designated pickup area. We weigh, sort, and credit points.'],
     ['Redeem', 'Cash out for gift cards once you reach $10.'],
   ];
   return (
@@ -881,9 +881,9 @@ function FirstBagStep({
   return (
     <>
       <StepHeading
-        eyebrow={`Step ${idx} · First batch`}
+        eyebrow={`Step ${idx} · First box of bags`}
         title="Order your bags."
-        lede="Your first sheet of 10 bags is on us. Add more if you'd like."
+        lede="Your first box of 10 bags is on us. Add more if you'd like."
       />
       <div style={{ padding: '20px 24px', flex: 1 }}>
         <div
@@ -967,7 +967,7 @@ function FirstBagStep({
             }}
           >
             <div style={{ fontSize: 13, fontWeight: 800, color: SS.ink }}>
-              {qty * 10} bags · {breakdown.freeShipping ? 'free shipping' : `+$${SHIPPING_FEE.toFixed(2)} ship`}
+              {qty * 10} bags · {breakdown.freeShipping ? 'free delivery' : `+$${SHIPPING_FEE.toFixed(2)} delivery`}
             </div>
             <div
               style={{ fontSize: 22, fontWeight: 900, color: SS.ink, letterSpacing: -0.5 }}
@@ -1007,7 +1007,7 @@ function FirstBagStep({
               +
             </div>
             <div style={{ fontSize: 14, fontWeight: 800, color: SS.ink, lineHeight: 1.3 }}>
-              <span style={{ color: SS.green }}>+10,000 pts signup bonus</span> credited after
+              <span style={{ color: SS.green }}>+100 pts signup bonus</span> credited after
               your first pickup.
             </div>
           </div>
@@ -1024,7 +1024,7 @@ function FirstBagStep({
             }}
           >
             Add ${(FREE_SHIPPING_THRESHOLD - breakdown.subtotal).toFixed(2)} more to unlock free
-            shipping.
+            delivery.
           </p>
         )}
 

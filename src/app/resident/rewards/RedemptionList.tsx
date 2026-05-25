@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { IconGift, IconBox } from '@/components/icons/EcoIcons';
 
-const GIFT_CARD_POINTS = 100_000;
+const GIFT_CARD_POINTS = 1_000;
 
 type ActiveBrand = 'amazon' | 'walmart';
 
@@ -30,14 +30,14 @@ const OPTIONS: Option[] = [
     key: 'amazon',
     icon: <IconGift size={18} color="#2D5A3D" stroke={1.5} />,
     label: 'Amazon gift card',
-    subtitle: '100,000 pts = $10',
+    subtitle: '1,000 pts = $10',
     disabled: false,
   },
   {
     key: 'walmart',
     icon: <IconGift size={18} color="#2D5A3D" stroke={1.5} />,
     label: 'Walmart gift card',
-    subtitle: '100,000 pts = $10',
+    subtitle: '1,000 pts = $10',
     disabled: false,
   },
   {
@@ -56,7 +56,21 @@ const OPTIONS: Option[] = [
   },
 ];
 
-export function RedemptionList({ balance }: { balance: number }) {
+export type PilotGate = 'open' | 'already_redeemed' | 'cap_reached';
+
+const ERROR_MESSAGES: Record<string, string> = {
+  already_redeemed_pilot: 'You already redeemed during the pilot — limit one gift card per user.',
+  pilot_cap_reached: 'The pilot gift-card batch is fully claimed. Thanks for joining.',
+  insufficient_balance: 'Not enough points yet.',
+};
+
+export function RedemptionList({
+  balance,
+  pilotGate,
+}: {
+  balance: number;
+  pilotGate: PilotGate;
+}) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -64,6 +78,7 @@ export function RedemptionList({ balance }: { balance: number }) {
 
   async function redeem(brand: ActiveBrand) {
     if (balance < GIFT_CARD_POINTS) return;
+    if (pilotGate !== 'open') return;
     setBusy(brand);
     setError(null);
     setSuccess(null);
@@ -74,7 +89,10 @@ export function RedemptionList({ balance }: { balance: number }) {
         body: JSON.stringify({ brand }),
       });
       const body = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(body.error ?? 'redemption_failed');
+      if (!res.ok) {
+        const code = typeof body.error === 'string' ? body.error : 'redemption_failed';
+        throw new Error(ERROR_MESSAGES[code] ?? code);
+      }
       setSuccess(
         `Request submitted — an admin will email your ${brand === 'amazon' ? 'Amazon' : 'Walmart'} code shortly.`,
       );
@@ -86,11 +104,30 @@ export function RedemptionList({ balance }: { balance: number }) {
     }
   }
 
-  const canRedeem = balance >= GIFT_CARD_POINTS;
+  const canRedeem = balance >= GIFT_CARD_POINTS && pilotGate === 'open';
+
+  const gateNotice =
+    pilotGate === 'already_redeemed'
+      ? 'You already claimed your pilot gift card — limit one per user during the pilot.'
+      : pilotGate === 'cap_reached'
+        ? 'The pilot gift-card batch is fully claimed. Cash payouts coming soon.'
+        : null;
 
   return (
     <section className="mt-5 rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] p-4">
       <div className="eco-eyebrow mb-1">Redeem for</div>
+      {gateNotice && (
+        <p
+          className="mt-2 rounded-[10px] border px-3 py-2 text-[12px]"
+          style={{
+            background: '#F8F3E5',
+            borderColor: '#D9D2C2',
+            color: '#5A6358',
+          }}
+        >
+          {gateNotice}
+        </p>
+      )}
       <ul className="mt-1 divide-y divide-[#E8E2D0]">
         {OPTIONS.map((opt) => {
           const locked = opt.disabled || !canRedeem;

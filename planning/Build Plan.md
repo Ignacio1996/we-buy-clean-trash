@@ -92,10 +92,10 @@ pointsAwarded =
     Σ (weight_i × marketPrice_i × customerPct_i)
     × separatedMultiplier        // 2 if declared-separated, else 1
     × (1 − contaminationPenalty) // 0 / 0.3 / 0.6 / 0.9 (None / Minor / Major / Severe)
-    × 10000                      // $ → points (100,000 pts = $10)
+    × 100                        // $ → points (1,000 pts = $10)
 ```
 
-- Signup bonus: **+10,000 pts**
+- Signup bonus: **+100 pts**
 - Customer payout % per commodity is configurable in admin (default 30%)
 - Contamination severity is set by the depot worker at processing time
 
@@ -104,8 +104,8 @@ pointsAwarded =
 ## Bag order pricing
 
 - Flat price per sheet of 10 bags
-- **Free shipping** on orders ≥ $20
-- **+$10 shipping** on orders < $20
+- **Free delivery** on orders ≥ $20
+- **+$10 delivery** on orders < $20
 - Bag order triggers the **next operator route** for that zone to deliver
 
 ---

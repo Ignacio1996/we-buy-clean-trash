@@ -301,7 +301,7 @@ npm run dev                 # boots http://localhost:3000</pre>
         <span class="expect">Expect</span> redirected to <code>/resident/welcome</code> (the
         onboarding card). The user's custom claim is now <code>role: resident</code>, a
         <code>transactions/&lt;id&gt;</code> doc of type <code>signup_bonus</code> for
-        <strong>+10,000 pts</strong> is written, and
+        <strong>+100 pts</strong> is written, and
         <code>users/&lt;uid&gt;.phone</code> contains what you typed (or
         <code>null</code> if you left it blank).
       </p>
@@ -410,8 +410,8 @@ npm run dev                 # boots http://localhost:3000</pre>
       <ul>
         <li>Greeting with your first name.</li>
         <li>
-          Points <strong>10,000</strong> / value <strong>$1.00</strong> (the formula is
-          <code>100,000 pts = $10</code>).
+          Points <strong>100</strong> / value <strong>$1.00</strong> (the formula is
+          <code>1,000 pts = $10</code>).
         </li>
         <li>"Order more bags" card at the top (primary revenue action).</li>
         <li>
@@ -497,15 +497,15 @@ npm run dev                 # boots http://localhost:3000</pre>
       <h4>3.7 — Rewards + redemption</h4>
       <ol>
         <li>
-          Rewards gate at <strong>100,000 pts = $10</strong>. A fresh signup has only 10,000 so
+          Rewards gate at <strong>1,000 pts = $10</strong>. A fresh signup has only 100 so
           redemption will be blocked. To actually test it, manually add points via the Firebase
-          console: set <code>users/{uid}.pointsBalance</code> to <code>100000</code> and add a
+          console: set <code>users/{uid}.pointsBalance</code> to <code>1000</code> and add a
           matching <code>transactions</code> entry if you care about ledger cleanliness.
         </li>
         <li>Visit <code>/resident/rewards</code> and click <strong>Amazon $10</strong>.</li>
       </ol>
       <p>
-        <span class="expect">Expect</span> balance drops by 100,000, a <code>redemptions</code>
+        <span class="expect">Expect</span> balance drops by 1,000, a <code>redemptions</code>
         doc with <code>status: pending</code> is created, and a new <code>transactions</code>
         ledger entry of type <code>redemption</code> (negative delta) is written — all in one
         transaction. <strong>Pay Trash Bill</strong> and <strong>Donate</strong> are disabled
@@ -626,7 +626,7 @@ npm run dev                 # boots http://localhost:3000</pre>
       </ol>
       <p>
         <span class="expect">Expect</span> a table of every resident (name, email, zone, points,
-        dollar value). Your signed-up resident from 1.1 appears with 10,000 pts / $1.00. Click
+        dollar value). Your signed-up resident from 1.1 appears with 100 pts / $1.00. Click
         "Manage staff invites →" to jump to invites.
       </p>
     </div>

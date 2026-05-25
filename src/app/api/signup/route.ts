@@ -3,6 +3,8 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { geocodeAddress } from '@/lib/maps/geocode';
 import { normalizePhone } from '@/lib/types/user';
+import { sendEmail } from '@/lib/email/send';
+import { buildResidentWelcomeEmail } from '@/lib/email/welcome';
 
 export const runtime = 'nodejs';
 
@@ -99,7 +101,7 @@ export async function POST(request: Request) {
   ]);
   const geo = geoResult ? { lat: geoResult.lat, lng: geoResult.lng } : null;
 
-  const SIGNUP_BONUS_POINTS = 10000;
+  const SIGNUP_BONUS_POINTS = 100;
   const addressRef = adminDb.collection('addresses').doc();
   const transactionRef = adminDb.collection('transactions').doc();
 
@@ -142,6 +144,18 @@ export async function POST(request: Request) {
       createdAt: FieldValue.serverTimestamp(),
     });
   });
+
+  if (email) {
+    const firstName = payload.name.split(' ')[0] ?? '';
+    const origin = request.headers.get('origin') ?? new URL(request.url).origin;
+    const orderBagsUrl = `${origin}/resident/order-bags`;
+    const { subject, text, html } = buildResidentWelcomeEmail({ firstName, orderBagsUrl });
+    // Fire-and-forget: a queue write failure must not roll back the signup.
+    // The Trigger Email extension owns retries from the `mail/` doc onward.
+    sendEmail({ to: email, subject, text, html, purpose: 'welcome', relatedDocId: uid }).catch(
+      (err) => console.error('[signup] welcome email queue failed:', err),
+    );
+  }
 
   return NextResponse.json({ ok: true, role: 'resident' });
 }

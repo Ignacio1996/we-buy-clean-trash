@@ -163,7 +163,7 @@ export function OrderBagsForm({
         >
           <div style={{ fontSize: 13, fontWeight: 800, color: SS.ink }}>
             {quantity * 10} bags ·{' '}
-            {breakdown.freeShipping ? 'free shipping' : `+$${SHIPPING_FEE.toFixed(2)} ship`}
+            {breakdown.freeShipping ? 'free delivery' : `+$${SHIPPING_FEE.toFixed(2)} delivery`}
           </div>
           <div style={{ fontSize: 22, fontWeight: 900, color: SS.ink, letterSpacing: -0.5 }}>
             {formatDollars(breakdown.total)}
@@ -182,7 +182,7 @@ export function OrderBagsForm({
           }}
         >
           Add {formatDollars(FREE_SHIPPING_THRESHOLD - breakdown.subtotal)} more to unlock free
-          shipping.
+          delivery.
         </p>
       )}
 

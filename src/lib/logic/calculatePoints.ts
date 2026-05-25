@@ -5,7 +5,7 @@ import {
   type MaterialPricing,
 } from '@/lib/types/material';
 
-export const POINTS_PER_DOLLAR = 10000;
+export const POINTS_PER_DOLLAR = 100;
 export const SEPARATED_MULTIPLIER = 2;
 
 export interface CalculatePointsInput {
