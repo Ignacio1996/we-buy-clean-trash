@@ -20,6 +20,7 @@ import {
   calculateBagOrderTotal,
 } from '@/lib/logic/calculateBagOrderTotal';
 import { startBagCheckout } from '@/lib/payments/stripe-client';
+import { AddressAutocomplete } from '@/components/address/AddressAutocomplete';
 
 type Step = 'splash' | 'address' | 'how' | 'account' | 'password' | 'first';
 
@@ -441,12 +442,18 @@ function AddressStep({
         lede="We need your address so our driver can find your bags."
       />
       <div style={{ padding: '20px 24px', flex: 1 }}>
-        <FormInput
-          label="Street"
+        <AddressAutocomplete
           value={address.street}
           onChange={(v) => update('street', v)}
-          placeholder="312 Almanac Way"
-          autoComplete="address-line1"
+          onSelect={(parsed) =>
+            onChange({
+              ...address,
+              street: parsed.street || address.street,
+              city: parsed.city || address.city,
+              state: parsed.state || address.state,
+              postalCode: parsed.postalCode || address.postalCode,
+            })
+          }
           background={SS.mint}
         />
         <FormInput
