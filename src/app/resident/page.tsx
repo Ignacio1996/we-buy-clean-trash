@@ -103,11 +103,18 @@ export default async function ResidentHome() {
   const initial = firstName.charAt(0).toUpperCase() || '·';
   const dollarValue = pointsToDollars(pointsBalance);
 
-  const ordersSnap = await adminDb
-    .collection('bagOrders')
-    .where('residentId', '==', uid)
-    .get();
+  const [ordersSnap, userRedemptionSnap] = await Promise.all([
+    adminDb.collection('bagOrders').where('residentId', '==', uid).get(),
+    adminDb
+      .collection('redemptions')
+      .where('userId', '==', uid)
+      .where('status', 'in', ['pending', 'fulfilled'])
+      .limit(1)
+      .get(),
+  ]);
+  const hasRedeemed = !userRedemptionSnap.empty;
   const hasEverOrdered = ordersSnap.size > 0;
+  const canRedeem = pointsBalance >= GIFT_CARD_POINTS && !hasRedeemed;
   const openOrders = ordersSnap.docs
     .map((d) => d.data() as BagOrderDoc)
     .filter((o) => OPEN_ORDER_STATUSES.includes(o.status))
@@ -415,7 +422,11 @@ export default async function ResidentHome() {
             opacity: 0.75,
           }}
         >
-          {pct >= 1 ? 'Tap rewards to cash out.' : 'points to your next $10 gift card'}
+          {pct >= 1
+            ? hasRedeemed
+              ? 'Pilot limit reached — keep earning, more redemptions coming soon.'
+              : 'Tap below to cash out.'
+            : 'points to your next $10 gift card'}
         </div>
         <div
           style={{
@@ -443,6 +454,19 @@ export default async function ResidentHome() {
             {Math.round(pct * 100)}%
           </div>
         </div>
+        {canRedeem && (
+          <div style={{ marginTop: 16 }}>
+            <SSPillLink
+              href="/resident/rewards"
+              variant="red"
+              leadingIcon={<IconGift size={22} stroke={2.5} />}
+              iconArrow={<IconArrow size={22} stroke={2.5} />}
+              style={{ fontSize: 18, padding: '18px 22px' }}
+            >
+              Redeem $10 gift card
+            </SSPillLink>
+          </div>
+        )}
       </div>
 
       {/* Mint — how it works */}

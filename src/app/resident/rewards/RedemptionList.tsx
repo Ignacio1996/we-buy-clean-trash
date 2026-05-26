@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { IconGift, IconBox } from '@/components/icons/EcoIcons';
+import { SS, SSEyebrow } from '@/components/resident/ss/SS';
 
 const GIFT_CARD_POINTS = 1_000;
 
@@ -15,6 +16,7 @@ type Option =
       icon: ReactNode;
       label: string;
       subtitle: string;
+      tint: string;
       disabled: false;
     }
   | {
@@ -22,36 +24,41 @@ type Option =
       icon: ReactNode;
       label: string;
       subtitle: string;
+      tint: string;
       disabled: true;
     };
 
 const OPTIONS: Option[] = [
   {
     key: 'amazon',
-    icon: <IconGift size={18} color="#2D5A3D" stroke={1.5} />,
+    icon: <IconGift size={22} color={SS.ink} stroke={2.25} />,
     label: 'Amazon gift card',
     subtitle: '1,000 pts = $10',
+    tint: SS.yellow,
     disabled: false,
   },
   {
     key: 'walmart',
-    icon: <IconGift size={18} color="#2D5A3D" stroke={1.5} />,
+    icon: <IconGift size={22} color={SS.ink} stroke={2.25} />,
     label: 'Walmart gift card',
     subtitle: '1,000 pts = $10',
+    tint: SS.sky,
     disabled: false,
   },
   {
     key: 'pay_trash_bill',
-    icon: <IconBox size={18} color="#8A8A7A" stroke={1.5} />,
+    icon: <IconBox size={22} color={SS.ink} stroke={2.25} />,
     label: 'Pay trash bill',
     subtitle: 'Coming soon',
+    tint: SS.mint,
     disabled: true,
   },
   {
     key: 'donate',
-    icon: <IconBox size={18} color="#8A8A7A" stroke={1.5} />,
+    icon: <IconBox size={22} color={SS.ink} stroke={2.25} />,
     label: 'Donate to nonprofit',
     subtitle: 'Coming soon',
+    tint: SS.peach,
     disabled: true,
   },
 ];
@@ -114,61 +121,99 @@ export function RedemptionList({
         : null;
 
   return (
-    <section className="mt-5 rounded-[14px] border border-[#D9D2C2] bg-[#FBF7EE] p-4">
-      <div className="eco-eyebrow mb-1">Redeem for</div>
+    <section style={{ padding: '28px 20px 8px' }}>
+      <SSEyebrow style={{ marginBottom: 12 }}>Redeem for</SSEyebrow>
+
       {gateNotice && (
-        <p
-          className="mt-2 rounded-[10px] border px-3 py-2 text-[12px]"
+        <div
           style={{
-            background: '#F8F3E5',
-            borderColor: '#D9D2C2',
-            color: '#5A6358',
+            background: SS.peach,
+            border: `2px solid ${SS.ink}`,
+            borderRadius: 14,
+            padding: '12px 14px',
+            marginBottom: 14,
+            fontSize: 13,
+            fontWeight: 800,
+            color: SS.ink,
+            lineHeight: 1.4,
+            boxShadow: `0 3px 0 ${SS.ink}`,
           }}
         >
           {gateNotice}
-        </p>
+        </div>
       )}
-      <ul className="mt-1 divide-y divide-[#E8E2D0]">
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {OPTIONS.map((opt) => {
           const locked = opt.disabled || !canRedeem;
+          const isBusy = busy === opt.key;
           return (
-            <li key={opt.key} className="flex items-center justify-between py-3">
-              <div className="flex items-center gap-3">
-                <span
-                  className="flex size-10 flex-shrink-0 items-center justify-center rounded-[10px]"
-                  style={{ background: opt.disabled ? '#F8F3E5' : '#E8EFE6' }}
+            <div
+              key={opt.key}
+              style={{
+                background: opt.disabled ? '#fff' : opt.tint,
+                border: `2px solid ${SS.ink}`,
+                borderRadius: 18,
+                padding: '14px 16px',
+                boxShadow: `0 4px 0 ${SS.ink}`,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 14,
+                opacity: opt.disabled ? 0.55 : 1,
+              }}
+            >
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: '50%',
+                  background: '#fff',
+                  border: `2px solid ${SS.ink}`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                {opt.icon}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div
+                  style={{
+                    fontSize: 17,
+                    fontWeight: 900,
+                    color: SS.ink,
+                    letterSpacing: -0.3,
+                    lineHeight: 1.1,
+                  }}
                 >
-                  {opt.icon}
-                </span>
-                <div>
-                  <div
-                    style={{
-                      fontFamily: 'var(--eco-serif)',
-                      fontSize: 15,
-                      color: locked ? '#8A8A7A' : '#1F2A22',
-                    }}
-                  >
-                    {opt.label}
-                  </div>
-                  <div
-                    className="mt-0.5 italic"
-                    style={{
-                      fontFamily: 'var(--eco-serif)',
-                      fontSize: 12,
-                      color: '#5A6358',
-                    }}
-                  >
-                    {opt.subtitle}
-                  </div>
+                  {opt.label}
+                </div>
+                <div
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 800,
+                    color: SS.ink,
+                    opacity: 0.7,
+                    marginTop: 4,
+                    letterSpacing: 0.2,
+                  }}
+                >
+                  {opt.subtitle}
                 </div>
               </div>
               {opt.disabled ? (
                 <span
-                  className="rounded-full border px-3 py-1 text-[11px] uppercase"
                   style={{
-                    borderColor: '#D9D2C2',
-                    color: '#8A8A7A',
+                    background: '#fff',
+                    border: `2px solid ${SS.ink}`,
+                    borderRadius: 999,
+                    padding: '6px 12px',
+                    fontSize: 10,
+                    fontWeight: 900,
                     letterSpacing: 1.2,
+                    textTransform: 'uppercase',
+                    color: SS.ink,
                   }}
                 >
                   Soon
@@ -177,39 +222,67 @@ export function RedemptionList({
                 <button
                   type="button"
                   onClick={() => redeem(opt.key as ActiveBrand)}
-                  disabled={locked || busy === opt.key}
-                  className="rounded-full bg-[#2D5A3D] px-4 py-1.5 text-[12px] font-semibold tracking-[0.3px] text-[#FBF7EE] transition-colors hover:bg-[#1F4029] disabled:cursor-not-allowed disabled:opacity-30"
+                  disabled={locked || isBusy}
+                  style={{
+                    background: locked ? '#fff' : SS.green,
+                    color: locked ? SS.inkSoft : '#fff',
+                    border: locked ? `2px solid ${SS.ink}` : 'none',
+                    borderRadius: 999,
+                    padding: '10px 18px',
+                    fontFamily: SS.sans,
+                    fontSize: 13,
+                    fontWeight: 900,
+                    letterSpacing: 0.4,
+                    textTransform: 'uppercase',
+                    cursor: locked || isBusy ? 'not-allowed' : 'pointer',
+                    boxShadow: locked ? `0 3px 0 ${SS.ink}` : `0 3px 0 ${SS.greenDark}`,
+                    opacity: locked && !opt.disabled ? 0.6 : 1,
+                    flexShrink: 0,
+                  }}
                 >
-                  {busy === opt.key ? '…' : canRedeem ? 'Redeem' : 'Locked'}
+                  {isBusy ? '…' : canRedeem ? 'Redeem' : 'Locked'}
                 </button>
               )}
-            </li>
+            </div>
           );
         })}
-      </ul>
+      </div>
+
       {success && (
-        <p
-          className="mt-3 rounded-[10px] border px-3 py-2 text-[12px]"
+        <div
           style={{
-            background: '#E8EFE6',
-            borderColor: 'rgba(45,90,61,0.3)',
-            color: '#2D5A3D',
+            marginTop: 14,
+            background: SS.mint,
+            border: `2px solid ${SS.ink}`,
+            borderRadius: 14,
+            padding: '12px 14px',
+            fontSize: 13,
+            fontWeight: 800,
+            color: SS.ink,
+            lineHeight: 1.4,
+            boxShadow: `0 3px 0 ${SS.ink}`,
           }}
         >
           {success}
-        </p>
+        </div>
       )}
       {error && (
-        <p
-          className="mt-3 rounded-[10px] border px-3 py-2 text-[12px]"
+        <div
           style={{
-            background: '#F0DCC8',
-            borderColor: 'rgba(154,75,38,0.3)',
-            color: '#9A4B26',
+            marginTop: 14,
+            background: SS.peach,
+            border: `2px solid ${SS.ink}`,
+            borderRadius: 14,
+            padding: '12px 14px',
+            fontSize: 13,
+            fontWeight: 800,
+            color: SS.ink,
+            lineHeight: 1.4,
+            boxShadow: `0 3px 0 ${SS.ink}`,
           }}
         >
           {error}
-        </p>
+        </div>
       )}
     </section>
   );
