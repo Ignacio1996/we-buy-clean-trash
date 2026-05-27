@@ -8,8 +8,6 @@ import {
 } from '@/lib/logic/calculateBagOrderTotal';
 import type { BagOrderDoc } from '@/lib/types/bagOrder';
 
-export const runtime = 'nodejs';
-
 /**
  * Create a `pending` (unpaid) bag order. The browser then drives the Stripe
  * Checkout via @invertase/firestore-stripe-payments (see stripe-client.ts).

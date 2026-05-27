@@ -9,8 +9,6 @@ import { COMPLIANCE_NOTICE_LABELS } from '@/lib/types/complianceBatch';
 import { MATERIAL_DISPLAY_NAMES, MATERIAL_IDS } from '@/lib/types/material';
 import { PrintButton } from './PrintButton';
 
-export const dynamic = 'force-dynamic';
-
 const DAY_NAMES = [
   'Sunday',
   'Monday',

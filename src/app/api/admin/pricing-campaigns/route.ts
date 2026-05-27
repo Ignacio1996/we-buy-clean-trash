@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
+import { CAMPAIGNS_CACHE_TAG } from '@/lib/admin/loadActiveCampaigns';
 import { isMaterialId, type MaterialId } from '@/lib/types/material';
-
-export const runtime = 'nodejs';
 
 interface CreatePayload {
   name: string;
@@ -76,6 +76,7 @@ export async function POST(request: Request) {
     createdAt: FieldValue.serverTimestamp(),
     createdBy: session.uid,
   });
+  revalidateTag(CAMPAIGNS_CACHE_TAG, 'default');
   return NextResponse.json({ ok: true, id: ref.id });
 }
 
@@ -95,5 +96,6 @@ export async function DELETE(request: Request) {
     active: false,
     endsAt: FieldValue.serverTimestamp(),
   });
+  revalidateTag(CAMPAIGNS_CACHE_TAG, 'default');
   return NextResponse.json({ ok: true });
 }

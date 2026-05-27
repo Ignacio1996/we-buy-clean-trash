@@ -8,8 +8,6 @@ import { InviteRowActions } from './InviteRowActions';
 import { TestSmsForm } from './TestSmsForm';
 import { GuideLink } from '@/components/admin/GuideLink';
 
-export const dynamic = 'force-dynamic';
-
 interface InviteRow {
   invite: InviteDoc;
   status: { label: string; tone: string };

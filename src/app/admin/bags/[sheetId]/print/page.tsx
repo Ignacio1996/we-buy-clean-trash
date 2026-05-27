@@ -5,8 +5,6 @@ import { adminDb } from '@/lib/firebase/admin';
 import type { BagDoc, StickerSheetDoc } from '@/lib/types/bag';
 import { PrintBar } from './PrintBar';
 
-export const dynamic = 'force-dynamic';
-
 type LabelSize = '2.25x1.25' | '4x6';
 
 interface PageProps {

@@ -20,8 +20,6 @@ import {
 } from '@/components/manager/SSMg';
 import { ManagerLogout } from '@/components/manager/ManagerLogout';
 
-export const dynamic = 'force-dynamic';
-
 const DEPOT_CAPACITY_LBS_PER_MATERIAL = 1500;
 
 interface PageProps {

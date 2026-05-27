@@ -3,8 +3,6 @@ import { cookies } from 'next/headers';
 import { adminAuth } from '@/lib/firebase/admin';
 import { SESSION_COOKIE_MAX_AGE_SECONDS, SESSION_COOKIE_NAME } from '@/lib/auth/cookie';
 
-export const runtime = 'nodejs';
-
 export async function POST(request: Request) {
   let body: { idToken?: unknown };
   try {

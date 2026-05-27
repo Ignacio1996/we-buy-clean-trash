@@ -6,8 +6,6 @@ import { sendSMS } from '@/lib/sms/send';
 import type { PickupDoc } from '@/lib/types/pickup';
 import type { UserDoc } from '@/lib/types/user';
 
-export const runtime = 'nodejs';
-
 export async function POST(_request: Request, context: { params: Promise<{ id: string }> }) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });

@@ -21,8 +21,6 @@ import { resolveContainerType, containerBinSize } from '@/lib/types/bag';
 import type { BinPickupBinEntry } from '@/lib/types/binPickup';
 import type { CommercialAccountDoc } from '@/lib/types/commercialAccount';
 
-export const runtime = 'nodejs';
-
 const MAX_BINS_PER_PICKUP = 50;
 const MAX_PHOTO_BASE64 = 6 * 1024 * 1024;
 

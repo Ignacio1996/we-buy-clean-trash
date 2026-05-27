@@ -15,8 +15,6 @@ import {
 } from './CampaignsManager';
 import { GuideLink } from '@/components/admin/GuideLink';
 
-export const dynamic = 'force-dynamic';
-
 async function loadMaterials(): Promise<MaterialRow[]> {
   const snap = await adminDb.collection('materials').get();
   const fromDb = new Map<MaterialId, MaterialRow>();

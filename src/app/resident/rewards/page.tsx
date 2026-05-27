@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getSession } from '@/lib/auth/session';
+import { loadResidentUserDoc } from '@/lib/auth/residentAccount';
 import { adminDb } from '@/lib/firebase/admin';
 import { pointsToDollars } from '@/lib/logic/pointsToDollars';
 import type { TransactionDoc } from '@/lib/types/transaction';
@@ -31,8 +32,8 @@ export default async function RewardsPage() {
   const session = await getSession();
   const uid = session!.uid;
 
-  const [userSnap, txSnap, userRedemptionSnap, totalRedemptionSnap] = await Promise.all([
-    adminDb.collection('users').doc(uid).get(),
+  const [user, txSnap, userRedemptionSnap, totalRedemptionSnap] = await Promise.all([
+    loadResidentUserDoc(uid),
     adminDb
       .collection('transactions')
       .where('userId', '==', uid)
@@ -58,8 +59,6 @@ export default async function RewardsPage() {
     : totalRedemptions >= PILOT_GIFT_CARD_CAP
       ? 'cap_reached'
       : 'open';
-
-  const user = userSnap.data() ?? {};
   const balance = typeof user.pointsBalance === 'number' ? user.pointsBalance : 0;
   const progress = Math.min(1, balance / GIFT_CARD_POINTS);
   const pointsToNext = Math.max(0, GIFT_CARD_POINTS - balance);

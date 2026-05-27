@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/session';
 import { confirmBagOrder } from '@/lib/payments/confirmBagOrder';
 
-export const runtime = 'nodejs';
-
 /**
  * Reconcile a `pending` bag order against the Stripe Checkout session synced
  * by the firestore-stripe-payments extension. The success page calls this on

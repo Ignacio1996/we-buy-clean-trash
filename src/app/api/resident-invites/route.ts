@@ -5,8 +5,6 @@ import { sendEmail } from '@/lib/email/send';
 import { sendSMS } from '@/lib/sms/send';
 import { buildResidentInviteEmail, buildResidentInviteSms } from '@/lib/invites/messages';
 
-export const runtime = 'nodejs';
-
 type DeliveryResult = { channel: 'email' | 'sms'; ok: boolean; error?: string };
 
 export async function POST(request: Request) {

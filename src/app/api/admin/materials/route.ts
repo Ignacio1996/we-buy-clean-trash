@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
+import { MATERIALS_CACHE_TAG } from '@/lib/admin/loadActiveMaterials';
 import {
   SEED_MATERIAL_DISPLAY_NAMES,
   isMaterialId,
@@ -12,8 +14,6 @@ import {
   type MeasurementMode,
   type PayoutMode,
 } from '@/lib/types/material';
-
-export const runtime = 'nodejs';
 
 function parsePrice(v: unknown): number | null {
   const n = Number(v);
@@ -165,6 +165,7 @@ export async function PUT(request: Request) {
     });
   });
 
+  revalidateTag(MATERIALS_CACHE_TAG, 'default');
   return NextResponse.json({ ok: true });
 }
 
@@ -190,5 +191,6 @@ export async function DELETE(request: Request) {
     updatedAt: FieldValue.serverTimestamp(),
     updatedBy: session.uid,
   });
+  revalidateTag(MATERIALS_CACHE_TAG, 'default');
   return NextResponse.json({ ok: true });
 }

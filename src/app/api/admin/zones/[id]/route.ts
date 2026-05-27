@@ -8,8 +8,6 @@ import {
   unassignResidentsFromZone,
 } from '@/lib/admin/assignResidentsToZone';
 
-export const runtime = 'nodejs';
-
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
   const session = await getSession();
   if (!session || session.role !== 'admin') {

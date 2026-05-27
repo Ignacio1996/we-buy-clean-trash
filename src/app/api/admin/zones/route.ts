@@ -5,8 +5,6 @@ import { getSession } from '@/lib/auth/session';
 import { parsePickupDays, parseZipCodes } from '@/lib/types/zone';
 import { assignResidentsToZone } from '@/lib/admin/assignResidentsToZone';
 
-export const runtime = 'nodejs';
-
 export async function POST(request: Request) {
   const session = await getSession();
   if (!session || session.role !== 'admin') {

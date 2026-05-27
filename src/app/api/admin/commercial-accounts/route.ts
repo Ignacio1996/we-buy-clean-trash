@@ -7,8 +7,6 @@ import { isMaterialId, type MaterialId } from '@/lib/types/material';
 import { isBinSize, type BinSize } from '@/lib/logic/binWeightTable';
 import { normalizeCollectionDays } from '@/lib/types/commercialAccount';
 
-export const runtime = 'nodejs';
-
 function str(v: unknown): string {
   return typeof v === 'string' ? v.trim() : '';
 }

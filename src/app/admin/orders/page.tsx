@@ -5,8 +5,6 @@ import type { RouteDoc } from '@/lib/types/route';
 import type { ZoneDoc } from '@/lib/types/zone';
 import type { AddressDoc, UserDoc } from '@/lib/types/user';
 
-export const dynamic = 'force-dynamic';
-
 interface OrderRow {
   id: string;
   residentName: string;

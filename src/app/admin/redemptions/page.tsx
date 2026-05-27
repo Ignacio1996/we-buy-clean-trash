@@ -6,8 +6,6 @@ import { RedemptionFulfillButton } from './RedemptionFulfillButton';
 import { GuideLink } from '@/components/admin/GuideLink';
 import { PILOT_GIFT_CARD_CAP } from '@/app/api/redemptions/route';
 
-export const dynamic = 'force-dynamic';
-
 interface Row {
   redemption: RedemptionDoc;
   userName: string;

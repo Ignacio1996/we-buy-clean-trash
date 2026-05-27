@@ -5,8 +5,6 @@ import type { UserDoc } from '@/lib/types/user';
 import type { ZoneDoc } from '@/lib/types/zone';
 import { GuideLink } from '@/components/admin/GuideLink';
 
-export const dynamic = 'force-dynamic';
-
 async function loadResidents(): Promise<{ users: UserDoc[]; zones: Map<string, string> }> {
   const [usersSnap, zonesSnap] = await Promise.all([
     adminDb

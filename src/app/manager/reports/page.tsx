@@ -13,8 +13,6 @@ import type { BagProcessingDoc } from '@/lib/types/bagProcessing';
 import type { MillShipmentDoc } from '@/lib/types/millShipment';
 import { PrintButton } from './PrintButton';
 
-export const dynamic = 'force-dynamic';
-
 interface SearchParamsShape {
   month?: string;
 }

@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { getSession } from '@/lib/auth/session';
-import { requireConsumerResident } from '@/lib/auth/residentAccount';
-import { adminDb } from '@/lib/firebase/admin';
+import {
+  loadResidentUserDoc,
+  requireConsumerResident,
+} from '@/lib/auth/residentAccount';
 import {
   BAG_SHEET_UNIT_PRICE_DOLLARS,
   BAGS_PER_SHEET,
@@ -18,10 +20,12 @@ import {
 
 export default async function OrderBagsPage() {
   const session = await getSession();
-  await requireConsumerResident(session!.uid);
-
-  const userSnap = await adminDb.collection('users').doc(session!.uid).get();
-  const userData = userSnap.data() ?? {};
+  const uid = session!.uid;
+  // requireConsumerResident + loadResidentUserDoc share the same memoized
+  // Firestore read via React.cache() — net one users/{uid} read per request,
+  // not the three this page used to incur (layout + role guard + page).
+  await requireConsumerResident(uid);
+  const userData = await loadResidentUserDoc(uid);
   const freeSheetCredits = userData.freeSheetClaimed === true ? 0 : 1;
 
   return (

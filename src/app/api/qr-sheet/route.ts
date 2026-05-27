@@ -3,8 +3,6 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
 
-export const runtime = 'nodejs';
-
 const SHEET_NUMBER_MIN = 1000;
 const SHEET_NUMBER_MAX = 9999;
 const MAX_COLLISION_RETRIES = 8;

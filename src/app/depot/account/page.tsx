@@ -6,8 +6,6 @@ import type { BagProcessingDoc } from '@/lib/types/bagProcessing';
 import { SS } from '@/components/resident/ss/SS';
 import { SignOutButton } from './SignOutButton';
 
-export const dynamic = 'force-dynamic';
-
 function startOfTodayTs(): Timestamp {
   const d = new Date();
   d.setHours(0, 0, 0, 0);

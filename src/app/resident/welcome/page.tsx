@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/session';
-import { adminDb } from '@/lib/firebase/admin';
+import { loadResidentUserDoc } from '@/lib/auth/residentAccount';
 import { PresignupScanBanner } from '@/components/PresignupScanBanner';
 import { WelcomeActions } from './WelcomeActions';
 import {
@@ -12,11 +12,10 @@ import {
 
 export default async function WelcomePage() {
   const session = await getSession();
-  const userSnap = await adminDb.collection('users').doc(session!.uid).get();
-  const user = userSnap.data();
-  if (user?.onboardingCompletedAt) redirect('/resident');
+  const user = await loadResidentUserDoc(session!.uid);
+  if (user.onboardingCompletedAt) redirect('/resident');
 
-  const firstName = typeof user?.name === 'string' ? user.name.split(' ')[0] : 'there';
+  const firstName = typeof user.name === 'string' ? user.name.split(' ')[0] : 'there';
 
   return (
     <SSScreen>

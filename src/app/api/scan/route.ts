@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { scanImage } from '@/lib/ai/scan';
 
-export const runtime = 'nodejs';
-
 const MAX_BASE64_CHARS = 8 * 1024 * 1024; // ~6 MB decoded — rough safety cap
 
 export async function POST(request: Request) {

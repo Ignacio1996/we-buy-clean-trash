@@ -3,8 +3,6 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { getSession } from '@/lib/auth/session';
 import { loadOperatorRoute } from '@/lib/auth/operatorAccess';
 
-export const runtime = 'nodejs';
-
 export async function POST(_request: Request, context: { params: Promise<{ id: string }> }) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });

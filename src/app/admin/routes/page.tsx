@@ -6,8 +6,6 @@ import { RouteBuilderClient } from './RouteBuilderClient';
 import { DeleteRouteButton } from './DeleteRouteButton';
 import { GuideLink } from '@/components/admin/GuideLink';
 
-export const dynamic = 'force-dynamic';
-
 interface RouteRow {
   id: string;
   date: string;

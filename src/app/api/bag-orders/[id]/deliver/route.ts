@@ -5,8 +5,6 @@ import { getSession } from '@/lib/auth/session';
 import { loadOperatorRoute } from '@/lib/auth/operatorAccess';
 import type { BagOrderDoc } from '@/lib/types/bagOrder';
 
-export const runtime = 'nodejs';
-
 // The operator scans ONE pre-printed sticker (e.g. "BAG-4237-01") to anchor
 // the sheet. The server creates all 10 bag docs with sequential codes matching
 // what's already printed on the physical sheet. Same pattern as scripts/dev-issue-bags.ts.

@@ -9,8 +9,6 @@ import { sendEmail } from '@/lib/email/send';
 import { sendSMS } from '@/lib/sms/send';
 import { buildInviteEmail, buildInviteSms } from '@/lib/invites/messages';
 
-export const runtime = 'nodejs';
-
 const INVITE_TTL_DAYS = 7;
 
 type DeliveryResult = { channel: 'email' | 'sms'; ok: boolean; error?: string };

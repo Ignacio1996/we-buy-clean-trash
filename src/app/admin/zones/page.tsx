@@ -5,8 +5,6 @@ import { loadActiveMaterials } from '@/lib/admin/loadActiveMaterials';
 import { ZonesClient } from './ZonesClient';
 import { GuideLink } from '@/components/admin/GuideLink';
 
-export const dynamic = 'force-dynamic';
-
 async function loadData() {
   const [zonesSnap, depotsSnap, materials] = await Promise.all([
     adminDb.collection('zones').orderBy('name').get(),

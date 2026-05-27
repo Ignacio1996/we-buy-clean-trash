@@ -5,8 +5,6 @@ import { getSession } from '@/lib/auth/session';
 import { isBinSize, type BinSize } from '@/lib/logic/binWeightTable';
 import type { ContainerType } from '@/lib/types/bag';
 
-export const runtime = 'nodejs';
-
 const BIN_NUMBER_MIN = 1000;
 const BIN_NUMBER_MAX = 9999;
 const MAX_COLLISION_RETRIES = 12;

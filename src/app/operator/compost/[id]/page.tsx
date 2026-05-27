@@ -8,8 +8,6 @@ import { resolveContainerType, containerBinSize } from '@/lib/types/bag';
 import { loadActiveMaterials } from '@/lib/admin/loadActiveMaterials';
 import { BinPickupForm, type BinView, type MaterialChoice } from './BinPickupForm';
 
-export const dynamic = 'force-dynamic';
-
 export default async function CompostSiteStopPage({
   params,
 }: {

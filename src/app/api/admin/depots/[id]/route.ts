@@ -4,8 +4,6 @@ import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
 import { isMaterialId, type MaterialId } from '@/lib/types/material';
 
-export const runtime = 'nodejs';
-
 export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
   const session = await getSession();
   if (!session || session.role !== 'admin') {

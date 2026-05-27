@@ -3,8 +3,6 @@ import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { isInvitableRole } from '@/lib/types/role';
 
-export const runtime = 'nodejs';
-
 interface AcceptPayload {
   idToken: string;
   inviteToken: string;

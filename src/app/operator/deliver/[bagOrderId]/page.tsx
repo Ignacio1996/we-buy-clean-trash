@@ -7,8 +7,6 @@ import type { AddressDoc, UserDoc } from '@/lib/types/user';
 import { DeliverClient } from './DeliverClient';
 import { SSOpHeader, SSOpShell } from '@/components/operator/SSOp';
 
-export const dynamic = 'force-dynamic';
-
 export default async function DeliverPage({
   params,
 }: {

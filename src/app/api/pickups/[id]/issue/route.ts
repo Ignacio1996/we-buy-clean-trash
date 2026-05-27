@@ -5,8 +5,6 @@ import { getSession } from '@/lib/auth/session';
 import { loadOperatorRoute } from '@/lib/auth/operatorAccess';
 import type { PickupDoc, PickupIssue } from '@/lib/types/pickup';
 
-export const runtime = 'nodejs';
-
 const VALID_ISSUES: PickupIssue[] = ['contaminated', 'other'];
 
 export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {

@@ -6,8 +6,6 @@ import { isComplianceNoticeType } from '@/lib/types/complianceNotice';
 import type { ComplianceBatchDoc } from '@/lib/types/complianceBatch';
 import type { ZoneDoc } from '@/lib/types/zone';
 
-export const runtime = 'nodejs';
-
 interface GeneratePayload {
   zoneId: string;
   type: 'initial_service' | 'semi_annual';

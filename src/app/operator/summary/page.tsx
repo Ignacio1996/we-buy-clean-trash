@@ -16,8 +16,6 @@ import {
   SSOpStat,
 } from '@/components/operator/SSOp';
 
-export const dynamic = 'force-dynamic';
-
 function startOfToday(): Timestamp {
   const d = new Date();
   d.setHours(0, 0, 0, 0);

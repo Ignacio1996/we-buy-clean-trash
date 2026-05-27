@@ -8,8 +8,6 @@ import type { AddressDoc, UserDoc } from '@/lib/types/user';
 import { ScanConfirmClient } from './ScanConfirmClient';
 import { SSOpHeader, SSOpShell } from '@/components/operator/SSOp';
 
-export const dynamic = 'force-dynamic';
-
 export default async function ScanConfirmPage({
   params,
 }: {

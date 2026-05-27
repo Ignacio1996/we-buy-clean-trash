@@ -15,8 +15,6 @@ import {
 } from '@/components/manager/SSMg';
 import { ManagerLogout } from '@/components/manager/ManagerLogout';
 
-export const dynamic = 'force-dynamic';
-
 const DEPOT_CAPACITY_LBS_PER_MATERIAL = 1500;
 const CRITICAL_PCT = 95;
 const LOW_PCT = 25;

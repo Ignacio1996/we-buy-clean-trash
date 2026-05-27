@@ -1,6 +1,71 @@
 import 'server-only';
+import { unstable_cache } from 'next/cache';
 import { Timestamp } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
+
+export const ADMIN_KPIS_CACHE_TAG = 'admin-kpis';
+
+const KPI_CACHE_OPTIONS = { tags: [ADMIN_KPIS_CACHE_TAG], revalidate: 300 };
+
+import {
+  MATERIAL_IDS,
+  type MaterialId,
+} from '@/lib/types/material';
+
+export interface AdminKpis {
+  residentCount: number;
+  bagsThisMonth: number;
+  inventoryByMaterial: Record<MaterialId, number>;
+  totalWeight: number;
+  revenue: number;
+}
+
+function startOfMonthTimestamp(): Timestamp {
+  const now = new Date();
+  return Timestamp.fromDate(new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0));
+}
+
+export const loadAdminKpis = unstable_cache(
+  async (): Promise<AdminKpis> => {
+    const monthStart = startOfMonthTimestamp();
+    const [residentsSnap, bagsThisMonthSnap, inventorySnap, ordersThisMonthSnap] =
+      await Promise.all([
+        adminDb.collection('users').where('role', '==', 'resident').count().get(),
+        adminDb.collection('bags').where('createdAt', '>=', monthStart).count().get(),
+        adminDb.collection('inventory').get(),
+        adminDb.collection('bagOrders').where('createdAt', '>=', monthStart).get(),
+      ]);
+
+    const inventoryByMaterial = Object.fromEntries(
+      MATERIAL_IDS.map((id) => [id, 0]),
+    ) as Record<MaterialId, number>;
+    inventorySnap.docs.forEach((d) => {
+      const materialId = d.get('materialId') as MaterialId | undefined;
+      const weight = typeof d.get('weight') === 'number' ? (d.get('weight') as number) : 0;
+      if (materialId && materialId in inventoryByMaterial) {
+        inventoryByMaterial[materialId] += weight;
+      }
+    });
+    const totalWeight = Object.values(inventoryByMaterial).reduce((a, b) => a + b, 0);
+
+    let revenue = 0;
+    ordersThisMonthSnap.docs.forEach((d) => {
+      if (d.get('status') === 'cancelled') return;
+      const total = typeof d.get('total') === 'number' ? (d.get('total') as number) : 0;
+      revenue += total;
+    });
+
+    return {
+      residentCount: residentsSnap.data().count,
+      bagsThisMonth: bagsThisMonthSnap.data().count,
+      inventoryByMaterial,
+      totalWeight,
+      revenue,
+    };
+  },
+  ['admin-kpis-summary'],
+  KPI_CACHE_OPTIONS,
+);
 import type { BagOrderDoc } from '@/lib/types/bagOrder';
 import type { BagProcessingDoc } from '@/lib/types/bagProcessing';
 import type { ContaminationSeverity } from '@/lib/types/material';
@@ -47,7 +112,13 @@ function strikeWindowStart(): Timestamp {
   return Timestamp.fromDate(d);
 }
 
-export async function loadZonePerformance(): Promise<ZonePerformanceRow[]> {
+export const loadZonePerformance = unstable_cache(
+  loadZonePerformanceUncached,
+  ['admin-zone-performance'],
+  KPI_CACHE_OPTIONS,
+);
+
+async function loadZonePerformanceUncached(): Promise<ZonePerformanceRow[]> {
   const monthStart = startOfMonth();
 
   const [zonesSnap, residentsSnap, processingSnap, ordersSnap] = await Promise.all([
@@ -98,7 +169,13 @@ export async function loadZonePerformance(): Promise<ZonePerformanceRow[]> {
   }));
 }
 
-export async function loadContaminationAlerts(limit = 8): Promise<ContaminationAlert[]> {
+export const loadContaminationAlerts = unstable_cache(
+  loadContaminationAlertsUncached,
+  ['admin-contamination-alerts'],
+  KPI_CACHE_OPTIONS,
+);
+
+async function loadContaminationAlertsUncached(limit = 8): Promise<ContaminationAlert[]> {
   const windowStart = strikeWindowStart();
   const snap = await adminDb
     .collection('bagProcessing')
@@ -191,7 +268,13 @@ export async function loadContaminationAlerts(limit = 8): Promise<ContaminationA
   });
 }
 
-export async function loadOperatorLeaderboard(limit = 5): Promise<OperatorLeaderboardRow[]> {
+export const loadOperatorLeaderboard = unstable_cache(
+  loadOperatorLeaderboardUncached,
+  ['admin-operator-leaderboard'],
+  KPI_CACHE_OPTIONS,
+);
+
+async function loadOperatorLeaderboardUncached(limit = 5): Promise<OperatorLeaderboardRow[]> {
   const monthStart = startOfMonth();
   const snap = await adminDb.collection('pickups').where('createdAt', '>=', monthStart).get();
 

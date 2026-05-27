@@ -8,8 +8,6 @@ import type { BagDoc } from '@/lib/types/bag';
 import type { UserDoc } from '@/lib/types/user';
 import { SS } from '@/components/resident/ss/SS';
 
-export const dynamic = 'force-dynamic';
-
 type RouteStatus = 'new' | 'in_progress' | 'done';
 
 interface RouteRow {

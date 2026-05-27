@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { autocompletePlaces } from '@/lib/maps/places';
 
-export const runtime = 'nodejs';
-
 export async function POST(request: Request) {
   let json: unknown;
   try {

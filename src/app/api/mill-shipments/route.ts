@@ -10,8 +10,6 @@ import {
 } from '@/lib/types/material';
 import type { InventoryDoc } from '@/lib/types/inventory';
 
-export const runtime = 'nodejs';
-
 const MAX_SHIPMENT_WEIGHT_LBS = 50_000;
 
 interface ParsedPayload {

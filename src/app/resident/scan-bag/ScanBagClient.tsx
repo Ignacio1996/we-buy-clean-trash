@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import jsQR from 'jsqr';
+import { loadJsQR } from '@/lib/scanner/loadJsQR';
 import { useRouter } from 'next/navigation';
 import type { DeclaredBagType } from '@/lib/types/bag';
 import {
@@ -120,34 +120,11 @@ export function ScanBagClient() {
     let rafId: number | null = null;
     let cancelled = false;
 
-    const scan = () => {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      if (!video || !canvas) return;
-      if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        if (ctx) {
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const code = jsQR(image.data, image.width, image.height, {
-            inversionAttempts: 'dontInvert',
-          });
-          if (code && code.data) {
-            setBagCode(code.data.trim());
-            setStep('choose_type');
-            setCameraOn(false);
-            return;
-          }
-        }
-      }
-      if (!cancelled) rafId = requestAnimationFrame(scan);
-    };
-
-    navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: 'environment' } })
-      .then((s) => {
+    Promise.all([
+      loadJsQR(),
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }),
+    ])
+      .then(([jsQR, s]) => {
         if (cancelled) {
           s.getTracks().forEach((t) => t.stop());
           return;
@@ -157,6 +134,30 @@ export function ScanBagClient() {
         if (!video) return;
         video.srcObject = s;
         void video.play();
+        const scan = () => {
+          const v = videoRef.current;
+          const canvas = canvasRef.current;
+          if (!v || !canvas) return;
+          if (v.readyState === v.HAVE_ENOUGH_DATA) {
+            canvas.width = v.videoWidth;
+            canvas.height = v.videoHeight;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            if (ctx) {
+              ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
+              const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              const code = jsQR(image.data, image.width, image.height, {
+                inversionAttempts: 'dontInvert',
+              });
+              if (code && code.data) {
+                setBagCode(code.data.trim());
+                setStep('choose_type');
+                setCameraOn(false);
+                return;
+              }
+            }
+          }
+          if (!cancelled) rafId = requestAnimationFrame(scan);
+        };
         rafId = requestAnimationFrame(scan);
       })
       .catch((err) => {

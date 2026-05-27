@@ -16,8 +16,6 @@ import {
 } from '@/components/operator/SSOp';
 import { LogoutLink } from './LogoutLink';
 
-export const dynamic = 'force-dynamic';
-
 export interface StopPickup {
   id: string;
   bagId: string;

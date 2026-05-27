@@ -3,8 +3,6 @@ import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
 import type { RouteDoc } from '@/lib/types/route';
 
-export const runtime = 'nodejs';
-
 const PICKUP_TERMINAL = new Set(['completed', 'missed', 'issue']);
 const BAG_ORDER_TERMINAL = new Set(['delivered']);
 

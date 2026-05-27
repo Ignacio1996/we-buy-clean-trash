@@ -10,8 +10,6 @@ import type { UserDoc } from '@/lib/types/user';
 import { SS } from '@/components/resident/ss/SS';
 import { RouteBagsClient, type RouteBagRow } from './RouteBagsClient';
 
-export const dynamic = 'force-dynamic';
-
 export default async function RouteDetailPage({
   params,
 }: {

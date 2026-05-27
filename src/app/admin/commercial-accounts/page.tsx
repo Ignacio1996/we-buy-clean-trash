@@ -6,8 +6,6 @@ import { loadActiveMaterials } from '@/lib/admin/loadActiveMaterials';
 import { GuideLink } from '@/components/admin/GuideLink';
 import { CommercialAccountsClient, type CommercialAccountView } from './CommercialAccountsClient';
 
-export const dynamic = 'force-dynamic';
-
 async function loadData() {
   const [accountsSnap, zonesSnap, materials] = await Promise.all([
     adminDb.collection('commercialAccounts').orderBy('businessName').get(),

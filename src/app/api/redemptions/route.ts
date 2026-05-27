@@ -11,8 +11,6 @@ import {
 } from '@/lib/types/redemption';
 import type { AddressDoc, UserDoc } from '@/lib/types/user';
 
-export const runtime = 'nodejs';
-
 const ACTIVE_BRANDS: RedemptionBrand[] = ['amazon', 'walmart'];
 const GIFT_CARD_POINTS = 1_000;
 // Pilot marketing budget: $10 gift card × 100 users = $1,000.

@@ -14,8 +14,6 @@ import type { UserDoc } from '@/lib/types/user';
 import { sendSMS } from '@/lib/sms/send';
 import { sendEmail } from '@/lib/email/send';
 
-export const runtime = 'nodejs';
-
 function parseTime(value: unknown): string | null {
   if (typeof value !== 'string') return null;
   const m = /^(\d{2}):(\d{2})$/.exec(value);

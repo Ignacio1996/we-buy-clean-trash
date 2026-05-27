@@ -12,8 +12,6 @@ import {
   SSOpShell,
 } from '@/components/operator/SSOp';
 
-export const dynamic = 'force-dynamic';
-
 interface SiteRow {
   id: string;
   businessName: string;

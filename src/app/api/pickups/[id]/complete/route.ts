@@ -6,8 +6,6 @@ import { getSession } from '@/lib/auth/session';
 import { loadOperatorRoute } from '@/lib/auth/operatorAccess';
 import type { PickupDoc } from '@/lib/types/pickup';
 
-export const runtime = 'nodejs';
-
 const MAX_BASE64_CHARS = 6 * 1024 * 1024;
 
 interface CompletePayload {

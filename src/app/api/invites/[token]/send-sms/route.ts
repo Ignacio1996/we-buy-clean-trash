@@ -5,8 +5,6 @@ import { sendSMS } from '@/lib/sms/send';
 import { buildInviteSms } from '@/lib/invites/messages';
 import type { InviteDoc } from '@/lib/types/invite';
 
-export const runtime = 'nodejs';
-
 export async function POST(request: Request, context: { params: Promise<{ token: string }> }) {
   const session = await getSession();
   if (!session || session.role !== 'admin') {

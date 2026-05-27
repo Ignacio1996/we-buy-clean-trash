@@ -6,8 +6,6 @@ import { normalizePhone } from '@/lib/types/user';
 import { sendEmail } from '@/lib/email/send';
 import { buildResidentWelcomeEmail } from '@/lib/email/welcome';
 
-export const runtime = 'nodejs';
-
 async function resolveZoneIdForZip(postalCode: string): Promise<string | null> {
   const snap = await adminDb
     .collection('zones')

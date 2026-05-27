@@ -3,8 +3,6 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import type { WaitlistEntryDoc } from '@/lib/types/waitlist';
 
-export const runtime = 'nodejs';
-
 const EMAIL_RE = /^\S+@\S+\.\S+$/;
 const ZIP_RE = /^\d{5}(-\d{4})?$/;
 

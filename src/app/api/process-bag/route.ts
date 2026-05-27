@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
 import { loadDepotContext } from '@/lib/auth/depotAccess';
 import { calculatePoints } from '@/lib/logic/calculatePoints';
 import { loadActiveCampaigns } from '@/lib/admin/loadActiveCampaigns';
+import { ADMIN_KPIS_CACHE_TAG } from '@/lib/admin/dashboard';
 import { buildMaterialMultipliers } from '@/lib/types/pricingCampaign';
 import { sendSMS } from '@/lib/sms/send';
 import {
@@ -19,8 +21,6 @@ import {
 import { resolveAcceptedMaterials } from '@/lib/types/depot';
 import type { BagDoc } from '@/lib/types/bag';
 import type { UserDoc } from '@/lib/types/user';
-
-export const runtime = 'nodejs';
 
 const MAX_WEIGHT_PER_MATERIAL_LBS = 200;
 
@@ -245,6 +245,7 @@ export async function POST(request: Request) {
       }
     }
 
+    revalidateTag(ADMIN_KPIS_CACHE_TAG, 'default');
     return NextResponse.json({
       ok: true,
       pointsAwarded,

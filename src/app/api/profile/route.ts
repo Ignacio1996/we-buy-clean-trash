@@ -4,8 +4,6 @@ import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
 import { normalizePhone } from '@/lib/types/user';
 
-export const runtime = 'nodejs';
-
 export async function PATCH(request: Request) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });

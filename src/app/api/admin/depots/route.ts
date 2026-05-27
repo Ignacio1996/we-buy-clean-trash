@@ -5,8 +5,6 @@ import { getSession } from '@/lib/auth/session';
 import { geocodeAddress } from '@/lib/maps/geocode';
 import { MATERIAL_IDS } from '@/lib/types/material';
 
-export const runtime = 'nodejs';
-
 function str(value: unknown): string {
   return typeof value === 'string' ? value.trim() : '';
 }

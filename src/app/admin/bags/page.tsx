@@ -4,8 +4,6 @@ import type { UserDoc } from '@/lib/types/user';
 import { GuideLink } from '@/components/admin/GuideLink';
 import { GenerateSheetButton } from './GenerateSheetButton';
 
-export const dynamic = 'force-dynamic';
-
 interface SheetRow {
   id: string;
   sheetNumber: string;

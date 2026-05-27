@@ -7,8 +7,6 @@ import type { MaterialId } from '@/lib/types/material';
 import type { InventoryDoc } from '@/lib/types/inventory';
 import { SS } from '@/components/resident/ss/SS';
 
-export const dynamic = 'force-dynamic';
-
 // Pilot-era heuristic: 1,500 lbs per material before we nag to schedule a truck.
 // Admin can revisit once we have real depot capacity data post-pilot.
 const DEPOT_CAPACITY_LBS_PER_MATERIAL = 1500;

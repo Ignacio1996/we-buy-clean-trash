@@ -5,8 +5,6 @@ import { GuideLink } from '@/components/admin/GuideLink';
 import { NewBatchForm } from './NewBatchForm';
 import { BatchList } from './BatchList';
 
-export const dynamic = 'force-dynamic';
-
 async function loadData() {
   const [zonesSnap, batchesSnap] = await Promise.all([
     adminDb.collection('zones').orderBy('name').get(),

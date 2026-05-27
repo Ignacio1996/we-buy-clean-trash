@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/session';
 import { sendSMS } from '@/lib/sms/send';
 
-export const runtime = 'nodejs';
-
 export async function POST(request: Request) {
   const session = await getSession();
   if (!session || session.role !== 'admin') {

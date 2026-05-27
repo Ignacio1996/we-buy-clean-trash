@@ -1,15 +1,13 @@
 import Link from 'next/link';
-import { Timestamp } from 'firebase-admin/firestore';
-import { adminDb } from '@/lib/firebase/admin';
 import {
   MATERIAL_IDS,
   MATERIAL_DISPLAY_NAMES,
   type ContaminationSeverity,
-  type MaterialId,
 } from '@/lib/types/material';
 import { GuideLink } from '@/components/admin/GuideLink';
 import { ResidentInviteCard } from './ResidentInviteCard';
 import {
+  loadAdminKpis,
   loadContaminationAlerts,
   loadOperatorLeaderboard,
   loadZonePerformance,
@@ -18,55 +16,8 @@ import {
   type ZonePerformanceRow,
 } from '@/lib/admin/dashboard';
 
-export const dynamic = 'force-dynamic';
-
-function startOfMonthTimestamp(): Timestamp {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
-  return Timestamp.fromDate(start);
-}
-
 function currentMonthLabel(): string {
   return new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
-}
-
-async function loadKpis() {
-  const monthStart = startOfMonthTimestamp();
-
-  const [residentsSnap, bagsThisMonthSnap, inventorySnap, ordersThisMonthSnap] = await Promise.all([
-    adminDb.collection('users').where('role', '==', 'resident').count().get(),
-    adminDb.collection('bags').where('createdAt', '>=', monthStart).count().get(),
-    adminDb.collection('inventory').get(),
-    adminDb.collection('bagOrders').where('createdAt', '>=', monthStart).get(),
-  ]);
-
-  const inventoryByMaterial: Record<MaterialId, number> = Object.fromEntries(
-    MATERIAL_IDS.map((id) => [id, 0]),
-  ) as Record<MaterialId, number>;
-  inventorySnap.docs.forEach((d) => {
-    const materialId = d.get('materialId') as MaterialId | undefined;
-    const weight = typeof d.get('weight') === 'number' ? (d.get('weight') as number) : 0;
-    if (materialId && materialId in inventoryByMaterial) {
-      inventoryByMaterial[materialId] += weight;
-    }
-  });
-  const totalWeight = Object.values(inventoryByMaterial).reduce((a, b) => a + b, 0);
-
-  let revenue = 0;
-  ordersThisMonthSnap.docs.forEach((d) => {
-    const status = d.get('status');
-    if (status === 'cancelled') return;
-    const total = typeof d.get('total') === 'number' ? (d.get('total') as number) : 0;
-    revenue += total;
-  });
-
-  return {
-    residentCount: residentsSnap.data().count,
-    bagsThisMonth: bagsThisMonthSnap.data().count,
-    inventoryByMaterial,
-    totalWeight,
-    revenue,
-  };
 }
 
 function formatLbs(lbs: number): string {
@@ -80,7 +31,7 @@ function formatDollars(d: number): string {
 
 export default async function AdminDashboard() {
   const [kpis, zones, alerts, leaderboard] = await Promise.all([
-    loadKpis(),
+    loadAdminKpis(),
     loadZonePerformance(),
     loadContaminationAlerts(),
     loadOperatorLeaderboard(),

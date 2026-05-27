@@ -15,8 +15,6 @@ import { resolveAcceptedMaterials } from '@/lib/types/depot';
 import { SS, SSPillLink } from '@/components/resident/ss/SS';
 import { ProcessBagForm, type ProcessBagFormProps } from './ProcessBagForm';
 
-export const dynamic = 'force-dynamic';
-
 function BackRow({ label, href }: { label: string; href: string }) {
   return (
     <Link
