@@ -5,6 +5,7 @@ import { geocodeAddress } from '@/lib/maps/geocode';
 import { normalizePhone } from '@/lib/types/user';
 import { sendEmail } from '@/lib/email/send';
 import { buildResidentWelcomeEmail } from '@/lib/email/welcome';
+import { SIGNUP_BONUS_POINTS } from '@/lib/logic/calculatePoints';
 
 async function resolveZoneIdForZip(postalCode: string): Promise<string | null> {
   const snap = await adminDb
@@ -99,7 +100,6 @@ export async function POST(request: Request) {
   ]);
   const geo = geoResult ? { lat: geoResult.lat, lng: geoResult.lng } : null;
 
-  const SIGNUP_BONUS_POINTS = 10000;
   const addressRef = adminDb.collection('addresses').doc();
   const transactionRef = adminDb.collection('transactions').doc();
 

@@ -8,6 +8,15 @@ import {
 export const POINTS_PER_DOLLAR = 100;
 export const SEPARATED_MULTIPLIER = 2;
 
+/**
+ * Points granted to a resident on signup, written as a `signup_bonus`
+ * transactions ledger entry. Single source of truth — the signup route, the
+ * welcome email, and the signup-bonus modal all import this so the awarded
+ * amount and the displayed amount can never drift. At 100 pts = $1, this is
+ * worth $0.10.
+ */
+export const SIGNUP_BONUS_POINTS = 10;
+
 export interface CalculatePointsInput {
   weights: Partial<Record<MaterialId, number>>;
   /** Pricing keyed by material id. Iteration is driven by this map's keys. */

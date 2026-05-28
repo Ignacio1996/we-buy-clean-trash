@@ -3,6 +3,7 @@ import type { UserRecord } from 'firebase-admin/auth';
 import { adminAuth, adminDb } from './_admin';
 import type { Role } from '../src/lib/types/role';
 import { MATERIAL_IDS } from '../src/lib/types/material';
+import { SIGNUP_BONUS_POINTS } from '../src/lib/logic/calculatePoints';
 
 // Idempotent pilot seed — safe to re-run. Creates the reference state the
 // build plan calls for:
@@ -22,7 +23,6 @@ const TEST_PASSWORD = process.env.PILOT_TEST_PASSWORD ?? 'webuycleantrash';
 
 const ZONE_ID = 'kirk-pilot';
 const DEPOT_ID = 'kirk-depot';
-const SIGNUP_BONUS_POINTS = 100;
 
 const ZONE = {
   id: ZONE_ID,
