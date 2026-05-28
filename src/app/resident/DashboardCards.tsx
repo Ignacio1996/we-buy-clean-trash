@@ -9,6 +9,7 @@ import {
 } from '@/components/resident/ss/SS';
 import {
   IconArrow,
+  IconBag,
   IconGift,
   IconTruck,
 } from '@/components/icons/EcoIcons';
@@ -172,6 +173,16 @@ function NextDeliverySection({
       : null;
   const nextPickupDate = nextPickupDateMs ? new Date(nextPickupDateMs) : null;
 
+  // The eyebrow header should describe what's actually happening: an order on
+  // its way is a delivery, a scheduled route is a pickup, and an empty state
+  // shouldn't claim a delivery is coming.
+  const eyebrow =
+    !loaded || order
+      ? { label: 'Next delivery', icon: <IconTruck size={14} stroke={2.25} /> }
+      : nextPickupDate
+        ? { label: 'Next pickup', icon: <IconTruck size={14} stroke={2.25} /> }
+        : { label: 'Order bags', icon: <IconBag size={14} stroke={2.25} /> };
+
   const content = !loaded ? (
     <>
       <div
@@ -265,8 +276,8 @@ function NextDeliverySection({
         marginTop: 12,
       }}
     >
-      <SSEyebrow icon={<IconTruck size={14} stroke={2.25} />} style={{ marginBottom: 8 }}>
-        Next delivery
+      <SSEyebrow icon={eyebrow.icon} style={{ marginBottom: 8 }}>
+        {eyebrow.label}
       </SSEyebrow>
       {content}
     </div>
