@@ -619,7 +619,7 @@ function HowStep({ onNext, idx }: { onNext: () => void; idx: number }) {
     <>
       <StepHeading
         eyebrow={`Step ${idx} · How it works`}
-        title="Four simple things."
+        title="Four simple steps."
         lede="Read once, do weekly."
       />
       <div
