@@ -593,10 +593,27 @@ function ServiceNotice({ lookup, busy }: { lookup: ZoneLookup | null; busy: bool
 // ─── Step 3 · How it works ───────────────────────────────────────
 function HowStep({ onNext, idx }: { onNext: () => void; idx: number }) {
   const steps = [
-    ['Order bags', 'Reusable, labeled by material. Free delivery over $20.'],
-    ['Fill clean', 'Rinse what goes in. Caps off bottles. No glass shards.'],
-    ['Pickup day', 'Leave bags at your designated pickup area. We weigh, sort, and credit points.'],
-    ['Redeem', 'Cash out for gift cards once you reach $10.'],
+    {
+      color: SS.green,
+      title: 'Order bags',
+      sub: 'Reusable, labeled by material.',
+      chip: 'Free delivery over $20',
+    },
+    {
+      color: SS.sky,
+      title: 'Fill clean',
+      sub: 'Rinse what goes in. Caps off bottles. No glass shards.',
+    },
+    {
+      color: SS.yellow,
+      title: 'Pickup day',
+      sub: 'Leave bags at your designated pickup area. We weigh, sort, and credit points.',
+    },
+    {
+      color: SS.peach,
+      title: 'Redeem',
+      sub: 'Cash out for gift cards once you reach $10.',
+    },
   ];
   return (
     <>
@@ -605,19 +622,38 @@ function HowStep({ onNext, idx }: { onNext: () => void; idx: number }) {
         title="Four simple things."
         lede="Read once, do weekly."
       />
-      <div style={{ background: SS.mint, padding: '24px 20px', flex: 1 }}>
-        {steps.map(([t, sub], i) => (
+      <div
+        style={{
+          background: SS.mint,
+          padding: '20px',
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
+        }}
+      >
+        {steps.map((step, i) => (
           <div
-            key={t}
-            style={{ display: 'flex', gap: 14, padding: '12px 0', alignItems: 'flex-start' }}
+            key={step.title}
+            style={{
+              display: 'flex',
+              gap: 14,
+              alignItems: 'flex-start',
+              background: '#fff',
+              border: `2px solid ${SS.ink}`,
+              borderRadius: 16,
+              padding: '14px 16px',
+              boxShadow: `0 4px 0 ${SS.ink}`,
+            }}
           >
             <div
               style={{
-                width: 40,
-                height: 40,
+                width: 38,
+                height: 38,
                 borderRadius: '50%',
-                background: SS.ink,
-                color: '#fff',
+                background: step.color,
+                border: `2px solid ${SS.ink}`,
+                color: SS.ink,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -628,16 +664,16 @@ function HowStep({ onNext, idx }: { onNext: () => void; idx: number }) {
             >
               {i + 1}
             </div>
-            <div style={{ flex: 1, paddingTop: 4 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <div
                 style={{
-                  fontSize: 19,
+                  fontSize: 18,
                   fontWeight: 900,
                   color: SS.ink,
                   letterSpacing: -0.3,
                 }}
               >
-                {t}
+                {step.title}
               </div>
               <div
                 style={{
@@ -649,8 +685,26 @@ function HowStep({ onNext, idx }: { onNext: () => void; idx: number }) {
                   opacity: 0.75,
                 }}
               >
-                {sub}
+                {step.sub}
               </div>
+              {step.chip ? (
+                <span
+                  style={{
+                    display: 'inline-block',
+                    marginTop: 8,
+                    background: SS.mint,
+                    border: `2px solid ${SS.ink}`,
+                    borderRadius: 999,
+                    padding: '3px 10px',
+                    fontSize: 11,
+                    fontWeight: 900,
+                    color: SS.ink,
+                    letterSpacing: 0.3,
+                  }}
+                >
+                  {step.chip}
+                </span>
+              ) : null}
             </div>
           </div>
         ))}
