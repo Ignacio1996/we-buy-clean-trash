@@ -4,6 +4,7 @@ import { pointsToDollars } from '@/lib/logic/pointsToDollars';
 import type { UserDoc } from '@/lib/types/user';
 import type { ZoneDoc } from '@/lib/types/zone';
 import { GuideLink } from '@/components/admin/GuideLink';
+import { AdminUsersTable, type ResidentRow } from '@/components/admin/AdminUsersTable';
 
 async function loadResidents(): Promise<{ users: UserDoc[]; zones: Map<string, string> }> {
   const [usersSnap, zonesSnap] = await Promise.all([
@@ -25,6 +26,14 @@ async function loadResidents(): Promise<{ users: UserDoc[]; zones: Map<string, s
 
 export default async function AdminUsersPage() {
   const { users, zones } = await loadResidents();
+  const rows: ResidentRow[] = users.map((u) => ({
+    uid: u.uid,
+    name: u.name,
+    email: u.email,
+    zoneName: u.zoneId ? (zones.get(u.zoneId) ?? u.zoneId) : '—',
+    pointsBalance: u.pointsBalance,
+    pointsValue: pointsToDollars(u.pointsBalance).toFixed(2),
+  }));
   return (
     <div>
       <header className="mb-6 flex items-end justify-between">
@@ -45,44 +54,7 @@ export default async function AdminUsersPage() {
         </div>
       </header>
 
-      <div className="overflow-hidden rounded-xl border border-white/10">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-white/5 text-[11px] uppercase tracking-wide text-gray-500">
-            <tr>
-              <th className="px-4 py-3 font-medium">Name</th>
-              <th className="px-4 py-3 font-medium">Email</th>
-              <th className="px-4 py-3 font-medium">Zone</th>
-              <th className="px-4 py-3 text-right font-medium">Points</th>
-              <th className="px-4 py-3 text-right font-medium">Value</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">
-            {users.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-xs text-gray-500">
-                  No residents yet.
-                </td>
-              </tr>
-            ) : (
-              users.map((u) => (
-                <tr key={u.uid} className="text-gray-300">
-                  <td className="px-4 py-3 text-white">{u.name}</td>
-                  <td className="px-4 py-3 text-gray-400">{u.email}</td>
-                  <td className="px-4 py-3 text-gray-400">
-                    {u.zoneId ? (zones.get(u.zoneId) ?? u.zoneId) : '—'}
-                  </td>
-                  <td className="px-4 py-3 text-right text-white">
-                    {u.pointsBalance.toLocaleString('en-US')}
-                  </td>
-                  <td className="px-4 py-3 text-right text-gray-400">
-                    ${pointsToDollars(u.pointsBalance).toFixed(2)}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <AdminUsersTable residents={rows} />
     </div>
   );
 }
