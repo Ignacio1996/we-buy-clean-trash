@@ -17,7 +17,6 @@ import {
   IconArrow,
   IconBag,
   IconCoin,
-  IconRecycle,
   IconScan,
   IconSparkle,
 } from '@/components/icons/EcoIcons';
@@ -120,7 +119,7 @@ export default async function ResidentHome() {
           fetch via /api/resident/home so the shell above paints immediately. */}
       <DashboardCards pointsBalance={pointsBalance} />
 
-      {/* Mint — how it works */}
+      {/* Mint — how it works (sticker cards, matching the signup flow) */}
       <div style={{ background: SS.mint, padding: '28px 20px' }}>
         <div
           style={{
@@ -133,94 +132,101 @@ export default async function ResidentHome() {
         >
           How it works
         </div>
-        {[
-          {
-            Icon: IconBag,
-            title: 'Order bags',
-            body: 'Pick a sheet of 10 bags. Free delivery over $20.',
-          },
-          {
-            Icon: IconRecycle,
-            title: 'Fill & set out',
-            body: 'Clean recyclables. Leave bags at your designated pickup area.',
-          },
-          {
-            Icon: IconCoin,
-            title: 'Return & redeem',
-            body: 'Points convert to gift cards. Cash out anytime.',
-          },
-        ].map(({ Icon, title, body }, i) => (
-          <div
-            key={title}
-            style={{
-              display: 'flex',
-              gap: 14,
-              padding: '14px 0',
-              alignItems: 'flex-start',
-            }}
-          >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {[
+            {
+              color: SS.green,
+              title: 'Order bags',
+              body: 'Pick a sheet of 10 reusable bags, labeled by material.',
+              chip: 'Free delivery over $20',
+            },
+            {
+              color: SS.sky,
+              title: 'Fill & set out',
+              body: 'Clean recyclables. Leave bags at your designated pickup area.',
+            },
+            {
+              color: SS.yellow,
+              title: 'Return & redeem',
+              body: 'Points convert to gift cards. Cash out anytime.',
+            },
+          ].map(({ color, title, body, chip }, i) => (
             <div
+              key={title}
               style={{
-                width: 44,
-                height: 44,
-                borderRadius: '50%',
-                background: SS.ink,
-                color: '#fff',
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-                position: 'relative',
+                gap: 14,
+                alignItems: 'flex-start',
+                background: '#fff',
+                border: `2px solid ${SS.ink}`,
+                borderRadius: 16,
+                padding: '14px 16px',
+                boxShadow: `0 4px 0 ${SS.ink}`,
               }}
             >
-              <Icon size={22} stroke={2.25} color="#fff" />
               <div
                 style={{
-                  position: 'absolute',
-                  top: -4,
-                  right: -4,
-                  width: 20,
-                  height: 20,
+                  width: 38,
+                  height: 38,
                   borderRadius: '50%',
-                  background: SS.brand,
-                  color: '#fff',
+                  background: color,
+                  border: `2px solid ${SS.ink}`,
+                  color: SS.ink,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: 11,
+                  fontSize: 18,
                   fontWeight: 900,
-                  border: '2px solid #fff',
+                  flexShrink: 0,
                 }}
               >
                 {i + 1}
               </div>
-            </div>
-            <div style={{ flex: 1, paddingTop: 4 }}>
-              <div
-                style={{
-                  fontSize: 19,
-                  fontWeight: 900,
-                  color: SS.ink,
-                  letterSpacing: -0.3,
-                }}
-              >
-                {title}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 900,
+                    color: SS.ink,
+                    letterSpacing: -0.3,
+                  }}
+                >
+                  {title}
+                </div>
+                <div
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: SS.ink,
+                    marginTop: 2,
+                    lineHeight: 1.35,
+                    opacity: 0.75,
+                  }}
+                >
+                  {body}
+                </div>
+                {chip ? (
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      marginTop: 8,
+                      background: SS.mint,
+                      border: `2px solid ${SS.ink}`,
+                      borderRadius: 999,
+                      padding: '3px 10px',
+                      fontSize: 11,
+                      fontWeight: 900,
+                      color: SS.ink,
+                      letterSpacing: 0.3,
+                    }}
+                  >
+                    {chip}
+                  </span>
+                ) : null}
               </div>
-              <div
-                style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: SS.ink,
-                  marginTop: 2,
-                  lineHeight: 1.35,
-                  opacity: 0.7,
-                }}
-              >
-                {body}
-              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </SSScreen>
   );
