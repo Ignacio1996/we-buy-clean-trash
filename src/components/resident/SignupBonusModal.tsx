@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { SS } from './ss/SS';
+import { POINTS_PER_DOLLAR, SIGNUP_BONUS_POINTS } from '@/lib/logic/calculatePoints';
 
 const STORAGE_PREFIX = 'wbct.signupBonusAcked.';
+const BONUS_PTS = SIGNUP_BONUS_POINTS.toLocaleString('en-US');
+const BONUS_DOLLARS = `$${(SIGNUP_BONUS_POINTS / POINTS_PER_DOLLAR).toFixed(2)}`;
 
 export function SignupBonusModal({ uid }: { uid: string }) {
   const [open, setOpen] = useState(false);
@@ -93,11 +96,11 @@ export function SignupBonusModal({ uid }: { uid: string }) {
             color: SS.ink,
           }}
         >
-          You earned <span style={{ color: SS.green }}>100 points</span>.
+          You earned <span style={{ color: SS.green }}>{BONUS_PTS} points</span>.
         </h2>
         <p style={{ marginTop: 12, fontSize: 14, fontWeight: 800, color: SS.ink, opacity: 0.75 }}>
-          That&rsquo;s worth <span style={{ color: SS.ink, fontWeight: 900 }}>$1</span> toward your
-          first reward.
+          That&rsquo;s worth <span style={{ color: SS.ink, fontWeight: 900 }}>{BONUS_DOLLARS}</span>{' '}
+          toward your first reward.
         </p>
         <p
           style={{

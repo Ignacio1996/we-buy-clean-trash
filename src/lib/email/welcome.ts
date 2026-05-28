@@ -1,4 +1,5 @@
 import 'server-only';
+import { POINTS_PER_DOLLAR, SIGNUP_BONUS_POINTS } from '@/lib/logic/calculatePoints';
 
 // Welcome email for new resident signups.
 //
@@ -29,8 +30,7 @@ const PHYSICAL_ADDRESS =
 const SUPPORT_EMAIL =
   process.env.WBCT_SUPPORT_EMAIL || 'support@webuycleantrash.com';
 
-const SIGNUP_BONUS_POINTS = 100;
-const SIGNUP_BONUS_DOLLARS = '1.00'; // 1,000 pts = $10  →  100 pts = $1
+const SIGNUP_BONUS_DOLLARS = (SIGNUP_BONUS_POINTS / POINTS_PER_DOLLAR).toFixed(2);
 
 function fmtPts(n: number): string {
   return n.toLocaleString('en-US');
