@@ -106,7 +106,8 @@ export interface ContaminationAlert {
   zoneName: string | null;
   strikeCount: number;
   lastSeverity: ContaminationSeverity;
-  lastAt: Date;
+  /** Epoch millis of the most recent flagged pickup (serialization-safe across unstable_cache). */
+  lastAt: number;
 }
 
 export interface OperatorLeaderboardRow {
@@ -280,7 +281,7 @@ async function loadContaminationAlertsUncached(limit = 8): Promise<Contamination
       zoneName: resident?.zoneId ? (zones.get(resident.zoneId) ?? null) : null,
       strikeCount: info.count,
       lastSeverity: info.lastSeverity,
-      lastAt: info.lastAt,
+      lastAt: info.lastAt.getTime(),
     };
   });
 }

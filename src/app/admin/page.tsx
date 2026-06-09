@@ -269,7 +269,10 @@ function ContaminationAlertsSection({ alerts }: { alerts: ContaminationAlert[] }
                   </div>
                   <div className="truncate text-[11px] text-gray-500">
                     {a.zoneName ?? 'No zone'} · Last: {SEVERITY_LABEL[a.lastSeverity]} ·{' '}
-                    {a.lastAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    {new Date(a.lastAt).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
                   </div>
                 </div>
                 <span
