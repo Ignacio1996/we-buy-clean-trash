@@ -81,9 +81,19 @@
         <p><span class="actor admin">Admin</span> Signed in as Tia · <code>tia.admin@wbct-pilot.test</code>.</p>
         <ol>
           <li>Open the homepage in your main browser.</li>
-          <li>Click <strong>Sign in</strong>.</li>
+          <li>Click <strong>Sign in</strong> (alongside <strong>Get started</strong> in the landing-page header).</li>
           <li>Enter Tia's email and the password from the <a href="index.html#test-users">Test users card</a>.</li>
         </ol>
+        <div class="callout note">
+          <span class="callout-title">Landing &amp; login navigation <span style="color:#22c55e;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Jun 9</span></span>
+          <p style="margin: 4pt 0;">
+            The landing page now offers a <strong>Sign in</strong> link next to <strong>Get
+            started</strong>. The login screen carries a <strong>back arrow</strong> and the
+            <strong>We Buy Clean Trash.</strong> wordmark, both of which link back to the homepage —
+            so a visitor who clicked Sign in by mistake can get back without using the browser
+            button.
+          </p>
+        </div>
         <div class="expected">
           <strong>Expected:</strong> Tia is redirected straight to the admin dashboard (not the
           resident home). She sees KPI tiles and a left sidebar with Users, Zones, Pricing,
@@ -113,13 +123,15 @@
         </ol>
         <div class="expected">
           <strong>Expected:</strong> The new resident lands on the resident home screen with a
-          <strong>10,000-point</strong> signup bonus and a short 3-step onboarding card.
+          <strong>10-point</strong> signup bonus (= $0.10) and a short 3-step onboarding card.
+          A welcome email also goes out to the address they signed up with.
         </div>
         <div class="verify-checklist">
           <h4>Verify:</h4>
           <p><span class="checkbox"></span> Name appears correctly in the top-right menu</p>
-          <p><span class="checkbox"></span> Points balance shows 10,000</p>
+          <p><span class="checkbox"></span> Points balance shows 10</p>
           <p><span class="checkbox"></span> Address is saved (check the Profile tab)</p>
+          <p><span class="checkbox"></span> A welcome email arrives at the signup address</p>
           </div>
       </div>
     </div>
@@ -136,7 +148,7 @@
         </ol>
         <div class="expected">
           <strong>Expected:</strong> Same as Scenario 2 — lands on the resident home screen with
-          10,000 points. No password prompt.
+          10 points. No password prompt.
         </div>
         <div class="verify-checklist">
           <h4>Verify:</h4>
@@ -189,8 +201,17 @@
         <ol>
           <li>Paste the link into a fresh private/incognito window.</li>
           <li>Click <strong>Accept invitation</strong>.</li>
-          <li>Set a password and submit.</li>
+          <li>Enter a new password, then re-enter it in the <strong>Confirm password</strong> field. The two must match, or submit is blocked.</li>
+          <li>Submit.</li>
         </ol>
+        <div class="callout note">
+          <span class="callout-title">Confirm-password on invite signup <span style="color:#22c55e;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Jun 9</span></span>
+          <p style="margin: 4pt 0;">
+            Invite signup for every non-resident role (operator, depot worker, depot manager,
+            admin) now asks for a password <em>and</em> a confirm-password field. Deliberately type
+            two different values — the form should refuse to submit until they match.
+          </p>
+        </div>
         <div class="expected">
           <strong>Expected:</strong> The new operator lands on the operator home screen
           (<em>Today's Route</em>), <em>not</em> the resident home. Opening the same invite link

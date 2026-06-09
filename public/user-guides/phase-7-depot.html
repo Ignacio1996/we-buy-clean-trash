@@ -108,10 +108,29 @@
           <strong>NEW</strong>. The row shows Aguirre's name, the number of bags he actually picked
           up, and the arrival time (whenever he tapped <em>Deliver to depot</em>).
         </div>
+        <div class="callout note">
+          <span class="callout-title">Shared header &amp; yellow stats hero <span style="color:#22c55e;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Jun 9</span></span>
+          <p style="margin: 4pt 0;">
+            The depot app now opens with the same white <strong>We Buy Clean Trash.</strong>
+            wordmark bar shared with the resident and operator apps — the avatar in it links to the
+            depot account page. The incoming stats hero now uses the unified yellow-header style
+            (matching the operator app) rather than its old standalone look.
+          </p>
+        </div>
+        <div class="callout note">
+          <span class="callout-title">Delivery-only routes are hidden <span style="color:#22c55e;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Jun 9</span></span>
+          <p style="margin: 4pt 0;">
+            Incoming now skips <strong>delivery-only routes</strong> — runs where Aguirre only
+            dropped off empty bag sheets and picked nothing up. With nothing to weigh or process,
+            they no longer clutter the list. A route shows here only when it carries at least one
+            bag to process.
+          </p>
+        </div>
         <div class="verify-checklist">
           <h4>Verify:</h4>
           <p><span class="checkbox"></span> Missed / issue bags are <em>not</em> counted in the bag total</p>
           <p><span class="checkbox"></span> Routes from a zone that isn't this depot's don't appear</p>
+          <p><span class="checkbox"></span> A delivery-only route (drop-offs, zero pickups) does <em>not</em> appear in Incoming</p>
           <p><span class="checkbox"></span> If nothing has arrived yet, the screen shows a friendly empty-state, not an error</p>
           </div>
       </div>
@@ -397,7 +416,7 @@
         </ol>
         <div class="expected">
           <strong>Expected:</strong> A console line like
-          <code>[sms-stub] to=... purpose=bag_processed body=Your bag #0473 was processed. +21,800 points added to your balance.</code>
+          <code>[sms-stub] to=... purpose=bag_processed body=Your bag #0473 was processed. +218 points added to your balance.</code>
           plus a new <em>smsLog</em> document with the same purpose and a
           <em>relatedDocId</em> pointing at the <em>bagProcessing</em> record just created.
         </div>

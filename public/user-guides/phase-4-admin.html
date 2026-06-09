@@ -61,6 +61,12 @@
           <strong>Expected:</strong> Numbers are real (zero is fine — it means nothing has been
           processed yet). No "TODO" text, no sample data, no broken charts.
         </div>
+        <div class="callout note">
+          <span class="callout-title">Pending-orders action item <span style="color:#22c55e;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Jun 9</span></span>
+          The dashboard flags <strong>paid bag orders awaiting route assignment</strong> as an
+          action item, so you can see at a glance when an order has been paid for but not yet
+          placed on a route.
+        </div>
         <div class="verify-checklist">
           <h4>Verify:</h4>
           <p><span class="checkbox"></span> Resident count matches the signups you've done</p>
@@ -109,6 +115,18 @@
           received. Name them <em>Lisa Park</em> (depot worker) and <em>David Nguyen</em> (depot
           manager) for consistency in future guides.
         </div>
+        <div class="callout note">
+          <span class="callout-title">Invite signup needs a confirmed password <span style="color:#22c55e;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Jun 9</span></span>
+          When the invitee accepts, the signup form now has <strong>password</strong> and
+          <strong>confirm password</strong> fields — they must match before the account is created.
+        </div>
+        <div class="callout note">
+          <span class="callout-title">Deleting staff <span style="color:#22c55e;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Jun 9</span></span>
+          You can now delete <strong>operators, depot workers, and depot managers</strong> from the
+          Users screen (previously only residents). Deletion detaches active assignments (nulls a
+          depot's <code>managerId</code> / a route's <code>operatorId</code>) while keeping
+          operational history. You can't delete yourself or another admin.
+        </div>
       </div>
     </div>
 
@@ -131,6 +149,14 @@
           <p><span class="checkbox"></span> Details match what Aguirre sees in her own profile</p>
           <p><span class="checkbox"></span> Transaction history is chronological</p>
           </div>
+        <div class="callout note">
+          <span class="callout-title">Deleting residents <span style="color:#22c55e;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Jun 9</span></span>
+          The Residents tab now supports <strong>per-row delete</strong> and <strong>bulk delete</strong>
+          (tick the row checkboxes), each behind a confirmation modal. Deleting a resident
+          cascade-wipes their data (addresses, bag orders, bags, transactions, redemptions), scrubs
+          them from routes and compliance batches, deletes their Stripe customer, and removes the
+          auth account. There's no undo — use real care during testing.
+        </div>
       </div>
     </div>
 
@@ -155,6 +181,13 @@
           <p><span class="checkbox"></span> Create / edit / delete all persist across reloads</p>
           <p><span class="checkbox"></span> Deleting a zone with residents is blocked</p>
           </div>
+        <div class="callout note">
+          <span class="callout-title">Address autocomplete <span style="color:#22c55e;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Jun 9</span></span>
+          The zone/depot address fields (and the commercial-account form) now use
+          <strong>Google Places Autocomplete</strong> — a dark-theme variant of the same
+          place-picking UX residents get at signup. Start typing an address and pick from the
+          suggestions.
+        </div>
       </div>
     </div>
 
@@ -204,9 +237,9 @@
           <li>Enter 1 lb of aluminum.</li>
         </ol>
         <div class="expected">
-          <strong>Expected:</strong> With a 30% payout, 1 lb should yield 3,000 points (= $0.30).
+          <strong>Expected:</strong> With a 30% payout, 1 lb should yield 30 points (= $0.30).
           Double-check by flipping on <em>Separated</em> — points should roughly double to
-          6,000.
+          60.
         </div>
         <div class="verify-checklist">
           <h4>Verify:</h4>
@@ -315,6 +348,62 @@
           <p><span class="checkbox"></span> Status flips on both sides (admin queue and Aguirre's history)</p>
           <p><span class="checkbox"></span> Points are not refunded when fulfilling (they were already deducted)</p>
           </div>
+        <div class="callout note">
+          <span class="callout-title">Pilot budget gate <span style="color:#22c55e;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Jun 9</span></span>
+          The Redemptions page shows a <strong>budget tile</strong> (e.g. <em>N/100 claimed,
+          $X/$1000 committed</em>). During the pilot each resident is capped at
+          <strong>one redemption</strong> (1,000 points = $10) — the API rejects any over-cap request.
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 7 — Admin Assistant (AI help chat) <span style="color:#22c55e;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Jun 9</span></div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
+        <p>
+          A new <strong>Assistant</strong> item (💬) in the admin nav opens
+          <strong>/admin/assistant</strong> — an AI chat that answers questions about how the app
+          works for every role, grounded <em>only</em> in these user guides. It's admin-only.
+        </p>
+        <ol>
+          <li>In the sidebar, click <strong>Assistant</strong>.</li>
+          <li>Click a suggestion button (e.g. <em>"How does a resident earn points?"</em>) or type your own question.</li>
+          <li>Watch the answer stream in.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Answers are drawn from the user guides. If no
+          <code>GEMINI_API_KEY</code> is set, the chat runs in <strong>demo mode</strong> (an amber
+          "Demo mode" notice appears); set <code>GEMINI_API_KEY</code> for live answers.
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Suggestion buttons populate and send a question</p>
+          <p><span class="checkbox"></span> Answers stream in rather than appearing all at once</p>
+          <p><span class="checkbox"></span> A non-admin can't reach /admin/assistant</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 8 — Orders this week <span style="color:#22c55e;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Jun 9</span></div>
+      <div class="scenario-body">
+        <p><span class="actor admin">Admin</span> Signed in as Tia Johnson.</p>
+        <ol>
+          <li>Open the <strong>Orders this week</strong> screen.</li>
+          <li>Look at the orders grouped under each route.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Within each route group, orders are sorted
+          <strong>newest-first</strong> and show a <strong>Date</strong> column (e.g.
+          <em>"Mon, May 27"</em>). Queued / unrouted orders appear in their own separate section.
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Newest order in each group is at the top</p>
+          <p><span class="checkbox"></span> Date column reads correctly per order</p>
+          <p><span class="checkbox"></span> Queued/unrouted orders are listed separately</p>
+        </div>
       </div>
     </div>
 
@@ -350,6 +439,10 @@
           Build the daily pickup route and assign it to an operator (covered in the
           <em>Routes</em> guide — Phase 5).
         </td>
+      </tr>
+      <tr>
+        <td>Assistant 💬 <span style="color:#22c55e;font-weight:700;font-size:0.7em;">NEW · Jun 9</span></td>
+        <td>AI help chat grounded in the user guides; answers how-the-app-works questions for every role. Admin-only.</td>
       </tr>
     </table>
 

@@ -429,10 +429,10 @@ npm run dev                 # boots http://localhost:3000</pre>
         <li>Open <code>/resident/order-bags</code>.</li>
         <li>Use the stepper to set quantity to <strong>1</strong>.</li>
         <li>
-          Confirm the total shows <strong>+$10 shipping</strong> because the subtotal is under the
-          $20 free-shipping threshold.
+          Confirm the total shows <strong>+$10 delivery</strong> because the subtotal is under the
+          $20 free-delivery threshold.
         </li>
-        <li>Bump quantity to <strong>3</strong> — shipping should switch to free.</li>
+        <li>Bump quantity to <strong>3</strong> — delivery should switch to free.</li>
         <li>Click <strong>Pay (stub)</strong>.</li>
       </ol>
       <p>
@@ -497,7 +497,7 @@ npm run dev                 # boots http://localhost:3000</pre>
       <h4>3.7 — Rewards + redemption</h4>
       <ol>
         <li>
-          Rewards gate at <strong>1,000 pts = $10</strong>. A fresh signup has only 100 so
+          Rewards gate at <strong>1,000 pts = $10</strong>. A fresh signup has only 10 so
           redemption will be blocked. To actually test it, manually add points via the Firebase
           console: set <code>users/{uid}.pointsBalance</code> to <code>1000</code> and add a
           matching <code>transactions</code> entry if you care about ledger cleanliness.

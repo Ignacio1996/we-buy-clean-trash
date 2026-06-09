@@ -4,13 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project state
 
-**Pre-code.** The repo currently contains only `planning/` — no app code, no `package.json`, no config. `planning/Build Plan.txt` is the authoritative source for stack, phases, data model, and locked-in decisions. Read it before scaffolding anything. The two HTML files in `planning/` are design mockups (how the app should look and flow).
+**Built.** The app is implemented (Phases 0–12) — a single Next.js app at the repo root with `package.json`, `src/`, Firebase config, and a Vercel deploy target. `planning/Build Plan.md` remains the authoritative source for the original stack, phases, data model, and locked-in decisions. `planning/user-guides/` holds the per-role user guides (also served in-app at `/user-guides`); the HTML files in `planning/` are design mockups (how the app should look and flow).
 
-Two sibling planning files:
+Key planning files:
 
-- `planning/Build Plan.txt` — ordered build phases 0–12, data model, points math, stubbed integrations table
-- `planning/App Design - We Buy Clean Trash - April 16th.html` — UI mockups per role
-- `planning/How It Works (April 16 2026).html` — product explainer
+- `planning/Build Plan.md` — ordered build phases 0–12, data model, points math, stubbed integrations table
+- `planning/app-designs.html` — UI mockups per role (the "App design doc")
+- `planning/how-the-app-works.html` — product explainer
 
 ## Architecture (planned)
 
@@ -38,6 +38,7 @@ src/middleware.ts      # role-based route gating
 - **Firebase project**: `we-buy-clean-trash` (already exists; Blaze plan required for external API calls from backend)
 - **Vercel**: default `*.vercel.app` for pilot
 - **AI scan**: Google Gemini 2.5 Flash, server-side via `/api/scan`. Pre-signup scan is session-only (localStorage), no anonymous Firestore writes.
+- **Admin Assistant**: in-app AI chat (admin-only) at `/admin/assistant`, served by `/api/admin/guide-chat` (verifies the `admin` claim, streams text). Google Gemini 2.5 Flash, grounded ONLY in the user guides — `scripts/build-guide-kb.ts` (`npm run build:guide-kb`) strips `planning/user-guides/*.html` into the committed `src/lib/ai/guide-kb.generated.ts` KB that's fed to Gemini as system context. Falls back to a demo-mode mock when `GEMINI_API_KEY` is unset.
 - **Routing**: Google Maps Routes API `computeRoutes` with `optimizeWaypointOrder: true`, called from `/api/route-optimize`
 - **QR**: app generates printable QR sheet PDFs for Rollo thermal printer; each sticker has a QR + printed-number fallback. Creating the sheet must atomically create `stickerSheets` + 10 `bags` records.
 - **Scale**: manual weight entry (no Bluetooth/USB)
@@ -81,8 +82,10 @@ pointsAwarded =
     × 100                        // $ → points (1,000 pts = $10)
 ```
 
-- Signup bonus: +100 pts (written as a `transactions` ledger entry, type `signup_bonus`)
-- `materials` collection holds `marketPrice` + `customerPct` per commodity (7 total: aluminum, tin/steel, cardboard, paper, PET, HDPE, mixed plastic); admin edits these and snapshots to `priceHistory`
+- At 100 pts = $1, **1,000 pts = $10** (the gift-card redemption threshold). `POINTS_PER_DOLLAR = 100` is the single constant — never hardcode the rate.
+- Signup bonus: +10 pts (= $0.10; written as a `transactions` ledger entry, type `signup_bonus`). `SIGNUP_BONUS_POINTS` in `calculatePoints` is the single source — the signup route, welcome email, and signup-bonus modal all import it.
+- `materials` collection holds `marketPrice` + `customerPct` per commodity (7 cash commodities: aluminum, tin/steel, cardboard, paper, PET, HDPE, mixed plastic); admin edits these and snapshots to `priceHistory`. Materials with `payoutMode: 'diversion_only'` (e.g. commingled, food scrap/compost) log weight for diversion reporting but award 0 points regardless of price.
+- Admin can run per-material **campaign multipliers** (e.g. ×2 aluminum); each multiplier is applied to that material's dollar contribution *before* the separated/contamination math.
 - Contamination severity set by depot worker at processing time
 
 ## Data model conventions
@@ -109,6 +112,7 @@ Follow the ordered phases in `planning/Build Plan.txt` (Phase 0 → 12). Don't s
 - `npm run seed:materials` — seed the 7 commodity docs
 - `npm run seed:pilot` — idempotent pilot seed (zone, depot, admin, operator, depot worker, 5 residents)
 - `npm run dev:issue-bags -- <email>` — hand-issue a 10-bag sheet to a resident (dev only)
+- `npm run build:guide-kb` — regenerate the admin Assistant knowledge base (`src/lib/ai/guide-kb.generated.ts`) from `planning/user-guides/*.html`; re-run after editing the guides
 
 Vercel auto-deploys on push to main once the project is linked. Env vars live in `.env.local` (see `.env.local.example`) and must also be set in the Vercel dashboard for deploys.
 
@@ -118,4 +122,4 @@ Whenever a new feature is added (for residents, operators, depot workers, depot 
 
 ## App design doc
 
-Whenever a new screen or design change is introduced (new page, new mockup, significant UI rework of an existing screen), ask the user if they want it reflected in `planning/App Design - We Buy Clean Trash - April 16th.html` — either as a new screen card in the appropriate role panel or as a changelog entry at the bottom. Don't modify the design doc unless the user confirms.
+Whenever a new screen or design change is introduced (new page, new mockup, significant UI rework of an existing screen), ask the user if they want it reflected in `planning/app-designs.html` — either as a new screen card in the appropriate role panel or as a changelog entry at the bottom. Don't modify the design doc unless the user confirms.

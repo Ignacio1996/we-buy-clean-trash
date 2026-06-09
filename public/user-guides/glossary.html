@@ -98,6 +98,13 @@
         off new stickers) — one route can have both.
       </dd>
 
+      <dt>Pickup day(s)</dt>
+      <dd>
+        The day or days of the week a zone is serviced. A zone can have <strong>multiple pickup
+        days per week</strong>, not just one. At signup the app matches a resident by ZIP and shows
+        them their assigned pickup day(s).
+      </dd>
+
       <dt>Yellow Sheet</dt>
       <dd>
         The table of per-material market prices (dollars per pound) that admins maintain in
@@ -122,9 +129,9 @@
 
       <dt>Signup bonus</dt>
       <dd>
-        A one-time <strong>10,000-point</strong> credit every new resident gets on signup.
-        Appears as a <code>signup_bonus</code> transaction in the ledger. 100,000 pts = $10, so
-        the bonus is worth roughly $1.
+        A one-time <strong>10-point</strong> credit every new resident gets on signup.
+        Appears as a <code>signup_bonus</code> transaction in the ledger. 1,000 pts = $10, so
+        the bonus is worth $0.10.
       </dd>
     </dl>
 
@@ -166,6 +173,20 @@
         Every bag is weighed across these seven categories, each with its own market price:
         aluminum, tin/steel, cardboard, paper, PET (clear bottles), HDPE (milk-jug-style), and
         mixed plastic (everything else).
+      </dd>
+
+      <dt>Diversion-only material</dt>
+      <dd>
+        A material that logs weight for diversion reporting but pays <strong>0 points</strong> —
+        e.g. commingled mixed loads or food scrap / compost. The weight still counts toward how
+        much was kept out of the landfill; it just doesn't earn the resident any points.
+      </dd>
+
+      <dt>Campaign multiplier</dt>
+      <dd>
+        A per-material bonus an admin can run for a limited time (e.g. <strong>×2 on
+        aluminum</strong>). It boosts that material's contribution <em>before</em> the separated
+        and contamination math is applied.
       </dd>
 
       <dt>Mill shipment</dt>

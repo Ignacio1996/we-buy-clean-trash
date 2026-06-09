@@ -53,6 +53,7 @@
           <li>Click <strong>New route</strong>.</li>
           <li>Pick tomorrow's date.</li>
           <li>Pick the zone Aguirre and Goode live in.</li>
+          <li>Pick a <strong>delivery time window</strong> for the run (e.g. 9am–noon).</li>
           <li>Click <strong>Pull pending stops</strong>.</li>
         </ol>
         <div class="expected">
@@ -60,10 +61,20 @@
           pickup (her scanned bag). Goode has a delivery (his bag order). Each stop shows the
           address and what's happening there.
         </div>
+        <div class="callout note">
+          <span class="callout-title">Delivery time window + resident notifications <span style="color:#22c55e;font-weight:700;font-size:0.7em;margin-left:6pt;">NEW · Jun 9</span></span>
+          <p style="margin: 4pt 0;">
+            Building a route now requires picking a <strong>delivery time window</strong>. On save,
+            every resident on the route is notified of that window by <strong>SMS and email</strong>
+            (SMS is the console stub for the pilot; email goes out for real), and the window shows
+            up on each resident's dashboard as their scheduled delivery slot.
+          </p>
+        </div>
         <div class="verify-checklist">
           <h4>Verify:</h4>
           <p><span class="checkbox"></span> Both residents appear in the stop list</p>
           <p><span class="checkbox"></span> Pickups and deliveries are visually distinguished</p>
+          <p><span class="checkbox"></span> A delivery time window must be chosen before the route can be built</p>
           </div>
       </div>
     </div>
@@ -101,12 +112,15 @@
           <strong>Expected:</strong> The route appears in the routes list with status
           <em>scheduled</em>, tomorrow's date, and Aguirre's name. If you sign in as Aguirre (on a
           different device or private window) he should see the route on his operator home
-          screen.
+          screen. On save, each resident on the route is also notified of the delivery window by
+          SMS + email, and that window now appears on their dashboard.
         </div>
         <div class="verify-checklist">
           <h4>Verify:</h4>
           <p><span class="checkbox"></span> Route saves and appears in list</p>
           <p><span class="checkbox"></span> Aguirre can see the route after the save</p>
+          <p><span class="checkbox"></span> Each resident's dashboard shows the scheduled delivery window after save</p>
+          <p><span class="checkbox"></span> An email (and SMS stub log) goes out per resident with the window</p>
           </div>
       </div>
     </div>

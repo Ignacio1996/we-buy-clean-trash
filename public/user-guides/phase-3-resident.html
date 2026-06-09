@@ -21,8 +21,8 @@
       Some features look real but don't fully fire during the pilot. That's by design — please
       don't file these as bugs:
       <ul>
-        <li><strong>Ordering bags</strong> — checkout ends on a mock "paid" screen. No real card is charged.</li>
-        <li><strong>Redeeming a gift card</strong> — the request lands in an admin queue; the actual gift card is emailed manually by an admin, not auto-fulfilled.</li>
+        <li><strong>Ordering bags</strong> — checkout runs through Stripe's hosted test checkout. Use Stripe test cards only; no live card is charged during the pilot.</li>
+        <li><strong>Redeeming a gift card</strong> — the request lands in an admin queue; the actual gift card is emailed manually by an admin, not auto-fulfilled. Pilot-gated: each resident can redeem once, and Redeem buttons lock once the pilot cap is reached.</li>
         <li><strong>"Pay trash bill" and "Donate"</strong> buttons are disabled on purpose.</li>
         <li><strong>SMS notifications</strong> are logged to the server console, not sent by text during the pilot.</li>
       </ul>
@@ -76,6 +76,32 @@
     </div>
 
     <div class="scenario">
+      <div class="scenario-head">Scenario 1b — Signing up <span style="color:#22c55e;">(NEW · Jun 9)</span></div>
+      <div class="scenario-body">
+        <p><span class="actor tester">Visitor</span> No account yet.</p>
+        <ol>
+          <li>From the landing page, tap <strong>Sign up to claim</strong> (or <strong>Sign up</strong>).</li>
+          <li>On the <strong>Four simple things</strong> step, read the neo-brutalist sticker cards (white cards with ink borders, numbered badges, and mint/peach chips highlighting the free-delivery perk).</li>
+          <li>On the address step, start typing your street address. <strong>Google Places Autocomplete</strong> suggests addresses and auto-fills street, city, state, and ZIP when you pick one. Unit/apt is still typed in by hand.</li>
+          <li>Confirm that once a ZIP is filled in, the page shows the matched <strong>pickup day(s)</strong> for that zone (a zone can have more than one pickup day per week).</li>
+          <li>Finish signup and land on the resident home.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> Address autocomplete fills the fields cleanly, the matched
+          pickup day(s) appear after the ZIP is entered, and the new account receives a
+          <strong>welcome email</strong> shortly after creation.
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> Address autocomplete suggests and auto-fills street/city/state/zip (unit/apt stays manual)</p>
+          <p><span class="checkbox"></span> Matched pickup day(s) show after the ZIP is entered — more than one day if the zone has multiple</p>
+          <p><span class="checkbox"></span> "Four simple things" renders as sticker cards with numbered badges and the free-delivery chip</p>
+          <p><span class="checkbox"></span> A welcome email arrives at the signup address</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario">
       <div class="scenario-head">Scenario 2 — The dashboard</div>
       <div class="scenario-body">
         <p><span class="actor resident">Resident</span> Signed in as Aguirre.</p>
@@ -85,30 +111,31 @@
         </ol>
         <p>You should see:</p>
         <ul>
-          <li>A <strong>points balance</strong> tile (10,000 right after signup) and a value tile.</li>
+          <li>A <strong>points balance</strong> tile (10 right after signup) and a value tile.</li>
           <li><strong>NEW (Apr 27):</strong> A redemption-progress card just below the tiles — <em>"X pts to a $10 gift card"</em> with a thin progress bar. Tap it to jump to /resident/rewards.</li>
           <li>A <strong>next pickup</strong> card with either a date or "Pickup day not assigned yet."</li>
+          <li><strong>NEW (Jun 9):</strong> A <strong>Next delivery</strong> card showing the delivery time window once a resident is on an admin-built delivery route (admin picks the window when building the route; residents also get SMS + email with it).</li>
           <li><strong>NEW (Apr 27):</strong> If a pricing campaign is live (admin set one in Phase 4 · Scenario 5c), a <strong>🔥 BONUS RUNNING NOW</strong> card lists the active multipliers.</li>
-          <li>An <strong>Order more bags</strong> CTA — or <strong>Order your first batch</strong> until at least one bag order has been placed (Apr 27 copy change).</li>
+          <li>An <strong>Order more bags</strong> CTA — or <strong>Order your first box</strong> until at least one bag order has been placed (Apr 27 copy change).</li>
           <li>A notification or impact card further down.</li>
           <li>A bottom nav bar: <em>Home · Scan · Calculator · Guide · Rewards</em>.</li>
         </ul>
         <!-- SCREENSHOT: drop in once captured, see screenshots/README.md
         <figure class="screenshot phone">
-          <img src="screenshots/resident-dashboard-after-signup.png" alt="Resident home after signup: 10,000 points, next pickup card, bottom nav" />
-          <figcaption><strong>Expected:</strong> Resident home immediately after signup — 10,000 pt balance and bottom nav visible.</figcaption>
+          <img src="screenshots/resident-dashboard-after-signup.png" alt="Resident home after signup: 10 points, next pickup card, bottom nav" />
+          <figcaption><strong>Expected:</strong> Resident home immediately after signup — 10 pt balance and bottom nav visible. The "How it works" section now uses neo-brutalist sticker cards (white cards, ink borders, numbered badges).</figcaption>
         </figure>
         -->
 
         <div class="expected">
           <strong>Expected:</strong> Everything loads in one pass, no long spinners. Numbers match
-          what you'd expect for a brand-new account (10,000 pts, no pickups yet).
+          what you'd expect for a brand-new account (10 pts, no pickups yet).
         </div>
         <div class="callout note">
           <span class="callout-title">🎉 Signup-bonus modal <span style="color:#22c55e;">(NEW · Apr 27)</span></span>
           <p style="margin: 4pt 0;">
             On the very first dashboard visit after signup, a modal pops over the screen explaining
-            <em>"You earned 10,000 points — that's your signup bonus, worth $1 toward your first
+            <em>"You earned 10 points — that's your signup bonus, worth $0.10 toward your first
             reward."</em> Tap <strong>Let's go</strong> or click outside to dismiss. The modal is
             keyed by uid in <code>localStorage</code> (<code>wbct.signupBonusAcked.&lt;uid&gt;</code>) —
             it never reappears for the same browser. Clear that key in DevTools to re-test.
@@ -119,9 +146,10 @@
           <p><span class="checkbox"></span> Points balance correct</p>
           <p><span class="checkbox"></span> Bottom nav switches screens cleanly</p>
           <p><span class="checkbox"></span> <strong>NEW:</strong> Signup-bonus modal shows once and never again on the same browser/account</p>
-          <p><span class="checkbox"></span> <strong>NEW:</strong> Redemption progress bar reads correctly — at 10,000 pts it shows "90,000 pts to a $10 gift card" and a 10% bar</p>
-          <p><span class="checkbox"></span> <strong>NEW:</strong> Order CTA reads "Order your first batch" until you've placed an order, then flips to "Order more bags"</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> Redemption progress bar reads correctly — at 10 pts it shows "990 pts to a $10 gift card" and a 1% bar</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> Order CTA reads "Order your first box" until you've placed an order, then flips to "Order more bags"</p>
           <p><span class="checkbox"></span> <strong>NEW:</strong> If admin started a campaign (Phase 4 · Scenario 5c), the 🔥 banner is visible above the order CTA</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> Once on a delivery route, the "Next delivery" card shows the time window, and SMS + email with that window are sent (SMS is logged to the console during the pilot)</p>
           </div>
       </div>
     </div>
@@ -133,10 +161,18 @@
         <ol>
           <li>Tap <strong>Order more bags</strong> on the home screen.</li>
           <li>Use the <strong>+</strong> / <strong>–</strong> stepper to choose a quantity. Try 1 first.</li>
-          <li>Read the order summary. With 1 sheet, you should see a <em>$10 shipping</em> line because the order is under $20.</li>
-          <li>Bump the quantity to 3. Shipping should drop to <em>Free</em> once the subtotal clears $20.</li>
-          <li>Tap <strong>Pay now</strong> (it's a placeholder button; no real payment happens).</li>
+          <li>Read the order summary. With 1 box, you should see a <em>$10 delivery</em> line because the order is under $20.</li>
+          <li>Bump the quantity to 3. Delivery should drop to <em>Free</em> once the subtotal clears $20.</li>
+          <li>Tap <strong>Pay now</strong> — checkout runs through Stripe's hosted page.</li>
         </ol>
+        <div class="callout note">
+          <span class="callout-title">Stripe checkout <span style="color:#22c55e;">(NEW · Jun 9)</span></span>
+          <p style="margin: 4pt 0;">
+            <strong>Pay now</strong> hands off to Stripe's hosted checkout. Orders whose welcome
+            credit fully covers the cart ($0 due) skip Stripe entirely and go straight to the
+            success page.
+          </p>
+        </div>
         <!-- SCREENSHOT: drop in once captured, see screenshots/README.md
         <figure class="screenshot phone">
           <img src="screenshots/resident-order-confirmation.png" alt="Order confirmation screen with order number and delivery note" />
@@ -145,21 +181,24 @@
         -->
 
         <div class="expected">
-          <strong>Expected:</strong> The checkout succeeds instantly. You land on an order
-          confirmation screen with an order number and a "delivered on next pickup" line. The
+          <strong>Expected:</strong> After paying on Stripe (or instantly, for a $0 welcome-credit
+          order), you land on an order confirmation / success screen with an order number and a
+          "delivered on next pickup" line. The
           order appears in Aguirre's account history.
         </div>
         <div class="verify-checklist">
           <h4>Verify:</h4>
-          <p><span class="checkbox"></span> Shipping rule toggles at the $20 threshold</p>
-          <p><span class="checkbox"></span> "Pay now" doesn't ask for a real card — it just simulates success</p>
+          <p><span class="checkbox"></span> Delivery rule toggles at the $20 threshold</p>
+          <p><span class="checkbox"></span> "Pay now" opens Stripe's hosted checkout</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> A cart fully covered by welcome credit ($0 due) skips Stripe and lands on the success page</p>
           <p><span class="checkbox"></span> Order appears in Aguirre's order history after checkout</p>
   
           </div>
         <div class="callout warn">
-          <span class="callout-title">No real charges during the pilot.</span>
-          The payment button is intentionally a stub. Don't enter a real card number anywhere in
-          this flow. If a form asks for one, stop and report it.
+          <span class="callout-title">Use Stripe test cards only during the pilot.</span>
+          Checkout is Stripe's real hosted page running in test mode. Don't enter a live card
+          number — use a Stripe test card (e.g. 4242 4242 4242 4242). If you're ever unsure
+          whether you're on test mode, stop and report it.
         </div>
       </div>
     </div>
@@ -241,7 +280,7 @@
         </ol>
         <div class="expected">
           <strong>Expected:</strong> The estimated points update live. Flipping the "separated"
-          toggle roughly <em>doubles</em> the estimate. Dollar equivalents ($10 per 100,000 pts)
+          toggle roughly <em>doubles</em> the estimate. Dollar equivalents ($10 per 1,000 pts)
           match the point totals. With a ×2 campaign on aluminum, the same 1 lb of aluminum should
           award double the points it did before.
         </div>
@@ -286,7 +325,7 @@
           <li>Confirm the current balance matches the home screen.</li>
           <li>Look at the 4 redemption tiles: <em>Amazon gift card</em>, <em>Walmart gift card</em>, <em>Pay trash bill</em>, <em>Donate to nonprofit</em>.</li>
           <li>Tap <strong>Amazon gift card</strong>.</li>
-          <li>Pick a dollar value (e.g. $5 = 50,000 pts).</li>
+          <li>Pick a dollar value (e.g. $5 = 500 pts).</li>
           <li>Submit the request.</li>
         </ol>
         <div class="expected">
@@ -297,11 +336,20 @@
           <strong>Pay trash bill</strong> and <strong>Donate</strong> tiles should be visible but
           disabled (greyed out) with a "Coming soon" label. That's intentional for the pilot.
         </div>
+        <div class="callout note">
+          <span class="callout-title">Redemption is pilot-gated <span style="color:#22c55e;">(NEW · Jun 9)</span></span>
+          <p style="margin: 4pt 0;">
+            Each resident can redeem <strong>once</strong> during the pilot, and the Redeem buttons
+            lock with a friendly notice once the overall pilot cap is reached. A locked button is
+            expected behavior, not a bug.
+          </p>
+        </div>
         <div class="verify-checklist">
           <h4>Verify:</h4>
           <p><span class="checkbox"></span> Balance decreases immediately</p>
           <p><span class="checkbox"></span> History shows the pending redemption</p>
           <p><span class="checkbox"></span> Pay trash bill / Donate are disabled, not crash buttons</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> After redeeming once (or when the pilot cap is hit), Redeem buttons lock with a friendly notice</p>
           </div>
       </div>
     </div>
@@ -313,17 +361,22 @@
         <ol>
           <li>Open the account menu (top-right) → <strong>Profile</strong>.</li>
           <li>Confirm name, email, phone, and address are correct.</li>
+          <li>Use the <strong>back-to-home header</strong> at the top of the page to return to the dashboard (Jun 9 addition).</li>
           <li>Try editing the phone number and saving.</li>
+          <li>Find the <strong>Refer a friend</strong> section and try the personal referral link — copy it, share via SMS / email / X / Facebook, scan the QR code, and use the native share sheet (Jun 9 addition).</li>
           <li>Try signing out from this screen.</li>
         </ol>
         <div class="expected">
           <strong>Expected:</strong> Editable fields save cleanly. The <em>pickup day</em> field
-          is read-only (only admin can change it). Sign-out returns to the public homepage.
+          is read-only (only admin can change it). The back-to-home header returns to the
+          dashboard. Sign-out returns to the public homepage.
         </div>
         <div class="verify-checklist">
           <h4>Verify:</h4>
           <p><span class="checkbox"></span> Phone saves and persists after reload</p>
           <p><span class="checkbox"></span> Pickup day is display-only</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> Back-to-home header returns to the dashboard</p>
+          <p><span class="checkbox"></span> <strong>NEW:</strong> Refer-a-friend link copies, shares (SMS/email/X/Facebook/native share), and shows a QR code</p>
           </div>
       </div>
     </div>

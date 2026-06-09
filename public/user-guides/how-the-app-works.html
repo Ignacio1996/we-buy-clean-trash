@@ -485,7 +485,7 @@
     <div class="step-right">
       <div class="step-icon">✍️</div>
       <h3>Sign Up &amp; Order Bags</h3>
-      <p>Customer creates an account and orders recycling bags. Bags come with a sheet of QR code stickers — each sticker has a unique QR code plus a printed number as backup. Customer sticks one label on each bag before filling it.</p>
+      <p>Customer creates an account and orders recycling bags. A welcome email goes out on signup. Bags come with a sheet of QR code stickers — each sticker has a unique QR code plus a printed number as backup. Customer sticks one label on each bag before filling it.</p>
       <span class="money-tag">💰 Revenue: bag sales (primary)</span>
       <span class="change-tag tag-built">✅ BUILT</span>
       <span class="change-tag tag-stub">⚠️ Stripe stubbed — mock checkout for pilot</span>
@@ -516,7 +516,7 @@
     <div class="step-left">
       <div class="step-icon">🔔</div>
       <h3>Text Notifications</h3>
-      <p>Resident gets a text 30 minutes before pickup: "Put your bags out!" Then a real-time alert when the driver is on the way: "Your trashman is heading to you now." Extra time to grab one more bag if needed.</p>
+      <p>When a route is built, the resident gets an SMS + email with their delivery window. Then a text 30 minutes before pickup: "Put your bags out!" And a real-time alert when the driver is on the way: "Your trashman is heading to you now." Extra time to grab one more bag if needed.</p>
       <span class="change-tag tag-built">✅ BUILT · Trigger logic + message log live</span>
       <span class="change-tag tag-stub">⚠️ Twilio stubbed — messages log to DB for pilot</span>
     </div>
@@ -558,7 +558,7 @@
     <div class="step-left">
       <div class="step-icon">🎁</div>
       <h3>Redeem Gift Cards</h3>
-      <p>100,000 points = $10 gift card. Redeem for Amazon, Walmart, or local store gift cards. Can also apply credit toward their trash bill or donate to a nonprofit. Points are linked to real rewards from day one — no abstract numbers.</p>
+      <p>1,000 points = $10 gift card. Redeem for Amazon, Walmart, or local store gift cards. Can also apply credit toward their trash bill or donate to a nonprofit. Points are linked to real rewards from day one — no abstract numbers.</p>
       <span class="change-tag tag-built">✅ BUILT · Redemption requests + admin fulfillment queue</span>
       <span class="change-tag tag-stub">⚠️ Cards sent manually by admin during pilot; Pay Trash Bill + Donate are disabled</span>
     </div>
@@ -636,7 +636,7 @@
   <div class="user-card">
     <div class="icon">🏠</div>
     <h4>Resident</h4>
-    <p>Scans items to see value, orders bags, sticks QR labels on them, fills &amp; separates, earns points, redeems gift cards</p>
+    <p>Scans items to see value, orders bags, sticks QR labels on them, fills &amp; separates, earns points, redeems gift cards, shares a personal refer-a-friend link</p>
   </div>
   <div class="user-card">
     <div class="icon">🚐</div>
@@ -656,7 +656,7 @@
   <div class="user-card">
     <div class="icon">📊</div>
     <h4>Admin</h4>
-    <p>Command center — all zones, all users, revenue, contamination alerts, commodity pricing, compliance notices</p>
+    <p>Command center — all zones, all users, revenue, contamination alerts, commodity pricing, compliance notices, plus an admin-only in-app AI Assistant that answers questions about the app, grounded in these user guides</p>
   </div>
 </div>
 
@@ -694,11 +694,11 @@
 <div class="points-box">
   <h3>Points &amp; Rewards System</h3>
   <div class="points-eq">
-    <span class="big">100,000 pts</span>
+    <span class="big">1,000 pts</span>
     <span class="eq">=</span>
     <span class="big">$10 gift card</span>
   </div>
-  <p style="color:#a0a0a0; font-size:0.85rem; margin-bottom:16px;">Signup bonus: 10,000 pts &nbsp;·&nbsp; ~500 pts per bag &nbsp;·&nbsp; Separated = 2x points &nbsp;·&nbsp; Commingled = base points &nbsp;·&nbsp; Contaminated = up to 90% reduction</p>
+  <p style="color:#a0a0a0; font-size:0.85rem; margin-bottom:16px;">Signup bonus: 10 pts &nbsp;·&nbsp; ~5 pts per bag &nbsp;·&nbsp; Separated = 2x points &nbsp;·&nbsp; Commingled = base points &nbsp;·&nbsp; Contaminated = up to 90% reduction</p>
   <p style="color:#888; font-size:0.8rem; margin-bottom:16px;">Points linked to real rewards from day one — no abstract numbers. Bonus points and multiplier weeks to build the habit early.</p>
   <div class="redeem-options">
     <span class="redeem-pill pill-1">🛒 Amazon Gift Card</span>
