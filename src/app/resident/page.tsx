@@ -55,8 +55,15 @@ export default async function ResidentHome() {
 
       <SSHeader initial={initial} />
 
-      {/* Yellow points hero — server-rendered from the single users/{uid} read */}
-      <div style={{ background: SS.yellow, padding: '24px 20px' }}>
+      {/* Yellow points hero — server-rendered from the single users/{uid} read.
+          Matches the operator yellow header: 20/20/22 padding + ink bottom rule. */}
+      <div
+        style={{
+          background: SS.yellow,
+          padding: '20px 20px 22px',
+          borderBottom: `2px solid ${SS.ink}`,
+        }}
+      >
         <SSEyebrow
           icon={<IconSparkle size={13} stroke={2.5} />}
           style={{ color: SS.ink, opacity: 0.7, marginBottom: 6 }}
