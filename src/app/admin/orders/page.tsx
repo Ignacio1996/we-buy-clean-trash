@@ -71,7 +71,7 @@ async function loadData() {
       .collection('routes')
       .where('date', '>=', startTs)
       .where('date', '<', endTs)
-      .orderBy('date', 'asc')
+      .orderBy('date', 'desc')
       .get(),
     // Orders that are paid but not yet on a route — could be a backlog or just
     // ahead of next route build. Surfaced separately so the admin notices.
