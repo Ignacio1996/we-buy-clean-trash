@@ -15,6 +15,8 @@ interface OrderRow {
   zoneName: string;
   operatorName: string;
   routeDate: string | null;
+  orderDate: string;
+  createdAtMs: number;
 }
 
 interface RouteGroup {
@@ -141,7 +143,12 @@ async function loadData() {
     zoneName: order.zoneId ? (zoneNameById.get(order.zoneId) ?? order.zoneId) : '—',
     operatorName: routeMeta?.operatorName ?? '—',
     routeDate: routeMeta?.date ?? null,
+    orderDate: formatDate(order.createdAt) ?? '—',
+    createdAtMs: order.createdAt?.toMillis?.() ?? 0,
   });
+
+  // Most recent order first.
+  const byNewest = (a: OrderRow, b: OrderRow) => b.createdAtMs - a.createdAtMs;
 
   const routeGroups: RouteGroup[] = routes.map((r) => {
     const operatorName = r.operatorId ? (opNameById.get(r.operatorId) ?? r.operatorId) : '—';
@@ -149,7 +156,8 @@ async function loadData() {
     const orders = r.bagOrdersToDeliver
       .map((id) => orderById.get(id))
       .filter((o): o is BagOrderDoc => Boolean(o))
-      .map((o) => toRow(o, { date, operatorName }));
+      .map((o) => toRow(o, { date, operatorName }))
+      .sort(byNewest);
     return {
       routeId: r.id,
       date,
@@ -162,7 +170,8 @@ async function loadData() {
   const unassigned: OrderRow[] = unassignedSnap.docs
     .map((d) => orderById.get(d.id))
     .filter((o): o is BagOrderDoc => Boolean(o))
-    .map((o) => toRow(o));
+    .map((o) => toRow(o))
+    .sort(byNewest);
 
   const weekLabel = `${start.toLocaleDateString('en-US', {
     month: 'short',
@@ -198,6 +207,7 @@ function OrdersTable({ orders }: { orders: OrderRow[] }) {
     <table className="w-full text-sm">
       <thead className="bg-white/5 text-left text-[11px] uppercase tracking-wide text-gray-500">
         <tr>
+          <th className="px-4 py-2 font-medium">Date</th>
           <th className="px-4 py-2 font-medium">Resident</th>
           <th className="px-4 py-2 font-medium">Address</th>
           <th className="px-4 py-2 font-medium">Bags</th>
@@ -208,6 +218,7 @@ function OrdersTable({ orders }: { orders: OrderRow[] }) {
       <tbody className="divide-y divide-white/5 bg-black/20">
         {orders.map((o) => (
           <tr key={o.id} className="text-gray-200">
+            <td className="px-4 py-2 text-gray-400 whitespace-nowrap">{o.orderDate}</td>
             <td className="px-4 py-2">{o.residentName}</td>
             <td className="px-4 py-2 text-gray-400">{o.address}</td>
             <td className="px-4 py-2">{o.quantity * 10}</td>
