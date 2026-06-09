@@ -10,6 +10,7 @@ import {
   loadAdminKpis,
   loadContaminationAlerts,
   loadOperatorLeaderboard,
+  loadPendingOrderCount,
   loadZonePerformance,
   type ContaminationAlert,
   type OperatorLeaderboardRow,
@@ -30,11 +31,12 @@ function formatDollars(d: number): string {
 }
 
 export default async function AdminDashboard() {
-  const [kpis, zones, alerts, leaderboard] = await Promise.all([
+  const [kpis, zones, alerts, leaderboard, pendingOrders] = await Promise.all([
     loadAdminKpis(),
     loadZonePerformance(),
     loadContaminationAlerts(),
     loadOperatorLeaderboard(),
+    loadPendingOrderCount(),
   ]);
   const monthLabel = currentMonthLabel();
 
@@ -50,6 +52,8 @@ export default async function AdminDashboard() {
           <GuideLink href="/user-guides/phase-9-admin-polish.html" />
         </div>
       </header>
+
+      <OrdersActionItem pendingCount={pendingOrders} />
 
       <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard label="Active residents" value={kpis.residentCount.toLocaleString('en-US')} />
@@ -86,6 +90,48 @@ export default async function AdminDashboard() {
         </div>
       </section>
     </div>
+  );
+}
+
+function OrdersActionItem({ pendingCount }: { pendingCount: number }) {
+  const hasPending = pendingCount > 0;
+  return (
+    <Link
+      href="/admin/orders"
+      className={`mb-3 flex items-center justify-between gap-4 rounded-xl border px-5 py-4 transition-colors ${
+        hasPending
+          ? 'border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/15'
+          : 'border-white/10 bg-white/5 hover:bg-white/10'
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        <div
+          className={`flex h-10 w-10 items-center justify-center rounded-lg text-lg ${
+            hasPending ? 'bg-amber-500/20 text-amber-200' : 'bg-white/10 text-gray-300'
+          }`}
+        >
+          📦
+        </div>
+        <div>
+          <div className="text-sm font-semibold text-white">Orders this week</div>
+          <div className="text-xs text-gray-400">
+            {hasPending
+              ? `${pendingCount.toLocaleString('en-US')} order${
+                  pendingCount === 1 ? '' : 's'
+                } pending — needs your attention`
+              : 'All orders fulfilled — nothing pending'}
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        {hasPending && (
+          <span className="rounded-full bg-amber-500/20 px-3 py-1 text-sm font-bold text-amber-200">
+            {pendingCount.toLocaleString('en-US')}
+          </span>
+        )}
+        <span className="text-xs text-gray-400">View →</span>
+      </div>
+    </Link>
   );
 }
 
