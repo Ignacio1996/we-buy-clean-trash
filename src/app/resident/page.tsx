@@ -11,7 +11,6 @@ import {
   SSHeader,
   SSPillLink,
   SSScreen,
-  SSStatusBarSpacer,
 } from '@/components/resident/ss/SS';
 import {
   IconArrow,
@@ -54,7 +53,6 @@ export default async function ResidentHome() {
     <SSScreen>
       <SignupBonusModal uid={uid} />
 
-      <SSStatusBarSpacer />
       <SSHeader initial={initial} />
 
       {/* Yellow points hero — server-rendered from the single users/{uid} read */}

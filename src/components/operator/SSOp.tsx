@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import type { CSSProperties, ReactNode } from 'react';
 
+import { SSWordmarkBar } from '@/components/resident/ss/SS';
+
 /**
  * Sticker Sections — Operator (driver) app primitives.
  * White base broken into pastel section blocks (yellow / mint / sky / peach).
@@ -33,10 +35,13 @@ export function SSOpShell({
   children,
   active = 'route',
   nav = true,
+  right,
 }: {
   children: ReactNode;
   active?: 'route' | 'compost' | 'me';
   nav?: boolean;
+  /** Right-side content for the shared wordmark bar (avatar, sign-out, …). */
+  right?: ReactNode;
 }) {
   return (
     <div
@@ -49,7 +54,7 @@ export function SSOpShell({
         position: 'relative',
       }}
     >
-      <div style={{ height: 50 }} />
+      <SSWordmarkBar right={right} />
       {children}
       {nav && <SSOpNav active={active} />}
     </div>

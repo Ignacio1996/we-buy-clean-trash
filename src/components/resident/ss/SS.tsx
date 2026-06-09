@@ -1,8 +1,6 @@
 import Link from 'next/link';
 import type { CSSProperties, ReactNode } from 'react';
 
-import { IconBell } from '@/components/icons/EcoIcons';
-
 /**
  * Sticker Sections — shared primitives for the WBCT resident app.
  * White base broken into pastel section blocks (yellow / mint / sky / peach).
@@ -75,6 +73,59 @@ export function SSWordmark({
   );
 }
 
+/**
+ * Shared role header bar — a flush, white wordmark strip used identically by
+ * resident, operator, and depot worker. Sits at the very top of the screen
+ * (no preceding spacer): the top padding clears the device status bar / notch
+ * via `env(safe-area-inset-top)` and falls back to a small inset in browsers.
+ * Each role supplies its own `right` slot (avatar link, sign-out, etc.).
+ */
+export function SSWordmarkBar({ right }: { right?: ReactNode }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: 12,
+        background: '#fff',
+        paddingLeft: 20,
+        paddingRight: 20,
+        paddingBottom: 14,
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)',
+      }}
+    >
+      <SSWordmark inline />
+      {right}
+    </div>
+  );
+}
+
+/** Circular avatar pill showing the user's initial; links to their account. */
+export function SSAvatarLink({ initial, href }: { initial: string; href: string }) {
+  return (
+    <Link
+      href={href}
+      style={{
+        width: 32,
+        height: 32,
+        borderRadius: '50%',
+        background: SS.ink,
+        color: '#fff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: 900,
+        fontSize: 13,
+        flexShrink: 0,
+        textDecoration: 'none',
+      }}
+    >
+      {initial}
+    </Link>
+  );
+}
+
 export function SSHeader({
   initial,
   href = '/resident/profile',
@@ -82,69 +133,7 @@ export function SSHeader({
   initial: string;
   href?: string;
 }) {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '12px 20px 16px',
-        gap: 12,
-      }}
-    >
-      <SSWordmark inline />
-      {/* Notification bell — visual only, matches the design's static dot. */}
-      <div
-        aria-hidden
-        style={{
-          width: 32,
-          height: 32,
-          borderRadius: '50%',
-          border: `2px solid ${SS.ink}`,
-          background: '#fff',
-          color: SS.ink,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-          position: 'relative',
-        }}
-      >
-        <IconBell size={16} stroke={2.25} />
-        <div
-          style={{
-            position: 'absolute',
-            top: -2,
-            right: -2,
-            width: 9,
-            height: 9,
-            borderRadius: '50%',
-            background: SS.brand,
-            border: '2px solid #fff',
-          }}
-        />
-      </div>
-      <Link
-        href={href}
-        style={{
-          width: 32,
-          height: 32,
-          borderRadius: '50%',
-          background: SS.ink,
-          color: '#fff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontWeight: 900,
-          fontSize: 13,
-          flexShrink: 0,
-          textDecoration: 'none',
-        }}
-      >
-        {initial}
-      </Link>
-    </div>
-  );
+  return <SSWordmarkBar right={<SSAvatarLink initial={initial} href={href} />} />;
 }
 
 export function SSStepBar({
