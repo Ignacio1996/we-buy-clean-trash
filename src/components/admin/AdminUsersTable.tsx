@@ -1,27 +1,67 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import type { Role } from '@/lib/types/role';
 
-export interface ResidentRow {
+export interface UserRow {
   uid: string;
   name: string;
   email: string | null;
+  role: Role;
   zoneName: string;
   pointsBalance: number;
   pointsValue: string;
 }
 
-export function AdminUsersTable({ residents }: { residents: ResidentRow[] }) {
+const ROLE_LABELS: Record<Role, string> = {
+  resident: 'Resident',
+  operator: 'Operator',
+  depot_worker: 'Depot worker',
+  depot_manager: 'Depot manager',
+  admin: 'Admin',
+};
+
+const ROLE_BADGE: Record<Role, string> = {
+  resident: 'bg-emerald-500/10 text-emerald-300',
+  operator: 'bg-sky-500/10 text-sky-300',
+  depot_worker: 'bg-amber-500/10 text-amber-300',
+  depot_manager: 'bg-violet-500/10 text-violet-300',
+  admin: 'bg-rose-500/10 text-rose-300',
+};
+
+type Filter = 'all' | Role;
+
+const FILTER_ORDER: Role[] = ['resident', 'operator', 'depot_worker', 'depot_manager', 'admin'];
+
+export function AdminUsersTable({ users }: { users: UserRow[] }) {
   const router = useRouter();
+  const [filter, setFilter] = useState<Filter>('all');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   // Holds the uids queued for deletion while the confirm dialog is open.
   const [pending, setPending] = useState<string[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const allSelected = residents.length > 0 && selected.size === residents.length;
-  const byUid = new Map(residents.map((r) => [r.uid, r]));
+  const counts = useMemo(() => {
+    const c: Record<string, number> = {};
+    for (const u of users) c[u.role] = (c[u.role] ?? 0) + 1;
+    return c;
+  }, [users]);
+
+  const visible = useMemo(
+    () => (filter === 'all' ? users : users.filter((u) => u.role === filter)),
+    [users, filter],
+  );
+
+  const byUid = new Map(users.map((r) => [r.uid, r]));
+  // Anyone except admins can be deleted. Residents cascade-delete all their data;
+  // staff (operator/depot_worker/depot_manager) are removed and detached from
+  // active assignments, with their history preserved. The delete endpoint refuses
+  // admins regardless, so the UI just hides the control for them.
+  const deletableVisible = visible.filter((u) => u.role !== 'admin');
+  const allSelected =
+    deletableVisible.length > 0 && deletableVisible.every((u) => selected.has(u.uid));
 
   function toggle(uid: string) {
     setSelected((prev) => {
@@ -33,7 +73,12 @@ export function AdminUsersTable({ residents }: { residents: ResidentRow[] }) {
   }
 
   function toggleAll() {
-    setSelected(allSelected ? new Set() : new Set(residents.map((r) => r.uid)));
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (allSelected) deletableVisible.forEach((u) => next.delete(u.uid));
+      else deletableVisible.forEach((u) => next.add(u.uid));
+      return next;
+    });
   }
 
   async function runDelete(uids: string[]) {
@@ -68,8 +113,10 @@ export function AdminUsersTable({ residents }: { residents: ResidentRow[] }) {
     }
   }
 
-  const pendingNames =
-    pending?.map((uid) => byUid.get(uid)?.name || byUid.get(uid)?.email || uid) ?? [];
+  const pendingRows = pending?.map((uid) => byUid.get(uid)).filter((r): r is UserRow => !!r) ?? [];
+  const pendingNames = pendingRows.map((r) => r.name || r.email || r.uid);
+  const hasResident = pendingRows.some((r) => r.role === 'resident');
+  const hasStaff = pendingRows.some((r) => r.role !== 'resident');
 
   return (
     <div>
@@ -78,6 +125,24 @@ export function AdminUsersTable({ residents }: { residents: ResidentRow[] }) {
           {error}
         </div>
       ) : null}
+
+      <div className="mb-4 flex flex-wrap gap-2">
+        <FilterChip
+          label="All"
+          count={users.length}
+          active={filter === 'all'}
+          onClick={() => setFilter('all')}
+        />
+        {FILTER_ORDER.map((role) => (
+          <FilterChip
+            key={role}
+            label={ROLE_LABELS[role]}
+            count={counts[role] ?? 0}
+            active={filter === role}
+            onClick={() => setFilter(role)}
+          />
+        ))}
+      </div>
 
       {selected.size > 0 ? (
         <div className="mb-3 flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm">
@@ -96,7 +161,7 @@ export function AdminUsersTable({ residents }: { residents: ResidentRow[] }) {
             onClick={() => setPending(Array.from(selected))}
             className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-300 hover:bg-red-500/20"
           >
-            Delete {selected.size} resident{selected.size === 1 ? '' : 's'}
+            Delete {selected.size} account{selected.size === 1 ? '' : 's'}
           </button>
         </div>
       ) : null}
@@ -108,14 +173,16 @@ export function AdminUsersTable({ residents }: { residents: ResidentRow[] }) {
               <th className="w-10 px-4 py-3">
                 <input
                   type="checkbox"
-                  aria-label="Select all residents"
+                  aria-label="Select all deletable users"
                   checked={allSelected}
+                  disabled={deletableVisible.length === 0}
                   onChange={toggleAll}
-                  className="h-4 w-4 cursor-pointer accent-red-500"
+                  className="h-4 w-4 cursor-pointer accent-red-500 disabled:opacity-30"
                 />
               </th>
               <th className="px-4 py-3 font-medium">Name</th>
               <th className="px-4 py-3 font-medium">Email</th>
+              <th className="px-4 py-3 font-medium">Role</th>
               <th className="px-4 py-3 font-medium">Zone</th>
               <th className="px-4 py-3 text-right font-medium">Points</th>
               <th className="px-4 py-3 text-right font-medium">Value</th>
@@ -123,45 +190,58 @@ export function AdminUsersTable({ residents }: { residents: ResidentRow[] }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {residents.length === 0 ? (
+            {visible.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-6 text-center text-xs text-gray-500">
-                  No residents yet.
+                <td colSpan={8} className="px-4 py-6 text-center text-xs text-gray-500">
+                  No users to show.
                 </td>
               </tr>
             ) : (
-              residents.map((u) => (
-                <tr
-                  key={u.uid}
-                  className={selected.has(u.uid) ? 'bg-white/5 text-gray-300' : 'text-gray-300'}
-                >
-                  <td className="px-4 py-3">
-                    <input
-                      type="checkbox"
-                      aria-label={`Select ${u.name}`}
-                      checked={selected.has(u.uid)}
-                      onChange={() => toggle(u.uid)}
-                      className="h-4 w-4 cursor-pointer accent-red-500"
-                    />
-                  </td>
-                  <td className="px-4 py-3 text-white">{u.name}</td>
-                  <td className="px-4 py-3 text-gray-400">{u.email ?? '—'}</td>
-                  <td className="px-4 py-3 text-gray-400">{u.zoneName}</td>
-                  <td className="px-4 py-3 text-right text-white">
-                    {u.pointsBalance.toLocaleString('en-US')}
-                  </td>
-                  <td className="px-4 py-3 text-right text-gray-400">${u.pointsValue}</td>
-                  <td className="px-4 py-3 text-right">
-                    <button
-                      type="button"
-                      onClick={() => setPending([u.uid])}
-                      className="text-xs text-gray-500 hover:text-red-400"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
+              visible.map((u) => {
+                const deletable = u.role !== 'admin';
+                return (
+                  <tr
+                    key={u.uid}
+                    className={selected.has(u.uid) ? 'bg-white/5 text-gray-300' : 'text-gray-300'}
+                  >
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        aria-label={`Select ${u.name}`}
+                        checked={selected.has(u.uid)}
+                        disabled={!deletable}
+                        onChange={() => toggle(u.uid)}
+                        className="h-4 w-4 cursor-pointer accent-red-500 disabled:opacity-30"
+                      />
+                    </td>
+                    <td className="px-4 py-3 text-white">{u.name}</td>
+                    <td className="px-4 py-3 text-gray-400">{u.email ?? '—'}</td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-medium ${ROLE_BADGE[u.role]}`}
+                      >
+                        {ROLE_LABELS[u.role]}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-gray-400">{u.zoneName}</td>
+                    <td className="px-4 py-3 text-right text-white">
+                      {u.pointsBalance.toLocaleString('en-US')}
+                    </td>
+                    <td className="px-4 py-3 text-right text-gray-400">${u.pointsValue}</td>
+                    <td className="px-4 py-3 text-right">
+                      {deletable ? (
+                        <button
+                          type="button"
+                          onClick={() => setPending([u.uid])}
+                          className="text-xs text-gray-500 hover:text-red-400"
+                        >
+                          Delete
+                        </button>
+                      ) : null}
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
@@ -171,18 +251,30 @@ export function AdminUsersTable({ residents }: { residents: ResidentRow[] }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="w-full max-w-md rounded-xl border border-white/10 bg-neutral-900 p-6 shadow-xl">
             <h2 className="text-lg font-semibold text-white">
-              Delete {pending.length} resident{pending.length === 1 ? '' : 's'}?
+              Delete {pending.length} account{pending.length === 1 ? '' : 's'}?
             </h2>
             <p className="mt-2 text-sm text-gray-400">
-              This permanently deletes{' '}
+              This permanently removes{' '}
               {pending.length === 1 ? (
                 <span className="text-white">{pendingNames[0]}</span>
               ) : (
                 <span className="text-white">these accounts</span>
               )}{' '}
-              and <span className="text-white">all</span> their data — orders, bags, sticker sheets,
-              processing records, pickups, transactions, points, and login. This cannot be undone.
+              and their login. This cannot be undone.
             </p>
+            {hasResident ? (
+              <p className="mt-2 text-sm text-gray-400">
+                {hasStaff ? 'Residents in this list also lose ' : 'This also deletes '}
+                <span className="text-white">all</span> their data — orders, bags, sticker sheets,
+                processing records, pickups, transactions, and points.
+              </p>
+            ) : null}
+            {hasStaff ? (
+              <p className="mt-2 text-sm text-gray-400">
+                Staff history (pickups, processing, completed routes) is preserved, but they&apos;ll
+                be unassigned from any depot they manage and any active route.
+              </p>
+            ) : null}
             {pending.length > 1 ? (
               <ul className="mt-3 max-h-32 overflow-y-auto rounded-lg border border-white/10 bg-white/5 p-2 text-xs text-gray-400">
                 {pendingNames.map((n, i) => (
@@ -214,5 +306,32 @@ export function AdminUsersTable({ residents }: { residents: ResidentRow[] }) {
         </div>
       ) : null}
     </div>
+  );
+}
+
+function FilterChip({
+  label,
+  count,
+  active,
+  onClick,
+}: {
+  label: string;
+  count: number;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+        active
+          ? 'border-white/20 bg-white/10 text-white'
+          : 'border-white/10 bg-transparent text-gray-400 hover:bg-white/5 hover:text-gray-200'
+      }`}
+    >
+      {label}
+      <span className={`ml-1.5 ${active ? 'text-gray-300' : 'text-gray-600'}`}>{count}</span>
+    </button>
   );
 }

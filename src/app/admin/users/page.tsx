@@ -4,16 +4,11 @@ import { pointsToDollars } from '@/lib/logic/pointsToDollars';
 import type { UserDoc } from '@/lib/types/user';
 import type { ZoneDoc } from '@/lib/types/zone';
 import { GuideLink } from '@/components/admin/GuideLink';
-import { AdminUsersTable, type ResidentRow } from '@/components/admin/AdminUsersTable';
+import { AdminUsersTable, type UserRow } from '@/components/admin/AdminUsersTable';
 
-async function loadResidents(): Promise<{ users: UserDoc[]; zones: Map<string, string> }> {
+async function loadUsers(): Promise<{ users: UserDoc[]; zones: Map<string, string> }> {
   const [usersSnap, zonesSnap] = await Promise.all([
-    adminDb
-      .collection('users')
-      .where('role', '==', 'resident')
-      .orderBy('createdAt', 'desc')
-      .limit(200)
-      .get(),
+    adminDb.collection('users').orderBy('createdAt', 'desc').limit(500).get(),
     adminDb.collection('zones').get(),
   ]);
   const zones = new Map<string, string>();
@@ -25,11 +20,12 @@ async function loadResidents(): Promise<{ users: UserDoc[]; zones: Map<string, s
 }
 
 export default async function AdminUsersPage() {
-  const { users, zones } = await loadResidents();
-  const rows: ResidentRow[] = users.map((u) => ({
+  const { users, zones } = await loadUsers();
+  const rows: UserRow[] = users.map((u) => ({
     uid: u.uid,
     name: u.name,
     email: u.email,
+    role: u.role,
     zoneName: u.zoneId ? (zones.get(u.zoneId) ?? u.zoneId) : '—',
     pointsBalance: u.pointsBalance,
     pointsValue: pointsToDollars(u.pointsBalance).toFixed(2),
@@ -38,9 +34,9 @@ export default async function AdminUsersPage() {
     <div>
       <header className="mb-6 flex items-end justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Residents</h1>
+          <h1 className="text-2xl font-semibold text-white">Users</h1>
           <p className="mt-1 text-xs text-gray-500">
-            {users.length} resident{users.length === 1 ? '' : 's'} signed up
+            {users.length} user{users.length === 1 ? '' : 's'} across all roles
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -54,7 +50,7 @@ export default async function AdminUsersPage() {
         </div>
       </header>
 
-      <AdminUsersTable residents={rows} />
+      <AdminUsersTable users={rows} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/session';
-import { deleteResidentCompletely } from '@/lib/admin/deleteResident';
+import { deleteUserCompletely } from '@/lib/admin/deleteUser';
 
 const MAX_PER_REQUEST = 100;
 
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
   // per-uid result list for the UI to report partial failures.
   const results = [];
   for (const uid of uids) {
-    results.push(await deleteResidentCompletely(uid));
+    results.push(await deleteUserCompletely(uid));
   }
   const deleted = results.filter((r) => r.ok).length;
   const failed = results.length - deleted;
