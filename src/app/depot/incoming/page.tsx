@@ -298,11 +298,13 @@ export default async function DepotIncomingPage() {
 
   return (
     <section>
-      {/* Yellow hero — today's processing stats */}
+      {/* Yellow hero — today's processing stats.
+          Matches the operator yellow header: 20/20/22 padding + ink bottom rule. */}
       <div
         style={{
           background: SS.yellow,
-          padding: '24px 20px 22px',
+          padding: '20px 20px 22px',
+          borderBottom: `2px solid ${SS.ink}`,
         }}
       >
         <div
