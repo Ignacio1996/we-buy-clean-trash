@@ -12,6 +12,23 @@ import {
   type MaterialId,
 } from '@/lib/types/material';
 
+// Orders still needing fulfillment — created/paid/queued or out for delivery,
+// but not yet delivered or cancelled. The dashboard surfaces this as an action item.
+const PENDING_ORDER_STATUSES = ['pending', 'queued', 'out_for_delivery'] as const;
+
+export const loadPendingOrderCount = unstable_cache(
+  async (): Promise<number> => {
+    const snap = await adminDb
+      .collection('bagOrders')
+      .where('status', 'in', PENDING_ORDER_STATUSES as unknown as string[])
+      .count()
+      .get();
+    return snap.data().count;
+  },
+  ['admin-pending-order-count'],
+  KPI_CACHE_OPTIONS,
+);
+
 export interface AdminKpis {
   residentCount: number;
   bagsThisMonth: number;
