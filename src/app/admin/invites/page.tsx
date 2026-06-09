@@ -35,11 +35,12 @@ async function loadInvitesData() {
     const { createdAt: _c, ...rest } = d.data() as ZoneDoc;
     return rest;
   });
+  const zoneNames = new Map(zones.map((z) => [z.id, z.name]));
   const depots = depotsSnap.docs.map((d) => {
     const { createdAt: _c, updatedAt: _u, ...rest } = d.data() as DepotDoc;
     return rest;
   });
-  return { invites, zones, depots };
+  return { invites, zones, depots, zoneNames };
 }
 
 function formatTimestamp(ts: Timestamp | null): string {
@@ -63,7 +64,7 @@ function roleLabel(role: string): string {
 }
 
 export default async function AdminInvitesPage() {
-  const { invites, zones, depots } = await loadInvitesData();
+  const { invites, zones, depots, zoneNames } = await loadInvitesData();
   return (
     <div>
       <header className="mb-6 flex items-end justify-between gap-4">
@@ -87,6 +88,7 @@ export default async function AdminInvitesPage() {
             <tr>
               <th className="px-4 py-3 font-medium">Contact</th>
               <th className="px-4 py-3 font-medium">Role</th>
+              <th className="px-4 py-3 font-medium">Zone</th>
               <th className="px-4 py-3 font-medium">Sent</th>
               <th className="px-4 py-3 font-medium">Expires</th>
               <th className="px-4 py-3 font-medium">Status</th>
@@ -96,7 +98,7 @@ export default async function AdminInvitesPage() {
           <tbody className="divide-y divide-white/5">
             {invites.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-xs text-gray-500">
+                <td colSpan={7} className="px-4 py-6 text-center text-xs text-gray-500">
                   No invites yet.
                 </td>
               </tr>
@@ -111,6 +113,15 @@ export default async function AdminInvitesPage() {
                     {!inv.email && !inv.phone && <span className="text-gray-500">—</span>}
                   </td>
                   <td className="px-4 py-3 text-gray-400">{roleLabel(inv.role)}</td>
+                  <td className="px-4 py-3 text-gray-400">
+                    {inv.zoneId ? (
+                      (zoneNames.get(inv.zoneId) ?? (
+                        <span className="text-gray-500">Unknown zone</span>
+                      ))
+                    ) : (
+                      <span className="text-gray-600">—</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-gray-400">{formatTimestamp(inv.createdAt)}</td>
                   <td className="px-4 py-3 text-gray-400">{formatTimestamp(inv.expiresAt)}</td>
                   <td className={`px-4 py-3 ${status.tone}`}>{status.label}</td>
