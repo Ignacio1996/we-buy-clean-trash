@@ -323,33 +323,31 @@ export default async function OperatorHome() {
     : undefined;
 
   return (
-    <SSOpShell active="route">
-      <SSOpHeader
-        kicker={headerKicker}
-        title={headerTitle}
-        sub={headerSub}
-        right={
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: '50%',
-                background: SSOP.ink,
-                color: '#fff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 900,
-                fontSize: 13,
-              }}
-            >
-              {operator.initial}
-            </div>
-            <LogoutLink />
+    <SSOpShell
+      active="route"
+      right={
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
+              background: SSOP.ink,
+              color: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 900,
+              fontSize: 13,
+            }}
+          >
+            {operator.initial}
           </div>
-        }
-      />
+          <LogoutLink />
+        </div>
+      }
+    >
+      <SSOpHeader kicker={headerKicker} title={headerTitle} sub={headerSub} />
 
       {!route ? (
         <>
