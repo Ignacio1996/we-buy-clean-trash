@@ -16,7 +16,8 @@
     "dev:issue-bags": "tsx --env-file=.env.local scripts/dev-issue-bags.ts",
     "repair:bag-order-route": "tsx --env-file=.env.local scripts/repair-bag-order-route.ts",
     "delete-route": "tsx --env-file=.env.local scripts/delete-route.ts",
-    "test:sms": "tsx --env-file=.env.local scripts/test-sms.ts"
+    "test:sms": "tsx --env-file=.env.local scripts/test-sms.ts",
+    "build:guide-kb": "tsx scripts/build-guide-kb.ts"
   },
   "dependencies": {
     "@invertase/firestore-stripe-payments": "^0.0.8",
