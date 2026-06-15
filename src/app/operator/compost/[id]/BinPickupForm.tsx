@@ -36,6 +36,36 @@ interface RowState {
   fullness: FullnessBucket;
 }
 
+const MAX_PHOTO_EDGE = 1024;
+
+/** Downscale + JPEG-compress a captured photo to a base64 string for upload. */
+function resizeToBase64(file: File): Promise<{ base64: string; mime: string }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, MAX_PHOTO_EDGE / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return reject(new Error('canvas_unavailable'));
+        ctx.drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+        const base64 = dataUrl.split(',')[1] ?? '';
+        resolve({ base64, mime: 'image/jpeg' });
+      };
+      img.onerror = () => reject(new Error('image_load_failed'));
+      img.src = reader.result as string;
+    };
+    reader.onerror = () => reject(new Error('file_read_failed'));
+    reader.readAsDataURL(file);
+  });
+}
+
 const FULLNESS_LABELS: Record<FullnessBucket, string> = {
   0: 'Empty',
   0.25: '¼ full',
@@ -67,8 +97,26 @@ export function BinPickupForm({
   const [materialId, setMaterialId] = useState<MaterialId>(materials[0]?.id ?? '');
   const [contam, setContam] = useState<ContaminationSeverity>('none');
   const [notes, setNotes] = useState('');
+  const [photo, setPhoto] = useState<{ base64: string; mime: string; preview: string } | null>(null);
+  const [photoBusy, setPhotoBusy] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  async function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // allow re-selecting the same file
+    if (!file) return;
+    setPhotoBusy(true);
+    setError(null);
+    try {
+      const { base64, mime } = await resizeToBase64(file);
+      setPhoto({ base64, mime, preview: `data:${mime};base64,${base64}` });
+    } catch {
+      setError('Could not read that photo. Try again.');
+    } finally {
+      setPhotoBusy(false);
+    }
+  }
 
   // Seed rows: one per provisioned bin, fullness defaults to empty so the
   // driver actively picks. If no bins are provisioned, start with one manual row.
@@ -95,9 +143,6 @@ export function BinPickupForm({
   const totalLbs = rows.reduce(
     (sum, r) => sum + BIN_WEIGHT_TABLE[r.binSize][r.fullness].weightLbs,
     0,
-  );
-  const anyInterpolated = rows.some(
-    (r) => BIN_WEIGHT_TABLE[r.binSize][r.fullness].interpolated === true,
   );
   const filledCount = rows.filter((r) => r.fullness > 0).length;
 
@@ -144,8 +189,8 @@ export function BinPickupForm({
             .map((r) => ({ bagId: r.bagId, binSize: r.binSize, fullness: r.fullness })),
           contaminationSeverity: contam,
           driverNotes: notes.trim() || null,
-          photoBase64: null,
-          photoMime: 'image/jpeg',
+          photoBase64: photo?.base64 ?? null,
+          photoMime: photo?.mime ?? 'image/jpeg',
         }),
       });
       const json = (await res.json().catch(() => ({}))) as { error?: string };
@@ -273,9 +318,6 @@ export function BinPickupForm({
                 </div>
                 <div className="mt-2 text-right text-[10px] text-gray-500">
                   ≈ {BIN_WEIGHT_TABLE[r.binSize][r.fullness].weightLbs} lbs
-                  {BIN_WEIGHT_TABLE[r.binSize][r.fullness].interpolated && (
-                    <span className="ml-1 text-amber-300/80">(estimated)</span>
-                  )}
                 </div>
               </div>
             );
@@ -314,6 +356,39 @@ export function BinPickupForm({
             className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-gray-600"
           />
         </label>
+
+        <div className="mt-3">
+          <span className="text-[11px] uppercase tracking-wide text-gray-500">Photo</span>
+          {photo ? (
+            <div className="mt-1 flex items-center gap-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={photo.preview}
+                alt="Pickup"
+                className="h-16 w-16 rounded-lg border border-white/10 object-cover"
+              />
+              <button
+                type="button"
+                onClick={() => setPhoto(null)}
+                className="text-[11px] text-gray-400 underline hover:text-gray-200"
+              >
+                Remove photo
+              </button>
+            </div>
+          ) : (
+            <label className="mt-1 flex cursor-pointer items-center justify-center rounded-lg border border-dashed border-white/15 bg-black/30 px-3 py-3 text-xs text-gray-400 hover:bg-white/5">
+              {photoBusy ? 'Processing…' : '📷 Add photo (optional)'}
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handlePhoto}
+                disabled={photoBusy}
+                className="hidden"
+              />
+            </label>
+          )}
+        </div>
       </div>
 
       <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-4">
@@ -323,7 +398,6 @@ export function BinPickupForm({
         </div>
         <div className="mt-1 text-[11px] text-blue-200/70">
           {filledCount} of {rows.length} bin{rows.length === 1 ? '' : 's'} with content
-          {anyInterpolated && ' · contains interpolated 48-gal estimates'}
         </div>
       </div>
 

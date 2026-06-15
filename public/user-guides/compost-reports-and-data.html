@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We Buy Clean Trash — Compost · Diversion reports, imported history &amp; methodology (Tia FAQ)</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <p class="nav-back"><a href="index.html">← Back to full guide</a> &nbsp;·&nbsp; <a href="compost-admin-commercial-accounts.html">🏢 Commercial sites</a> &nbsp;·&nbsp; <a href="compost-operator-route.html">🚛 Operator route</a> &nbsp;·&nbsp; <a href="glossary.html">📖 Glossary</a></p>
+    <header>
+      <h1>Compost · Diversion reports, imported history &amp; methodology</h1>
+      <p class="lead">
+        This guide explains the <strong>compost diversion reports</strong>, the <strong>three years of
+        Compost Clubhouse history</strong> we imported, and — most importantly — <strong>why some
+        numbers in the app differ from Tia's master spreadsheet</strong>. It is written so the in-app
+        Assistant can answer Tia's questions directly. Run as <strong>Tia Johnson</strong> (admin).
+      </p>
+    </header>
+
+    <div class="stub-warning">
+      <span class="stub-title">⚠️ Where this fits</span>
+      Phase C of the compost integration. Builds on
+      <a href="compost-admin-commercial-accounts.html">Commercial sites</a> (Phase B) and the
+      <a href="compost-operator-route.html">operator route flow</a>. Compost is kept
+      <strong>completely separate</strong> from the recycling/points side of the app — food scrap is
+      diversion-only and never touches points, transactions, or inventory.
+    </div>
+
+    <h2>The headline (what Tia should know first)</h2>
+    <ul>
+      <li><strong>Her entire operation is already in the app.</strong> We imported everything from her
+        master spreadsheet.</li>
+      <li><strong>22 sites</strong> — 12 Compost Clubhouse client sites + 10 City of Columbus drop-off
+        sites (19 active, 3 archived).</li>
+      <li><strong>Every pickup since July 2023</strong> — about <strong>1,528 collection records</strong>,
+        with the weights, bin counts, and fullness exactly as she tracked them.</li>
+      <li><strong>The monthly report numbers match her spreadsheet to the penny.</strong> Example: the
+        Compost Clubhouse total for April 2026 comes out to <strong>27,966.33 lbs</strong> in both the
+        sheet and the app.</li>
+      <li>Compost Clubhouse and City of Columbus data stay separate from each other and from the rest of
+        the WBCT recycling business.</li>
+    </ul>
+
+    <h2>The diversion reports screen</h2>
+    <p>
+      Found in the admin dashboard under the <strong>"Compost · Tia"</strong> section of the side nav,
+      at <strong>Diversion reports</strong> (<code>/admin/compost/reports</code>). It is separated from
+      the recycling navigation by a labeled divider so the two businesses never get confused.
+    </p>
+
+    <div class="scenario">
+      <div class="scenario-head">How to pull a report</div>
+      <div class="scenario-body">
+        <ol>
+          <li>Open <strong>Diversion reports</strong> from the Compost · Tia nav section.</li>
+          <li>Pick a <strong>Month</strong> from the dropdown (defaults to the latest month with data).</li>
+          <li>Pick an <strong>Affiliation</strong>: <em>All sites</em>, <em>Compost Clubhouse</em>, or
+            <em>City of Columbus</em>.</li>
+          <li>Read the KPI band and the two tables, then <strong>Export CSV</strong> or
+            <strong>Print / PDF</strong> to send to the City or a client.</li>
+        </ol>
+        <div class="expected">
+          <strong>What it shows:</strong>
+          <ul>
+            <li><strong>KPI band</strong> — Monthly and all-time totals in <em>pounds</em>, <em>tons</em>,
+              and <em>"cars off the road."</em></li>
+            <li><strong>Monthly Summary table</strong> — per site: weight collected (lbs), average bins
+              collected, bins on site, and average fullness for the selected month.</li>
+            <li><strong>All Time Summary table</strong> — per site: total lbs, total tons, and months
+              active.</li>
+            <li><strong>Inactive sites</strong> are shown greyed out with blank monthly figures (a "—"),
+              and are left out of the monthly total — the same way Tia blanks them before sharing a
+              report.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h2>What the imported history covers</h2>
+    <ul>
+      <li>All sites were imported from the master "Directory"/data tabs and tagged internally with
+        <code>importSource: 'compost-workbook'</code> so the import is reversible and re-runnable.</li>
+      <li>Sites live in a dedicated compost zone and depot, completely separate from recycling zones.</li>
+      <li>Three years of pickups means reports do <strong>not</strong> start from zero — they reflect her
+        real track record from day one.</li>
+      <li>A few orphan/junk rows from the sheet (2 sites with no data, 3 contact-only rows) were dropped
+        during import; everything with real pickup data was kept.</li>
+    </ul>
+
+    <h2>Why some numbers differ from the spreadsheet — and why that's intentional</h2>
+    <p>
+      This is the most important section for answering Tia's questions. Some numbers match exactly;
+      a couple are intentionally different. Here is each one.
+    </p>
+
+    <h3>1. How a pickup's weight is calculated — <em>matches her sheet</em> ✅</h3>
+    <p>
+      We use the same method her reports already rely on: <strong>bins × fullness × full-bin weight</strong>.
+      The full-bin weights are her own verified values:
+    </p>
+    <ul>
+      <li><strong>32-gallon bin = 130 lbs</strong> when full</li>
+      <li><strong>48-gallon bin = 195 lbs</strong> when full</li>
+      <li><strong>64-gallon bin = 260 lbs</strong> when full</li>
+    </ul>
+    <p>
+      Fullness is recorded by the driver as 0 / 25 / 50 / 75 / 100%. The weight scales linearly — this
+      reproduces the "Alternative Weight" column in her workbook exactly, so individual pickups and her
+      monthly totals come out the same.
+    </p>
+
+    <h3>2. Monthly totals — <em>match her sheet exactly</em> ✅</h3>
+    <p>
+      The monthly report (the one she sends clients each month) reproduces her spreadsheet exactly for
+      active sites. The monthly math is:
+    </p>
+    <p style="margin-left:1.5rem">
+      <code>Monthly total = (total reported lbs for the month ÷ number of pickup entries) × 4.35</code>
+    </p>
+    <p>
+      The <code>4.35</code> is the average number of weeks in a month — the same weekly-average ×
+      weeks-per-month approach her sheet uses. Example: Chapman's first month had 585 lbs over 2 entries
+      → weekly average 292.5 → monthly 292.5 × 4.35 = <strong>1,272.375 lbs</strong>.
+    </p>
+
+    <h3>3. "Cars off the road" — <em>kept the same for now, but flagged</em> ⚠️</h3>
+    <p>
+      We kept her existing cars-equivalent calculation (<code>pounds ÷ 1.17</code>) so her reports stay
+      consistent with what clients have already received. <strong>However</strong>, this number is far
+      larger than the standard EPA/ReFED conversion would produce (the standard figure is roughly
+      <code>0.00053 cars per pound</code> — about 1,900× smaller). We flagged this in the code and in
+      every report footnote, and we are waiting on Tia's decision: keep her figure for consistency, or
+      switch to the standard conversion going forward. Both are available via a single setting
+      (<code>USE_REFED_CARS</code>); today it is set to reproduce her formula.
+    </p>
+
+    <h3>4. All-time ("lifetime") totals — <em>these run lower in the app</em></h3>
+    <p>
+      This is the main difference. When we examined how her spreadsheet computes lifetime totals, we
+      found three pieces of manual editorial logic built into the sheet over the years that are
+      <strong>not</strong> in the raw collection data:
+    </p>
+    <ul>
+      <li><strong>Estimated "gap" months</strong> — when a site had no pickup recorded in a month, the
+        sheet carried the previous month's estimate forward, adding weight that wasn't actually
+        collected.</li>
+      <li><strong>Seasonal resets</strong> — for schools (e.g. The Wellington School), the running total
+        is manually reset each school year and summer months are blanked as "Closed for Summer."</li>
+      <li><strong>Discontinued sites keep counting</strong> — sites that left the route (e.g. Chapman's)
+        kept accumulating estimated weight every month afterward.</li>
+    </ul>
+    <p>
+      The app instead reports <strong>only weight that was actually collected</strong> — no estimated
+      fill-ins, no carry-forward, no resets. This is more defensible if the City or a client ever asks
+      "how did you get this number?", but it means <strong>lifetime totals in the app run lower</strong>
+      than her sheet for any site that had gaps or seasonal closures.
+    </p>
+    <p><strong>Concrete example — Florin Cafe lifetime total:</strong></p>
+    <ul>
+      <li>Her spreadsheet: <strong>33,374 lbs</strong></li>
+      <li>The app (measured only): <strong>28,390 lbs</strong></li>
+    </ul>
+    <p>
+      Both are "right" — they answer slightly different questions ("estimated diversion" vs "measured
+      diversion"). Every report in the app includes a short methodology note explaining this. If Tia
+      prefers the app to preserve her historical reported numbers as a baseline, we can do that — it is
+      one of the open questions below.
+    </p>
+
+    <h3>5. Inactive sites in the monthly total — <em>matches what she shares</em> ✅</h3>
+    <p>
+      Sites no longer on the route are greyed out and excluded from the monthly total, mirroring how she
+      blanks them before sending a report. They still appear in the all-time table for the historical
+      record.
+    </p>
+
+    <h2>What's still to come (planned, not built yet)</h2>
+    <ul>
+      <li><strong>Full route operations</strong> — a "Start / End Route" day; per-stop buttons for
+        <em>Swapped</em> vs <em>Loaded</em>, <em>Skipped</em> (with a reason), and <em>Damaged</em>
+        (with a photo); a running truck-weight tracker with a "truck is full → deliver to Alum Creek or
+        London?" prompt and an auto-text to the facility; and a cart cleaning queue at the yard.</li>
+      <li><strong>Quarterly contamination notes</strong> — a place to log the recommendations and
+        contamination observations she keeps per site, carried into reports.</li>
+      <li><strong>Automated monthly emails</strong> — those currently go out manually (via Dominique);
+        the app can send each site its monthly weight + cumulative + impact automatically.</li>
+      <li><strong>Access for Dominique and the City</strong> — a "program manager" login for Dominique
+        (manage sites, pickups, reports) and a read-only login for the City of Columbus to view only
+        their own diversion reports.</li>
+      <li><strong>Compost voucher rewards</strong> — for when the Columbus facility is producing.</li>
+    </ul>
+
+    <h2>Open questions for Tia</h2>
+    <ol>
+      <li><strong>"Cars off the road" figure.</strong> Keep her current figure for consistency with past
+        reports, or switch to the standard EPA/ReFED conversion going forward?</li>
+      <li><strong>Lifetime totals.</strong> Show measured-only totals (cleaner, more defensible), or
+        preserve her historical spreadsheet totals as a baseline so nothing appears to "drop"?</li>
+      <li><strong>Seasonal closures.</strong> Should sites have a "paused" status so school summer breaks
+        don't look like missed pickups?</li>
+      <li><strong>Monthly report format.</strong> Can we get a recent example of the exact report
+        Dominique sends the City, so the app's export matches it precisely?</li>
+      <li><strong>Route operations details.</strong> Are Alum Creek and London the only drop-off
+        destinations? Who's the contact (phone) at each for the automatic "on my way" text? Who marks
+        bins cleaned — the yard or the driver next day? What are the 4–5 most common skip reasons?</li>
+      <li><strong>Site contact info.</strong> Several sites are missing a contact email — fill those in
+        so monthly emails can reach them?</li>
+      <li><strong>Branding.</strong> On screens the City or clients see, use Compost Clubhouse branding,
+        "powered by WBCT," or both?</li>
+    </ol>
+
+    <h2>Quick answers to likely Tia questions</h2>
+    <ul>
+      <li><strong>"Is all my data in there?"</strong> Yes — 22 sites and ~1,528 pickups since July 2023,
+        for both Compost Clubhouse and City of Columbus.</li>
+      <li><strong>"Do my monthly numbers still match?"</strong> Yes, exactly — to the penny for active
+        sites (e.g. April 2026 Compost Clubhouse = 27,966.33 lbs).</li>
+      <li><strong>"Why is my lifetime total lower?"</strong> The app counts only weight actually
+        collected; the sheet added estimated gap-month weight, seasonal resets, and kept discontinued
+        sites counting. It's a "measured vs estimated" difference, and it can be switched if she
+        prefers.</li>
+      <li><strong>"Why does 'cars off the road' look different / can it stay the same?"</strong> It is
+        currently kept identical to her sheet (lbs ÷ 1.17). We flagged that it's much larger than the
+        standard figure and are awaiting her choice.</li>
+      <li><strong>"How does the weight get calculated?"</strong> Bins × fullness × full-bin weight
+        (130 / 195 / 260 lbs for 32 / 48 / 64-gal), same as her sheet.</li>
+      <li><strong>"Can I send this to the City?"</strong> Yes — Export CSV or Print / PDF from the
+        Diversion reports screen, filtered to City of Columbus.</li>
+      <li><strong>"Will compost mix with the recycling rewards app?"</strong> No — it's fully separated;
+        food scrap is diversion-only and never awards points or touches the recycling ledger.</li>
+    </ul>
+  </body>
+</html>

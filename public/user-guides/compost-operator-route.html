@@ -92,19 +92,21 @@
     </div>
 
     <div class="scenario">
-      <div class="scenario-head">Scenario 3 — 48-gallon estimates</div>
+      <div class="scenario-head">Scenario 3 — 48-gallon weights</div>
       <div class="scenario-body">
-        <p>The bin-weight table is verified by on-site weighing for 32-gal and 64-gal at every
-          fullness bucket. For 48-gal, only the <em>full</em> reading (195 lbs) was measured;
-          the intermediate buckets are linear interpolations.</p>
+        <p>All bin sizes now use one <strong>linear</strong> formula —
+          <code>fullness × full-bin weight</code> — matching the "Alternative Weight" column Tia's
+          monthly reports actually aggregate. Full-bin weights: 32-gal = 130 lbs, 48-gal = 195 lbs,
+          64-gal = 260 lbs. So a 48-gal bin at 50% is exactly half of 195.</p>
         <ol>
           <li>Provision a 48-gal bin for any site (Compost · Admin scenario 2).</li>
           <li>On the operator stop screen, pick <strong>50%</strong> on that row.</li>
         </ol>
         <div class="expected">
-          <strong>Expected:</strong> The row reads <code>≈ 97.5 lbs (estimated)</code> in
-          amber. The total-weight panel notes "<em>contains interpolated 48-gal estimates</em>"
-          when any row uses an interpolated bucket. Phase C reports footnote these.
+          <strong>Expected:</strong> The row reads <code>≈ 97.5 lbs</code> (195 × 0.5). These are
+          treated as real values, not estimates — the linear model is the source of truth and
+          reproduces Tia's three-year reporting history exactly, so the
+          <a href="compost-reports-and-data.html">Phase C diversion reports</a> do not footnote them.
         </div>
       </div>
     </div>
