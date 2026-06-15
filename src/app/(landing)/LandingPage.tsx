@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import styles from './landing.module.css';
 import { WaitlistButton } from './WaitlistButton';
+import { getRegionContent, type LandingRegion } from './regions';
 
 const svgProps = {
   viewBox: '0 0 24 24',
@@ -193,7 +194,9 @@ const FAQS = [
     a: 'Mild contamination — we sort it out at the depot and credit you for the clean portion. Heavy contamination (food, liquid, garbage) means the bag is rejected and returned. We text you a photo so you can fix it for next week.',
   },
   {
+    id: 'operate',
     q: 'Where do you operate?',
+    // Answer is region-specific — overridden at render from regions.ts.
     a: "Oakland, Berkeley, Emeryville, Alameda, and the eastern San Francisco peninsula. We're launching Sacramento and San Jose in summer 2026. Drop your zip in the footer to join the waitlist for new cities.",
   },
   {
@@ -202,7 +205,11 @@ const FAQS = [
   },
 ];
 
-export function LandingPage() {
+export function LandingPage({ region = 'default' }: { region?: LandingRegion }) {
+  const content = getRegionContent(region);
+  const faqs = FAQS.map((f) =>
+    f.id === 'operate' ? { ...f, a: content.whereWeOperate } : f,
+  );
   return (
     <div className={styles.root}>
       {/* Top bar */}
@@ -319,11 +326,9 @@ export function LandingPage() {
         <div className={styles.pilotInner}>
           <div className={styles.pilotTag}>Pilot</div>
           <div className={styles.pilotBody}>
-            <strong>Launching summer 2026 in Oakland.</strong> We&apos;re showing the work as we
-            build — early signups shape the routes, the bag design, and the rewards. Be one of the
-            first 200 households.
+            <strong>{content.pilotBannerStrong}</strong> {content.pilotBannerBody}
           </div>
-          <WaitlistButton label="Join the waitlist" />
+          <WaitlistButton label={content.waitlistLabel} />
         </div>
       </section>
 
@@ -641,7 +646,7 @@ export function LandingPage() {
             asked.
           </h2>
           <div className={styles.faq}>
-            {FAQS.map((f, i) => (
+            {faqs.map((f, i) => (
               <details key={i} open={f.open}>
                 <summary>{f.q}</summary>
                 <p>{f.a}</p>
@@ -679,26 +684,19 @@ export function LandingPage() {
               <br />
               Clean Trash<span className={styles.footerDot}>.</span>
             </div>
-            <div className={styles.footerTag}>
-              Turning recyclables into rewards. Door-side, zero-commission residential recycling.
-              Pilot launching summer 2026 in Oakland, CA.
-            </div>
+            <div className={styles.footerTag}>{content.footerTagline}</div>
           </div>
           <div>
-            <h5>Pilot area</h5>
+            <h5>{content.pilotAreaTitle}</h5>
             <ul>
-              <li>
-                <span className={styles.cityDot}></span>Oakland · summer 2026
-              </li>
-              <li className={styles.citySoon}>
-                <span className={`${styles.cityDot} ${styles.cityDotSoon}`}></span>Berkeley · TBD
-              </li>
-              <li className={styles.citySoon}>
-                <span className={`${styles.cityDot} ${styles.cityDotSoon}`}></span>Emeryville · TBD
-              </li>
-              <li className={styles.citySoon}>
-                <span className={`${styles.cityDot} ${styles.cityDotSoon}`}></span>Alameda · TBD
-              </li>
+              {content.pilotAreaCities.map((c) => (
+                <li key={c.name} className={c.live ? undefined : styles.citySoon}>
+                  <span
+                    className={`${styles.cityDot}${c.live ? '' : ` ${styles.cityDotSoon}`}`}
+                  ></span>
+                  {c.name}
+                </li>
+              ))}
             </ul>
           </div>
           <div>
@@ -714,9 +712,12 @@ export function LandingPage() {
               </li>
               <li className={styles.footerAddr}>
                 {/* TODO: business mailing address */}
-                123 Pilot St.
-                <br />
-                Oakland, CA 94607
+                {content.contactAddressLines.map((line, i) => (
+                  <span key={i}>
+                    {i > 0 && <br />}
+                    {line}
+                  </span>
+                ))}
               </li>
             </ul>
           </div>

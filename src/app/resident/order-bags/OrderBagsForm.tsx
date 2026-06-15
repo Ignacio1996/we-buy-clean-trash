@@ -48,9 +48,12 @@ export function OrderBagsForm({
       const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body.error ?? 'order_failed');
 
-      // 2. $0 (welcome-credit-only) order: nothing to charge. Jump to the
-      //    success page; its server-side confirm flips status to queued.
-      if (body.total === 0) {
+      // 2. $0 (welcome-credit-only) orders and admin-flagged test accounts skip
+      //    Stripe entirely — jump straight to the success page, where the
+      //    server-side confirm flips status to queued and marks it paid. The
+      //    bypass is gated server-side in confirmBagOrder; `body.isTest` here is
+      //    only a UX shortcut so we don't bounce the user through Stripe.
+      if (body.total === 0 || body.isTest) {
         router.replace(`/resident/order-bags/success?order=${body.orderId}`);
         return;
       }

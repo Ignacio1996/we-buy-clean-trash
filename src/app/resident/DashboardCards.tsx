@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import {
   SS,
@@ -10,10 +10,16 @@ import {
 import {
   IconArrow,
   IconBag,
+  IconCloud,
+  IconDroplet,
+  IconFire,
   IconGift,
+  IconLeaf,
+  IconRecycle,
   IconTruck,
 } from '@/components/icons/EcoIcons';
 import type { ResidentHomePayload } from '@/app/api/resident/home/route';
+import type { ResidentImpactPayload } from '@/app/api/resident/impact/route';
 
 const GIFT_CARD_POINTS = 1_000;
 
@@ -63,6 +69,7 @@ const SECTION_BORDER = `1px solid ${SS.line}`;
 
 export function DashboardCards({ pointsBalance }: { pointsBalance: number }) {
   const [data, setData] = useState<ResidentHomePayload | null>(null);
+  const [impact, setImpact] = useState<ResidentImpactPayload | null>(null);
   useEffect(() => {
     let cancelled = false;
     fetch('/api/resident/home', { credentials: 'same-origin' })
@@ -73,6 +80,14 @@ export function DashboardCards({ pointsBalance }: { pointsBalance: number }) {
       .catch(() => {
         // Leave skeletons / fallbacks in place on transient errors. The
         // server-rendered chrome (points hero, action stack) stays usable.
+      });
+    fetch('/api/resident/impact', { credentials: 'same-origin' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json: ResidentImpactPayload | null) => {
+        if (!cancelled && json) setImpact(json);
+      })
+      .catch(() => {
+        // Impact card simply doesn't render on transient errors.
       });
     return () => {
       cancelled = true;
@@ -98,7 +113,158 @@ export function DashboardCards({ pointsBalance }: { pointsBalance: number }) {
         hasRedeemed={data?.hasRedeemed ?? false}
         canRedeem={canRedeem}
       />
+      <ImpactSection impact={impact} />
+      <EducationSection />
     </>
+  );
+}
+
+function formatImpact(n: number): string {
+  if (n >= 100) return Math.round(n).toLocaleString('en-US');
+  if (n >= 10) return n.toFixed(0);
+  return n.toFixed(1);
+}
+
+function ImpactSection({ impact }: { impact: ResidentImpactPayload | null }) {
+  // Only surfaces once the resident has at least one processed bag — before
+  // that there's nothing to estimate and an all-zero card reads as broken.
+  if (!impact || impact.bagsProcessed === 0 || impact.lbsDiverted <= 0) return null;
+
+  const tiles: Array<{ icon: ReactNode; value: string; unit: string; label: string }> = [
+    {
+      icon: <IconRecycle size={18} stroke={2.25} />,
+      value: formatImpact(impact.lbsDiverted),
+      unit: 'lbs',
+      label: 'Diverted from landfill',
+    },
+    {
+      icon: <IconCloud size={18} stroke={2.25} />,
+      value: formatImpact(impact.co2LbsAvoided),
+      unit: 'lbs',
+      label: 'CO₂ avoided',
+    },
+    {
+      icon: <IconDroplet size={18} stroke={2.25} />,
+      value: formatImpact(impact.waterGalSaved),
+      unit: 'gal',
+      label: 'Water saved',
+    },
+    {
+      icon: <IconFire size={18} stroke={2.25} />,
+      value: formatImpact(impact.energyKwhSaved),
+      unit: 'kWh',
+      label: 'Energy saved',
+    },
+  ];
+
+  return (
+    <div style={{ background: SS.mint, padding: '24px 20px' }}>
+      <SSEyebrow icon={<IconLeaf size={14} stroke={2.25} />} style={{ marginBottom: 4 }}>
+        Your impact
+      </SSEyebrow>
+      <div
+        style={{
+          fontSize: 15,
+          fontWeight: 800,
+          color: SS.ink,
+          opacity: 0.75,
+          marginBottom: 14,
+        }}
+      >
+        Estimated from what you&apos;ve recycled so far.
+      </div>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 10,
+        }}
+      >
+        {tiles.map((t) => (
+          <div
+            key={t.label}
+            style={{
+              background: '#fff',
+              border: `2px solid ${SS.ink}`,
+              borderRadius: 16,
+              padding: '14px 14px 12px',
+              boxShadow: `0 4px 0 ${SS.ink}`,
+            }}
+          >
+            <div style={{ color: SS.green, marginBottom: 6 }}>{t.icon}</div>
+            <div
+              style={{
+                fontSize: 26,
+                fontWeight: 900,
+                letterSpacing: -1,
+                color: SS.ink,
+                lineHeight: 1,
+              }}
+            >
+              {t.value}
+              <span style={{ fontSize: 13, fontWeight: 800, marginLeft: 3, color: SS.inkSoft }}>
+                {t.unit}
+              </span>
+            </div>
+            <div
+              style={{
+                fontSize: 12,
+                fontWeight: 800,
+                color: SS.inkSoft,
+                marginTop: 4,
+                lineHeight: 1.25,
+              }}
+            >
+              {t.label}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div
+        style={{
+          fontSize: 11,
+          fontWeight: 700,
+          color: SS.inkSoft,
+          marginTop: 12,
+          opacity: 0.85,
+        }}
+      >
+        Estimates based on standard recycling conversion factors.
+      </div>
+    </div>
+  );
+}
+
+function EducationSection() {
+  return (
+    <div style={{ background: '#fff', padding: '20px 20px 24px', borderTop: SECTION_BORDER }}>
+      <Link
+        href="/resident/education"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 14,
+          background: SS.sky,
+          border: `2px solid ${SS.ink}`,
+          borderRadius: 18,
+          padding: '16px 18px',
+          textDecoration: 'none',
+          color: SS.ink,
+          boxShadow: `0 4px 0 ${SS.ink}`,
+        }}
+      >
+        <div style={{ color: SS.green, flexShrink: 0 }}>
+          <IconRecycle size={28} stroke={2.25} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 16, fontWeight: 900, letterSpacing: -0.3 }}>Recycle Right</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: SS.inkSoft, marginTop: 2 }}>
+            Quick tips to earn more on every bag.
+          </div>
+        </div>
+        <span style={{ fontSize: 18, fontWeight: 900 }}>→</span>
+      </Link>
+    </div>
   );
 }
 

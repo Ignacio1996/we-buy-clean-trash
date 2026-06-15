@@ -1,12 +1,24 @@
 import Link from 'next/link';
 import { adminDb } from '@/lib/firebase/admin';
 import { pointsToDollars } from '@/lib/logic/pointsToDollars';
-import type { UserDoc } from '@/lib/types/user';
+import type { AddressDoc, UserDoc } from '@/lib/types/user';
 import type { ZoneDoc } from '@/lib/types/zone';
 import { GuideLink } from '@/components/admin/GuideLink';
 import { AdminUsersTable, type UserRow } from '@/components/admin/AdminUsersTable';
 
-async function loadUsers(): Promise<{ users: UserDoc[]; zones: Map<string, string> }> {
+function formatAddress(a: AddressDoc | undefined): { address: string | null; zip: string | null } {
+  if (!a) return { address: null, zip: null };
+  const line1 = [a.street, a.unit].filter(Boolean).join(' ');
+  const line2 = [a.city, a.state].filter(Boolean).join(', ');
+  const address = [line1, line2].filter(Boolean).join(', ') || null;
+  return { address, zip: a.postalCode || null };
+}
+
+async function loadUsers(): Promise<{
+  users: UserDoc[];
+  zones: Map<string, string>;
+  addresses: Map<string, AddressDoc>;
+}> {
   const [usersSnap, zonesSnap] = await Promise.all([
     adminDb.collection('users').orderBy('createdAt', 'desc').limit(500).get(),
     adminDb.collection('zones').get(),
@@ -16,20 +28,45 @@ async function loadUsers(): Promise<{ users: UserDoc[]; zones: Map<string, strin
     const z = d.data() as ZoneDoc;
     zones.set(d.id, z.name);
   });
-  return { users: usersSnap.docs.map((d) => d.data() as UserDoc), zones };
+
+  const users = usersSnap.docs.map((d) => d.data() as UserDoc);
+
+  // Batch-load the address docs referenced by these users (residents). getAll
+  // tolerates missing docs, so unmatched ids just resolve to a non-existent ref.
+  const addressIds = Array.from(
+    new Set(users.map((u) => u.addressId).filter((id): id is string => !!id)),
+  );
+  const addresses = new Map<string, AddressDoc>();
+  if (addressIds.length > 0) {
+    const addrSnaps = await adminDb.getAll(
+      ...addressIds.map((id) => adminDb.collection('addresses').doc(id)),
+    );
+    for (const snap of addrSnaps) {
+      if (snap.exists) addresses.set(snap.id, snap.data() as AddressDoc);
+    }
+  }
+
+  return { users, zones, addresses };
 }
 
 export default async function AdminUsersPage() {
-  const { users, zones } = await loadUsers();
-  const rows: UserRow[] = users.map((u) => ({
-    uid: u.uid,
-    name: u.name,
-    email: u.email,
-    role: u.role,
-    zoneName: u.zoneId ? (zones.get(u.zoneId) ?? u.zoneId) : '—',
-    pointsBalance: u.pointsBalance,
-    pointsValue: pointsToDollars(u.pointsBalance).toFixed(2),
-  }));
+  const { users, zones, addresses } = await loadUsers();
+  const rows: UserRow[] = users.map((u) => {
+    const { address, zip } = formatAddress(u.addressId ? addresses.get(u.addressId) : undefined);
+    return {
+      uid: u.uid,
+      name: u.name,
+      email: u.email,
+      role: u.role,
+      zoneName: u.zoneId ? (zones.get(u.zoneId) ?? u.zoneId) : '—',
+      pointsBalance: u.pointsBalance,
+      pointsValue: pointsToDollars(u.pointsBalance).toFixed(2),
+      phone: u.phone ?? null,
+      address,
+      zip,
+      isTest: u.isTest === true,
+    };
+  });
   return (
     <div>
       <header className="mb-6 flex items-end justify-between">

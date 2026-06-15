@@ -12,6 +12,42 @@ export interface UserRow {
   zoneName: string;
   pointsBalance: number;
   pointsValue: string;
+  phone: string | null;
+  address: string | null;
+  zip: string | null;
+  isTest: boolean;
+}
+
+/** Escape a single CSV field per RFC 4180 (quote if it contains , " or newline). */
+function csvCell(value: string | number | null | undefined): string {
+  const s = value == null ? '' : String(value);
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+const EXPORT_COLUMNS: Array<{ header: string; get: (r: UserRow) => string }> = [
+  { header: 'Name', get: (r) => r.name },
+  { header: 'Email', get: (r) => r.email ?? '' },
+  { header: 'Phone', get: (r) => r.phone ?? '' },
+  { header: 'Address', get: (r) => r.address ?? '' },
+  { header: 'Zone', get: (r) => r.zoneName },
+  { header: 'Zip code', get: (r) => r.zip ?? '' },
+];
+
+function exportRowsToCsv(rows: UserRow[]) {
+  const lines = [
+    EXPORT_COLUMNS.map((c) => csvCell(c.header)).join(','),
+    ...rows.map((r) => EXPORT_COLUMNS.map((c) => csvCell(c.get(r))).join(',')),
+  ];
+  // Prepend a UTF-8 BOM so Excel opens accented characters correctly.
+  const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `wbct-users-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 const ROLE_LABELS: Record<Role, string> = {
@@ -37,10 +73,13 @@ const FILTER_ORDER: Role[] = ['resident', 'operator', 'depot_worker', 'depot_man
 export function AdminUsersTable({ users }: { users: UserRow[] }) {
   const router = useRouter();
   const [filter, setFilter] = useState<Filter>('all');
+  const [hideTest, setHideTest] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   // Holds the uids queued for deletion while the confirm dialog is open.
   const [pending, setPending] = useState<string[] | null>(null);
   const [busy, setBusy] = useState(false);
+  // uid currently mid-flight on a test-flag toggle (disables its control).
+  const [togglingTest, setTogglingTest] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const counts = useMemo(() => {
@@ -49,10 +88,35 @@ export function AdminUsersTable({ users }: { users: UserRow[] }) {
     return c;
   }, [users]);
 
-  const visible = useMemo(
-    () => (filter === 'all' ? users : users.filter((u) => u.role === filter)),
-    [users, filter],
-  );
+  const testCount = useMemo(() => users.filter((u) => u.isTest).length, [users]);
+
+  const visible = useMemo(() => {
+    let rows = filter === 'all' ? users : users.filter((u) => u.role === filter);
+    if (hideTest) rows = rows.filter((u) => !u.isTest);
+    return rows;
+  }, [users, filter, hideTest]);
+
+  async function setTestFlag(uid: string, isTest: boolean) {
+    setTogglingTest(uid);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/users/test-flag', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid, isTest }),
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        setError(data.error ?? `Request failed (${res.status})`);
+        return;
+      }
+      router.refresh();
+    } catch {
+      setError('Network error — please try again.');
+    } finally {
+      setTogglingTest(null);
+    }
+  }
 
   const byUid = new Map(users.map((r) => [r.uid, r]));
   // Anyone except admins can be deleted. Residents cascade-delete all their data;
@@ -126,7 +190,7 @@ export function AdminUsersTable({ users }: { users: UserRow[] }) {
         </div>
       ) : null}
 
-      <div className="mb-4 flex flex-wrap gap-2">
+      <div className="mb-4 flex flex-wrap items-center gap-2">
         <FilterChip
           label="All"
           count={users.length}
@@ -142,6 +206,29 @@ export function AdminUsersTable({ users }: { users: UserRow[] }) {
             onClick={() => setFilter(role)}
           />
         ))}
+        <div className="ml-auto flex items-center gap-2">
+          {testCount > 0 ? (
+            <button
+              type="button"
+              onClick={() => setHideTest((v) => !v)}
+              className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                hideTest
+                  ? 'border-amber-500/40 bg-amber-500/15 text-amber-200'
+                  : 'border-white/10 bg-transparent text-gray-400 hover:bg-white/5 hover:text-gray-200'
+              }`}
+            >
+              {hideTest ? 'Test accounts hidden' : `Hide test (${testCount})`}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => exportRowsToCsv(visible)}
+            disabled={visible.length === 0}
+            className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-40"
+          >
+            Export CSV ({visible.length})
+          </button>
+        </div>
       </div>
 
       {selected.size > 0 ? (
@@ -184,15 +271,17 @@ export function AdminUsersTable({ users }: { users: UserRow[] }) {
               <th className="px-4 py-3 font-medium">Email</th>
               <th className="px-4 py-3 font-medium">Role</th>
               <th className="px-4 py-3 font-medium">Zone</th>
+              <th className="px-4 py-3 font-medium">Zip</th>
+              <th className="px-4 py-3 font-medium">Address</th>
               <th className="px-4 py-3 text-right font-medium">Points</th>
               <th className="px-4 py-3 text-right font-medium">Value</th>
-              <th className="w-20 px-4 py-3" />
+              <th className="w-28 px-4 py-3" />
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
             {visible.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-6 text-center text-xs text-gray-500">
+                <td colSpan={10} className="px-4 py-6 text-center text-xs text-gray-500">
                   No users to show.
                 </td>
               </tr>
@@ -214,7 +303,16 @@ export function AdminUsersTable({ users }: { users: UserRow[] }) {
                         className="h-4 w-4 cursor-pointer accent-red-500 disabled:opacity-30"
                       />
                     </td>
-                    <td className="px-4 py-3 text-white">{u.name}</td>
+                    <td className="px-4 py-3 text-white">
+                      <span className="inline-flex items-center gap-1.5">
+                        {u.name}
+                        {u.isTest ? (
+                          <span className="rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300">
+                            Test
+                          </span>
+                        ) : null}
+                      </span>
+                    </td>
                     <td className="px-4 py-3 text-gray-400">{u.email ?? '—'}</td>
                     <td className="px-4 py-3">
                       <span
@@ -224,20 +322,37 @@ export function AdminUsersTable({ users }: { users: UserRow[] }) {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-gray-400">{u.zoneName}</td>
+                    <td className="px-4 py-3 text-gray-400">{u.zip ?? '—'}</td>
+                    <td className="px-4 py-3 text-gray-400">{u.address ?? '—'}</td>
                     <td className="px-4 py-3 text-right text-white">
                       {u.pointsBalance.toLocaleString('en-US')}
                     </td>
                     <td className="px-4 py-3 text-right text-gray-400">${u.pointsValue}</td>
                     <td className="px-4 py-3 text-right">
-                      {deletable ? (
+                      <div className="flex items-center justify-end gap-3">
                         <button
                           type="button"
-                          onClick={() => setPending([u.uid])}
-                          className="text-xs text-gray-500 hover:text-red-400"
+                          disabled={togglingTest === u.uid}
+                          onClick={() => setTestFlag(u.uid, !u.isTest)}
+                          className="text-xs text-gray-500 hover:text-amber-300 disabled:opacity-40"
+                          title={
+                            u.isTest
+                              ? 'Remove the test flag — this account will use live Stripe again'
+                              : 'Mark as a test account — skips Stripe, no real charges'
+                          }
                         >
-                          Delete
+                          {togglingTest === u.uid ? '…' : u.isTest ? 'Untest' : 'Mark test'}
                         </button>
-                      ) : null}
+                        {deletable ? (
+                          <button
+                            type="button"
+                            onClick={() => setPending([u.uid])}
+                            className="text-xs text-gray-500 hover:text-red-400"
+                          >
+                            Delete
+                          </button>
+                        ) : null}
+                      </div>
                     </td>
                   </tr>
                 );

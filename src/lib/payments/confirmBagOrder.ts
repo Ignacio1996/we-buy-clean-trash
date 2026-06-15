@@ -72,7 +72,16 @@ export async function confirmBagOrder(orderId: string, uid: string): Promise<Con
   //      acceptable for the single-resident pilot — concurrent same-total
   //      orders could theoretically pick the wrong payment, but residents
   //      check out one order at a time.
-  let paid = order.total === 0;
+  // Test accounts (admin-flagged on the user doc, server-side) bypass Stripe
+  // entirely: their orders are auto-confirmed as paid with no real charge. This
+  // is the single gate for the bypass — read only from the trusted user doc,
+  // never from any client-supplied value. Declared here so the credit-consume
+  // step below reuses the same ref.
+  const userRef = adminDb.collection('users').doc(uid);
+  const userSnap = await userRef.get();
+  const isTestAccount = userSnap.get('isTest') === true;
+
+  let paid = order.total === 0 || isTestAccount;
   let sessionId: string | null = null;
   if (!paid) {
     const sessSnap = await adminDb
@@ -116,7 +125,6 @@ export async function confirmBagOrder(orderId: string, uid: string): Promise<Con
   // permitted inside). Re-checked inside the tx for status before enqueue.
   const zoneId = order.zoneId;
   const routeRef = zoneId ? await findNextPendingRouteRef(zoneId) : null;
-  const userRef = adminDb.collection('users').doc(uid);
 
   await adminDb.runTransaction(async (tx) => {
     // All reads first.

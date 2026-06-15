@@ -42,6 +42,11 @@ export async function POST(request: Request) {
 
   const zoneId = (user.zoneId as string | null) ?? null;
   const freeSheetCredits = user.freeSheetClaimed === true ? 0 : 1;
+  // Admin-flagged test accounts skip Stripe — the client routes straight to the
+  // success page, where confirmBagOrder (which re-reads this same flag) auto-
+  // marks the order paid. Surfacing it here is just a UX hint; the authoritative
+  // gate is server-side in confirmBagOrder.
+  const isTest = user.isTest === true;
 
   const billedTotal = calculateBagOrderTotal({
     quantity,
@@ -85,5 +90,6 @@ export async function POST(request: Request) {
     shipping: billedTotal.shipping,
     total: billedTotal.total,
     freeShipping: billedTotal.freeShipping,
+    isTest,
   });
 }

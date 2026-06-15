@@ -36,6 +36,14 @@ export interface UserDoc {
   freeSheetClaimed?: boolean;
   /** Defaults to 'resident' for legacy docs — see resolveAccountType. */
   accountType?: AccountType;
+  /**
+   * Test account flag, set only by an admin (server-side). Test accounts skip
+   * Stripe entirely — their bag orders are auto-confirmed as paid without a real
+   * charge — and can be filtered out of admin views, exports, and reports. This
+   * is the single server-side gate for the payment bypass: never trust a
+   * client-supplied value, or a real resident could self-flag to skip payment.
+   */
+  isTest?: boolean;
   /** When set, this user is the portal contact for a commercialAccount. */
   commercialAccountId?: string | null;
   createdAt: Timestamp;
