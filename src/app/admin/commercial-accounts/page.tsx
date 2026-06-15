@@ -18,7 +18,7 @@ async function loadData() {
       createdAt?: unknown;
       updatedAt?: unknown;
     };
-    const { createdAt: _c, updatedAt: _u, ...rest } = data;
+    const { createdAt: _c, updatedAt: _u, firstMonthOfData: _f, ...rest } = data;
     return rest as CommercialAccountView;
   });
 

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
 import { geocodeAddress } from '@/lib/maps/geocode';
@@ -14,6 +14,22 @@ function str(v: unknown): string {
 function strOrNull(v: unknown): string | null {
   const s = str(v);
   return s.length > 0 ? s : null;
+}
+
+/**
+ * Parses a "first month of data" input into a Timestamp pinned to the first of
+ * that month (UTC). Accepts "YYYY-MM" (HTML month input) or any ISO date
+ * string. Returns null for empty/invalid input.
+ */
+function monthStartOrNull(v: unknown): Timestamp | null {
+  const s = str(v);
+  if (!s) return null;
+  const m = /^(\d{4})-(\d{2})/.exec(s);
+  if (!m) return null;
+  const year = Number(m[1]);
+  const month = Number(m[2]);
+  if (month < 1 || month > 12) return null;
+  return Timestamp.fromDate(new Date(Date.UTC(year, month - 1, 1)));
 }
 
 function num(v: unknown): number | null {
@@ -65,6 +81,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'invalid_pickups_per_week' }, { status: 400 });
   }
 
+  const binsOnSiteRaw = num(raw.binsOnSite);
+  const binsOnSite = binsOnSiteRaw !== null && binsOnSiteRaw >= 0 ? Math.floor(binsOnSiteRaw) : 0;
+
   const collectionDays = normalizeCollectionDays(raw.collectionDays);
   if (!collectionDays) {
     return NextResponse.json({ error: 'invalid_collection_days' }, { status: 400 });
@@ -99,10 +118,12 @@ export async function POST(request: Request) {
     geo,
     zoneId,
     defaultBinSize: defaultBinSize as BinSize,
+    binsOnSite,
     pickupsPerWeek,
     collectionDays,
     affiliationId: strOrNull(raw.affiliationId),
     materialIds,
+    firstMonthOfData: monthStartOrNull(raw.firstMonthOfData),
     active: true,
     driverNotes: strOrNull(raw.driverNotes),
     createdAt: FieldValue.serverTimestamp(),

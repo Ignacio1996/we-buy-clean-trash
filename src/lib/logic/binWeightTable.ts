@@ -1,17 +1,24 @@
 /**
  * Bin-fullness → weight lookup for compost (food scrap) pickups.
  *
- * Source: Compost Clubhouse Collection Data spreadsheet, "Static Values" sheet,
- * with values verified by on-site weighing on 9/21/23 at City of Columbus sites.
- * The table is non-linear at the top — bins compact under their own weight
- * once past ~75%, so 100% weighs more than 4× the 25% value.
+ * Source: Compost Clubhouse Collection Data spreadsheet. We deliberately mirror
+ * the column her monthly reports actually aggregate — "Alternative Weight" in
+ * the Form Responses sheet — which is the LINEAR model:
  *
- * Used by Phase B (operator-scan flow): driver picks bin size + a fullness bucket,
+ *     weight = binCount × fullnessFraction × fullBinWeight
+ *     fullBinWeight = { 32: 130, 48: 195, 64: 260 } lbs   ("Static Values" sheet)
+ *
+ * So each bucket below is simply `fullnessFraction × fullBinWeight`. This makes
+ * the app reproduce Tia's three-year reporting history exactly. (Her sheet also
+ * has a second "Weight" column built on a stepped 32-gal-only bucket table, but
+ * the reports do NOT use it — see "Compost Integration - Phase C.md".)
+ *
+ * Used by the operator-scan flow: driver picks bin size + a fullness bucket,
  * server multiplies by bin count to get total weight for the pickup.
  *
- * 48-gallon: only 100% is provided in the source (195 lbs). The intermediate
- * buckets are linearly interpolated until Tia's team measures them on-site.
- * Flagged with `interpolated: true` so reports can footnote the estimate.
+ * The `interpolated` flag on each entry is retained for historical records and
+ * for a future per-bucket measured override, but no entry sets it today — the
+ * linear model is the intended source of truth, not a placeholder estimate.
  */
 
 export const BIN_SIZES = ['32', '48', '64'] as const;
@@ -36,26 +43,38 @@ interface BinWeightEntry {
 }
 
 /** weight per bin (lbs) at each fullness bucket, by bin size. */
+/** 100%-full weight per bin size (lbs), from the "Static Values" sheet. */
+export const FULL_BIN_WEIGHT_LBS: Record<BinSize, number> = {
+  '32': 130,
+  '48': 195,
+  '64': 260,
+};
+
+/**
+ * weight per bin (lbs) at each fullness bucket, by bin size.
+ * Linear: each value is `fullnessFraction × FULL_BIN_WEIGHT_LBS[size]`,
+ * matching the "Alternative Weight" column Tia's reports aggregate.
+ */
 export const BIN_WEIGHT_TABLE: Record<BinSize, Record<FullnessBucket, BinWeightEntry>> = {
   '32': {
     0: { weightLbs: 0 },
-    0.25: { weightLbs: 30 },
-    0.5: { weightLbs: 60 },
-    0.75: { weightLbs: 90 },
+    0.25: { weightLbs: 32.5 },
+    0.5: { weightLbs: 65 },
+    0.75: { weightLbs: 97.5 },
     1: { weightLbs: 130 },
   },
   '48': {
     0: { weightLbs: 0 },
-    0.25: { weightLbs: 48.75, interpolated: true },
-    0.5: { weightLbs: 97.5, interpolated: true },
-    0.75: { weightLbs: 146.25, interpolated: true },
+    0.25: { weightLbs: 48.75 },
+    0.5: { weightLbs: 97.5 },
+    0.75: { weightLbs: 146.25 },
     1: { weightLbs: 195 },
   },
   '64': {
     0: { weightLbs: 0 },
-    0.25: { weightLbs: 60 },
-    0.5: { weightLbs: 120 },
-    0.75: { weightLbs: 180 },
+    0.25: { weightLbs: 65 },
+    0.5: { weightLbs: 130 },
+    0.75: { weightLbs: 195 },
     1: { weightLbs: 260 },
   },
 };

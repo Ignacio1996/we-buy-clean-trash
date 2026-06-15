@@ -17,6 +17,8 @@
     "repair:bag-order-route": "tsx --env-file=.env.local scripts/repair-bag-order-route.ts",
     "delete-route": "tsx --env-file=.env.local scripts/delete-route.ts",
     "test:sms": "tsx --env-file=.env.local scripts/test-sms.ts",
+    "verify:compost-report": "tsx scripts/verify-compost-report.ts",
+    "import:compost": "tsx --env-file=.env.local scripts/import-compost-data.ts",
     "build:guide-kb": "tsx scripts/build-guide-kb.ts"
   },
   "dependencies": {

@@ -9,7 +9,12 @@ import type { MaterialId } from '@/lib/types/material';
 import type { MeasurementMode } from '@/lib/types/material';
 import { AddressAutocompleteField } from '@/components/address/AddressAutocompleteField';
 
-export type CommercialAccountView = Omit<CommercialAccountDoc, 'createdAt' | 'updatedAt'> & {
+// firstMonthOfData is a server-only Timestamp consumed by the report engine,
+// not the client UI — omit it here so it stays serializable.
+export type CommercialAccountView = Omit<
+  CommercialAccountDoc,
+  'createdAt' | 'updatedAt' | 'firstMonthOfData'
+> & {
   binCount?: number;
 };
 
@@ -143,6 +148,7 @@ function AccountCard({
       <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-xs sm:grid-cols-4">
         <Stat label="Zone" value={zoneName} />
         <Stat label="Default bin" value={BIN_DISPLAY_NAMES[account.defaultBinSize]} />
+        <Stat label="Bins on site" value={String(account.binsOnSite ?? 0)} />
         <Stat label="Pickups / week" value={String(account.pickupsPerWeek)} />
         <Stat
           label="Days"
@@ -319,9 +325,11 @@ function NewAccountForm({
     postalCode: '',
     zoneId: zones[0]?.id ?? '',
     defaultBinSize: '32' as BinSize,
+    binsOnSite: 1,
     pickupsPerWeek: 1,
     collectionDays: [1] as number[],
     affiliationId: '',
+    firstMonthOfData: '',
     materialIds: defaultMaterialIds.length > 0 ? defaultMaterialIds : [],
     driverNotes: '',
   });
@@ -379,6 +387,7 @@ function NewAccountForm({
       state: '',
       postalCode: '',
       affiliationId: '',
+      firstMonthOfData: '',
       driverNotes: '',
     }));
     router.refresh();
@@ -508,6 +517,22 @@ function NewAccountForm({
           </select>
         </label>
         <label className="block">
+          <span className="text-[11px] uppercase tracking-wide text-gray-500">Bins on site</span>
+          <input
+            type="number"
+            min={0}
+            max={99}
+            value={form.binsOnSite}
+            onChange={(e) =>
+              setForm((f) => ({
+                ...f,
+                binsOnSite: Math.max(0, Math.min(99, Number(e.target.value) || 0)),
+              }))
+            }
+            className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
+          />
+        </label>
+        <label className="block">
           <span className="text-[11px] uppercase tracking-wide text-gray-500">Pickups / week</span>
           <input
             type="number"
@@ -528,8 +553,18 @@ function NewAccountForm({
           value={form.affiliationId}
           onChange={(v) => setForm((f) => ({ ...f, affiliationId: v }))}
           placeholder="compost_clubhouse · city_of_columbus"
-          className="sm:col-span-2"
         />
+        <label className="block">
+          <span className="text-[11px] uppercase tracking-wide text-gray-500">
+            First month of data
+          </span>
+          <input
+            type="month"
+            value={form.firstMonthOfData}
+            onChange={(e) => setForm((f) => ({ ...f, firstMonthOfData: e.target.value }))}
+            className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
+          />
+        </label>
         <label className="block sm:col-span-2">
           <span className="text-[11px] uppercase tracking-wide text-gray-500">
             Collection days

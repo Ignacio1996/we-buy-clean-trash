@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
 import { isMaterialId, type MaterialId } from '@/lib/types/material';
@@ -48,11 +48,33 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   if (raw.driverNotes !== undefined) update.driverNotes = strOrNull(raw.driverNotes);
   if (raw.active !== undefined) update.active = Boolean(raw.active);
 
+  if (raw.firstMonthOfData !== undefined) {
+    const s = str(raw.firstMonthOfData);
+    if (!s) {
+      update.firstMonthOfData = null;
+    } else {
+      const m = /^(\d{4})-(\d{2})/.exec(s);
+      const month = m ? Number(m[2]) : 0;
+      if (!m || month < 1 || month > 12) {
+        return NextResponse.json({ error: 'invalid_first_month' }, { status: 400 });
+      }
+      update.firstMonthOfData = Timestamp.fromDate(new Date(Date.UTC(Number(m[1]), month - 1, 1)));
+    }
+  }
+
   if (raw.defaultBinSize !== undefined) {
     if (!isBinSize(raw.defaultBinSize)) {
       return NextResponse.json({ error: 'invalid_bin_size' }, { status: 400 });
     }
     update.defaultBinSize = raw.defaultBinSize as BinSize;
+  }
+
+  if (raw.binsOnSite !== undefined) {
+    const n = typeof raw.binsOnSite === 'number' ? raw.binsOnSite : Number(raw.binsOnSite);
+    if (!Number.isFinite(n) || n < 0) {
+      return NextResponse.json({ error: 'invalid_bins_on_site' }, { status: 400 });
+    }
+    update.binsOnSite = Math.floor(n);
   }
 
   if (raw.pickupsPerWeek !== undefined) {

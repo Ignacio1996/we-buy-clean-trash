@@ -29,6 +29,13 @@ export interface CommercialAccountDoc {
    * provisioning new bins from the admin form.
    */
   defaultBinSize: BinSize;
+  /**
+   * Declared number of bins physically at the site — mirrors the Directory
+   * sheet's "# of Bins" column and drives the report's "Bins on Site" value.
+   * This is editable site metadata, distinct from the count of provisioned QR
+   * bag docs (which may be zero for historical/imported sites).
+   */
+  binsOnSite: number;
   /** Number of pickups per week — Tia's drivers sequence routes around this. */
   pickupsPerWeek: number;
   /**
@@ -47,6 +54,14 @@ export interface CommercialAccountDoc {
    * Stored explicitly so the operator UI knows what to show per stop.
    */
   materialIds: MaterialId[];
+  /**
+   * First month this site has collection data — mirrors the Directory sheet's
+   * "First Month of Data" column. Drives the "Months Active" all-time KPI in
+   * the monthly reports (DATEDIF from this month to the report month). Stored
+   * as a Timestamp pinned to the first of the month; null for sites onboarded
+   * before any pickup has been recorded.
+   */
+  firstMonthOfData: Timestamp | null;
   /** Soft-delete flag — historical pickups stay attached. */
   active: boolean;
   /** Public-facing notes the driver sees on-site (gate code, bin location, etc.). */
