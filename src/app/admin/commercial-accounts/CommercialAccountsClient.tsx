@@ -263,13 +263,25 @@ function BinSection({ account }: { account: CommercialAccountView }) {
           {(account.binCount ?? 0) === 1 ? '' : 's'} provisioned
         </div>
         {!adding ? (
-          <button
-            type="button"
-            onClick={() => setAdding(true)}
-            className="text-[11px] text-blue-300 underline hover:text-blue-200"
-          >
-            Provision bins
-          </button>
+          <div className="flex items-center gap-3">
+            {(account.binCount ?? 0) > 0 && (
+              <a
+                href={`/admin/commercial-accounts/${account.id}/bins/print`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[11px] text-blue-300 underline hover:text-blue-200"
+              >
+                Print QR labels
+              </a>
+            )}
+            <button
+              type="button"
+              onClick={() => setAdding(true)}
+              className="text-[11px] text-blue-300 underline hover:text-blue-200"
+            >
+              Provision bins
+            </button>
+          </div>
         ) : (
           <button
             type="button"
