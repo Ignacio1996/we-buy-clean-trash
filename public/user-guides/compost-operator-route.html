@@ -22,6 +22,7 @@
       <ul>
         <li>An admin onboarded at least one commercial site in the operator's zone — see <a href="compost-admin-commercial-accounts.html">Compost · Admin: Commercial accounts</a>.</li>
         <li>That site has at least one bin provisioned (or the operator uses the manual-entry row).</li>
+        <li>For scanning: the bins carry printed QR labels — see <strong>Print QR labels</strong> in <a href="compost-admin-commercial-accounts.html">Compost · Admin: Commercial accounts</a>. (Scanning is optional; tapping the bin row from the list still works.)</li>
         <li>Today is one of the site's <strong>collection days</strong>, or you're testing an off-day pickup (still allowed — sites just won't show the TODAY badge).</li>
       </ul>
     </div>
@@ -31,6 +32,7 @@
       <li>The compost-route banner appears on <code>/operator</code> when commercial sites exist in the operator's zone.</li>
       <li>Today's sites surface above the rest with a TODAY badge.</li>
       <li>The site stop screen shows one row per provisioned bin.</li>
+      <li><strong>Scanning a bin's QR label</strong> jumps to (highlights + scrolls to) that bin's row; an unknown code warns and falls back to a manual bin.</li>
       <li>Picking a fullness bucket updates the per-row weight estimate live.</li>
       <li>Total weight = sum across all rows with content.</li>
       <li>Submitting writes a <code>binPickups</code> doc and increments commercial inventory.</li>
@@ -91,6 +93,18 @@
           <li>Tap the Comune card. You land on <strong>/operator/compost/[id]</strong>.</li>
           <li>Read the driver-notes amber banner if present (gate code, bin location).</li>
           <li><strong>Material</strong> defaults to <code>Food scrap</code>. Leave it.</li>
+          <li><strong>Scan a bin (optional but recommended).</strong> In the <strong>Scan a bin</strong>
+            card, tap <strong>📷 Scan bin</strong> and point the camera at the bin's printed QR
+            label (or type its <code>BIN-NNNN</code> number).
+            <ul>
+              <li>A match shows a green <em>"✓ BIN-NNNN — set its fullness below"</em> banner and
+                highlights + scrolls to that bin's row.</li>
+              <li>A code not on this site's list shows an amber warning and adds it as a manual bin
+                (in case you're at the wrong stop).</li>
+              <li>The scanner stays open so you can scan the next bin. Scanning is just a shortcut —
+                you can always tap the right row by its printed number instead.</li>
+            </ul>
+          </li>
           <li>Three rows are pre-rendered, one per provisioned bin. For each row tap the
             fullness bucket:
             <ul>
@@ -116,6 +130,8 @@
           <p><span class="checkbox"></span> Total updates instantly when fullness changes</p>
           <p><span class="checkbox"></span> Submit is disabled when no row has fullness &gt; 0</p>
           <p><span class="checkbox"></span> A site with zero bins falls back to a single manual-entry row that lets you pick a size and fullness ad-hoc</p>
+          <p><span class="checkbox"></span> Scanning a provisioned bin's QR highlights + scrolls to its row</p>
+          <p><span class="checkbox"></span> Scanning a code from another site shows the amber "isn't on this site's list" warning</p>
         </div>
       </div>
     </div>

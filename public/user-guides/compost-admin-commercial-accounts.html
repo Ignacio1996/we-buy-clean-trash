@@ -29,6 +29,7 @@
       <li>The site picks a default bin size and a list of pickup days.</li>
       <li>An <strong>affiliation tag</strong> (Compost Clubhouse vs City of Columbus) can be set free-form.</li>
       <li>Tia can <strong>provision N bins</strong> for the site — each gets a <code>BIN-NNNN</code> QR code that the driver scans on-site.</li>
+      <li>Tia can <strong>print QR labels</strong> for a site's bins (Rollo 2.25×1.25 or a 4×6 sheet) to stick on the physical bins.</li>
       <li>Archiving a site preserves its bins and historical pickups.</li>
     </ul>
 
@@ -82,8 +83,7 @@
           <strong>Expected:</strong> The counter jumps from <code>0</code> to <code>3 bins
           provisioned</code>. Three new <code>BIN-NNNN</code>-coded BagDocs now exist in
           Firestore, each tagged <code>reusable: true</code> and <code>commercialAccountId</code>
-          pointing at Comune. (Print labels for these in a future Phase B.5 — for the pilot,
-          taping a printed number sticker on the bin is fine.)
+          pointing at Comune. Print their QR labels next (Scenario 3).
         </div>
         <div class="verify-checklist">
           <h4>Verify:</h4>
@@ -94,7 +94,44 @@
     </div>
 
     <div class="scenario">
-      <div class="scenario-head">Scenario 3 — Edit and archive</div>
+      <div class="scenario-head">Scenario 3 — Print QR labels for the bins</div>
+      <div class="scenario-body">
+        <p>Each provisioned bin already has a unique <code>BIN-NNNN</code> code — this step
+          renders those codes as printable QR labels to stick on the physical bins. The driver
+          then scans the label at pickup (see
+          <a href="compost-operator-route.html">Compost · Operator route</a>).</p>
+        <ol>
+          <li>On the Comune card's bin section, click <strong>Print QR labels</strong> (appears
+            next to <strong>Provision bins</strong> once at least one bin exists). It opens a
+            print page in a new tab.</li>
+          <li>Pick a label size with the toggle in the top bar:
+            <ul>
+              <li><strong>2.25 × 1.25</strong> — Rollo thermal stock, one label per page.</li>
+              <li><strong>4 × 6</strong> — up to 10 labels on a single sheet (2 columns × 5 rows),
+                paginating automatically for sites with more bins.</li>
+            </ul>
+          </li>
+          <li>Each label shows the <strong>QR code</strong>, the <strong>site name</strong>, the
+            <code>BIN-NNNN</code> number, and the <strong>bin size</strong>
+            (e.g. "32 Gallon compost bin").</li>
+          <li>Click <strong>Print</strong> and send to your label printer. Stick one label on each bin.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The preview shows one label per provisioned bin. The QR
+          encodes the bin's <code>BIN-NNNN</code> code, so scanning it at a stop matches the right
+          bin row. Long business names wrap to two lines rather than getting cut off.
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> "Print QR labels" only appears when the site has ≥ 1 bin</p>
+          <p><span class="checkbox"></span> Switching 2.25×1.25 ↔ 4×6 re-lays out the labels</p>
+          <p><span class="checkbox"></span> The printed number under the QR matches the bin's code (human-readable fallback)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 4 — Edit and archive</div>
       <div class="scenario-body">
         <p>Archiving must <em>not</em> destroy historical pickups or detach the bins.</p>
         <ol>
