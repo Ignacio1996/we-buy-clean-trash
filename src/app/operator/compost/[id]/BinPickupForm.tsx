@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { QrScanner } from '@/components/scanner/QrScanner';
 import {
   BIN_DISPLAY_NAMES,
   BIN_SIZES,
@@ -41,6 +42,13 @@ interface RowState {
   bagId: string | null;
   binSize: BinSize;
   fullness: FullnessBucket;
+  /** QR code scanned for an ad-hoc bin not on this site's provisioned list. */
+  scannedCode?: string;
+}
+
+/** Normalize a scanned/typed bin code for matching (e.g. ' bin-1234 ' → 'BIN-1234'). */
+function normalizeCode(value: string): string {
+  return value.trim().toUpperCase();
 }
 
 const MAX_PHOTO_EDGE = 1024;
@@ -124,6 +132,11 @@ export function BinPickupForm({
   const [photoBusy, setPhotoBusy] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [scanOpen, setScanOpen] = useState(false);
+  const [highlightKey, setHighlightKey] = useState<string | null>(null);
+  const [scanMessage, setScanMessage] = useState<
+    { tone: 'ok' | 'warn'; text: string } | null
+  >(null);
 
   async function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -173,20 +186,66 @@ export function BinPickupForm({
     setRows((prev) => prev.map((r) => (r.key === key ? { ...r, ...patch } : r)));
   }
 
-  function addManualRow() {
+  function addManualRow(scannedCode?: string) {
+    const key = `manual_${Date.now()}`;
     setRows((prev) => [
       ...prev,
       {
-        key: `manual_${prev.length + 1}_${Date.now()}`,
+        key,
         bagId: null,
         binSize: defaultBinSize,
         fullness: 0 as FullnessBucket,
+        scannedCode,
       },
     ]);
+    return key;
   }
 
   function removeRow(key: string) {
     setRows((prev) => (prev.length === 1 ? prev : prev.filter((r) => r.key !== key)));
+  }
+
+  /** Briefly highlight a row and scroll it into view so the driver sets fullness. */
+  function focusRow(key: string) {
+    setHighlightKey(key);
+    if (typeof window !== 'undefined') {
+      window.requestAnimationFrame(() => {
+        document.getElementById(`binrow-${key}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+      window.setTimeout(() => setHighlightKey((cur) => (cur === key ? null : cur)), 2500);
+    }
+  }
+
+  function handleScan(raw: string) {
+    const code = normalizeCode(raw);
+    if (!code) return;
+
+    // 1. Match a provisioned bin (printed label QR == bin's qrCode/printedNumber).
+    const bin = bins.find(
+      (b) => normalizeCode(b.qrCode) === code || normalizeCode(b.printedNumber) === code,
+    );
+    if (bin) {
+      focusRow(bin.bagId);
+      setScanMessage({ tone: 'ok', text: `✓ ${bin.printedNumber} — set its fullness below.` });
+      return;
+    }
+
+    // 2. Already added as an ad-hoc row this session — just re-focus it.
+    const existing = rows.find((r) => r.scannedCode && normalizeCode(r.scannedCode) === code);
+    if (existing) {
+      focusRow(existing.key);
+      setScanMessage({ tone: 'ok', text: `${code} already added — set its fullness below.` });
+      return;
+    }
+
+    // 3. Unknown code — not provisioned to this site. Add as a manual bin so the
+    // stop still records, but warn the driver in case they're at the wrong site.
+    const key = addManualRow(code);
+    focusRow(key);
+    setScanMessage({
+      tone: 'warn',
+      text: `${code} isn't on this site's bin list — added as a manual bin. Double-check you're at the right stop.`,
+    });
   }
 
   const isSkip = action === 'skipped';
@@ -323,6 +382,54 @@ export function BinPickupForm({
         </div>
       ) : (
         <>
+      {/* Scan a bin's printed QR to jump straight to its row */}
+      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm font-semibold text-white">Scan a bin</div>
+            <div className="text-[11px] text-gray-500">
+              Point the camera at a bin&apos;s QR label to set its fullness.
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setScanMessage(null);
+              setScanOpen((v) => !v);
+            }}
+            className={`rounded-md border px-3 py-2 text-[12px] font-semibold ${
+              scanOpen
+                ? 'border-white/15 bg-black/30 text-gray-300'
+                : 'border-blue-400/50 bg-blue-500/20 text-blue-100'
+            }`}
+          >
+            {scanOpen ? 'Close scanner' : '📷 Scan bin'}
+          </button>
+        </div>
+
+        {scanOpen && (
+          <div className="mt-3">
+            <QrScanner
+              onDetected={handleScan}
+              manualPlaceholder="Or type the bin number (BIN-1234)"
+              scanInstructions="📷 Tap to scan a bin QR"
+            />
+          </div>
+        )}
+
+        {scanMessage && (
+          <p
+            className={`mt-3 rounded-lg border px-3 py-2 text-xs ${
+              scanMessage.tone === 'ok'
+                ? 'border-green-500/30 bg-green-500/10 text-green-200'
+                : 'border-amber-500/40 bg-amber-500/10 text-amber-100'
+            }`}
+          >
+            {scanMessage.text}
+          </p>
+        )}
+      </div>
+
       <div className="rounded-xl border border-white/10 bg-white/5 p-4">
         <div className="flex items-center justify-between">
           <div>
@@ -335,7 +442,7 @@ export function BinPickupForm({
           </div>
           <button
             type="button"
-            onClick={addManualRow}
+            onClick={() => addManualRow()}
             className="text-[11px] text-blue-300 underline hover:text-blue-200"
           >
             + Manual bin
@@ -348,12 +455,19 @@ export function BinPickupForm({
             return (
               <div
                 key={r.key}
-                className="rounded-lg border border-white/10 bg-black/30 p-3"
+                id={`binrow-${r.key}`}
+                className={`rounded-lg border bg-black/30 p-3 transition-colors ${
+                  highlightKey === r.key
+                    ? 'border-blue-400/70 ring-2 ring-blue-400/40'
+                    : 'border-white/10'
+                }`}
               >
                 <div className="flex items-center justify-between text-[11px]">
                   <div>
                     {bin ? (
                       <span className="font-mono text-white">{bin.printedNumber}</span>
+                    ) : r.scannedCode ? (
+                      <span className="font-mono text-amber-200">{r.scannedCode}</span>
                     ) : (
                       <span className="text-gray-400">Manual entry</span>
                     )}

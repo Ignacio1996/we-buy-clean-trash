@@ -9,6 +9,7 @@ export interface UserRow {
   name: string;
   email: string | null;
   role: Role;
+  zoneId: string | null;
   zoneName: string;
   pointsBalance: number;
   pointsValue: string;
@@ -68,6 +69,15 @@ const ROLE_BADGE: Record<Role, string> = {
   admin: 'bg-rose-500/10 text-rose-300',
 };
 
+export interface ZoneOption {
+  id: string;
+  name: string;
+}
+
+// Roles whose `zoneId` actually drives behaviour (e.g. the operator compost site
+// list filters on it). Mirrors the invite form's zone picker — keep in sync.
+const ZONE_EDITABLE_ROLES = new Set<Role>(['operator', 'program_manager']);
+
 type Filter = 'all' | Role;
 
 const FILTER_ORDER: Role[] = [
@@ -79,7 +89,7 @@ const FILTER_ORDER: Role[] = [
   'admin',
 ];
 
-export function AdminUsersTable({ users }: { users: UserRow[] }) {
+export function AdminUsersTable({ users, zones }: { users: UserRow[]; zones: ZoneOption[] }) {
   const router = useRouter();
   const [filter, setFilter] = useState<Filter>('all');
   const [hideTest, setHideTest] = useState(false);
@@ -89,7 +99,31 @@ export function AdminUsersTable({ users }: { users: UserRow[] }) {
   const [busy, setBusy] = useState(false);
   // uid currently mid-flight on a test-flag toggle (disables its control).
   const [togglingTest, setTogglingTest] = useState<string | null>(null);
+  // uid currently mid-flight on a zone reassignment (disables its dropdown).
+  const [savingZone, setSavingZone] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  async function setZone(uid: string, zoneId: string) {
+    setSavingZone(uid);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/users/zone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid, zoneId: zoneId || null }),
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        setError(data.error ?? `Request failed (${res.status})`);
+        return;
+      }
+      router.refresh();
+    } catch {
+      setError('Network error — please try again.');
+    } finally {
+      setSavingZone(null);
+    }
+  }
 
   const counts = useMemo(() => {
     const c: Record<string, number> = {};
@@ -330,7 +364,26 @@ export function AdminUsersTable({ users }: { users: UserRow[] }) {
                         {ROLE_LABELS[u.role]}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-400">{u.zoneName}</td>
+                    <td className="px-4 py-3 text-gray-400">
+                      {ZONE_EDITABLE_ROLES.has(u.role) ? (
+                        <select
+                          aria-label={`Zone for ${u.name}`}
+                          value={u.zoneId ?? ''}
+                          disabled={savingZone === u.uid}
+                          onChange={(e) => setZone(u.uid, e.target.value)}
+                          className="max-w-[11rem] rounded-md border border-white/10 bg-black/40 px-2 py-1 text-xs text-gray-200 focus:border-white/30 focus:outline-none disabled:opacity-40"
+                        >
+                          <option value="">Unassigned</option>
+                          {zones.map((z) => (
+                            <option key={z.id} value={z.id}>
+                              {z.name}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        u.zoneName
+                      )}
+                    </td>
                     <td className="px-4 py-3 text-gray-400">{u.zip ?? '—'}</td>
                     <td className="px-4 py-3 text-gray-400">{u.address ?? '—'}</td>
                     <td className="px-4 py-3 text-right text-white">

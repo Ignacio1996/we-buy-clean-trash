@@ -51,6 +51,9 @@ async function loadUsers(): Promise<{
 
 export default async function AdminUsersPage() {
   const { users, zones, addresses } = await loadUsers();
+  const zoneOptions = Array.from(zones.entries())
+    .map(([id, name]) => ({ id, name }))
+    .sort((a, b) => a.name.localeCompare(b.name));
   const rows: UserRow[] = users.map((u) => {
     const { address, zip } = formatAddress(u.addressId ? addresses.get(u.addressId) : undefined);
     return {
@@ -58,6 +61,7 @@ export default async function AdminUsersPage() {
       name: u.name,
       email: u.email,
       role: u.role,
+      zoneId: u.zoneId ?? null,
       zoneName: u.zoneId ? (zones.get(u.zoneId) ?? u.zoneId) : '—',
       pointsBalance: u.pointsBalance,
       pointsValue: pointsToDollars(u.pointsBalance).toFixed(2),
@@ -87,7 +91,7 @@ export default async function AdminUsersPage() {
         </div>
       </header>
 
-      <AdminUsersTable users={rows} />
+      <AdminUsersTable users={rows} zones={zoneOptions} />
     </div>
   );
 }
