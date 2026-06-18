@@ -12,6 +12,8 @@ export function roleLabel(role: InvitableRole): string {
       return 'Depot Worker';
     case 'depot_manager':
       return 'Depot Manager';
+    case 'program_manager':
+      return 'Program Manager';
     case 'admin':
       return 'Admin';
   }

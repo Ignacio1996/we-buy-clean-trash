@@ -59,19 +59,24 @@ export async function loadCompostReportData(): Promise<CompostReportData> {
   });
 
   const monthSet = new Set<string>();
-  const pickups: ReportPickupInput[] = pickupsSnap.docs.map((d) => {
-    const p = d.data() as BinPickupDoc;
-    const monthKey = monthKeyOf(p.createdAt);
-    monthSet.add(monthKey);
-    const bins = Array.isArray(p.bins) ? p.bins : [];
-    return {
-      siteId: p.commercialAccountId,
-      monthKey,
-      totalWeightLbs: p.totalWeightLbs ?? 0,
-      binFullness: bins.map((b) => b.fullness),
-      binCount: bins.length,
-    };
-  });
+  const pickups: ReportPickupInput[] = pickupsSnap.docs
+    // Skipped stops collect nothing — exclude them so they don't dilute
+    // avg-fullness or inflate pickup counts. Legacy docs have no `action`
+    // field and are treated as collections.
+    .filter((d) => d.get('action') !== 'skipped')
+    .map((d) => {
+      const p = d.data() as BinPickupDoc;
+      const monthKey = monthKeyOf(p.createdAt);
+      monthSet.add(monthKey);
+      const bins = Array.isArray(p.bins) ? p.bins : [];
+      return {
+        siteId: p.commercialAccountId,
+        monthKey,
+        totalWeightLbs: p.totalWeightLbs ?? 0,
+        binFullness: bins.map((b) => b.fullness),
+        binCount: bins.length,
+      };
+    });
 
   const affiliations = [
     ...new Set(sites.map((s) => s.affiliationId).filter((x): x is string => !!x)),

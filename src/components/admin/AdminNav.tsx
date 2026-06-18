@@ -22,7 +22,9 @@ const RECYCLING_ITEMS = [
 // program. Commercial-site directory + diversion reporting only.
 const COMPOST_ITEMS = [
   { href: '/admin/commercial-accounts', label: 'Commercial sites', icon: '🏢' },
+  { href: '/admin/compost/routes', label: 'Route runs', icon: '🛻' },
   { href: '/admin/compost/reports', label: 'Diversion reports', icon: '📈' },
+  { href: '/admin/compost/destinations', label: 'Drop-off destinations', icon: '📍' },
 ] as const;
 
 type NavItem = { href: string; label: string; icon: string };

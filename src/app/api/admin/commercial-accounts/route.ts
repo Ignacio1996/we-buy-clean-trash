@@ -6,6 +6,7 @@ import { geocodeAddress } from '@/lib/maps/geocode';
 import { isMaterialId, type MaterialId } from '@/lib/types/material';
 import { isBinSize, type BinSize } from '@/lib/logic/binWeightTable';
 import { normalizeCollectionDays } from '@/lib/types/commercialAccount';
+import { isCompostManagerRole } from '@/lib/types/role';
 
 function str(v: unknown): string {
   return typeof v === 'string' ? v.trim() : '';
@@ -43,7 +44,7 @@ function num(v: unknown): number | null {
 
 export async function POST(request: Request) {
   const session = await getSession();
-  if (!session || session.role !== 'admin') {
+  if (!session || !isCompostManagerRole(session.role)) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   }
 
@@ -125,6 +126,7 @@ export async function POST(request: Request) {
     materialIds,
     firstMonthOfData: monthStartOrNull(raw.firstMonthOfData),
     active: true,
+    status: 'active',
     driverNotes: strOrNull(raw.driverNotes),
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),

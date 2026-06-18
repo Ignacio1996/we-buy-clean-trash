@@ -4,7 +4,8 @@ import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
 import { isMaterialId, type MaterialId } from '@/lib/types/material';
 import { isBinSize, type BinSize } from '@/lib/logic/binWeightTable';
-import { normalizeCollectionDays } from '@/lib/types/commercialAccount';
+import { normalizeCollectionDays, isCommercialAccountStatus } from '@/lib/types/commercialAccount';
+import { isCompostManagerRole } from '@/lib/types/role';
 
 function str(v: unknown): string {
   return typeof v === 'string' ? v.trim() : '';
@@ -17,7 +18,7 @@ function strOrNull(v: unknown): string | null {
 
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
   const session = await getSession();
-  if (!session || session.role !== 'admin') {
+  if (!session || !isCompostManagerRole(session.role)) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   }
   const { id } = await context.params;
@@ -47,6 +48,12 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   if (raw.affiliationId !== undefined) update.affiliationId = strOrNull(raw.affiliationId);
   if (raw.driverNotes !== undefined) update.driverNotes = strOrNull(raw.driverNotes);
   if (raw.active !== undefined) update.active = Boolean(raw.active);
+  if (raw.status !== undefined) {
+    if (!isCommercialAccountStatus(raw.status)) {
+      return NextResponse.json({ error: 'invalid_status' }, { status: 400 });
+    }
+    update.status = raw.status;
+  }
 
   if (raw.firstMonthOfData !== undefined) {
     const s = str(raw.firstMonthOfData);
@@ -126,7 +133,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
 export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
   const session = await getSession();
-  if (!session || session.role !== 'admin') {
+  if (!session || !isCompostManagerRole(session.role)) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   }
   const { id } = await context.params;

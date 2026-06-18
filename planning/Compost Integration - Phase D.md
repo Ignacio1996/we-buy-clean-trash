@@ -1,7 +1,12 @@
 # Compost Integration · Phase D — Route Operations & Program Rollout
 
 **Date:** 2026-06-15
-**Status:** Planning.
+**Status:** In progress. Gating decisions resolved with Tia (2026-06-15). Landed
+so far: D1.1 stop actions + skip reasons, D1.4 cleaning/damaged toggles, D5 paused
+site status, D1.2′ tap-triggered on-the-way SMS + `compostDestinations`, and D4
+`program_manager` role + scoped `/program` surface. Remaining: D1.3 route record,
+D1.4 admin cleaning queue, D2 quarterly notes, D3 automated emails, D4
+`city_viewer`. See "Decisions resolved" below.
 **Builds on:** [Phase A](./Compost%20Integration%20-%20Phase%20A.md),
 [Phase B](./Compost%20Integration%20-%20Phase%20B.md),
 [Phase C](./Compost%20Integration%20-%20Phase%20C.md). Operational design captured in
@@ -35,6 +40,23 @@ until they're answered; build order should follow.
 
 Decisions 1 and 8 are quick. 5/6/7 are needed before D1 ships. 2/3 shape D5.
 
+### Decisions resolved — 2026-06-15 call with Tia
+
+| # | Resolution | Effect on build |
+|---|------------|-----------------|
+| 1 | **Cars-equivalent** — Tia doesn't know the source of her conversion; suspects it's off. Nic to find the published standard and report the exact mismatch. | **Deferred.** Keep current factor until Nic confirms the standard. |
+| 2 | **Lifetime totals** — go with **measured-only** (raw collected data), not the spreadsheet's carried-forward estimates. Accuracy over continuity. | **D5 historical baseline DROPPED.** Keep `METHODOLOGY_NOTE`. |
+| 3 | **Seasonal closures** — **yes**, add a paused status so summer-closed schools don't read as missed pickups. | **D5 site status: BUILD.** ✅ Done — `paused` status. |
+| 4 | **Report format** — she just File→Save-as-PDFs the "Monthly Reports" sheet. Nic to grab a recent City export to match precisely. | **Deferred** until sample in hand. |
+| 5 | **Destinations/SMS** — Alum Creek + London only. They no longer fill the truck to a limit: whole route runs Sunday, all containers swapped, dropped Monday. **No truck-weight routing.** SMS "on the way" should be **optional per destination**, triggered when the operator marks the **last pickup done** (not by truck weight). Alum Creek wants the text; London (a prison) probably can't receive one. | **D1.2 truck-weight tracker DROPPED.** Replace with optional per-destination "last pickup done → SMS" (see D1.2′ below). Deferred to a later pass. |
+| 6 | **Cleaning** — keep it dead simple: a per-stop **"needs cleaning" toggle** (not a 1–5 scale), in the same form (no second app/form). Feeds a cart-cleaning queue. | **D1.4 simplified.** ✅ Toggle done; admin cleaning queue still to build. |
+| 7 | **Skip reasons** — facility closed · no access · bin blocked · weather · other (+ optional note). | **D1.1 skip picker: BUILD.** ✅ Done. |
+| 8 | **Branding** — **Compost Clubhouse only** on City/client surfaces; no "powered by WBCT". | Apply in D4/D6. |
+| — | **Rewards/vouchers** — confirmed **none** for the compost program. | Stays out of scope. |
+| — | **Program manager** — Tia wants a program-manager owner (her daughter or Dominique), not herself. | Reinforces D4 `program_manager` role. |
+
+> **Immediate driver:** Tia runs the City of Columbus route **Sun June 21, ~2pm** and will run the app in parallel with the existing flow for feedback. The operator stop flow (D1.1 actions + skip reasons + cleaning/damaged toggles) is the priority for that test. Tia explicitly wants the operator form kept **as close to the current simple form as possible** (location · bins · weight · status · photo).
+
 ---
 
 ## Workstreams
@@ -55,27 +77,42 @@ order.
 - Data: extend `binPickups` with `action`, `skipReason?`, `damaged?` (the doc
   already carries `routeId`, `photoUrl`, `contaminationSeverity`).
 
-**D1.2 — Truck weight + destination.** Running truck-weight total at the top of the
-route screen; an "Add weight" entry after stops; at ~1 ton a prompt to pick a
-destination (decision #5); an auto-SMS to that facility via the existing
-`sendSMS()` stub; a "Confirm delivery" button that records the drop and resets the
-running weight to zero.
-- New collection `compostDeliveries`: `{ routeId, destination, weightLbs,
-  confirmedAt, smsSent }`.
+**D1.2 — ~~Truck weight + destination~~ DROPPED (decision #5).** Tia no longer
+fills the truck to a weight limit — the whole route runs Sunday, every container
+is swapped, and drops happen Monday. The running-weight tracker / 1-ton
+destination prompt is therefore removed.
 
-**D1.3 — Route record.** A real "today's run" object: *Start Route* at shift
-start, all stops/weights/deliveries attached, *End Route* with a summary screen
-("12 stops · 1 skipped · 18 carts swapped · 2,340 lbs delivered · 1 damaged").
-- New collection `compostRoutes`: `{ id, zoneId, operatorId, date, status:
-  'in_progress' | 'completed', startedAt, endedAt, summary }`. Pickups/deliveries
-  reference it via `routeId`. Admin can review any past route.
+**D1.2′ — Optional "on the way" SMS (replaces D1.2).** ✅ **Done.** A
+`compostDestinations` collection holds each facility (name, contact, phone,
+per-destination `smsEnabled`). The operator taps **"Done — heading to drop-off"**
+on `/operator/compost`, picks the destination, and `POST /api/compost/on-the-way`
+texts the program manager(s) ("…finished the last pickup and is heading to X") and
+— only if that destination opted in — the facility contact directly. Tap-triggered
+(no GPS), matching how Tia texts JD today; SMS goes through the existing
+`sendSMS()` stub and is logged to `smsLog`. Destinations are managed from
+`/program/destinations` (and `/admin/compost/destinations`).
 
-**D1.4 — Cart return + cleaning queue.** Admin queue: bins come back from a route →
-**Returned** → someone marks **Cleaned/Ready** (decision #6); damaged bins go to a
-"Needs replacement" list.
-- Extend the reusable-bin `BagDoc` with a `binStatus: 'ready' | 'out' |
-  'returned' | 'cleaning' | 'needs_replacement'` lifecycle (separate from the
-  sticker/bag status used by the recycling side).
+**D1.3 — Route record. ✅ Done.** A real "today's run" object: *Start Route* at
+shift start, all stops/weights attached, *End Route* with a summary screen
+("12 stops · 1 skipped · 18 carts swapped · 2,340 lbs · 1 damaged").
+- Collection `compostRoutes`: `{ id, zoneId, operatorId, date (Columbus-local
+  YYYY-MM-DD), status: 'in_progress' | 'completed', startedAt, endedAt, summary }`.
+  One open run per operator (Start is idempotent). Bin pickups attach via
+  `routeId` automatically — `process-bin-pickup` stamps the operator's open run
+  onto each pickup (null when no run is open / ad-hoc). End Route freezes the
+  summary from the run's pickups (pure `summarizeCompostRoute`).
+- Operator surface: Start/End control at the top of `/operator/compost` with a
+  live tally; admin reviews any past run at `/admin/compost/routes`.
+- Single-driver: no dispatch/assignment — the run belongs to whoever started it.
+
+**D1.4 — Cleaning queue (simplified per decision #6).** No bin-by-bin lifecycle —
+Tia just wants to know *which sites need the cart-cleaning truck*. The operator
+sets a per-stop **"needs cleaning"** toggle (✅ done on `binPickups.needsCleaning`)
+and a **"damaged — needs replacement"** toggle (✅ `binPickups.damaged`). **Still to
+build:** an admin queue surface that lists open `needsCleaning` / `damaged` stops
+and lets someone mark them resolved (a simple resolved flag on the pickup, or a
+lightweight `cleaningTasks` collection). The full `BagDoc.binStatus` lifecycle is
+shelved as over-engineered for the pilot.
 
 **D1.5 — Route-aware reporting.** Surface route summaries + contamination/skip
 rates in `/admin/compost`. Feeds D2.
@@ -102,28 +139,28 @@ log sends to an `emailLog` collection (matches her "Email Logs" sheet).
 
 ### D4 — Roles & access
 
-Two new invite-only roles (same pattern as operator/depot/manager — admin issues
-an `invites/{token}`, user accepts, claim set via Admin SDK; gate in `proxy.ts`):
-
-- **`program_manager`** (Dominique) — zone-scoped read + admin on commercial
-  accounts, pickups, routes, and reports. Effectively a compost-only admin.
+- **`program_manager`** ✅ **Done.** Invite-only (appears in the admin invite form
+  with a zone selector), claim set via the existing accept-invite flow. Lands on a
+  scoped **`/program`** surface (dashboard + diversion reports + commercial sites +
+  drop-off destinations) gated by `requireAnyRole(['program_manager','admin'])`.
+  The compost write APIs (`/api/admin/commercial-accounts/*`,
+  `/api/compost/destinations/*`) accept `program_manager` via
+  `COMPOST_MANAGER_ROLES`. The `/program` pages reuse the admin compost components
+  (re-exported) so the two surfaces never diverge. Branded **Compost Clubhouse**.
+  *Pilot note:* zone-scoping is not strictly enforced on writes (single-zone
+  pilot) — harden when a second zone exists.
 - **`city_viewer`** (Ari, City of Columbus) — read-only, scoped to the
-  `city_of_columbus` affiliation: can view/export only City diversion reports.
+  `city_of_columbus` affiliation. **Still deferred** — build alongside the City
+  report-format work (decision #4).
 
-Touches `src/lib/types/role.ts`, `proxy.ts` route gating, the invite flow, and a
-new `/program` (or scoped `/admin/compost`) entry surface. Branding per decision
-#8 on the city_viewer surface.
+### D5 — Site status (decisions 2 & 3 resolved)
 
-### D5 — Historical baseline & site status (depends on decisions 2 & 3)
-
-- **Site status** — add a `paused` / seasonal-closure concept to
-  `commercialAccounts` so summer gaps for schools don't read as missed pickups and
-  don't distort avg-fullness. Resolves decision #3.
-- **Historical baseline (only if decision #2 = preserve)** — a
-  `compostMonthlyBaseline` snapshot of her spreadsheet's reported per-site
-  monthly/cumulative figures for months before go-live, displayed for historical
-  months while the live engine takes over for new pickups. If decision #2 =
-  measured-only, this workstream is dropped and we keep the current
+- **Site status** ✅ — `commercialAccounts.status: 'active' | 'paused'` added.
+  Paused sites are dropped from the operator's daily route and don't read as
+  missed pickups; admin pauses/resumes from the commercial-sites page. Resolves
+  decision #3.
+- **Historical baseline — DROPPED.** Decision #2 = measured-only, so the
+  `compostMonthlyBaseline` snapshot is not built; we keep the current
   `METHODOLOGY_NOTE`.
 
 ### D6 — Polish & data hygiene
@@ -152,17 +189,21 @@ new `/program` (or scoped `/admin/compost`) entry surface. Branding per decision
 
 ## New data model (summary)
 
-| Collection / field | Purpose | Workstream |
-|--------------------|---------|------------|
-| `compostRoutes` | the driver's day record | D1.3 |
-| `compostDeliveries` | truck drops to facilities | D1.2 |
-| `binPickups.action / skipReason / damaged` | per-stop action detail | D1.1 |
-| `BagDoc.binStatus` | reusable-bin cleaning lifecycle | D1.4 |
-| `compostNotes` | per-site quarterly notes | D2 |
-| `emailLog` | monthly report send log | D3 |
-| `Role: program_manager / city_viewer` | program + City access | D4 |
-| `commercialAccounts.status` (paused) | seasonal closures | D5 |
-| `compostMonthlyBaseline` | historical reported figures (conditional) | D5 |
+| Collection / field | Purpose | Workstream | Status |
+|--------------------|---------|------------|--------|
+| `binPickups.action / skipReason` | swapped/loaded/skipped + skip reason | D1.1 | ✅ done |
+| `binPickups.needsCleaning / damaged` | per-stop cleaning + replacement flags | D1.4 | ✅ done |
+| `commercialAccounts.status` (active/paused) | seasonal closures | D5 | ✅ done |
+| `compostDestinations` | drop-off facilities + per-dest SMS opt-in | D1.2′ | ✅ done |
+| `Role: program_manager` + `/program` surface | compost program access | D4 | ✅ done |
+| `Role: city_viewer` | read-only City reports | D4 | deferred |
+| `compostRoutes` | the driver's day record | D1.3 | ✅ done |
+| `cleaningTasks` (or resolved flag) | admin cleaning/replacement queue | D1.4 | to build |
+| `compostNotes` | per-site quarterly notes | D2 | to build |
+| `emailLog` | monthly report send log | D3 | to build |
+| ~~`compostDeliveries`~~ | ~~truck drops~~ — dropped (no truck-weight routing) | D1.2 | dropped |
+| ~~`compostMonthlyBaseline`~~ | ~~historical figures~~ — dropped (measured-only) | D5 | dropped |
+| ~~`BagDoc.binStatus`~~ | ~~bin lifecycle~~ — shelved (over-engineered) | D1.4 | dropped |
 
 All compost collections stay isolated from the recycling program; all privileged
 writes go through Admin SDK API routes per the repo trust boundary; points math is

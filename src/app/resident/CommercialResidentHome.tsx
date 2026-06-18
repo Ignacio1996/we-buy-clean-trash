@@ -28,6 +28,8 @@ async function loadPickupSummary(commercialAccountId: string) {
   let totalLbs = 0;
   for (const d of snap.docs) {
     const p = d.data() as BinPickupDoc;
+    // Skipped stops collected nothing — don't surface them as pickups.
+    if (p.action === 'skipped') continue;
     totalLbs += p.totalWeightLbs;
     const ts = p.createdAt?.toDate?.();
     rows.push({

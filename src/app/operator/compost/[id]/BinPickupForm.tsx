@@ -15,6 +15,13 @@ import {
   type ContaminationSeverity,
   type MaterialId,
 } from '@/lib/types/material';
+import {
+  BIN_PICKUP_ACTIONS,
+  COMPOST_SKIP_REASONS,
+  COMPOST_SKIP_REASON_LABELS,
+  type BinPickupAction,
+  type CompostSkipReason,
+} from '@/lib/types/binPickup';
 
 export interface BinView {
   bagId: string;
@@ -81,6 +88,18 @@ const CONTAM_LABELS: Record<ContaminationSeverity, string> = {
   severe: 'Severe',
 };
 
+const ACTION_LABELS: Record<BinPickupAction, string> = {
+  swapped: 'Swapped',
+  loaded: 'Loaded',
+  skipped: 'Skipped',
+};
+
+const ACTION_HINTS: Record<BinPickupAction, string> = {
+  swapped: 'Gave clean empties, took the full bins',
+  loaded: 'Dumped into the truck, set the same bins back',
+  skipped: 'Nothing collected this stop',
+};
+
 export function BinPickupForm({
   accountId,
   defaultBinSize,
@@ -95,6 +114,10 @@ export function BinPickupForm({
   const router = useRouter();
 
   const [materialId, setMaterialId] = useState<MaterialId>(materials[0]?.id ?? '');
+  const [action, setAction] = useState<BinPickupAction>('swapped');
+  const [skipReason, setSkipReason] = useState<CompostSkipReason | null>(null);
+  const [needsCleaning, setNeedsCleaning] = useState(false);
+  const [damaged, setDamaged] = useState(false);
   const [contam, setContam] = useState<ContaminationSeverity>('none');
   const [notes, setNotes] = useState('');
   const [photo, setPhoto] = useState<{ base64: string; mime: string; preview: string } | null>(null);
@@ -166,12 +189,19 @@ export function BinPickupForm({
     setRows((prev) => (prev.length === 1 ? prev : prev.filter((r) => r.key !== key)));
   }
 
+  const isSkip = action === 'skipped';
+
   async function submit() {
     if (!materialId) {
       setError('Pick a material.');
       return;
     }
-    if (filledCount === 0) {
+    if (isSkip) {
+      if (!skipReason) {
+        setError('Pick a reason for skipping.');
+        return;
+      }
+    } else if (filledCount === 0) {
       setError('Set fullness on at least one bin.');
       return;
     }
@@ -184,10 +214,16 @@ export function BinPickupForm({
         body: JSON.stringify({
           commercialAccountId: accountId,
           materialId,
-          bins: rows
-            .filter((r) => r.fullness > 0)
-            .map((r) => ({ bagId: r.bagId, binSize: r.binSize, fullness: r.fullness })),
-          contaminationSeverity: contam,
+          action,
+          skipReason: isSkip ? skipReason : null,
+          bins: isSkip
+            ? []
+            : rows
+                .filter((r) => r.fullness > 0)
+                .map((r) => ({ bagId: r.bagId, binSize: r.binSize, fullness: r.fullness })),
+          contaminationSeverity: isSkip ? 'none' : contam,
+          needsCleaning: isSkip ? false : needsCleaning,
+          damaged: isSkip ? false : damaged,
           driverNotes: notes.trim() || null,
           photoBase64: photo?.base64 ?? null,
           photoMime: photo?.mime ?? 'image/jpeg',
@@ -233,6 +269,60 @@ export function BinPickupForm({
         </label>
       </div>
 
+      {/* Stop status — what happened at this stop */}
+      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+        <div className="text-[11px] uppercase tracking-wide text-gray-500">Status</div>
+        <div className="mt-2 grid grid-cols-3 gap-1">
+          {BIN_PICKUP_ACTIONS.map((a) => {
+            const on = action === a;
+            return (
+              <button
+                key={a}
+                type="button"
+                onClick={() => setAction(a)}
+                className={`rounded-md border px-2 py-2 text-[12px] font-semibold ${
+                  on
+                    ? a === 'skipped'
+                      ? 'border-red-500/50 bg-red-500/15 text-red-100'
+                      : 'border-blue-400/50 bg-blue-500/20 text-blue-100'
+                    : 'border-white/10 bg-black/30 text-gray-400'
+                }`}
+              >
+                {ACTION_LABELS[a]}
+              </button>
+            );
+          })}
+        </div>
+        <div className="mt-2 text-[11px] text-gray-500">{ACTION_HINTS[action]}</div>
+      </div>
+
+      {isSkip ? (
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4">
+          <div className="text-[11px] uppercase tracking-wide text-red-200/80">
+            Why was it skipped?
+          </div>
+          <div className="mt-2 grid grid-cols-2 gap-1.5">
+            {COMPOST_SKIP_REASONS.map((reason) => {
+              const on = skipReason === reason;
+              return (
+                <button
+                  key={reason}
+                  type="button"
+                  onClick={() => setSkipReason(reason)}
+                  className={`rounded-md border px-2 py-2 text-[12px] ${
+                    on
+                      ? 'border-red-400/60 bg-red-500/25 text-red-50'
+                      : 'border-white/10 bg-black/30 text-gray-300'
+                  }`}
+                >
+                  {COMPOST_SKIP_REASON_LABELS[reason]}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        <>
       <div className="rounded-xl border border-white/10 bg-white/5 p-4">
         <div className="flex items-center justify-between">
           <div>
@@ -345,8 +435,51 @@ export function BinPickupForm({
             </button>
           ))}
         </div>
+      </div>
 
-        <label className="mt-3 block">
+      {/* Bin condition flags — feed the cart-cleaning + replacement queues */}
+      <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2">
+        <button
+          type="button"
+          onClick={() => setNeedsCleaning((v) => !v)}
+          className={`flex w-full items-center justify-between rounded-lg border px-3 py-2.5 text-sm ${
+            needsCleaning
+              ? 'border-amber-500/50 bg-amber-500/15 text-amber-100'
+              : 'border-white/10 bg-black/30 text-gray-300'
+          }`}
+        >
+          <span>🧼 Bin(s) need cleaning</span>
+          <span className="text-[11px] font-semibold">{needsCleaning ? 'YES' : 'No'}</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setDamaged((v) => !v)}
+          className={`flex w-full items-center justify-between rounded-lg border px-3 py-2.5 text-sm ${
+            damaged
+              ? 'border-red-500/50 bg-red-500/15 text-red-100'
+              : 'border-white/10 bg-black/30 text-gray-300'
+          }`}
+        >
+          <span>🛠️ Bin damaged — needs replacement</span>
+          <span className="text-[11px] font-semibold">{damaged ? 'YES' : 'No'}</span>
+        </button>
+      </div>
+
+      <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-4">
+        <div className="flex items-baseline justify-between">
+          <div className="text-[11px] uppercase tracking-wide text-blue-200/70">Total weight</div>
+          <div className="text-2xl font-bold text-white">{totalLbs} lbs</div>
+        </div>
+        <div className="mt-1 text-[11px] text-blue-200/70">
+          {filledCount} of {rows.length} bin{rows.length === 1 ? '' : 's'} with content
+        </div>
+      </div>
+        </>
+      )}
+
+      {/* Notes + photo — shared across collect/skip */}
+      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+        <label className="block">
           <span className="text-[11px] uppercase tracking-wide text-gray-500">Notes</span>
           <textarea
             value={notes}
@@ -391,23 +524,15 @@ export function BinPickupForm({
         </div>
       </div>
 
-      <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-4">
-        <div className="flex items-baseline justify-between">
-          <div className="text-[11px] uppercase tracking-wide text-blue-200/70">Total weight</div>
-          <div className="text-2xl font-bold text-white">{totalLbs} lbs</div>
-        </div>
-        <div className="mt-1 text-[11px] text-blue-200/70">
-          {filledCount} of {rows.length} bin{rows.length === 1 ? '' : 's'} with content
-        </div>
-      </div>
-
       <button
         type="button"
         onClick={submit}
-        disabled={busy || filledCount === 0}
-        className="w-full rounded-lg bg-green-500 px-4 py-3 text-sm font-semibold text-black disabled:opacity-50"
+        disabled={busy || (isSkip ? !skipReason : filledCount === 0)}
+        className={`w-full rounded-lg px-4 py-3 text-sm font-semibold text-black disabled:opacity-50 ${
+          isSkip ? 'bg-red-400' : 'bg-green-500'
+        }`}
       >
-        {busy ? 'Submitting…' : '✓ Record pickup'}
+        {busy ? 'Submitting…' : isSkip ? '✕ Record skip' : '✓ Record pickup'}
       </button>
 
       {error && (

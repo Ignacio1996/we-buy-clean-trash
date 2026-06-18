@@ -56,6 +56,8 @@ function roleLabel(role: string): string {
       return 'Depot worker';
     case 'depot_manager':
       return 'Depot manager';
+    case 'program_manager':
+      return 'Program manager';
     case 'admin':
       return 'Admin';
     default:

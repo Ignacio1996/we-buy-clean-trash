@@ -47,3 +47,10 @@ export async function requireRole(role: Role): Promise<SessionUser> {
   if (session.role !== role) redirect(ROLE_HOME_PATH[session.role]);
   return session;
 }
+
+/** Allow any of several roles (e.g. admin OR program_manager for compost surfaces). */
+export async function requireAnyRole(roles: readonly Role[]): Promise<SessionUser> {
+  const session = await requireSession();
+  if (!roles.includes(session.role)) redirect(ROLE_HOME_PATH[session.role]);
+  return session;
+}

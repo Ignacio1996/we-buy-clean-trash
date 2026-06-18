@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { SESSION_COOKIE_NAME } from '@/lib/auth/cookie';
 
-const PROTECTED_PREFIXES = ['/resident', '/operator', '/depot', '/manager', '/admin'];
+const PROTECTED_PREFIXES = ['/resident', '/operator', '/depot', '/manager', '/program', '/admin'];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -24,6 +24,7 @@ export const config = {
     '/operator/:path*',
     '/depot/:path*',
     '/manager/:path*',
+    '/program/:path*',
     '/admin/:path*',
   ],
 };

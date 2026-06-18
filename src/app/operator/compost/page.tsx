@@ -4,6 +4,11 @@ import { adminDb } from '@/lib/firebase/admin';
 import type { CommercialAccountDoc } from '@/lib/types/commercialAccount';
 import { COLLECTION_DAY_LABELS } from '@/lib/types/commercialAccount';
 import type { UserDoc } from '@/lib/types/user';
+import type { CompostDestinationDoc } from '@/lib/types/compostDestination';
+import type { BinPickupDoc } from '@/lib/types/binPickup';
+import type { CompostRouteDoc } from '@/lib/types/compostRoute';
+import { summarizeCompostRoute } from '@/lib/logic/compostRouteSummary';
+import { columbusTimeLabel } from '@/lib/logic/columbusDate';
 import {
   SSOP,
   SSOpBadge,
@@ -11,6 +16,8 @@ import {
   SSOpHeader,
   SSOpShell,
 } from '@/components/operator/SSOp';
+import { OnTheWayButton, type DestinationChoice } from './OnTheWayButton';
+import { CompostRouteControl, type ActiveRouteView } from './CompostRouteControl';
 
 interface SiteRow {
   id: string;
@@ -21,6 +28,7 @@ interface SiteRow {
   affiliationId: string | null;
   binCount: number;
   scheduledToday: boolean;
+  paused: boolean;
   scheduledDays: string;
   scheduledDaysShort: string;
 }
@@ -56,6 +64,7 @@ async function loadSites(operatorUid: string): Promise<SiteRow[]> {
     const days = Array.isArray(a.collectionDays)
       ? a.collectionDays.map((n) => COLLECTION_DAY_LABELS[n]).filter(Boolean)
       : [];
+    const paused = a.status === 'paused';
     return {
       id: a.id,
       businessName: a.businessName,
@@ -64,22 +73,76 @@ async function loadSites(operatorUid: string): Promise<SiteRow[]> {
       pickupsPerWeek: a.pickupsPerWeek,
       affiliationId: a.affiliationId,
       binCount: binCounts.get(a.id) ?? 0,
-      scheduledToday: Array.isArray(a.collectionDays) && a.collectionDays.includes(today),
+      // Paused sites are never "due today" — keeps summer-closed schools off the route.
+      scheduledToday:
+        !paused && Array.isArray(a.collectionDays) && a.collectionDays.includes(today),
+      paused,
       scheduledDays: days.join(', ') || '—',
       scheduledDaysShort: days[0] ?? '—',
     };
   });
 
   rows.sort((a, b) => {
+    // Paused last, then today first, then alphabetical.
+    if (a.paused !== b.paused) return a.paused ? 1 : -1;
     if (a.scheduledToday !== b.scheduledToday) return a.scheduledToday ? -1 : 1;
     return a.businessName.localeCompare(b.businessName);
   });
   return rows;
 }
 
+async function loadDestinations(operatorUid: string): Promise<DestinationChoice[]> {
+  const operatorSnap = await adminDb.collection('users').doc(operatorUid).get();
+  const operatorZoneId = operatorSnap.exists
+    ? ((operatorSnap.data() as UserDoc).zoneId ?? null)
+    : null;
+
+  const snap = await adminDb
+    .collection('compostDestinations')
+    .where('active', '==', true)
+    .get();
+  return snap.docs
+    .map((d) => d.data() as CompostDestinationDoc)
+    // Show zone-matched destinations (plus zone-less ones) for this operator.
+    .filter((d) => !operatorZoneId || !d.zoneId || d.zoneId === operatorZoneId)
+    .map((d) => ({ id: d.id, name: d.name }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/** The operator's open run (if any) with a live tally for the run banner. */
+async function loadActiveRoute(operatorUid: string): Promise<ActiveRouteView | null> {
+  const snap = await adminDb
+    .collection('compostRoutes')
+    .where('operatorId', '==', operatorUid)
+    .where('status', '==', 'in_progress')
+    .limit(1)
+    .get();
+  if (snap.empty) return null;
+  const route = snap.docs[0].data() as CompostRouteDoc;
+
+  const pickupsSnap = await adminDb
+    .collection('binPickups')
+    .where('routeId', '==', route.id)
+    .get();
+  const tally = summarizeCompostRoute(pickupsSnap.docs.map((d) => d.data() as BinPickupDoc));
+  const startedAt = route.startedAt?.toDate?.() ?? null;
+
+  return {
+    id: route.id,
+    startedLabel: startedAt ? columbusTimeLabel(startedAt) : null,
+    stops: tally.stops,
+    skipped: tally.skipped,
+    totalWeightLbs: tally.totalWeightLbs,
+  };
+}
+
 export default async function OperatorCompostPage() {
   const session = await requireRole('operator');
-  const sites = await loadSites(session.uid);
+  const [sites, destinations, activeRoute] = await Promise.all([
+    loadSites(session.uid),
+    loadDestinations(session.uid),
+    loadActiveRoute(session.uid),
+  ]);
   const todayCount = sites.filter((s) => s.scheduledToday).length;
 
   return (
@@ -107,6 +170,10 @@ export default async function OperatorCompostPage() {
         headerBg={SSOP.mint}
       />
 
+      <div style={{ background: '#fff', padding: '18px 20px 0' }}>
+        <CompostRouteControl active={activeRoute} />
+      </div>
+
       {sites.length === 0 ? (
         <div style={{ padding: '40px 20px', textAlign: 'center' }}>
           <div
@@ -130,6 +197,8 @@ export default async function OperatorCompostPage() {
           </div>
         </div>
       )}
+
+      <OnTheWayButton destinations={destinations} />
     </SSOpShell>
   );
 }
@@ -148,6 +217,7 @@ function SiteCard({ site }: { site: SiteRow }) {
         padding: '14px 14px',
         boxShadow: `0 3px 0 ${SSOP.ink}`,
         textDecoration: 'none',
+        opacity: site.paused ? 0.65 : 1,
       }}
     >
       <div
@@ -155,7 +225,7 @@ function SiteCard({ site }: { site: SiteRow }) {
           width: 48,
           height: 48,
           borderRadius: 12,
-          background: site.scheduledToday ? SSOP.yellow : SSOP.sky,
+          background: site.paused ? '#e5e5e5' : site.scheduledToday ? SSOP.yellow : SSOP.sky,
           border: `2px solid ${SSOP.ink}`,
           display: 'flex',
           flexDirection: 'column',
@@ -166,7 +236,7 @@ function SiteCard({ site }: { site: SiteRow }) {
         }}
       >
         <span style={{ fontSize: 9, fontWeight: 900, letterSpacing: 1, textTransform: 'uppercase', color: SSOP.ink }}>
-          {site.scheduledToday ? 'Today' : site.scheduledDaysShort}
+          {site.paused ? 'Paused' : site.scheduledToday ? 'Today' : site.scheduledDaysShort}
         </span>
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>

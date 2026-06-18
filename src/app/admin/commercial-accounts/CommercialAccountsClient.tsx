@@ -98,6 +98,7 @@ function AccountCard({
   const zoneName = zones.find((z) => z.id === account.zoneId)?.name ?? account.zoneId;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const paused = account.status === 'paused';
 
   async function archive() {
     if (!confirm(`Archive ${account.businessName}? Bins remain attached for reporting.`)) return;
@@ -107,6 +108,22 @@ function AccountCard({
     setBusy(false);
     if (!res.ok) {
       setError('Archive failed.');
+      return;
+    }
+    router.refresh();
+  }
+
+  async function togglePause() {
+    setBusy(true);
+    setError(null);
+    const res = await fetch(`/api/admin/commercial-accounts/${account.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ status: paused ? 'active' : 'paused' }),
+    });
+    setBusy(false);
+    if (!res.ok) {
+      setError(paused ? 'Resume failed.' : 'Pause failed.');
       return;
     }
     router.refresh();
@@ -123,6 +140,11 @@ function AccountCard({
                 {account.affiliationId}
               </span>
             )}
+            {paused && (
+              <span className="rounded-full border border-orange-500/40 bg-orange-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-orange-300">
+                Paused
+              </span>
+            )}
           </div>
           <div className="mt-0.5 text-xs text-gray-400">
             {account.contactName}
@@ -135,14 +157,28 @@ function AccountCard({
             {account.postalCode}
           </div>
         </div>
-        <button
-          type="button"
-          onClick={archive}
-          disabled={busy}
-          className="shrink-0 rounded border border-red-500/30 px-2 py-1 text-[11px] text-red-400 hover:bg-red-500/10 disabled:opacity-50"
-        >
-          {busy ? '…' : 'Archive'}
-        </button>
+        <div className="flex shrink-0 items-center gap-1.5">
+          <button
+            type="button"
+            onClick={togglePause}
+            disabled={busy}
+            className={`rounded border px-2 py-1 text-[11px] disabled:opacity-50 ${
+              paused
+                ? 'border-green-500/30 text-green-400 hover:bg-green-500/10'
+                : 'border-orange-500/30 text-orange-400 hover:bg-orange-500/10'
+            }`}
+          >
+            {busy ? '…' : paused ? 'Resume' : 'Pause'}
+          </button>
+          <button
+            type="button"
+            onClick={archive}
+            disabled={busy}
+            className="rounded border border-red-500/30 px-2 py-1 text-[11px] text-red-400 hover:bg-red-500/10 disabled:opacity-50"
+          >
+            {busy ? '…' : 'Archive'}
+          </button>
+        </div>
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-xs sm:grid-cols-4">

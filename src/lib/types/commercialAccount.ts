@@ -2,6 +2,15 @@ import type { Timestamp } from 'firebase-admin/firestore';
 import type { BinSize } from '@/lib/logic/binWeightTable';
 import type { MaterialId } from './material';
 
+export const COMMERCIAL_ACCOUNT_STATUSES = ['active', 'paused'] as const;
+export type CommercialAccountStatus = (typeof COMMERCIAL_ACCOUNT_STATUSES)[number];
+
+export function isCommercialAccountStatus(v: unknown): v is CommercialAccountStatus {
+  return (
+    typeof v === 'string' && (COMMERCIAL_ACCOUNT_STATUSES as readonly string[]).includes(v)
+  );
+}
+
 /**
  * Commercial site directory record — admin-onboarded, mirrors the Compost
  * Clubhouse "Directory" sheet. Sites can exist without a UserDoc (no portal
@@ -64,6 +73,13 @@ export interface CommercialAccountDoc {
   firstMonthOfData: Timestamp | null;
   /** Soft-delete flag — historical pickups stay attached. */
   active: boolean;
+  /**
+   * Service status, distinct from archive (`active`). `paused` is a planned,
+   * temporary pause — e.g. a school over summer break — so the gap doesn't read
+   * as a missed pickup and the site is dropped from the operator's daily list.
+   * Legacy docs without this field are treated as 'active'.
+   */
+  status: CommercialAccountStatus;
   /** Public-facing notes the driver sees on-site (gate code, bin location, etc.). */
   driverNotes: string | null;
   createdAt: Timestamp;

@@ -18,7 +18,13 @@ import {
 } from '@/lib/types/material';
 import type { BagDoc } from '@/lib/types/bag';
 import { resolveContainerType, containerBinSize } from '@/lib/types/bag';
-import type { BinPickupBinEntry } from '@/lib/types/binPickup';
+import {
+  isBinPickupAction,
+  isCompostSkipReason,
+  type BinPickupAction,
+  type BinPickupBinEntry,
+  type CompostSkipReason,
+} from '@/lib/types/binPickup';
 import type { CommercialAccountDoc } from '@/lib/types/commercialAccount';
 
 const MAX_BINS_PER_PICKUP = 50;
@@ -33,8 +39,12 @@ interface BinInput {
 interface ProcessBinPickupPayload {
   commercialAccountId: string;
   materialId: MaterialId;
+  action: BinPickupAction;
+  skipReason: CompostSkipReason | null;
   bins: BinInput[];
   contaminationSeverity: ContaminationSeverity;
+  needsCleaning: boolean;
+  damaged: boolean;
   driverNotes: string | null;
   photoBase64: string | null;
   photoMime: string;
@@ -50,22 +60,39 @@ function parsePayload(raw: unknown): ProcessBinPickupPayload | { error: string }
 
   if (!isMaterialId(r.materialId)) return { error: 'invalid_material_id' };
 
-  if (!Array.isArray(r.bins) || r.bins.length === 0 || r.bins.length > MAX_BINS_PER_PICKUP) {
-    return { error: 'invalid_bins' };
+  // Default to a normal collection ('swapped') when the client omits action,
+  // so older clients keep working.
+  const action: BinPickupAction = isBinPickupAction(r.action) ? r.action : 'swapped';
+  const skipped = action === 'skipped';
+
+  let skipReason: CompostSkipReason | null = null;
+  if (skipped) {
+    if (!isCompostSkipReason(r.skipReason)) return { error: 'invalid_skip_reason' };
+    skipReason = r.skipReason;
   }
+
+  // Skipped stops record no bins/weight; collections require at least one bin.
   const bins: BinInput[] = [];
-  for (const b of r.bins) {
-    if (!b || typeof b !== 'object') return { error: 'invalid_bin_entry' };
-    const e = b as Record<string, unknown>;
-    if (!isBinSize(e.binSize)) return { error: 'invalid_bin_size' };
-    if (!isFullnessBucket(e.fullness)) return { error: 'invalid_fullness' };
-    const bagId = typeof e.bagId === 'string' && e.bagId.trim() ? e.bagId.trim() : null;
-    bins.push({ bagId, binSize: e.binSize, fullness: e.fullness });
+  if (!skipped) {
+    if (!Array.isArray(r.bins) || r.bins.length === 0 || r.bins.length > MAX_BINS_PER_PICKUP) {
+      return { error: 'invalid_bins' };
+    }
+    for (const b of r.bins) {
+      if (!b || typeof b !== 'object') return { error: 'invalid_bin_entry' };
+      const e = b as Record<string, unknown>;
+      if (!isBinSize(e.binSize)) return { error: 'invalid_bin_size' };
+      if (!isFullnessBucket(e.fullness)) return { error: 'invalid_fullness' };
+      const bagId = typeof e.bagId === 'string' && e.bagId.trim() ? e.bagId.trim() : null;
+      bins.push({ bagId, binSize: e.binSize, fullness: e.fullness });
+    }
   }
 
   if (!isContaminationSeverity(r.contaminationSeverity)) {
     return { error: 'invalid_contamination' };
   }
+
+  const needsCleaning = r.needsCleaning === true;
+  const damaged = r.damaged === true;
 
   const driverNotes =
     typeof r.driverNotes === 'string' && r.driverNotes.trim() ? r.driverNotes.trim() : null;
@@ -80,8 +107,12 @@ function parsePayload(raw: unknown): ProcessBinPickupPayload | { error: string }
   return {
     commercialAccountId,
     materialId: r.materialId,
+    action,
+    skipReason,
     bins,
     contaminationSeverity: r.contaminationSeverity,
+    needsCleaning,
+    damaged,
     driverNotes,
     photoBase64,
     photoMime,
@@ -178,6 +209,17 @@ export async function POST(request: Request) {
     photoUrl = upload.url;
   }
 
+  // Attach the pickup to the operator's open run (D1.3), if any. Null = ad-hoc
+  // pickup recorded outside a Start Route / End Route run.
+  let routeId: string | null = null;
+  const openRouteSnap = await adminDb
+    .collection('compostRoutes')
+    .where('operatorId', '==', session.uid)
+    .where('status', '==', 'in_progress')
+    .limit(1)
+    .get();
+  if (!openRouteSnap.empty) routeId = openRouteSnap.docs[0].id;
+
   const pickupRef = adminDb.collection('binPickups').doc();
   const inventoryRef = adminDb
     .collection('inventory')
@@ -189,11 +231,15 @@ export async function POST(request: Request) {
       commercialAccountId: parsed.commercialAccountId,
       zoneId: account.zoneId,
       operatorId: session.uid,
-      routeId: null,
+      routeId,
       materialId: parsed.materialId,
+      action: parsed.action,
+      skipReason: parsed.skipReason,
       bins: binEntries,
       totalWeightLbs,
       contaminationSeverity: parsed.contaminationSeverity,
+      needsCleaning: parsed.needsCleaning,
+      damaged: parsed.damaged,
       driverNotes: parsed.driverNotes,
       photoUrl,
       createdAt: FieldValue.serverTimestamp(),
@@ -201,20 +247,23 @@ export async function POST(request: Request) {
 
     // Inventory rolls up by zone + material for compost (no depot — bins go
     // direct to the composting facility). Inventory id namespaces commercial
-    // pickups so they don't collide with depot inventory.
-    tx.set(
-      inventoryRef,
-      {
-        id: inventoryRef.id,
-        depotId: null,
-        zoneId: account.zoneId,
-        materialId: parsed.materialId,
-        weight: FieldValue.increment(totalWeightLbs),
-        scope: 'commercial',
-        updatedAt: FieldValue.serverTimestamp(),
-      },
-      { merge: true },
-    );
+    // pickups so they don't collide with depot inventory. Skipped stops collect
+    // nothing, so they don't touch inventory.
+    if (totalWeightLbs > 0) {
+      tx.set(
+        inventoryRef,
+        {
+          id: inventoryRef.id,
+          depotId: null,
+          zoneId: account.zoneId,
+          materialId: parsed.materialId,
+          weight: FieldValue.increment(totalWeightLbs),
+          scope: 'commercial',
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
+    }
   });
 
   return NextResponse.json({

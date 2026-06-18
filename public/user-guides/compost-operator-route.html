@@ -10,9 +10,10 @@
     <header>
       <h1>Compost · Operator — Bin-fullness route</h1>
       <p class="lead">
-        How a compost driver records a pickup at a commercial site. The driver opens the
-        compost route, taps the site, picks fullness per bin, submits. No scale needed — the
-        server runs the bin-weight lookup. Run as <strong>Operator Aguirre</strong>.
+        How a compost driver runs the day: <strong>Start run</strong>, work the sites (tap a
+        site, pick fullness per bin, submit), then <strong>End run</strong> for a summary.
+        No scale needed — the server runs the bin-weight lookup. Pickups recorded while a run
+        is open attach to it automatically. Run as <strong>Operator Aguirre</strong>.
       </p>
     </header>
 
@@ -33,6 +34,8 @@
       <li>Picking a fullness bucket updates the per-row weight estimate live.</li>
       <li>Total weight = sum across all rows with content.</li>
       <li>Submitting writes a <code>binPickups</code> doc and increments commercial inventory.</li>
+      <li><strong>Start run</strong> opens a <code>compostRoutes</code> record; pickups taken while it's open carry its <code>routeId</code>; <strong>End run</strong> freezes a summary (stops · skipped · carts swapped · lbs · damaged).</li>
+      <li>An admin can review any past run at <code>/admin/compost/routes</code>.</li>
     </ul>
 
     <div class="scenario">
@@ -54,7 +57,33 @@
     </div>
 
     <div class="scenario">
-      <div class="scenario-head">Scenario 2 — Record a pickup at Comune (3 × 32-gal bins)</div>
+      <div class="scenario-head">Scenario 2 — Start your run</div>
+      <div class="scenario-body">
+        <p>The run is "the driver's day" — one record that all of today's stops hang off of,
+          so the office gets a clean end-of-day tally instead of loose pickups.</p>
+        <ol>
+          <li>On <strong>/operator/compost</strong>, before working any site, tap the green
+            <strong>▶ Start run</strong> button near the top.</li>
+          <li>The button is replaced by a mint <strong>Run in progress</strong> banner showing
+            the start time and a live tally (<code>0 stops · 0 lbs so far</code>).</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> A <code>compostRoutes</code> doc is created with
+          <code>status: 'in_progress'</code>. Starting again (double-tap / reload) does
+          <em>not</em> create a second run — you get the same open one back. From here on,
+          every pickup you record attaches to this run.
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> The banner shows "Started &lt;time&gt;" in Columbus local time</p>
+          <p><span class="checkbox"></span> Recording a pickup bumps the live tally (stops + lbs) after the page refreshes</p>
+          <p><span class="checkbox"></span> You can still record without starting a run — those pickups just have <code>routeId: null</code> (ad-hoc)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 3 — Record a pickup at Comune (3 × 32-gal bins)</div>
       <div class="scenario-body">
         <p>Comune was onboarded with three 32-gal bins. Today the driver finds the bins at
           ¾, ½, and full.</p>
@@ -92,7 +121,33 @@
     </div>
 
     <div class="scenario">
-      <div class="scenario-head">Scenario 3 — 48-gallon weights</div>
+      <div class="scenario-head">Scenario 4 — End your run &amp; read the summary</div>
+      <div class="scenario-body">
+        <p>After the last stop, close out the day. The summary is computed from every pickup
+          tied to the run — you don't tally anything by hand.</p>
+        <ol>
+          <li>Back on <strong>/operator/compost</strong>, in the <strong>Run in progress</strong>
+            banner, tap the red <strong>End run</strong> button.</li>
+          <li>The banner flips to a <strong>Run complete ✓</strong> card with the day's tally,
+            e.g. <code>12 stops · 1 skipped · 18 carts swapped · 2,340 lbs · 1 damaged</code>.</li>
+          <li>To begin another run later, tap <strong>Start a new run</strong> on that card.</li>
+        </ol>
+        <div class="expected">
+          <strong>Expected:</strong> The <code>compostRoutes</code> doc flips to
+          <code>status: 'completed'</code> with <code>endedAt</code> set and a frozen
+          <code>summary</code>. Only the operator who started the run can end it.
+        </div>
+        <div class="verify-checklist">
+          <h4>Verify:</h4>
+          <p><span class="checkbox"></span> "Carts swapped" counts bins on <em>Swapped</em> stops only (Loaded stops dump &amp; return the same bins)</p>
+          <p><span class="checkbox"></span> Skipped stops add to the "skipped" count but contribute 0 lbs</p>
+          <p><span class="checkbox"></span> The same summary appears for the admin at <code>/admin/compost/routes</code></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-head">Scenario 5 — 48-gallon weights</div>
       <div class="scenario-body">
         <p>All bin sizes now use one <strong>linear</strong> formula —
           <code>fullness × full-bin weight</code> — matching the "Alternative Weight" column Tia's
@@ -110,6 +165,17 @@
         </div>
       </div>
     </div>
+
+    <h2>Admin — review past runs</h2>
+    <p>
+      As <strong>Admin</strong>, open <strong>Compost → Route runs</strong>
+      (<code>/admin/compost/routes</code>). It lists the most recent 100 runs with date, driver,
+      the frozen summary line, and status (Completed / In progress). This is review-only — runs
+      are created and closed by the driver on the road; there's no manual route-building or
+      driver assignment (single-driver pilot — see the
+      <a href="compost-admin-commercial-accounts.html">Commercial accounts</a> guide for how
+      sites surface to the driver by zone + collection day).
+    </p>
 
     <h2>Edge cases worth poking</h2>
     <ul>

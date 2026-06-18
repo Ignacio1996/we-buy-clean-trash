@@ -13,6 +13,7 @@ const ROLE_LABELS: Record<InvitableRole, string> = {
   operator: 'Operator',
   depot_worker: 'Depot worker',
   depot_manager: 'Depot manager',
+  program_manager: 'Program manager (compost)',
   admin: 'Admin',
 };
 
@@ -78,7 +79,7 @@ export function InviteForm({ zones, depots }: Props) {
 
   const showEmail = channel === 'email' || channel === 'both';
   const showPhone = channel === 'phone' || channel === 'both';
-  const showZone = role === 'operator';
+  const showZone = role === 'operator' || role === 'program_manager';
   const showDepot = role === 'depot_worker' || role === 'depot_manager';
 
   return (

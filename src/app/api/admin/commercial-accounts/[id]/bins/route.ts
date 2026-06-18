@@ -4,6 +4,7 @@ import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
 import { isBinSize, type BinSize } from '@/lib/logic/binWeightTable';
 import type { ContainerType } from '@/lib/types/bag';
+import { isCompostManagerRole } from '@/lib/types/role';
 
 const BIN_NUMBER_MIN = 1000;
 const BIN_NUMBER_MAX = 9999;
@@ -36,7 +37,7 @@ async function reserveBinCode(): Promise<string> {
 
 export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
   const session = await getSession();
-  if (!session || session.role !== 'admin') {
+  if (!session || !isCompostManagerRole(session.role)) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   }
   const { id } = await context.params;

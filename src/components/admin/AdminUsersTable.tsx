@@ -55,6 +55,7 @@ const ROLE_LABELS: Record<Role, string> = {
   operator: 'Operator',
   depot_worker: 'Depot worker',
   depot_manager: 'Depot manager',
+  program_manager: 'Program manager',
   admin: 'Admin',
 };
 
@@ -63,12 +64,20 @@ const ROLE_BADGE: Record<Role, string> = {
   operator: 'bg-sky-500/10 text-sky-300',
   depot_worker: 'bg-amber-500/10 text-amber-300',
   depot_manager: 'bg-violet-500/10 text-violet-300',
+  program_manager: 'bg-teal-500/10 text-teal-300',
   admin: 'bg-rose-500/10 text-rose-300',
 };
 
 type Filter = 'all' | Role;
 
-const FILTER_ORDER: Role[] = ['resident', 'operator', 'depot_worker', 'depot_manager', 'admin'];
+const FILTER_ORDER: Role[] = [
+  'resident',
+  'operator',
+  'depot_worker',
+  'depot_manager',
+  'program_manager',
+  'admin',
+];
 
 export function AdminUsersTable({ users }: { users: UserRow[] }) {
   const router = useRouter();
