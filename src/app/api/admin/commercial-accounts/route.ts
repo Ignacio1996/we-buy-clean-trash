@@ -5,7 +5,7 @@ import { getSession } from '@/lib/auth/session';
 import { geocodeAddress } from '@/lib/maps/geocode';
 import { isMaterialId, type MaterialId } from '@/lib/types/material';
 import { isBinSize, type BinSize } from '@/lib/logic/binWeightTable';
-import { normalizeCollectionDays } from '@/lib/types/commercialAccount';
+import { normalizeCollectionDays, isSiteType } from '@/lib/types/commercialAccount';
 import { isCompostManagerRole } from '@/lib/types/role';
 
 function str(v: unknown): string {
@@ -90,6 +90,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'invalid_collection_days' }, { status: 400 });
   }
 
+  const routeOrderRaw = num(raw.routeOrder);
+  const routeOrder =
+    routeOrderRaw !== null && routeOrderRaw >= 0 ? Math.floor(routeOrderRaw) : null;
+
   if (!Array.isArray(raw.materialIds) || raw.materialIds.length === 0) {
     return NextResponse.json({ error: 'invalid_material_ids' }, { status: 400 });
   }
@@ -118,10 +122,12 @@ export async function POST(request: Request) {
     postalCode,
     geo,
     zoneId,
+    siteType: isSiteType(raw.siteType) ? raw.siteType : 'compost',
     defaultBinSize: defaultBinSize as BinSize,
     binsOnSite,
     pickupsPerWeek,
     collectionDays,
+    routeOrder,
     affiliationId: strOrNull(raw.affiliationId),
     materialIds,
     firstMonthOfData: monthStartOrNull(raw.firstMonthOfData),

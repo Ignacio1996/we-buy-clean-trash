@@ -31,6 +31,8 @@ interface SiteRow {
   paused: boolean;
   scheduledDays: string;
   scheduledDaysShort: string;
+  routeOrder: number | null;
+  recyclingCheck: boolean;
 }
 
 function todayDay(): number {
@@ -79,13 +81,19 @@ async function loadSites(operatorUid: string): Promise<SiteRow[]> {
       paused,
       scheduledDays: days.join(', ') || '—',
       scheduledDaysShort: days[0] ?? '—',
+      routeOrder: typeof a.routeOrder === 'number' ? a.routeOrder : null,
+      recyclingCheck: a.siteType === 'recycling_check',
     };
   });
 
   rows.sort((a, b) => {
-    // Paused last, then today first, then alphabetical.
+    // Paused last, then today first, then route order (the order Tia drives),
+    // sequenced sites before unsequenced, then alphabetical as a final tiebreak.
     if (a.paused !== b.paused) return a.paused ? 1 : -1;
     if (a.scheduledToday !== b.scheduledToday) return a.scheduledToday ? -1 : 1;
+    const ao = a.routeOrder ?? Number.POSITIVE_INFINITY;
+    const bo = b.routeOrder ?? Number.POSITIVE_INFINITY;
+    if (ao !== bo) return ao - bo;
     return a.businessName.localeCompare(b.businessName);
   });
   return rows;
@@ -263,12 +271,19 @@ function SiteCard({ site }: { site: SiteRow }) {
               {site.affiliationId}
             </SSOpBadge>
           )}
+          {site.recyclingCheck && (
+            <SSOpBadge bg={SSOP.sky} fg={SSOP.ink}>
+              Recycling
+            </SSOpBadge>
+          )}
         </div>
         <div style={{ fontSize: 11, fontWeight: 800, color: SSOP.inkSoft, marginTop: 1 }}>
           {site.street} · {site.cityLine}
         </div>
         <div style={{ fontSize: 11, fontWeight: 800, color: SSOP.inkSoft, marginTop: 4 }}>
-          {site.binCount} bin{site.binCount === 1 ? '' : 's'} · {site.pickupsPerWeek}× / wk · {site.scheduledDays}
+          {site.recyclingCheck
+            ? `Recycling cart check · ${site.pickupsPerWeek}× / wk · ${site.scheduledDays}`
+            : `${site.binCount} bin${site.binCount === 1 ? '' : 's'} · ${site.pickupsPerWeek}× / wk · ${site.scheduledDays}`}
         </div>
       </div>
       <span style={{ fontSize: 22, fontWeight: 900, color: SSOP.ink }}>›</span>

@@ -17,7 +17,6 @@ import {
   type MaterialId,
 } from '@/lib/types/material';
 import {
-  BIN_PICKUP_ACTIONS,
   COMPOST_SKIP_REASONS,
   COMPOST_SKIP_REASON_LABELS,
   type BinPickupAction,
@@ -97,16 +96,31 @@ const CONTAM_LABELS: Record<ContaminationSeverity, string> = {
 };
 
 const ACTION_LABELS: Record<BinPickupAction, string> = {
-  swapped: 'Swapped',
+  swapped: 'Collected',
   loaded: 'Loaded',
   skipped: 'Skipped',
 };
 
 const ACTION_HINTS: Record<BinPickupAction, string> = {
-  swapped: 'Gave clean empties, took the full bins',
+  swapped: 'Bins collected this stop',
   loaded: 'Dumped into the truck, set the same bins back',
   skipped: 'Nothing collected this stop',
 };
+
+/**
+ * Actions shown to the driver. The swap-vs-loaded distinction is no longer
+ * tracked in the field (City of Columbus now collects everything every run), so
+ * the picker is just Collected / Skipped. "Collected" stores as `swapped` so the
+ * existing reporting (cartsSwapped, weights) keeps working.
+ */
+const VISIBLE_ACTIONS: readonly BinPickupAction[] = ['swapped', 'skipped'];
+
+/**
+ * Bin QR scanning is hidden for the pilot — Tia's drivers enter bins manually.
+ * The scanner + handlers stay wired so this can flip back on if QR labels (or
+ * yard-sign QRs) get used later.
+ */
+const SHOW_BIN_SCANNER = false;
 
 export function BinPickupForm({
   accountId,
@@ -121,7 +135,8 @@ export function BinPickupForm({
 }) {
   const router = useRouter();
 
-  const [materialId, setMaterialId] = useState<MaterialId>(materials[0]?.id ?? '');
+  // Always the site's single food-scrap material — no picker shown to the driver.
+  const materialId: MaterialId = materials[0]?.id ?? '';
   const [action, setAction] = useState<BinPickupAction>('swapped');
   const [skipReason, setSkipReason] = useState<CompostSkipReason | null>(null);
   const [needsCleaning, setNeedsCleaning] = useState(false);
@@ -311,28 +326,11 @@ export function BinPickupForm({
 
   return (
     <section className="mt-4 space-y-4">
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <label className="block">
-          <span className="text-[11px] uppercase tracking-wide text-gray-500">Material</span>
-          <select
-            value={materialId}
-            onChange={(e) => setMaterialId(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
-          >
-            {materials.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-
       {/* Stop status — what happened at this stop */}
       <div className="rounded-xl border border-white/10 bg-white/5 p-4">
         <div className="text-[11px] uppercase tracking-wide text-gray-500">Status</div>
-        <div className="mt-2 grid grid-cols-3 gap-1">
-          {BIN_PICKUP_ACTIONS.map((a) => {
+        <div className="mt-2 grid grid-cols-2 gap-1">
+          {VISIBLE_ACTIONS.map((a) => {
             const on = action === a;
             return (
               <button
@@ -382,7 +380,7 @@ export function BinPickupForm({
         </div>
       ) : (
         <>
-      {/* Scan a bin's printed QR to jump straight to its row */}
+      {SHOW_BIN_SCANNER && (
       <div className="rounded-xl border border-white/10 bg-white/5 p-4">
         <div className="flex items-center justify-between">
           <div>
@@ -429,6 +427,7 @@ export function BinPickupForm({
           </p>
         )}
       </div>
+      )}
 
       <div className="rounded-xl border border-white/10 bg-white/5 p-4">
         <div className="flex items-center justify-between">
@@ -437,15 +436,15 @@ export function BinPickupForm({
             <div className="text-[11px] text-gray-500">
               {bins.length > 0
                 ? `${bins.length} bin${bins.length === 1 ? '' : 's'} provisioned`
-                : 'Manual entry — no bins provisioned yet'}
+                : 'Tap a fullness for each bin. Add more bins below.'}
             </div>
           </div>
           <button
             type="button"
             onClick={() => addManualRow()}
-            className="text-[11px] text-blue-300 underline hover:text-blue-200"
+            className="rounded-md border border-blue-400/50 bg-blue-500/20 px-3 py-1.5 text-[12px] font-semibold text-blue-100"
           >
-            + Manual bin
+            + Add bin
           </button>
         </div>
 

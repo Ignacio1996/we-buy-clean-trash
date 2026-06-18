@@ -7,6 +7,7 @@ import type { BagDoc } from '@/lib/types/bag';
 import { resolveContainerType, containerBinSize } from '@/lib/types/bag';
 import { loadActiveMaterials } from '@/lib/admin/loadActiveMaterials';
 import { BinPickupForm, type BinView, type MaterialChoice } from './BinPickupForm';
+import { RecyclingCheckForm } from './RecyclingCheckForm';
 
 export default async function CompostSiteStopPage({
   params,
@@ -88,12 +89,16 @@ export default async function CompostSiteStopPage({
         </section>
       )}
 
-      <BinPickupForm
-        accountId={account.id}
-        defaultBinSize={account.defaultBinSize}
-        bins={bins}
-        materials={materialChoices}
-      />
+      {account.siteType === 'recycling_check' ? (
+        <RecyclingCheckForm accountId={account.id} />
+      ) : (
+        <BinPickupForm
+          accountId={account.id}
+          defaultBinSize={account.defaultBinSize}
+          bins={bins}
+          materials={materialChoices}
+        />
+      )}
     </main>
   );
 }

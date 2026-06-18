@@ -12,6 +12,20 @@ export function isCommercialAccountStatus(v: unknown): v is CommercialAccountSta
 }
 
 /**
+ * What kind of stop the driver does here.
+ * - `compost`: food-scrap bin pickup — the default flow (fullness + weight).
+ * - `recycling_check`: a recycling/trash cart check (e.g. Dora Lofts) — the
+ *   driver inspects carts, takes a photo, and flags contamination/overflow.
+ *   No weight or bin fullness. Legacy docs without this field are `compost`.
+ */
+export const SITE_TYPES = ['compost', 'recycling_check'] as const;
+export type SiteType = (typeof SITE_TYPES)[number];
+
+export function isSiteType(v: unknown): v is SiteType {
+  return typeof v === 'string' && (SITE_TYPES as readonly string[]).includes(v);
+}
+
+/**
  * Commercial site directory record — admin-onboarded, mirrors the Compost
  * Clubhouse "Directory" sheet. Sites can exist without a UserDoc (no portal
  * access). Bins (BagDocs with containerType: 'bin_*') reference these via
@@ -33,6 +47,12 @@ export interface CommercialAccountDoc {
   geo: { lat: number; lng: number } | null;
   zoneId: string;
   /**
+   * What the driver does at this stop. Defaults to `compost` (food-scrap bin
+   * pickup); `recycling_check` sites use the cart-inspection flow instead.
+   * Legacy docs without this field are treated as `compost`.
+   */
+  siteType: SiteType;
+  /**
    * Default bin size offered to this site. The site can have multiple bins of
    * mixed sizes (each with its own QR), but this is the size used when
    * provisioning new bins from the admin form.
@@ -53,6 +73,13 @@ export interface CommercialAccountDoc {
    * once a week (e.g. [1, 4] for Mon + Thu).
    */
   collectionDays: number[];
+  /**
+   * Sequence position within the day's route — lower numbers are visited first.
+   * Lets the operator's site list match the order Tia drives (the emailed route
+   * sheet). Null for sites not yet sequenced; those sort after ordered sites,
+   * alphabetically. Not unique-enforced — ties fall back to name order.
+   */
+  routeOrder: number | null;
   /**
    * Affiliation tag — drives report filtering (e.g. 'compost_clubhouse',
    * 'city_of_columbus'). Free-form string, not a separate collection.

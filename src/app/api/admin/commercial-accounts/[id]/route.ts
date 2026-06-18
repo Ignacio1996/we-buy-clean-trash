@@ -4,7 +4,11 @@ import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
 import { isMaterialId, type MaterialId } from '@/lib/types/material';
 import { isBinSize, type BinSize } from '@/lib/logic/binWeightTable';
-import { normalizeCollectionDays, isCommercialAccountStatus } from '@/lib/types/commercialAccount';
+import {
+  normalizeCollectionDays,
+  isCommercialAccountStatus,
+  isSiteType,
+} from '@/lib/types/commercialAccount';
 import { isCompostManagerRole } from '@/lib/types/role';
 
 function str(v: unknown): string {
@@ -69,6 +73,13 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     }
   }
 
+  if (raw.siteType !== undefined) {
+    if (!isSiteType(raw.siteType)) {
+      return NextResponse.json({ error: 'invalid_site_type' }, { status: 400 });
+    }
+    update.siteType = raw.siteType;
+  }
+
   if (raw.defaultBinSize !== undefined) {
     if (!isBinSize(raw.defaultBinSize)) {
       return NextResponse.json({ error: 'invalid_bin_size' }, { status: 400 });
@@ -96,6 +107,18 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     const days = normalizeCollectionDays(raw.collectionDays);
     if (!days) return NextResponse.json({ error: 'invalid_collection_days' }, { status: 400 });
     update.collectionDays = days;
+  }
+
+  if (raw.routeOrder !== undefined) {
+    if (raw.routeOrder === null || raw.routeOrder === '') {
+      update.routeOrder = null;
+    } else {
+      const n = typeof raw.routeOrder === 'number' ? raw.routeOrder : Number(raw.routeOrder);
+      if (!Number.isFinite(n) || n < 0) {
+        return NextResponse.json({ error: 'invalid_route_order' }, { status: 400 });
+      }
+      update.routeOrder = Math.floor(n);
+    }
   }
 
   if (raw.materialIds !== undefined) {

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import type { CommercialAccountDoc } from '@/lib/types/commercialAccount';
+import type { CommercialAccountDoc, SiteType } from '@/lib/types/commercialAccount';
 import { COLLECTION_DAY_LABELS } from '@/lib/types/commercialAccount';
 import { BIN_DISPLAY_NAMES, BIN_SIZES, type BinSize } from '@/lib/logic/binWeightTable';
 import type { MaterialId } from '@/lib/types/material';
@@ -135,6 +135,11 @@ function AccountCard({
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold text-white">{account.businessName}</h3>
+            {account.siteType === 'recycling_check' && (
+              <span className="rounded-full border border-blue-400/30 bg-blue-500/10 px-1.5 py-0.5 text-[10px] text-blue-200">
+                Recycling check
+              </span>
+            )}
             {account.affiliationId && (
               <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] text-amber-300">
                 {account.affiliationId}
@@ -221,9 +226,64 @@ function AccountCard({
         </div>
       )}
 
+      <RouteOrderField account={account} />
+
       <BinSection account={account} />
 
       {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
+    </div>
+  );
+}
+
+/** Inline route-order editor — saves on blur / Enter so Tia can sequence the route fast. */
+function RouteOrderField({ account }: { account: CommercialAccountView }) {
+  const router = useRouter();
+  const initial = typeof account.routeOrder === 'number' ? String(account.routeOrder) : '';
+  const [value, setValue] = useState(initial);
+  const [busy, setBusy] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function save() {
+    if (value === initial) return;
+    setBusy(true);
+    setError(null);
+    setSaved(false);
+    const res = await fetch(`/api/admin/commercial-accounts/${account.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ routeOrder: value.trim() === '' ? null : Number(value) }),
+    });
+    setBusy(false);
+    if (!res.ok) {
+      setError('Save failed');
+      return;
+    }
+    setSaved(true);
+    router.refresh();
+  }
+
+  return (
+    <div className="mt-3 flex items-center gap-2">
+      <span className="text-[10px] uppercase tracking-wide text-gray-500">Route order</span>
+      <input
+        type="number"
+        min={0}
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value);
+          setSaved(false);
+        }}
+        onBlur={save}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+        }}
+        placeholder="—"
+        className="w-20 rounded border border-white/10 bg-black/40 px-2 py-1 text-xs text-white placeholder-gray-600"
+      />
+      {busy && <span className="text-[10px] text-gray-500">Saving…</span>}
+      {saved && !busy && <span className="text-[10px] text-green-400">Saved</span>}
+      {error && <span className="text-[10px] text-red-400">{error}</span>}
     </div>
   );
 }
@@ -372,10 +432,12 @@ function NewAccountForm({
     state: '',
     postalCode: '',
     zoneId: zones[0]?.id ?? '',
+    siteType: 'compost' as SiteType,
     defaultBinSize: '32' as BinSize,
     binsOnSite: 1,
     pickupsPerWeek: 1,
     collectionDays: [1] as number[],
+    routeOrder: '' as string,
     affiliationId: '',
     firstMonthOfData: '',
     materialIds: defaultMaterialIds.length > 0 ? defaultMaterialIds : [],
@@ -434,6 +496,7 @@ function NewAccountForm({
       city: '',
       state: '',
       postalCode: '',
+      routeOrder: '',
       affiliationId: '',
       firstMonthOfData: '',
       driverNotes: '',
@@ -535,6 +598,17 @@ function NewAccountForm({
           required
         />
         <label className="block sm:col-span-2">
+          <span className="text-[11px] uppercase tracking-wide text-gray-500">Stop type</span>
+          <select
+            value={form.siteType}
+            onChange={(e) => setForm((f) => ({ ...f, siteType: e.target.value as SiteType }))}
+            className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
+          >
+            <option value="compost">Compost (food-scrap bins)</option>
+            <option value="recycling_check">Recycling check (cart inspection)</option>
+          </select>
+        </label>
+        <label className="block sm:col-span-2">
           <span className="text-[11px] uppercase tracking-wide text-gray-500">Zone</span>
           <select
             value={form.zoneId}
@@ -594,6 +668,19 @@ function NewAccountForm({
               }))
             }
             className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
+          />
+        </label>
+        <label className="block">
+          <span className="text-[11px] uppercase tracking-wide text-gray-500">
+            Route order (optional)
+          </span>
+          <input
+            type="number"
+            min={0}
+            value={form.routeOrder}
+            onChange={(e) => setForm((f) => ({ ...f, routeOrder: e.target.value }))}
+            placeholder="Stop # on the route"
+            className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-gray-600"
           />
         </label>
         <Field

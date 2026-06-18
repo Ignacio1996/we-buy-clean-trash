@@ -224,6 +224,9 @@ export async function POST(request: Request) {
   const inventoryRef = adminDb
     .collection('inventory')
     .doc(`commercial_${account.zoneId}_${parsed.materialId}`);
+  // One cleaning ticket per flagged pickup (id == pickup id) so the admin queue
+  // can turn the on-route flag into a scheduled cleaning.
+  const cleaningTicketRef = adminDb.collection('cleaningTickets').doc(pickupRef.id);
 
   await adminDb.runTransaction(async (tx) => {
     tx.set(pickupRef, {
@@ -263,6 +266,22 @@ export async function POST(request: Request) {
         },
         { merge: true },
       );
+    }
+
+    // Raise a cleaning ticket when the driver flags the stop. Skipped stops
+    // collect nothing and don't flag cleaning, so this only fires on collections.
+    if (parsed.needsCleaning) {
+      tx.set(cleaningTicketRef, {
+        id: cleaningTicketRef.id,
+        commercialAccountId: parsed.commercialAccountId,
+        zoneId: account.zoneId,
+        flaggedByRunId: routeId,
+        flaggedByPickupId: pickupRef.id,
+        flaggedAt: FieldValue.serverTimestamp(),
+        status: 'open',
+        resolvedAt: null,
+        resolvedBy: null,
+      });
     }
   });
 
