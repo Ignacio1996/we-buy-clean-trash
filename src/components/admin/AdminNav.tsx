@@ -23,6 +23,7 @@ const RECYCLING_ITEMS = [
 const COMPOST_ITEMS = [
   { href: '/admin/commercial-accounts', label: 'Commercial sites', icon: '🏢' },
   { href: '/admin/compost/routes', label: 'Route runs', icon: '🛻' },
+  { href: '/admin/compost/pickups', label: 'Recorded pickups', icon: '🗑️' },
   { href: '/admin/compost/cleaning', label: 'Cleaning queue', icon: '🧼' },
   { href: '/admin/compost/reports', label: 'Diversion reports', icon: '📈' },
   { href: '/admin/compost/destinations', label: 'Drop-off destinations', icon: '📍' },

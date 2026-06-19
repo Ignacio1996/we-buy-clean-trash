@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { requireRole } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
@@ -5,10 +6,7 @@ import type { CommercialAccountDoc } from '@/lib/types/commercialAccount';
 import { COLLECTION_DAY_LABELS } from '@/lib/types/commercialAccount';
 import type { UserDoc } from '@/lib/types/user';
 import type { CompostDestinationDoc } from '@/lib/types/compostDestination';
-import type { BinPickupDoc } from '@/lib/types/binPickup';
-import type { CompostRouteDoc } from '@/lib/types/compostRoute';
-import { summarizeCompostRoute } from '@/lib/logic/compostRouteSummary';
-import { columbusTimeLabel } from '@/lib/logic/columbusDate';
+import { columbusDayStart } from '@/lib/logic/columbusDate';
 import {
   SSOP,
   SSOpBadge,
@@ -17,7 +15,6 @@ import {
   SSOpShell,
 } from '@/components/operator/SSOp';
 import { OnTheWayButton, type DestinationChoice } from './OnTheWayButton';
-import { CompostRouteControl, type ActiveRouteView } from './CompostRouteControl';
 
 interface SiteRow {
   id: string;
@@ -35,6 +32,8 @@ interface SiteRow {
   nextPickupInDays: number;
   routeOrder: number | null;
   recyclingCheck: boolean;
+  /** True when a pickup/check for this site has been recorded on the open run. */
+  done: boolean;
 }
 
 function todayDay(): number {
@@ -70,17 +69,6 @@ async function loadSites(operatorUid: string): Promise<SiteRow[]> {
   const accountsSnap = await query.get();
   const accounts = accountsSnap.docs.map((d) => d.data() as CommercialAccountDoc);
 
-  const binCounts = new Map<string, number>();
-  if (accounts.length > 0) {
-    const binsSnap = await adminDb.collection('bags').where('reusable', '==', true).get();
-    binsSnap.docs.forEach((d) => {
-      const accId = d.get('commercialAccountId');
-      if (typeof accId === 'string') {
-        binCounts.set(accId, (binCounts.get(accId) ?? 0) + 1);
-      }
-    });
-  }
-
   const today = todayDay();
   const rows: SiteRow[] = accounts.map((a) => {
     const collectionDays = Array.isArray(a.collectionDays) ? a.collectionDays : [];
@@ -94,7 +82,9 @@ async function loadSites(operatorUid: string): Promise<SiteRow[]> {
       cityLine: `${a.city}, ${a.state} ${a.postalCode}`,
       pickupsPerWeek: a.pickupsPerWeek,
       affiliationId: a.affiliationId,
-      binCount: binCounts.get(a.id) ?? 0,
+      // Declared bin count from the Directory sheet ("# of Bins") — not the
+      // count of provisioned QR bag docs, which is often 0 for imported sites.
+      binCount: typeof a.binsOnSite === 'number' ? a.binsOnSite : 0,
       // Paused sites are never "due today" — keeps summer-closed schools off the route.
       scheduledToday: !paused && collectionDays.includes(today),
       paused,
@@ -105,6 +95,8 @@ async function loadSites(operatorUid: string): Promise<SiteRow[]> {
       nextPickupInDays: next.inDays,
       routeOrder: typeof a.routeOrder === 'number' ? a.routeOrder : null,
       recyclingCheck: a.siteType === 'recycling_check',
+      // Filled in by the page once the open run's recorded stops are known.
+      done: false,
     };
   });
 
@@ -141,44 +133,60 @@ async function loadDestinations(operatorUid: string): Promise<DestinationChoice[
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
-/** The operator's open run (if any) with a live tally for the run banner. */
-async function loadActiveRoute(operatorUid: string): Promise<ActiveRouteView | null> {
-  const snap = await adminDb
-    .collection('compostRoutes')
-    .where('operatorId', '==', operatorUid)
-    .where('status', '==', 'in_progress')
-    .limit(1)
-    .get();
-  if (snap.empty) return null;
-  const route = snap.docs[0].data() as CompostRouteDoc;
-
-  const pickupsSnap = await adminDb
-    .collection('binPickups')
-    .where('routeId', '==', route.id)
-    .get();
-  const tally = summarizeCompostRoute(pickupsSnap.docs.map((d) => d.data() as BinPickupDoc));
-  const startedAt = route.startedAt?.toDate?.() ?? null;
-
-  return {
-    id: route.id,
-    startedLabel: startedAt ? columbusTimeLabel(startedAt) : null,
-    stops: tally.stops,
-    skipped: tally.skipped,
-    totalWeightLbs: tally.totalWeightLbs,
-  };
+/**
+ * Commercial-account ids with a stop recorded today (Columbus local day) by this
+ * operator — bin pickups and recycling cart checks both count. Drives the "Picked
+ * up" state on the site list so the driver sees at a glance what's already done,
+ * with no Start Route / End Route run to manage.
+ */
+async function loadDoneAccountIds(operatorUid: string): Promise<Set<string>> {
+  const dayStart = columbusDayStart(new Date());
+  const [pickupsSnap, checksSnap] = await Promise.all([
+    adminDb
+      .collection('binPickups')
+      .where('operatorId', '==', operatorUid)
+      .where('createdAt', '>=', dayStart)
+      .get(),
+    adminDb
+      .collection('siteChecks')
+      .where('operatorId', '==', operatorUid)
+      .where('createdAt', '>=', dayStart)
+      .get(),
+  ]);
+  const ids = new Set<string>();
+  for (const d of [...pickupsSnap.docs, ...checksSnap.docs]) {
+    const accId = d.get('commercialAccountId');
+    if (typeof accId === 'string') ids.add(accId);
+  }
+  return ids;
 }
 
-export default async function OperatorCompostPage() {
+export default async function OperatorCompostPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ recorded?: string }>;
+}) {
   const session = await requireRole('operator');
-  const [sites, destinations, activeRoute] = await Promise.all([
+  const { recorded } = await searchParams;
+  const [sites, destinations, doneIds] = await Promise.all([
     loadSites(session.uid),
     loadDestinations(session.uid),
-    loadActiveRoute(session.uid),
+    loadDoneAccountIds(session.uid),
   ]);
-  const todaySites = sites.filter((s) => s.scheduledToday);
+  // Name of the site just recorded (if any), for the success banner.
+  const recordedName = recorded ? (sites.find((s) => s.id === recorded)?.businessName ?? null) : null;
+  // Flag the sites already serviced today so they show as done and sink to the bottom.
+  for (const s of sites) s.done = doneIds.has(s.id);
+
+  // Done stops sink to the bottom of the today list (stable otherwise) so the
+  // driver's next stop is always near the top.
+  const todaySites = sites
+    .filter((s) => s.scheduledToday)
+    .sort((a, b) => Number(a.done) - Number(b.done));
   const upcomingSites = sites.filter((s) => !s.scheduledToday && !s.paused);
   const pausedSites = sites.filter((s) => s.paused);
   const todayCount = todaySites.length;
+  const todayDoneCount = todaySites.filter((s) => s.done).length;
 
   return (
     <SSOpShell active="compost">
@@ -199,15 +207,54 @@ export default async function OperatorCompostPage() {
             </>
           )
         }
-        sub={`${sites.length} active site${sites.length === 1 ? '' : 's'} in your zone`}
+        sub={
+          todayCount > 0
+            ? `${todayDoneCount} of ${todayCount} done · ${sites.length} active site${sites.length === 1 ? '' : 's'} in your zone`
+            : `${sites.length} active site${sites.length === 1 ? '' : 's'} in your zone`
+        }
         back="Back to route"
         backHref="/operator"
         headerBg={SSOP.mint}
       />
 
-      <div style={{ background: '#fff', padding: '18px 20px 0' }}>
-        <CompostRouteControl active={activeRoute} />
-      </div>
+      {recorded && (
+        <div style={{ background: '#fff', padding: '14px 20px 0' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              background: SSOP.mint,
+              border: `2px solid ${SSOP.ink}`,
+              borderRadius: 14,
+              padding: '12px 14px',
+              boxShadow: `0 3px 0 ${SSOP.ink}`,
+            }}
+          >
+            <span
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                background: SSOP.green,
+                border: `2px solid ${SSOP.ink}`,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+                fontSize: 16,
+                fontWeight: 900,
+                flexShrink: 0,
+              }}
+            >
+              ✓
+            </span>
+            <span style={{ fontSize: 14, fontWeight: 900, color: SSOP.ink }}>
+              {recordedName ? `Recorded — ${recordedName}` : 'Stop recorded.'}
+            </span>
+          </div>
+        </div>
+      )}
 
       {sites.length === 0 ? (
         <div style={{ padding: '40px 20px', textAlign: 'center' }}>
@@ -341,28 +388,33 @@ function SiteGroup({
 }
 
 function SiteCard({ site }: { site: SiteRow }) {
-  return (
-    <Link
-      href={`/operator/compost/${site.id}`}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        background: '#fff',
-        border: `2px solid ${SSOP.ink}`,
-        borderRadius: 14,
-        padding: '14px 14px',
-        boxShadow: `0 3px 0 ${SSOP.ink}`,
-        textDecoration: 'none',
-        opacity: site.paused ? 0.65 : 1,
-      }}
-    >
+  const cardStyle: CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    background: site.done ? SSOP.mint : '#fff',
+    border: `2px solid ${SSOP.ink}`,
+    borderRadius: 14,
+    padding: '14px 14px',
+    boxShadow: `0 3px 0 ${SSOP.ink}`,
+    textDecoration: 'none',
+    opacity: site.paused ? 0.65 : 1,
+  };
+
+  const inner = (
+    <>
       <div
         style={{
           width: 48,
           height: 48,
           borderRadius: 12,
-          background: site.paused ? '#e5e5e5' : site.scheduledToday ? SSOP.yellow : SSOP.sky,
+          background: site.done
+            ? SSOP.green
+            : site.paused
+              ? '#e5e5e5'
+              : site.scheduledToday
+                ? SSOP.yellow
+                : SSOP.sky,
           border: `2px solid ${SSOP.ink}`,
           display: 'flex',
           flexDirection: 'column',
@@ -372,9 +424,13 @@ function SiteCard({ site }: { site: SiteRow }) {
           flexShrink: 0,
         }}
       >
-        <span style={{ fontSize: 9, fontWeight: 900, letterSpacing: 1, textTransform: 'uppercase', color: SSOP.ink }}>
-          {site.paused ? 'Paused' : site.scheduledToday ? 'Today' : site.scheduledDaysShort}
-        </span>
+        {site.done ? (
+          <span style={{ fontSize: 24, fontWeight: 900, color: '#fff', lineHeight: 1 }}>✓</span>
+        ) : (
+          <span style={{ fontSize: 9, fontWeight: 900, letterSpacing: 1, textTransform: 'uppercase', color: SSOP.ink }}>
+            {site.paused ? 'Paused' : site.scheduledToday ? 'Today' : site.scheduledDaysShort}
+          </span>
+        )}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div
@@ -395,6 +451,11 @@ function SiteCard({ site }: { site: SiteRow }) {
           >
             {site.businessName}
           </div>
+          {site.done && (
+            <SSOpBadge bg={SSOP.green} fg="#fff">
+              ✓ Picked up
+            </SSOpBadge>
+          )}
           {site.affiliationId && (
             <SSOpBadge bg={SSOP.amber} fg="#fff">
               {site.affiliationId}
@@ -415,7 +476,34 @@ function SiteCard({ site }: { site: SiteRow }) {
             : `${site.binCount} bin${site.binCount === 1 ? '' : 's'} · ${site.pickupsPerWeek}× / wk · ${site.scheduledDays}`}
         </div>
       </div>
-      <span style={{ fontSize: 22, fontWeight: 900, color: SSOP.ink }}>›</span>
+      <span
+        style={{
+          flexShrink: 0,
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 4,
+          background: site.paused ? '#e5e5e5' : site.done ? '#fff' : SSOP.green,
+          color: site.paused ? SSOP.inkSoft : site.done ? SSOP.ink : '#fff',
+          border: `2px solid ${SSOP.ink}`,
+          borderRadius: 999,
+          padding: '8px 12px',
+          fontSize: 12,
+          fontWeight: 900,
+          boxShadow: site.paused ? 'none' : `0 2px 0 ${SSOP.ink}`,
+        }}
+      >
+        {site.paused
+          ? 'View'
+          : site.done
+            ? 'Edit'
+            : `${site.recyclingCheck ? 'Check' : 'Record'} ›`}
+      </span>
+    </>
+  );
+
+  return (
+    <Link href={`/operator/compost/${site.id}`} style={cardStyle}>
+      {inner}
     </Link>
   );
 }

@@ -387,6 +387,68 @@ export function SSOpBadge({
   );
 }
 
+type ChipTone = 'ink' | 'green' | 'brand' | 'sky' | 'yellow' | 'mint' | 'amber';
+
+const CHIP_TONES: Record<ChipTone, { bg: string; fg: string }> = {
+  ink: { bg: SSOP.ink, fg: '#fff' },
+  green: { bg: SSOP.green, fg: '#fff' },
+  brand: { bg: SSOP.brand, fg: '#fff' },
+  sky: { bg: SSOP.sky, fg: SSOP.ink },
+  yellow: { bg: SSOP.yellow, fg: SSOP.ink },
+  mint: { bg: SSOP.mint, fg: SSOP.ink },
+  amber: { bg: SSOP.amber, fg: '#fff' },
+};
+
+/**
+ * Selectable sticker chip — the segmented-button primitive for the operator
+ * forms (status, fullness, contamination, skip reason …). Selected fills with
+ * its tone colour and casts a hard ink shadow; unselected stays white with a
+ * soft grey shadow so the geometry doesn't jump between states.
+ */
+export function SSOpChip({
+  on,
+  onClick,
+  children,
+  tone = 'ink',
+  disabled,
+  style,
+}: {
+  on: boolean;
+  onClick: () => void;
+  children: ReactNode;
+  tone?: ChipTone;
+  disabled?: boolean;
+  style?: CSSProperties;
+}) {
+  const t = CHIP_TONES[tone];
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        width: '100%',
+        background: on ? t.bg : '#fff',
+        color: on ? t.fg : SSOP.inkSoft,
+        border: `2px solid ${on ? SSOP.ink : '#D6D6D6'}`,
+        borderRadius: 12,
+        padding: '10px 8px',
+        fontFamily: SSOP.sans,
+        fontSize: 13,
+        fontWeight: 900,
+        letterSpacing: -0.2,
+        lineHeight: 1.1,
+        boxShadow: `0 3px 0 ${on ? SSOP.ink : '#D6D6D6'}`,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? 0.5 : 1,
+        ...style,
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
 type PillVariant = 'ink' | 'brand' | 'white' | 'yellow' | 'green';
 
 const PILL_VARIANTS: Record<PillVariant, { bg: string; fg: string; border: string; sh: string }> = {

@@ -1,14 +1,26 @@
 import { NextResponse } from 'next/server';
+import type {
+  Query,
+  QuerySnapshot,
+  DocumentData,
+  DocumentReference,
+} from 'firebase-admin/firestore';
 import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import { getSession } from '@/lib/auth/session';
 import { isCompostManagerRole } from '@/lib/types/role';
 import type { BinPickupDoc } from '@/lib/types/binPickup';
+import { parseDayRunId, columbusDayBounds } from '@/lib/logic/compostDay';
 
 /**
  * Delete a compost run and everything it produced — its bin pickups, the
  * inventory those pickups added, and any cleaning tickets they raised. Built for
  * clearing test runs (e.g. Friday's dry-run) before a real run. Manager-only.
+ *
+ * A "run" is now a derived driver-day (`${operatorId}__${dayKey}`): the operator
+ * flow no longer stores run docs, so we resolve the day's pickups/checks by
+ * operator + Columbus-day window. Legacy `compostRoutes` ids (no `__`) still
+ * delete by `routeId` for old stored runs.
  *
  * Inventory is rolled up by zone + material, so we decrement it by the summed
  * weight of the deleted pickups to keep diversion reports honest. Skipped stops
@@ -22,15 +34,44 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
   }
   const { id } = await context.params;
 
-  const routeRef = adminDb.collection('compostRoutes').doc(id);
-  const routeSnap = await routeRef.get();
-  if (!routeSnap.exists) return NextResponse.json({ error: 'not_found' }, { status: 404 });
+  const day = parseDayRunId(id);
 
-  const [pickupsSnap, checksSnap, ticketsSnap] = await Promise.all([
-    adminDb.collection('binPickups').where('routeId', '==', id).get(),
-    adminDb.collection('siteChecks').where('routeId', '==', id).get(),
-    adminDb.collection('cleaningTickets').where('flaggedByRunId', '==', id).get(),
-  ]);
+  let pickupsSnap: QuerySnapshot<DocumentData>;
+  let checksSnap: QuerySnapshot<DocumentData>;
+  let ticketDocRefs: DocumentReference[] = [];
+  let legacyRouteRef: DocumentReference | null = null;
+
+  if (day) {
+    const { start, end } = columbusDayBounds(day.dayKey);
+    const inWindow = (q: Query<DocumentData>) =>
+      q
+        .where('operatorId', '==', day.operatorId)
+        .where('createdAt', '>=', start)
+        .where('createdAt', '<', end)
+        .get();
+    [pickupsSnap, checksSnap] = await Promise.all([
+      inWindow(adminDb.collection('binPickups')),
+      inWindow(adminDb.collection('siteChecks')),
+    ]);
+    if (pickupsSnap.empty && checksSnap.empty) {
+      return NextResponse.json({ error: 'not_found' }, { status: 404 });
+    }
+    // A cleaning ticket's id matches the pickup that raised it.
+    ticketDocRefs = pickupsSnap.docs.map((d) => adminDb.collection('cleaningTickets').doc(d.id));
+  } else {
+    // Legacy stored run.
+    legacyRouteRef = adminDb.collection('compostRoutes').doc(id);
+    const routeSnap = await legacyRouteRef.get();
+    if (!routeSnap.exists) return NextResponse.json({ error: 'not_found' }, { status: 404 });
+    const [p, c, t] = await Promise.all([
+      adminDb.collection('binPickups').where('routeId', '==', id).get(),
+      adminDb.collection('siteChecks').where('routeId', '==', id).get(),
+      adminDb.collection('cleaningTickets').where('flaggedByRunId', '==', id).get(),
+    ]);
+    pickupsSnap = p;
+    checksSnap = c;
+    ticketDocRefs = t.docs.map((d) => d.ref);
+  }
 
   // Sum weight removed per inventory key (commercial_<zone>_<material>) so we can
   // undo what each pickup added.
@@ -46,7 +87,7 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
   const batch = adminDb.batch();
   for (const doc of pickupsSnap.docs) batch.delete(doc.ref);
   for (const doc of checksSnap.docs) batch.delete(doc.ref);
-  for (const doc of ticketsSnap.docs) batch.delete(doc.ref);
+  for (const ref of ticketDocRefs) batch.delete(ref);
   for (const [key, weight] of inventoryDelta) {
     batch.set(
       adminDb.collection('inventory').doc(key),
@@ -54,13 +95,13 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
       { merge: true },
     );
   }
-  batch.delete(routeRef);
+  if (legacyRouteRef) batch.delete(legacyRouteRef);
   await batch.commit();
 
   return NextResponse.json({
     ok: true,
     deletedPickups: pickupsSnap.size,
     deletedChecks: checksSnap.size,
-    deletedTickets: ticketsSnap.size,
+    deletedTickets: ticketDocRefs.length,
   });
 }

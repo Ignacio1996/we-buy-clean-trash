@@ -6,6 +6,14 @@ import { COLLECTION_DAY_LABELS } from '@/lib/types/commercialAccount';
 import type { BagDoc } from '@/lib/types/bag';
 import { resolveContainerType, containerBinSize } from '@/lib/types/bag';
 import { loadActiveMaterials } from '@/lib/admin/loadActiveMaterials';
+import {
+  SSOP,
+  SSOpBadge,
+  SSOpCard,
+  SSOpEyebrow,
+  SSOpHeader,
+  SSOpShell,
+} from '@/components/operator/SSOp';
 import { BinPickupForm, type BinView, type MaterialChoice } from './BinPickupForm';
 import { RecyclingCheckForm } from './RecyclingCheckForm';
 
@@ -50,55 +58,65 @@ export default async function CompostSiteStopPage({
     .filter((m) => account.materialIds.includes(m.id) && m.measurementMode === 'bin_fullness')
     .map((m) => ({ id: m.id, name: m.name }));
 
+  const isRecyclingCheck = account.siteType === 'recycling_check';
+  const addressLine = `${account.street}${account.unit ? `, ${account.unit}` : ''}, ${account.city}, ${account.state} ${account.postalCode}`;
+  const scheduleLine =
+    account.collectionDays.map((d) => COLLECTION_DAY_LABELS[d]).filter(Boolean).join(', ') || '—';
+
   return (
-    <main className="mx-auto min-h-dvh max-w-md bg-neutral-950 px-4 pb-16 pt-6 text-gray-100">
-      <header>
-        <div className="text-[10px] uppercase tracking-[0.2em] text-gray-500">Commercial stop</div>
-        <h1 className="mt-0.5 text-lg font-semibold text-white">{account.businessName}</h1>
-        <div className="mt-0.5 text-xs text-gray-400">
-          {account.street}
-          {account.unit ? `, ${account.unit}` : ''}, {account.city}, {account.state}{' '}
-          {account.postalCode}
-        </div>
-        {account.contactName && (
-          <div className="mt-0.5 text-[11px] text-gray-500">
-            Contact: {account.contactName}
-            {account.contactPhone ? ` · ${account.contactPhone}` : ''}
+    <SSOpShell active="compost" nav={false}>
+      <SSOpHeader
+        kicker="Commercial stop"
+        title={account.businessName}
+        sub={addressLine}
+        back="Back to compost"
+        backHref="/operator/compost"
+        headerBg={isRecyclingCheck ? SSOP.sky : SSOP.mint}
+      />
+
+      <div style={{ background: SSOP.bg, padding: '18px 20px 40px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <SSOpCard>
+          <SSOpEyebrow mb={10}>Site details</SSOpEyebrow>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {account.affiliationId && (
+              <SSOpBadge bg={SSOP.amber} fg="#fff">
+                {account.affiliationId}
+              </SSOpBadge>
+            )}
+            <SSOpBadge bg="#fff">{scheduleLine}</SSOpBadge>
+            <SSOpBadge bg="#fff">{account.pickupsPerWeek}× / week</SSOpBadge>
+            {isRecyclingCheck && (
+              <SSOpBadge bg={SSOP.sky}>Recycling check</SSOpBadge>
+            )}
           </div>
-        )}
-        <div className="mt-2 flex flex-wrap gap-1.5 text-[10px] text-gray-400">
-          {account.affiliationId && (
-            <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-amber-300">
-              {account.affiliationId}
-            </span>
+          {account.contactName && (
+            <div style={{ marginTop: 12, fontSize: 13, fontWeight: 800, color: SSOP.inkSoft }}>
+              Contact: {account.contactName}
+              {account.contactPhone ? ` · ${account.contactPhone}` : ''}
+            </div>
           )}
-          <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5">
-            {account.collectionDays.map((d) => COLLECTION_DAY_LABELS[d]).filter(Boolean).join(', ') ||
-              '—'}
-          </span>
-          <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5">
-            {account.pickupsPerWeek}× / week
-          </span>
-        </div>
-      </header>
+        </SSOpCard>
 
-      {account.driverNotes && (
-        <section className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-100">
-          <div className="text-[9px] uppercase tracking-wide text-amber-300/80">Driver notes</div>
-          <div className="mt-0.5">{account.driverNotes}</div>
-        </section>
-      )}
+        {account.driverNotes && (
+          <SSOpCard color={SSOP.yellow}>
+            <SSOpEyebrow mb={6}>Driver notes</SSOpEyebrow>
+            <div style={{ fontSize: 14, fontWeight: 800, color: SSOP.ink, lineHeight: 1.4 }}>
+              {account.driverNotes}
+            </div>
+          </SSOpCard>
+        )}
 
-      {account.siteType === 'recycling_check' ? (
-        <RecyclingCheckForm accountId={account.id} />
-      ) : (
-        <BinPickupForm
-          accountId={account.id}
-          defaultBinSize={account.defaultBinSize}
-          bins={bins}
-          materials={materialChoices}
-        />
-      )}
-    </main>
+        {isRecyclingCheck ? (
+          <RecyclingCheckForm accountId={account.id} />
+        ) : (
+          <BinPickupForm
+            accountId={account.id}
+            defaultBinSize={account.defaultBinSize}
+            bins={bins}
+            materials={materialChoices}
+          />
+        )}
+      </div>
+    </SSOpShell>
   );
 }

@@ -4,6 +4,15 @@ import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { QrScanner } from '@/components/scanner/QrScanner';
 import {
+  SSOP,
+  SSOpBadge,
+  SSOpCard,
+  SSOpChip,
+  SSOpEyebrow,
+  SSOpPillButton,
+  SSOpToggle,
+} from '@/components/operator/SSOp';
+import {
   BIN_DISPLAY_NAMES,
   BIN_SIZES,
   BIN_WEIGHT_TABLE,
@@ -307,7 +316,7 @@ export function BinPickupForm({
       if (!res.ok) {
         throw new Error(json.error ?? 'submit_failed');
       }
-      router.push('/operator/compost');
+      router.push(`/operator/compost?recorded=${encodeURIComponent(accountId)}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'submit_failed');
     } finally {
@@ -317,96 +326,79 @@ export function BinPickupForm({
 
   if (materials.length === 0) {
     return (
-      <section className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100">
-        No bin-fullness materials are enabled for this site. Ask the admin to add a compost
-        material to the site profile.
-      </section>
+      <SSOpCard color={SSOP.yellow}>
+        <div style={{ fontSize: 14, fontWeight: 800, color: SSOP.ink, lineHeight: 1.4 }}>
+          No bin-fullness materials are enabled for this site. Ask the admin to add a compost
+          material to the site profile.
+        </div>
+      </SSOpCard>
     );
   }
 
   return (
-    <section className="mt-4 space-y-4">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       {/* Stop status — what happened at this stop */}
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <div className="text-[11px] uppercase tracking-wide text-gray-500">Status</div>
-        <div className="mt-2 grid grid-cols-2 gap-1">
-          {VISIBLE_ACTIONS.map((a) => {
-            const on = action === a;
-            return (
-              <button
-                key={a}
-                type="button"
-                onClick={() => setAction(a)}
-                className={`rounded-md border px-2 py-2 text-[12px] font-semibold ${
-                  on
-                    ? a === 'skipped'
-                      ? 'border-red-500/50 bg-red-500/15 text-red-100'
-                      : 'border-blue-400/50 bg-blue-500/20 text-blue-100'
-                    : 'border-white/10 bg-black/30 text-gray-400'
-                }`}
-              >
-                {ACTION_LABELS[a]}
-              </button>
-            );
-          })}
+      <SSOpCard>
+        <SSOpEyebrow mb={10}>Status</SSOpEyebrow>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+          {VISIBLE_ACTIONS.map((a) => (
+            <SSOpChip
+              key={a}
+              on={action === a}
+              onClick={() => setAction(a)}
+              tone={a === 'skipped' ? 'brand' : 'green'}
+            >
+              {ACTION_LABELS[a]}
+            </SSOpChip>
+          ))}
         </div>
-        <div className="mt-2 text-[11px] text-gray-500">{ACTION_HINTS[action]}</div>
-      </div>
+        <div style={{ marginTop: 10, fontSize: 12, fontWeight: 800, color: SSOP.inkSoft }}>
+          {ACTION_HINTS[action]}
+        </div>
+      </SSOpCard>
 
       {isSkip ? (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4">
-          <div className="text-[11px] uppercase tracking-wide text-red-200/80">
-            Why was it skipped?
+        <SSOpCard>
+          <SSOpEyebrow mb={10}>Why was it skipped?</SSOpEyebrow>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+            {COMPOST_SKIP_REASONS.map((reason) => (
+              <SSOpChip
+                key={reason}
+                on={skipReason === reason}
+                onClick={() => setSkipReason(reason)}
+                tone="brand"
+              >
+                {COMPOST_SKIP_REASON_LABELS[reason]}
+              </SSOpChip>
+            ))}
           </div>
-          <div className="mt-2 grid grid-cols-2 gap-1.5">
-            {COMPOST_SKIP_REASONS.map((reason) => {
-              const on = skipReason === reason;
-              return (
-                <button
-                  key={reason}
-                  type="button"
-                  onClick={() => setSkipReason(reason)}
-                  className={`rounded-md border px-2 py-2 text-[12px] ${
-                    on
-                      ? 'border-red-400/60 bg-red-500/25 text-red-50'
-                      : 'border-white/10 bg-black/30 text-gray-300'
-                  }`}
-                >
-                  {COMPOST_SKIP_REASON_LABELS[reason]}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        </SSOpCard>
       ) : (
         <>
       {SHOW_BIN_SCANNER && (
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <div className="flex items-center justify-between">
+      <SSOpCard>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
           <div>
-            <div className="text-sm font-semibold text-white">Scan a bin</div>
-            <div className="text-[11px] text-gray-500">
+            <div style={{ fontSize: 15, fontWeight: 900, color: SSOP.ink }}>Scan a bin</div>
+            <div style={{ fontSize: 11, fontWeight: 800, color: SSOP.inkSoft, marginTop: 2 }}>
               Point the camera at a bin&apos;s QR label to set its fullness.
             </div>
           </div>
-          <button
-            type="button"
+          <SSOpChip
+            on={scanOpen}
             onClick={() => {
               setScanMessage(null);
               setScanOpen((v) => !v);
             }}
-            className={`rounded-md border px-3 py-2 text-[12px] font-semibold ${
-              scanOpen
-                ? 'border-white/15 bg-black/30 text-gray-300'
-                : 'border-blue-400/50 bg-blue-500/20 text-blue-100'
-            }`}
+            tone="sky"
+            style={{ width: 'auto', whiteSpace: 'nowrap', padding: '10px 14px' }}
           >
             {scanOpen ? 'Close scanner' : '📷 Scan bin'}
-          </button>
+          </SSOpChip>
         </div>
 
         {scanOpen && (
-          <div className="mt-3">
+          <div style={{ marginTop: 12 }}>
             <QrScanner
               onDetected={handleScan}
               manualPlaceholder="Or type the bin number (BIN-1234)"
@@ -416,67 +408,92 @@ export function BinPickupForm({
         )}
 
         {scanMessage && (
-          <p
-            className={`mt-3 rounded-lg border px-3 py-2 text-xs ${
-              scanMessage.tone === 'ok'
-                ? 'border-green-500/30 bg-green-500/10 text-green-200'
-                : 'border-amber-500/40 bg-amber-500/10 text-amber-100'
-            }`}
+          <div
+            style={{
+              marginTop: 12,
+              borderRadius: 12,
+              border: `2px solid ${SSOP.ink}`,
+              background: scanMessage.tone === 'ok' ? SSOP.mint : SSOP.yellow,
+              padding: '10px 12px',
+              fontSize: 12,
+              fontWeight: 800,
+              color: SSOP.ink,
+            }}
           >
             {scanMessage.text}
-          </p>
+          </div>
         )}
-      </div>
+      </SSOpCard>
       )}
 
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <div className="flex items-center justify-between">
+      <SSOpCard>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
           <div>
-            <div className="text-sm font-semibold text-white">Bins</div>
-            <div className="text-[11px] text-gray-500">
+            <div style={{ fontSize: 15, fontWeight: 900, color: SSOP.ink }}>Bins</div>
+            <div style={{ fontSize: 11, fontWeight: 800, color: SSOP.inkSoft, marginTop: 2 }}>
               {bins.length > 0
                 ? `${bins.length} bin${bins.length === 1 ? '' : 's'} provisioned`
                 : 'Tap a fullness for each bin. Add more bins below.'}
             </div>
           </div>
-          <button
-            type="button"
+          <SSOpChip
+            on={false}
             onClick={() => addManualRow()}
-            className="rounded-md border border-blue-400/50 bg-blue-500/20 px-3 py-1.5 text-[12px] font-semibold text-blue-100"
+            tone="sky"
+            style={{ width: 'auto', whiteSpace: 'nowrap', padding: '10px 14px' }}
           >
             + Add bin
-          </button>
+          </SSOpChip>
         </div>
 
-        <div className="mt-3 space-y-3">
+        <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
           {rows.map((r) => {
             const bin = r.bagId ? bins.find((b) => b.bagId === r.bagId) : null;
+            const highlighted = highlightKey === r.key;
             return (
               <div
                 key={r.key}
                 id={`binrow-${r.key}`}
-                className={`rounded-lg border bg-black/30 p-3 transition-colors ${
-                  highlightKey === r.key
-                    ? 'border-blue-400/70 ring-2 ring-blue-400/40'
-                    : 'border-white/10'
-                }`}
+                style={{
+                  borderRadius: 14,
+                  border: `2px solid ${highlighted ? SSOP.brand : '#D6D6D6'}`,
+                  background: '#fff',
+                  padding: 12,
+                  boxShadow: `0 3px 0 ${highlighted ? SSOP.brand : '#D6D6D6'}`,
+                }}
               >
-                <div className="flex items-center justify-between text-[11px]">
-                  <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                     {bin ? (
-                      <span className="font-mono text-white">{bin.printedNumber}</span>
+                      <span style={{ fontFamily: SSOP.mono, fontSize: 13, fontWeight: 900, color: SSOP.ink }}>
+                        {bin.printedNumber}
+                      </span>
                     ) : r.scannedCode ? (
-                      <span className="font-mono text-amber-200">{r.scannedCode}</span>
+                      <SSOpBadge bg={SSOP.amber} fg="#fff">
+                        {r.scannedCode}
+                      </SSOpBadge>
                     ) : (
-                      <span className="text-gray-400">Manual entry</span>
+                      <span style={{ fontSize: 13, fontWeight: 900, color: SSOP.inkSoft }}>
+                        Manual entry
+                      </span>
                     )}
-                    <span className="ml-2 text-gray-500">{BIN_DISPLAY_NAMES[r.binSize]}</span>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: SSOP.inkSoft }}>
+                      {BIN_DISPLAY_NAMES[r.binSize]}
+                    </span>
                   </div>
                   {!r.bagId && rows.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeRow(r.key)}
-                      className="text-[11px] text-gray-400 hover:text-gray-200"
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 800,
+                        color: SSOP.inkSoft,
+                        textDecoration: 'underline',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                      }}
                     >
                       Remove
                     </button>
@@ -487,7 +504,19 @@ export function BinPickupForm({
                   <select
                     value={r.binSize}
                     onChange={(e) => setRow(r.key, { binSize: e.target.value as BinSize })}
-                    className="mt-2 w-full rounded border border-white/10 bg-black/40 px-2 py-1 text-xs text-white"
+                    style={{
+                      marginTop: 10,
+                      width: '100%',
+                      boxSizing: 'border-box',
+                      borderRadius: 10,
+                      border: `2px solid ${SSOP.ink}`,
+                      background: '#fff',
+                      padding: '8px 10px',
+                      fontFamily: SSOP.sans,
+                      fontSize: 13,
+                      fontWeight: 900,
+                      color: SSOP.ink,
+                    }}
                   >
                     {BIN_SIZES.map((s) => (
                       <option key={s} value={s}>
@@ -497,162 +526,186 @@ export function BinPickupForm({
                   </select>
                 )}
 
-                <div className="mt-3 grid grid-cols-5 gap-1">
-                  {FULLNESS_BUCKETS.map((f) => {
-                    const active = r.fullness === f;
-                    return (
-                      <button
-                        key={f}
-                        type="button"
-                        onClick={() => setRow(r.key, { fullness: f })}
-                        className={`rounded-md border px-1 py-2 text-[10px] transition-colors ${
-                          active
-                            ? 'border-blue-400/50 bg-blue-500/20 text-blue-100'
-                            : 'border-white/10 bg-black/30 text-gray-400 hover:bg-white/10'
-                        }`}
-                      >
-                        <div className="text-sm font-semibold">
-                          {f === 0 ? '0' : `${f * 100}%`}
-                        </div>
-                        <div className="mt-0.5">{FULLNESS_LABELS[f]}</div>
-                      </button>
-                    );
-                  })}
+                <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 6 }}>
+                  {FULLNESS_BUCKETS.map((f) => (
+                    <SSOpChip
+                      key={f}
+                      on={r.fullness === f}
+                      onClick={() => setRow(r.key, { fullness: f })}
+                      tone="sky"
+                      style={{ padding: '8px 2px' }}
+                    >
+                      <div style={{ fontSize: 14, fontWeight: 900 }}>{f === 0 ? '0' : `${f * 100}%`}</div>
+                      <div style={{ fontSize: 9, fontWeight: 800, marginTop: 2 }}>{FULLNESS_LABELS[f]}</div>
+                    </SSOpChip>
+                  ))}
                 </div>
-                <div className="mt-2 text-right text-[10px] text-gray-500">
+                <div style={{ marginTop: 8, textAlign: 'right', fontSize: 11, fontWeight: 800, color: SSOP.inkSoft }}>
                   ≈ {BIN_WEIGHT_TABLE[r.binSize][r.fullness].weightLbs} lbs
                 </div>
               </div>
             );
           })}
         </div>
-      </div>
+      </SSOpCard>
 
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <div className="text-[11px] uppercase tracking-wide text-gray-500">Contamination</div>
-        <div className="mt-2 grid grid-cols-4 gap-1">
+      <SSOpCard>
+        <SSOpEyebrow mb={10}>Contamination</SSOpEyebrow>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
           {CONTAMINATION_SEVERITIES.map((sev) => (
-            <button
+            <SSOpChip
               key={sev}
-              type="button"
+              on={contam === sev}
               onClick={() => setContam(sev)}
-              className={`rounded-md border px-2 py-1.5 text-[11px] ${
-                contam === sev
-                  ? sev === 'none'
-                    ? 'border-green-500/40 bg-green-500/15 text-green-100'
-                    : 'border-amber-500/40 bg-amber-500/15 text-amber-100'
-                  : 'border-white/10 bg-black/30 text-gray-400'
-              }`}
+              tone={sev === 'none' ? 'green' : 'amber'}
             >
               {CONTAM_LABELS[sev]}
-            </button>
+            </SSOpChip>
           ))}
         </div>
-      </div>
+      </SSOpCard>
 
       {/* Bin condition flags — feed the cart-cleaning + replacement queues */}
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2">
-        <button
-          type="button"
-          onClick={() => setNeedsCleaning((v) => !v)}
-          className={`flex w-full items-center justify-between rounded-lg border px-3 py-2.5 text-sm ${
-            needsCleaning
-              ? 'border-amber-500/50 bg-amber-500/15 text-amber-100'
-              : 'border-white/10 bg-black/30 text-gray-300'
-          }`}
-        >
-          <span>🧼 Bin(s) need cleaning</span>
-          <span className="text-[11px] font-semibold">{needsCleaning ? 'YES' : 'No'}</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setDamaged((v) => !v)}
-          className={`flex w-full items-center justify-between rounded-lg border px-3 py-2.5 text-sm ${
-            damaged
-              ? 'border-red-500/50 bg-red-500/15 text-red-100'
-              : 'border-white/10 bg-black/30 text-gray-300'
-          }`}
-        >
-          <span>🛠️ Bin damaged — needs replacement</span>
-          <span className="text-[11px] font-semibold">{damaged ? 'YES' : 'No'}</span>
-        </button>
-      </div>
-
-      <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-4">
-        <div className="flex items-baseline justify-between">
-          <div className="text-[11px] uppercase tracking-wide text-blue-200/70">Total weight</div>
-          <div className="text-2xl font-bold text-white">{totalLbs} lbs</div>
+      <SSOpCard>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+            <span style={{ fontSize: 14, fontWeight: 900, color: SSOP.ink }}>🧼 Bin(s) need cleaning</span>
+            <SSOpToggle on={needsCleaning} onChange={setNeedsCleaning} label="Bins need cleaning" />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+            <span style={{ fontSize: 14, fontWeight: 900, color: SSOP.ink }}>
+              🛠️ Bin damaged — needs replacement
+            </span>
+            <SSOpToggle on={damaged} onChange={setDamaged} danger label="Bin damaged" />
+          </div>
         </div>
-        <div className="mt-1 text-[11px] text-blue-200/70">
+      </SSOpCard>
+
+      <SSOpCard color={SSOP.sky}>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+          <SSOpEyebrow mb={0}>Total weight</SSOpEyebrow>
+          <div style={{ fontSize: 30, fontWeight: 900, letterSpacing: -1, color: SSOP.ink }}>
+            {totalLbs} lbs
+          </div>
+        </div>
+        <div style={{ marginTop: 6, fontSize: 11, fontWeight: 800, color: SSOP.inkSoft }}>
           {filledCount} of {rows.length} bin{rows.length === 1 ? '' : 's'} with content
         </div>
-      </div>
+      </SSOpCard>
         </>
       )}
 
       {/* Notes + photo — shared across collect/skip */}
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <label className="block">
-          <span className="text-[11px] uppercase tracking-wide text-gray-500">Notes</span>
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={2}
-            placeholder="Anything the admin should know? (optional)"
-            className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-gray-600"
-          />
-        </label>
+      <SSOpCard>
+        <SSOpEyebrow mb={8}>Notes</SSOpEyebrow>
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          rows={2}
+          placeholder="Anything the admin should know? (optional)"
+          style={{
+            width: '100%',
+            boxSizing: 'border-box',
+            background: '#fff',
+            border: `2px solid ${SSOP.ink}`,
+            borderRadius: 12,
+            padding: '10px 12px',
+            fontFamily: SSOP.sans,
+            fontSize: 14,
+            fontWeight: 700,
+            color: SSOP.ink,
+            resize: 'vertical',
+          }}
+        />
 
-        <div className="mt-3">
-          <span className="text-[11px] uppercase tracking-wide text-gray-500">Photo</span>
-          {photo ? (
-            <div className="mt-1 flex items-center gap-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={photo.preview}
-                alt="Pickup"
-                className="h-16 w-16 rounded-lg border border-white/10 object-cover"
-              />
-              <button
-                type="button"
-                onClick={() => setPhoto(null)}
-                className="text-[11px] text-gray-400 underline hover:text-gray-200"
-              >
-                Remove photo
-              </button>
-            </div>
-          ) : (
-            <label className="mt-1 flex cursor-pointer items-center justify-center rounded-lg border border-dashed border-white/15 bg-black/30 px-3 py-3 text-xs text-gray-400 hover:bg-white/5">
-              {photoBusy ? 'Processing…' : '📷 Add photo (optional)'}
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handlePhoto}
-                disabled={photoBusy}
-                className="hidden"
-              />
-            </label>
-          )}
-        </div>
-      </div>
+        <SSOpEyebrow mb={8} style={{ marginTop: 14 }}>
+          Photo
+        </SSOpEyebrow>
+        {photo ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={photo.preview}
+              alt="Pickup"
+              style={{ width: 64, height: 64, borderRadius: 12, border: `2px solid ${SSOP.ink}`, objectFit: 'cover' }}
+            />
+            <button
+              type="button"
+              onClick={() => setPhoto(null)}
+              style={{
+                fontSize: 12,
+                fontWeight: 800,
+                color: SSOP.inkSoft,
+                textDecoration: 'underline',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              Remove photo
+            </button>
+          </div>
+        ) : (
+          <label
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              borderRadius: 12,
+              border: `2px dashed ${SSOP.ink}`,
+              background: '#fff',
+              padding: '14px',
+              fontSize: 13,
+              fontWeight: 900,
+              color: SSOP.inkSoft,
+            }}
+          >
+            {photoBusy ? 'Processing…' : '📷 Add photo (optional)'}
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handlePhoto}
+              disabled={photoBusy}
+              style={{ display: 'none' }}
+            />
+          </label>
+        )}
+      </SSOpCard>
 
-      <button
+      <SSOpPillButton
         type="button"
         onClick={submit}
         disabled={busy || (isSkip ? !skipReason : filledCount === 0)}
-        className={`w-full rounded-lg px-4 py-3 text-sm font-semibold text-black disabled:opacity-50 ${
-          isSkip ? 'bg-red-400' : 'bg-green-500'
-        }`}
+        variant={isSkip ? 'brand' : 'green'}
+        size="lg"
+        rightIcon={isSkip ? '✕' : '✓'}
       >
-        {busy ? 'Submitting…' : isSkip ? '✕ Record skip' : '✓ Record pickup'}
-      </button>
+        {busy ? 'Submitting…' : isSkip ? 'Record skip' : 'Record pickup'}
+      </SSOpPillButton>
 
-      {error && (
-        <p className="rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-300">
-          {error}
-        </p>
-      )}
-    </section>
+      {error && <ErrorCard>{error}</ErrorCard>}
+    </div>
+  );
+}
+
+function ErrorCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        background: SSOP.brand,
+        border: `2px solid ${SSOP.ink}`,
+        borderRadius: 14,
+        padding: 14,
+        color: '#fff',
+        fontFamily: SSOP.sans,
+        fontSize: 13,
+        fontWeight: 900,
+        boxShadow: `0 4px 0 ${SSOP.ink}`,
+      }}
+    >
+      {children}
+    </div>
   );
 }

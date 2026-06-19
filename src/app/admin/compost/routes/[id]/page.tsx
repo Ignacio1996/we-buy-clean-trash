@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { adminDb } from '@/lib/firebase/admin';
-import type { CompostRouteDoc } from '@/lib/types/compostRoute';
 import type { BinPickupDoc } from '@/lib/types/binPickup';
 import { COMPOST_SKIP_REASON_LABELS } from '@/lib/types/binPickup';
 import type { SiteCheckDoc } from '@/lib/types/siteCheck';
@@ -9,7 +8,9 @@ import { CART_STATUS_LABELS } from '@/lib/types/siteCheck';
 import type { CommercialAccountDoc } from '@/lib/types/commercialAccount';
 import type { UserDoc } from '@/lib/types/user';
 import { BIN_DISPLAY_NAMES } from '@/lib/logic/binWeightTable';
-import { columbusDateLabel, columbusTimeLabel } from '@/lib/logic/columbusDate';
+import { columbusDateKey, columbusDateLabel, columbusTimeLabel } from '@/lib/logic/columbusDate';
+import { parseDayRunId, columbusDayBounds } from '@/lib/logic/compostDay';
+import { summarizeCompostRoute } from '@/lib/logic/compostRouteSummary';
 import { DeleteRunButton } from './DeleteRunButton';
 
 const FULLNESS_PCT: Record<number, string> = {
@@ -49,14 +50,27 @@ export default async function CompostRunDetailPage({
 }) {
   const { id } = await params;
 
-  const routeSnap = await adminDb.collection('compostRoutes').doc(id).get();
-  if (!routeSnap.exists) notFound();
-  const route = routeSnap.data() as CompostRouteDoc;
+  // A run is one operator's Columbus-day of recorded stops (no stored run doc).
+  const parsed = parseDayRunId(id);
+  if (!parsed) notFound();
+  const { operatorId, dayKey } = parsed;
+  const { start, end } = columbusDayBounds(dayKey);
 
   const [pickupsSnap, checksSnap] = await Promise.all([
-    adminDb.collection('binPickups').where('routeId', '==', id).get(),
-    adminDb.collection('siteChecks').where('routeId', '==', id).get(),
+    adminDb
+      .collection('binPickups')
+      .where('operatorId', '==', operatorId)
+      .where('createdAt', '>=', start)
+      .where('createdAt', '<', end)
+      .get(),
+    adminDb
+      .collection('siteChecks')
+      .where('operatorId', '==', operatorId)
+      .where('createdAt', '>=', start)
+      .where('createdAt', '<', end)
+      .get(),
   ]);
+  if (pickupsSnap.empty && checksSnap.empty) notFound();
   const pickups = pickupsSnap.docs
     .map((d) => d.data() as BinPickupDoc)
     .sort((a, b) => (a.createdAt?.toMillis?.() ?? 0) - (b.createdAt?.toMillis?.() ?? 0));
@@ -80,16 +94,24 @@ export default async function CompostRunDetailPage({
       if (s.exists) siteNames.set(s.id, (s.data() as CommercialAccountDoc).businessName);
     }
   }
-  const operatorSnap = await adminDb.collection('users').doc(route.operatorId).get();
+  const operatorSnap = await adminDb.collection('users').doc(operatorId).get();
   const operatorName = operatorSnap.exists
-    ? (operatorSnap.data() as UserDoc).name ||
-      (operatorSnap.data() as UserDoc).email ||
-      route.operatorId
-    : route.operatorId;
+    ? (operatorSnap.data() as UserDoc).name || (operatorSnap.data() as UserDoc).email || operatorId
+    : operatorId === 'import'
+      ? 'Imported'
+      : operatorId;
 
-  const startedAt = route.startedAt?.toDate?.() ?? null;
-  const endedAt = route.endedAt?.toDate?.() ?? null;
-  const dateLabel = startedAt ? columbusDateLabel(startedAt) : route.date;
+  // First/last recorded stop bound the run's time window; the day's pickups roll
+  // up into the same summary the list shows. Today's day is still "in progress".
+  const allTimes = [
+    ...pickups.map((p) => p.createdAt?.toMillis?.() ?? 0),
+    ...checks.map((c) => c.createdAt?.toMillis?.() ?? 0),
+  ].filter((ms) => ms > 0);
+  const startedAt = allTimes.length > 0 ? new Date(Math.min(...allTimes)) : start;
+  const endedAt = allTimes.length > 0 ? new Date(Math.max(...allTimes)) : null;
+  const status: 'in_progress' | 'completed' =
+    dayKey === columbusDateKey(new Date()) ? 'in_progress' : 'completed';
+  const dateLabel = columbusDateLabel(startedAt);
 
   const stops: StopView[] = pickups.map((p) => ({
     id: p.id,
@@ -123,7 +145,7 @@ export default async function CompostRunDetailPage({
     photoUrl: c.photoUrl,
   }));
 
-  const s = route.summary;
+  const s = summarizeCompostRoute(pickups);
 
   return (
     <div>
@@ -140,10 +162,10 @@ export default async function CompostRunDetailPage({
             <p className="mt-1 text-xs text-gray-500">
               {operatorName} · {startedAt ? columbusTimeLabel(startedAt) : '—'}
               {endedAt ? ` – ${columbusTimeLabel(endedAt)}` : ''} ·{' '}
-              {route.status === 'completed' ? 'Completed' : 'In progress'}
+              {status === 'completed' ? 'Completed' : 'In progress'}
             </p>
           </div>
-          <DeleteRunButton routeId={route.id} stops={stops.length} />
+          <DeleteRunButton routeId={id} stops={stops.length + checkViews.length} />
         </div>
 
         {s && (

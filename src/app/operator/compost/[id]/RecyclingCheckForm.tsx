@@ -2,6 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  SSOP,
+  SSOpCard,
+  SSOpChip,
+  SSOpEyebrow,
+  SSOpPillButton,
+  SSOpToggle,
+} from '@/components/operator/SSOp';
 import { CONTAMINATION_SEVERITIES, type ContaminationSeverity } from '@/lib/types/material';
 import { CART_STATUSES, CART_STATUS_LABELS, type CartStatus } from '@/lib/types/siteCheck';
 
@@ -87,7 +95,7 @@ export function RecyclingCheckForm({ accountId }: { accountId: string }) {
       });
       const out = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) throw new Error(out.error ?? 'submit_failed');
-      router.push('/operator/compost');
+      router.push(`/operator/compost?recorded=${encodeURIComponent(accountId)}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'submit_failed');
     } finally {
@@ -96,134 +104,158 @@ export function RecyclingCheckForm({ accountId }: { accountId: string }) {
   }
 
   return (
-    <section className="mt-4 space-y-4">
-      <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-3 text-[11px] text-blue-100">
-        Recycling cart check — inspect the carts, snap a photo of the cart area, and flag any
-        contamination or overflow.
-      </div>
-
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <div className="text-[11px] uppercase tracking-wide text-gray-500">Recycling</div>
-        <div className="mt-2 grid grid-cols-3 gap-1">
-          {CART_STATUSES.map((s) => {
-            const on = cartStatus === s;
-            return (
-              <button
-                key={s}
-                type="button"
-                onClick={() => setCartStatus(s)}
-                className={`rounded-md border px-2 py-2 text-[12px] font-semibold ${
-                  on
-                    ? s === 'skipped'
-                      ? 'border-red-500/50 bg-red-500/15 text-red-100'
-                      : 'border-blue-400/50 bg-blue-500/20 text-blue-100'
-                    : 'border-white/10 bg-black/30 text-gray-400'
-                }`}
-              >
-                {CART_STATUS_LABELS[s]}
-              </button>
-            );
-          })}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <SSOpCard color={SSOP.sky}>
+        <div style={{ fontSize: 13, fontWeight: 800, color: SSOP.ink, lineHeight: 1.4 }}>
+          Recycling cart check — inspect the carts, snap a photo of the cart area, and flag any
+          contamination or overflow.
         </div>
-      </div>
+      </SSOpCard>
 
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <div className="text-[11px] uppercase tracking-wide text-gray-500">Contamination</div>
-        <div className="mt-2 grid grid-cols-4 gap-1">
-          {CONTAMINATION_SEVERITIES.map((sev) => (
-            <button
-              key={sev}
-              type="button"
-              onClick={() => setContam(sev)}
-              className={`rounded-md border px-2 py-1.5 text-[11px] ${
-                contam === sev
-                  ? sev === 'none'
-                    ? 'border-green-500/40 bg-green-500/15 text-green-100'
-                    : 'border-amber-500/40 bg-amber-500/15 text-amber-100'
-                  : 'border-white/10 bg-black/30 text-gray-400'
-              }`}
+      <SSOpCard>
+        <SSOpEyebrow mb={10}>Recycling</SSOpEyebrow>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+          {CART_STATUSES.map((s) => (
+            <SSOpChip
+              key={s}
+              on={cartStatus === s}
+              onClick={() => setCartStatus(s)}
+              tone={s === 'skipped' ? 'brand' : 'sky'}
             >
-              {CONTAM_LABELS[sev]}
-            </button>
+              {CART_STATUS_LABELS[s]}
+            </SSOpChip>
           ))}
         </div>
-      </div>
+      </SSOpCard>
 
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <button
-          type="button"
-          onClick={() => setOverflow((v) => !v)}
-          className={`flex w-full items-center justify-between rounded-lg border px-3 py-2.5 text-sm ${
-            overflow
-              ? 'border-amber-500/50 bg-amber-500/15 text-amber-100'
-              : 'border-white/10 bg-black/30 text-gray-300'
-          }`}
-        >
-          <span>🗑️ Cart(s) overflowing</span>
-          <span className="text-[11px] font-semibold">{overflow ? 'YES' : 'No'}</span>
-        </button>
-      </div>
-
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <label className="block">
-          <span className="text-[11px] uppercase tracking-wide text-gray-500">Notes</span>
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={2}
-            placeholder="Anything the admin should know? (optional)"
-            className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-gray-600"
-          />
-        </label>
-
-        <div className="mt-3">
-          <span className="text-[11px] uppercase tracking-wide text-gray-500">Photo</span>
-          {photo ? (
-            <div className="mt-1 flex items-center gap-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={photo.preview}
-                alt="Cart area"
-                className="h-16 w-16 rounded-lg border border-white/10 object-cover"
-              />
-              <button
-                type="button"
-                onClick={() => setPhoto(null)}
-                className="text-[11px] text-gray-400 underline hover:text-gray-200"
-              >
-                Remove photo
-              </button>
-            </div>
-          ) : (
-            <label className="mt-1 flex cursor-pointer items-center justify-center rounded-lg border border-dashed border-white/15 bg-black/30 px-3 py-3 text-xs text-gray-400 hover:bg-white/5">
-              {photoBusy ? 'Processing…' : '📷 Add photo of cart area'}
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handlePhoto}
-                disabled={photoBusy}
-                className="hidden"
-              />
-            </label>
-          )}
+      <SSOpCard>
+        <SSOpEyebrow mb={10}>Contamination</SSOpEyebrow>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+          {CONTAMINATION_SEVERITIES.map((sev) => (
+            <SSOpChip
+              key={sev}
+              on={contam === sev}
+              onClick={() => setContam(sev)}
+              tone={sev === 'none' ? 'green' : 'amber'}
+            >
+              {CONTAM_LABELS[sev]}
+            </SSOpChip>
+          ))}
         </div>
-      </div>
+      </SSOpCard>
 
-      <button
-        type="button"
-        onClick={submit}
-        disabled={busy}
-        className="w-full rounded-lg bg-blue-500 px-4 py-3 text-sm font-semibold text-black disabled:opacity-50"
-      >
-        {busy ? 'Submitting…' : '✓ Record check'}
-      </button>
+      <SSOpCard>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <span style={{ fontSize: 14, fontWeight: 900, color: SSOP.ink }}>
+            🗑️ Cart(s) overflowing
+          </span>
+          <SSOpToggle on={overflow} onChange={setOverflow} danger label="Carts overflowing" />
+        </div>
+      </SSOpCard>
 
-      {error && (
-        <p className="rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-300">
-          {error}
-        </p>
-      )}
-    </section>
+      <SSOpCard>
+        <SSOpEyebrow mb={8}>Notes</SSOpEyebrow>
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          rows={2}
+          placeholder="Anything the admin should know? (optional)"
+          style={{
+            width: '100%',
+            boxSizing: 'border-box',
+            background: '#fff',
+            border: `2px solid ${SSOP.ink}`,
+            borderRadius: 12,
+            padding: '10px 12px',
+            fontFamily: SSOP.sans,
+            fontSize: 14,
+            fontWeight: 700,
+            color: SSOP.ink,
+            resize: 'vertical',
+          }}
+        />
+
+        <SSOpEyebrow mb={8} style={{ marginTop: 14 }}>
+          Photo
+        </SSOpEyebrow>
+        {photo ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={photo.preview}
+              alt="Cart area"
+              style={{ width: 64, height: 64, borderRadius: 12, border: `2px solid ${SSOP.ink}`, objectFit: 'cover' }}
+            />
+            <button
+              type="button"
+              onClick={() => setPhoto(null)}
+              style={{
+                fontSize: 12,
+                fontWeight: 800,
+                color: SSOP.inkSoft,
+                textDecoration: 'underline',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              Remove photo
+            </button>
+          </div>
+        ) : (
+          <label
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              borderRadius: 12,
+              border: `2px dashed ${SSOP.ink}`,
+              background: '#fff',
+              padding: '14px',
+              fontSize: 13,
+              fontWeight: 900,
+              color: SSOP.inkSoft,
+            }}
+          >
+            {photoBusy ? 'Processing…' : '📷 Add photo of cart area'}
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handlePhoto}
+              disabled={photoBusy}
+              style={{ display: 'none' }}
+            />
+          </label>
+        )}
+      </SSOpCard>
+
+      <SSOpPillButton type="button" onClick={submit} disabled={busy} variant="green" size="lg" rightIcon="✓">
+        {busy ? 'Submitting…' : 'Record check'}
+      </SSOpPillButton>
+
+      {error && <ErrorCard>{error}</ErrorCard>}
+    </div>
+  );
+}
+
+function ErrorCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        background: SSOP.brand,
+        border: `2px solid ${SSOP.ink}`,
+        borderRadius: 14,
+        padding: 14,
+        color: '#fff',
+        fontFamily: SSOP.sans,
+        fontSize: 13,
+        fontWeight: 900,
+        boxShadow: `0 4px 0 ${SSOP.ink}`,
+      }}
+    >
+      {children}
+    </div>
   );
 }

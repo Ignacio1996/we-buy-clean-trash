@@ -189,20 +189,9 @@ function AccountCard({
       <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-xs sm:grid-cols-4">
         <Stat label="Zone" value={zoneName} />
         <Stat label="Default bin" value={BIN_DISPLAY_NAMES[account.defaultBinSize]} />
-        <Stat label="Bins on site" value={String(account.binsOnSite ?? 0)} />
-        <Stat label="Pickups / week" value={String(account.pickupsPerWeek)} />
-        <Stat
-          label="Days"
-          value={
-            account.collectionDays.length > 0
-              ? account.collectionDays
-                  .map((n) => COLLECTION_DAY_LABELS[n])
-                  .filter(Boolean)
-                  .join(', ')
-              : '—'
-          }
-        />
       </div>
+
+      <ScheduleField account={account} />
 
       <div className="mt-3 flex flex-wrap items-center gap-1.5">
         <span className="text-[10px] uppercase tracking-wide text-gray-500">Materials:</span>
@@ -231,6 +220,135 @@ function AccountCard({
       <BinSection account={account} />
 
       {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
+    </div>
+  );
+}
+
+/**
+ * Inline schedule editor — collection days, declared bins on site, and pickups
+ * per week. Lets the admin fix a site's delivery days (e.g. Sun → Mon) without
+ * re-running a seed script. Saves all three fields in one PATCH.
+ */
+function ScheduleField({ account }: { account: CommercialAccountView }) {
+  const router = useRouter();
+  const initialDays = account.collectionDays;
+  const [days, setDays] = useState<number[]>(initialDays);
+  const [bins, setBins] = useState<number>(account.binsOnSite ?? 0);
+  const [perWeek, setPerWeek] = useState<number>(account.pickupsPerWeek);
+  const [busy, setBusy] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const dirty =
+    bins !== (account.binsOnSite ?? 0) ||
+    perWeek !== account.pickupsPerWeek ||
+    days.length !== initialDays.length ||
+    days.some((d, i) => d !== initialDays[i]);
+
+  function toggle(d: number) {
+    setSaved(false);
+    setDays((prev) =>
+      prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d].sort((a, b) => a - b),
+    );
+  }
+
+  async function save() {
+    if (!dirty) return;
+    if (days.length === 0) {
+      setError('Pick at least one collection day.');
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    setSaved(false);
+    const res = await fetch(`/api/admin/commercial-accounts/${account.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ collectionDays: days, binsOnSite: bins, pickupsPerWeek: perWeek }),
+    });
+    setBusy(false);
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      setError(typeof body.error === 'string' ? body.error : 'Save failed');
+      return;
+    }
+    setSaved(true);
+    router.refresh();
+  }
+
+  return (
+    <div className="mt-3 rounded-lg border border-white/10 bg-black/20 px-3 py-2.5">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] uppercase tracking-wide text-gray-500">Schedule</span>
+        <div className="flex items-center gap-2">
+          {busy && <span className="text-[10px] text-gray-500">Saving…</span>}
+          {saved && !busy && <span className="text-[10px] text-green-400">Saved</span>}
+          {error && <span className="text-[10px] text-red-400">{error}</span>}
+          <button
+            type="button"
+            onClick={save}
+            disabled={busy || !dirty}
+            className="rounded bg-white px-2.5 py-1 text-[11px] font-semibold text-black disabled:opacity-40"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {DAY_NUMBERS.map((d) => {
+          const on = days.includes(d);
+          return (
+            <button
+              key={d}
+              type="button"
+              onClick={() => toggle(d)}
+              className={`rounded-full border px-2.5 py-0.5 text-[11px] ${
+                on
+                  ? 'border-blue-400/50 bg-blue-500/15 text-blue-200'
+                  : 'border-white/10 bg-black/30 text-gray-500 hover:bg-white/10'
+              }`}
+            >
+              {COLLECTION_DAY_LABELS[d]}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-2 flex flex-wrap items-end gap-4">
+        <label className="block">
+          <span className="block text-[9px] uppercase tracking-wide text-gray-500">
+            Bins on site
+          </span>
+          <input
+            type="number"
+            min={0}
+            max={99}
+            value={bins}
+            onChange={(e) => {
+              setSaved(false);
+              setBins(Math.max(0, Math.min(99, Number(e.target.value) || 0)));
+            }}
+            className="mt-0.5 w-20 rounded border border-white/10 bg-black/40 px-2 py-1 text-xs text-white"
+          />
+        </label>
+        <label className="block">
+          <span className="block text-[9px] uppercase tracking-wide text-gray-500">
+            Pickups / week
+          </span>
+          <input
+            type="number"
+            min={1}
+            max={7}
+            value={perWeek}
+            onChange={(e) => {
+              setSaved(false);
+              setPerWeek(Math.max(1, Math.min(7, Number(e.target.value) || 1)));
+            }}
+            className="mt-0.5 w-20 rounded border border-white/10 bg-black/40 px-2 py-1 text-xs text-white"
+          />
+        </label>
+      </div>
     </div>
   );
 }

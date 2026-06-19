@@ -51,7 +51,7 @@ const WEDNESDAY: RouteUpdate[] = [
   {
     siteId: 'reynoldsburg',
     routeOrder: 10,
-    businessName: 'Sweetgreen Reynoldsburg',
+    businessName: 'Reynoldsburg',
     collectionDays: [3],
   },
 ];
