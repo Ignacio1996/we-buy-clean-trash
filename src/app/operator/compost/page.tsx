@@ -31,6 +31,8 @@ interface SiteRow {
   paused: boolean;
   scheduledDays: string;
   scheduledDaysShort: string;
+  /** Days until the soonest pickup: 0 = today, 1..6 ahead, Infinity = never. */
+  nextPickupInDays: number;
   routeOrder: number | null;
   recyclingCheck: boolean;
 }
@@ -38,6 +40,24 @@ interface SiteRow {
 function todayDay(): number {
   const d = new Date().getDay();
   return d === 0 ? 7 : d;
+}
+
+/**
+ * Soonest pickup relative to today, by calendar proximity — not raw weekday
+ * number. From a Friday, Sunday (ISO 7) is only 2 days out, so it must rank
+ * ahead of Monday (ISO 1), which raw numeric sorting would get backwards.
+ */
+function nextPickup(collectionDays: number[], today: number): { inDays: number; day: number | null } {
+  let inDays = Number.POSITIVE_INFINITY;
+  let day: number | null = null;
+  for (const d of collectionDays) {
+    const dist = (d - today + 7) % 7; // 0 = today, 1..6 ahead
+    if (dist < inDays) {
+      inDays = dist;
+      day = d;
+    }
+  }
+  return { inDays, day };
 }
 
 async function loadSites(operatorUid: string): Promise<SiteRow[]> {
@@ -63,10 +83,10 @@ async function loadSites(operatorUid: string): Promise<SiteRow[]> {
 
   const today = todayDay();
   const rows: SiteRow[] = accounts.map((a) => {
-    const days = Array.isArray(a.collectionDays)
-      ? a.collectionDays.map((n) => COLLECTION_DAY_LABELS[n]).filter(Boolean)
-      : [];
+    const collectionDays = Array.isArray(a.collectionDays) ? a.collectionDays : [];
+    const days = collectionDays.map((n) => COLLECTION_DAY_LABELS[n]).filter(Boolean);
     const paused = a.status === 'paused';
+    const next = nextPickup(collectionDays, today);
     return {
       id: a.id,
       businessName: a.businessName,
@@ -76,21 +96,25 @@ async function loadSites(operatorUid: string): Promise<SiteRow[]> {
       affiliationId: a.affiliationId,
       binCount: binCounts.get(a.id) ?? 0,
       // Paused sites are never "due today" — keeps summer-closed schools off the route.
-      scheduledToday:
-        !paused && Array.isArray(a.collectionDays) && a.collectionDays.includes(today),
+      scheduledToday: !paused && collectionDays.includes(today),
       paused,
       scheduledDays: days.join(', ') || '—',
-      scheduledDaysShort: days[0] ?? '—',
+      // Tile shows the SOONEST upcoming day, not just the first one listed — so a
+      // Sunday pickup reads "Sun" instead of the lowest-numbered weekday.
+      scheduledDaysShort: next.day ? COLLECTION_DAY_LABELS[next.day] : (days[0] ?? '—'),
+      nextPickupInDays: next.inDays,
       routeOrder: typeof a.routeOrder === 'number' ? a.routeOrder : null,
       recyclingCheck: a.siteType === 'recycling_check',
     };
   });
 
   rows.sort((a, b) => {
-    // Paused last, then today first, then route order (the order Tia drives),
-    // sequenced sites before unsequenced, then alphabetical as a final tiebreak.
+    // Paused last, then today first, then soonest next pickup (calendar
+    // proximity — Sunday from a Friday ranks above Monday), then route order
+    // (the order Tia drives), then alphabetical as a final tiebreak.
     if (a.paused !== b.paused) return a.paused ? 1 : -1;
     if (a.scheduledToday !== b.scheduledToday) return a.scheduledToday ? -1 : 1;
+    if (a.nextPickupInDays !== b.nextPickupInDays) return a.nextPickupInDays - b.nextPickupInDays;
     const ao = a.routeOrder ?? Number.POSITIVE_INFINITY;
     const bo = b.routeOrder ?? Number.POSITIVE_INFINITY;
     if (ao !== bo) return ao - bo;
@@ -151,7 +175,10 @@ export default async function OperatorCompostPage() {
     loadDestinations(session.uid),
     loadActiveRoute(session.uid),
   ]);
-  const todayCount = sites.filter((s) => s.scheduledToday).length;
+  const todaySites = sites.filter((s) => s.scheduledToday);
+  const upcomingSites = sites.filter((s) => !s.scheduledToday && !s.paused);
+  const pausedSites = sites.filter((s) => s.paused);
+  const todayCount = todaySites.length;
 
   return (
     <SSOpShell active="compost">
@@ -197,17 +224,119 @@ export default async function OperatorCompostPage() {
         </div>
       ) : (
         <div style={{ background: '#fff', padding: '22px 20px' }}>
-          <SSOpEyebrow>Sites</SSOpEyebrow>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {sites.map((site) => (
-              <SiteCard key={site.id} site={site} />
-            ))}
-          </div>
+          <SiteGroup
+            title="On today"
+            count={todaySites.length}
+            accent={SSOP.yellow}
+            tint="rgba(255, 235, 82, 0.22)"
+            sites={todaySites}
+            emptyNote="No sites scheduled for today — nothing due."
+          />
+          {upcomingSites.length > 0 && (
+            <SiteGroup
+              title="Rest of the week"
+              count={upcomingSites.length}
+              accent={SSOP.sky}
+              sites={upcomingSites}
+            />
+          )}
+          {pausedSites.length > 0 && (
+            <SiteGroup
+              title="Paused"
+              count={pausedSites.length}
+              accent="#E5E5E5"
+              sites={pausedSites}
+            />
+          )}
         </div>
       )}
 
       <OnTheWayButton destinations={destinations} />
     </SSOpShell>
+  );
+}
+
+function SiteGroup({
+  title,
+  count,
+  accent,
+  sites,
+  tint,
+  emptyNote,
+}: {
+  title: string;
+  count: number;
+  accent: string;
+  sites: SiteRow[];
+  /** Optional wash that wraps the group in a tinted, bordered card to make it pop. */
+  tint?: string;
+  emptyNote?: string;
+}) {
+  return (
+    <div
+      style={{
+        background: tint ?? 'transparent',
+        border: tint ? `2px solid ${SSOP.ink}` : 'none',
+        borderRadius: tint ? 16 : 0,
+        padding: tint ? '14px 14px 16px' : 0,
+        marginBottom: 18,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <span
+          style={{
+            width: 12,
+            height: 12,
+            borderRadius: '50%',
+            background: accent,
+            border: `2px solid ${SSOP.ink}`,
+            flexShrink: 0,
+          }}
+        />
+        <SSOpEyebrow mb={0} color={SSOP.ink}>
+          {title}
+        </SSOpEyebrow>
+        <span
+          style={{
+            background: accent,
+            color: SSOP.ink,
+            border: `2px solid ${SSOP.ink}`,
+            borderRadius: 999,
+            minWidth: 22,
+            height: 22,
+            padding: '0 7px',
+            fontSize: 11,
+            fontWeight: 900,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {count}
+        </span>
+      </div>
+      {sites.length > 0 ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {sites.map((site) => (
+            <SiteCard key={site.id} site={site} />
+          ))}
+        </div>
+      ) : (
+        emptyNote && (
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 800,
+              color: SSOP.inkSoft,
+              fontStyle: 'italic',
+              padding: '6px 2px',
+            }}
+          >
+            {emptyNote}
+          </div>
+        )
+      )}
+    </div>
   );
 }
 
