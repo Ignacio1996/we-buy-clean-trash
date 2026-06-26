@@ -59,6 +59,35 @@ export function columbusDayStart(now: Date): Date {
   return new Date(Date.UTC(y, m - 1, d) - columbusOffsetMs(now));
 }
 
+/**
+ * ISO weekday (1 = Mon … 7 = Sun) for a "YYYY-MM-DD" calendar date key. Parsed
+ * at noon UTC so the weekday is the same calendar day everywhere — matches the
+ * 1..7 convention used by CommercialAccountDoc.collectionDays.
+ */
+export function weekdayFromDateKey(dayKey: string): number {
+  const dow = new Date(`${dayKey}T12:00:00Z`).getUTCDay(); // 0 = Sun
+  return dow === 0 ? 7 : dow;
+}
+
+/**
+ * "YYYY-MM-DD" of the Monday that starts the week containing `now` (Columbus
+ * local). Week starts Monday to match collectionDays (1 = Mon … 7 = Sun).
+ */
+export function columbusWeekStartKey(now: Date): string {
+  const todayKey = columbusDateKey(now);
+  const weekday = weekdayFromDateKey(todayKey); // 1 = Mon … 7 = Sun
+  const [y, m, d] = todayKey.split('-').map(Number);
+  // Noon UTC keeps the calendar day stable across time zones; Date.UTC handles
+  // negative day rollover into the previous month.
+  return columbusDateKey(new Date(Date.UTC(y, m - 1, d - (weekday - 1), 12)));
+}
+
+/** UTC instant of Monday 00:00 Columbus local for the week containing `now`. */
+export function columbusWeekStart(now: Date): Date {
+  const [y, m, d] = columbusWeekStartKey(now).split('-').map(Number);
+  return columbusDayStart(new Date(Date.UTC(y, m - 1, d, 12)));
+}
+
 /** Friendly date label like "Sun, Jun 15" in Columbus local time. */
 export function columbusDateLabel(now: Date): string {
   return new Intl.DateTimeFormat('en-US', {

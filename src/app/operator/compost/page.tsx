@@ -32,6 +32,8 @@ interface SiteRow {
   nextPickupInDays: number;
   routeOrder: number | null;
   recyclingCheck: boolean;
+  /** Weighed-recycling site (reusable tote, measured net weight). */
+  weighed: boolean;
   /** True when a pickup/check for this site has been recorded on the open run. */
   done: boolean;
 }
@@ -95,6 +97,7 @@ async function loadSites(operatorUid: string): Promise<SiteRow[]> {
       nextPickupInDays: next.inDays,
       routeOrder: typeof a.routeOrder === 'number' ? a.routeOrder : null,
       recyclingCheck: a.siteType === 'recycling_check',
+      weighed: a.siteType === 'recycling_weighed',
       // Filled in by the page once the open run's recorded stops are known.
       done: false,
     };
@@ -466,6 +469,11 @@ function SiteCard({ site }: { site: SiteRow }) {
               Recycling
             </SSOpBadge>
           )}
+          {site.weighed && (
+            <SSOpBadge bg={SSOP.sky} fg={SSOP.ink}>
+              Weighed
+            </SSOpBadge>
+          )}
         </div>
         <div style={{ fontSize: 11, fontWeight: 800, color: SSOP.inkSoft, marginTop: 1 }}>
           {site.street} · {site.cityLine}
@@ -473,7 +481,9 @@ function SiteCard({ site }: { site: SiteRow }) {
         <div style={{ fontSize: 11, fontWeight: 800, color: SSOP.inkSoft, marginTop: 4 }}>
           {site.recyclingCheck
             ? `Recycling cart check · ${site.pickupsPerWeek}× / wk · ${site.scheduledDays}`
-            : `${site.binCount} bin${site.binCount === 1 ? '' : 's'} · ${site.pickupsPerWeek}× / wk · ${site.scheduledDays}`}
+            : site.weighed
+              ? `Weighed recycling · ${site.pickupsPerWeek}× / wk · ${site.scheduledDays}`
+              : `${site.binCount} bin${site.binCount === 1 ? '' : 's'} · ${site.pickupsPerWeek}× / wk · ${site.scheduledDays}`}
         </div>
       </div>
       <span

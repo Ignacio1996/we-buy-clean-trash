@@ -46,6 +46,23 @@ export function isCompostSkipReason(value: unknown): value is CompostSkipReason 
 }
 
 /**
+ * How the pickup's weight was captured.
+ * - `fullness` (default): bins[] × binWeightTable — the compost food-scrap flow.
+ * - `weighed`: a measured net weight (gross tote − tare) entered directly by the
+ *   driver — the reusable-tote recycling flow (`recycling_weighed` sites). No
+ *   fullness buckets; `bins[]` is empty and `totalWeightLbs` is the net.
+ * Legacy docs without this field are `fullness`.
+ */
+export const BIN_PICKUP_CAPTURE_MODES = ['fullness', 'weighed'] as const;
+export type BinPickupCaptureMode = (typeof BIN_PICKUP_CAPTURE_MODES)[number];
+
+export function isBinPickupCaptureMode(value: unknown): value is BinPickupCaptureMode {
+  return (
+    typeof value === 'string' && (BIN_PICKUP_CAPTURE_MODES as readonly string[]).includes(value)
+  );
+}
+
+/**
  * Operator-recorded pickup at a commercial site. One doc per pickup event,
  * regardless of how many bins were emptied. The driver scans the bin QR (or
  * picks the site from the route), then enters fullness per bin.
@@ -86,8 +103,19 @@ export interface BinPickupDoc {
   /** Required when `action === 'skipped'`; null otherwise. */
   skipReason: CompostSkipReason | null;
   bins: BinPickupBinEntry[];
-  /** Sum of bins[].weightLbs. 0 for skipped stops. Stored to avoid recomputation in reports. */
+  /** Sum of bins[].weightLbs (fullness mode) or the measured net (weighed mode). 0 for skipped stops. */
   totalWeightLbs: number;
+  /**
+   * How weight was captured. Absent/`fullness` = the bin-fullness compost flow.
+   * `weighed` = direct net weight from a reusable tote (recycling_weighed sites).
+   */
+  captureMode?: BinPickupCaptureMode;
+  /** Weighed mode only: gross weight of the full tote in lbs. Null otherwise. */
+  grossWeightLbs?: number | null;
+  /** Weighed mode only: tare (empty tote) weight in lbs. Null otherwise. */
+  tareWeightLbs?: number | null;
+  /** Weighed mode only: bag/bin doc id of the reusable tote the driver scanned. Null otherwise. */
+  binBagId?: string | null;
   /**
    * Driver flagged the bin(s) as needing the mobile cart-cleaning truck. Feeds
    * the admin cleaning queue. Defaults to false.

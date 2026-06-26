@@ -5,6 +5,7 @@ import type { BagDoc } from '@/lib/types/bag';
 import { loadActiveMaterials } from '@/lib/admin/loadActiveMaterials';
 import { GuideLink } from '@/components/admin/GuideLink';
 import { CommercialAccountsClient, type CommercialAccountView } from './CommercialAccountsClient';
+import { CompostRouteOptimizer } from './CompostRouteOptimizer';
 
 async function loadData() {
   const [accountsSnap, zonesSnap, materials] = await Promise.all([
@@ -66,7 +67,10 @@ export default async function AdminCommercialAccountsPage() {
             and record fullness on-site instead of weighing at a depot.
           </p>
         </div>
-        <GuideLink href="/user-guides/compost-admin-commercial-accounts.html" />
+        <div className="flex items-center gap-3">
+          <CompostRouteOptimizer zones={zones} />
+          <GuideLink href="/user-guides/compost-admin-commercial-accounts.html" />
+        </div>
       </header>
       <CommercialAccountsClient accounts={accounts} zones={zones} materials={materials} />
     </div>

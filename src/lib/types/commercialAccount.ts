@@ -17,9 +17,19 @@ export function isCommercialAccountStatus(v: unknown): v is CommercialAccountSta
  * - `recycling_check`: a recycling/trash cart check (e.g. Dora Lofts) — the
  *   driver inspects carts, takes a photo, and flags contamination/overflow.
  *   No weight or bin fullness. Legacy docs without this field are `compost`.
+ * - `recycling_weighed`: WBCT reusable-tote recycling (e.g. Dora's Loft) — the
+ *   driver scans the permanent bin QR, collects raw recyclables, and records a
+ *   measured net weight (gross tote − tare). Diversion-only, no points. This is
+ *   the pilot model for the reusable-container WBCT flow.
  */
-export const SITE_TYPES = ['compost', 'recycling_check'] as const;
+export const SITE_TYPES = ['compost', 'recycling_check', 'recycling_weighed'] as const;
 export type SiteType = (typeof SITE_TYPES)[number];
+
+export const SITE_TYPE_LABELS: Record<SiteType, string> = {
+  compost: 'Compost (food-scrap bins)',
+  recycling_check: 'Recycling check (cart inspection)',
+  recycling_weighed: 'Recycling — weighed (reusable tote)',
+};
 
 export function isSiteType(v: unknown): v is SiteType {
   return typeof v === 'string' && (SITE_TYPES as readonly string[]).includes(v);

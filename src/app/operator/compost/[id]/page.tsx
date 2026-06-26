@@ -16,6 +16,7 @@ import {
 } from '@/components/operator/SSOp';
 import { BinPickupForm, type BinView, type MaterialChoice } from './BinPickupForm';
 import { RecyclingCheckForm } from './RecyclingCheckForm';
+import { WeighedPickupForm } from './WeighedPickupForm';
 
 export default async function CompostSiteStopPage({
   params,
@@ -58,7 +59,14 @@ export default async function CompostSiteStopPage({
     .filter((m) => account.materialIds.includes(m.id) && m.measurementMode === 'bin_fullness')
     .map((m) => ({ id: m.id, name: m.name }));
 
+  // Weighed sites capture a measured net weight, so any of the account's
+  // materials apply (not just bin_fullness ones).
+  const weighedMaterials: MaterialChoice[] = allMaterials
+    .filter((m) => account.materialIds.includes(m.id))
+    .map((m) => ({ id: m.id, name: m.name }));
+
   const isRecyclingCheck = account.siteType === 'recycling_check';
+  const isWeighed = account.siteType === 'recycling_weighed';
   const addressLine = `${account.street}${account.unit ? `, ${account.unit}` : ''}, ${account.city}, ${account.state} ${account.postalCode}`;
   const scheduleLine =
     account.collectionDays.map((d) => COLLECTION_DAY_LABELS[d]).filter(Boolean).join(', ') || '—';
@@ -71,7 +79,7 @@ export default async function CompostSiteStopPage({
         sub={addressLine}
         back="Back to compost"
         backHref="/operator/compost"
-        headerBg={isRecyclingCheck ? SSOP.sky : SSOP.mint}
+        headerBg={isRecyclingCheck || isWeighed ? SSOP.sky : SSOP.mint}
       />
 
       <div style={{ background: SSOP.bg, padding: '18px 20px 40px', display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -87,6 +95,9 @@ export default async function CompostSiteStopPage({
             <SSOpBadge bg="#fff">{account.pickupsPerWeek}× / week</SSOpBadge>
             {isRecyclingCheck && (
               <SSOpBadge bg={SSOP.sky}>Recycling check</SSOpBadge>
+            )}
+            {isWeighed && (
+              <SSOpBadge bg={SSOP.sky}>Weighed recycling</SSOpBadge>
             )}
           </div>
           {account.contactName && (
@@ -108,6 +119,8 @@ export default async function CompostSiteStopPage({
 
         {isRecyclingCheck ? (
           <RecyclingCheckForm accountId={account.id} />
+        ) : isWeighed ? (
+          <WeighedPickupForm accountId={account.id} materials={weighedMaterials} bins={bins} />
         ) : (
           <BinPickupForm
             accountId={account.id}

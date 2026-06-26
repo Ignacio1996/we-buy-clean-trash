@@ -1,16 +1,22 @@
 import Link from 'next/link';
 import { DeleteRunRowButton } from './DeleteRunRowButton';
+import { ExportRunsButton } from './ExportRunsButton';
 import { adminDb } from '@/lib/firebase/admin';
 import type { CompostRouteSummary } from '@/lib/types/compostRoute';
 import type { BinPickupDoc } from '@/lib/types/binPickup';
 import type { SiteCheckDoc } from '@/lib/types/siteCheck';
 import type { UserDoc } from '@/lib/types/user';
+import type { CommercialAccountDoc } from '@/lib/types/commercialAccount';
+import { COLLECTION_DAY_LABELS } from '@/lib/types/commercialAccount';
 import { summarizeCompostRoute } from '@/lib/logic/compostRouteSummary';
 import { dayRunId } from '@/lib/logic/compostDay';
 import {
   columbusDateKey,
   columbusDateLabel,
+  columbusDayStart,
   columbusTimeLabel,
+  columbusWeekStartKey,
+  weekdayFromDateKey,
 } from '@/lib/logic/columbusDate';
 
 interface RouteRow {
@@ -142,20 +148,86 @@ async function loadRoutes(): Promise<RouteRow[]> {
   });
 }
 
+interface MissedSite {
+  id: string;
+  name: string;
+  bins: number;
+}
+
+/**
+ * Active sites scheduled for today (Columbus weekday) with no bin pickup or
+ * recycling check recorded yet — the end-of-day completeness check that would
+ * have caught the missing Dodge Park run. Program-wide (any operator).
+ */
+async function loadTodayMissed(): Promise<MissedSite[]> {
+  const todayKey = columbusDateKey(new Date());
+  const weekday = weekdayFromDateKey(todayKey);
+  const dayStart = columbusDayStart(new Date());
+  const [accountsSnap, pickupsSnap, checksSnap] = await Promise.all([
+    adminDb.collection('commercialAccounts').where('active', '==', true).get(),
+    adminDb.collection('binPickups').where('createdAt', '>=', dayStart).get(),
+    adminDb.collection('siteChecks').where('createdAt', '>=', dayStart).get(),
+  ]);
+  const recorded = new Set<string>();
+  for (const d of [...pickupsSnap.docs, ...checksSnap.docs]) {
+    const accId = d.get('commercialAccountId');
+    if (typeof accId === 'string') recorded.add(accId);
+  }
+  return accountsSnap.docs
+    .map((d) => d.data() as CommercialAccountDoc)
+    .filter(
+      (a) =>
+        a.status !== 'paused' &&
+        Array.isArray(a.collectionDays) &&
+        a.collectionDays.includes(weekday) &&
+        !recorded.has(a.id),
+    )
+    .map((a) => ({
+      id: a.id,
+      name: a.businessName,
+      bins: typeof a.binsOnSite === 'number' ? a.binsOnSite : 0,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+type RunView = 'today' | 'week' | 'all';
+
+const VIEW_LABEL: Record<RunView, string> = {
+  today: 'Today',
+  week: 'This week',
+  all: 'All time',
+};
+
 export default async function CompostRoutesPage({
   searchParams,
 }: {
   searchParams: Promise<{ filter?: string }>;
 }) {
   const { filter } = await searchParams;
-  const todayOnly = filter !== 'all';
-  const todayKey = columbusDateKey(new Date());
-  const allRoutes = await loadRoutes();
-  const routes = todayOnly ? allRoutes.filter((r) => r.dateKey === todayKey) : allRoutes;
+  // Default to "this week" — Tia reviews the week's runs, not just today's.
+  const view: RunView = filter === 'all' ? 'all' : filter === 'today' ? 'today' : 'week';
 
-  // "Today" tallies — what Tia checks to confirm the run is done.
-  const today = allRoutes.filter((r) => r.dateKey === todayKey);
-  const todayWeight = today.reduce((sum, r) => sum + r.totalWeightLbs, 0);
+  const now = new Date();
+  const todayKey = columbusDateKey(now);
+  const todayWeekday = weekdayFromDateKey(todayKey);
+  const weekStartKey = columbusWeekStartKey(now);
+  const [allRoutes, missedToday] = await Promise.all([loadRoutes(), loadTodayMissed()]);
+
+  const routes =
+    view === 'all'
+      ? allRoutes
+      : view === 'today'
+        ? allRoutes.filter((r) => r.dateKey === todayKey)
+        : allRoutes.filter((r) => r.dateKey >= weekStartKey);
+
+  // Headline tally tracks the active view.
+  const viewWeight = routes.reduce((sum, r) => sum + r.totalWeightLbs, 0);
+
+  const VIEWS: { key: RunView; href: string; label: string }[] = [
+    { key: 'today', href: '/admin/compost/routes?filter=today', label: 'Today' },
+    { key: 'week', href: '/admin/compost/routes', label: 'This week' },
+    { key: 'all', href: '/admin/compost/routes?filter=all', label: 'All runs' },
+  ];
 
   return (
     <div>
@@ -174,43 +246,70 @@ export default async function CompostRoutesPage({
 
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-2.5">
-            <div className="text-[10px] uppercase tracking-wide text-emerald-300/70">Today</div>
+            <div className="text-[10px] uppercase tracking-wide text-emerald-300/70">
+              {VIEW_LABEL[view]}
+            </div>
             <div className="mt-0.5 text-sm text-white">
-              <span className="font-semibold">{today.length}</span> run
-              {today.length === 1 ? '' : 's'} ·{' '}
-              <span className="font-semibold">{todayWeight.toLocaleString()}</span> lbs
+              <span className="font-semibold">{routes.length}</span> run
+              {routes.length === 1 ? '' : 's'} ·{' '}
+              <span className="font-semibold">{viewWeight.toLocaleString()}</span> lbs
             </div>
           </div>
           <div className="flex items-center gap-1.5">
-            <Link
-              href="/admin/compost/routes"
-              className={`rounded-full border px-3 py-1 text-[11px] font-semibold ${
-                todayOnly
-                  ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-200'
-                  : 'border-white/10 bg-black/30 text-gray-400 hover:bg-white/10'
-              }`}
-            >
-              Today
-            </Link>
-            <Link
-              href="/admin/compost/routes?filter=all"
-              className={`rounded-full border px-3 py-1 text-[11px] font-semibold ${
-                todayOnly
-                  ? 'border-white/10 bg-black/30 text-gray-400 hover:bg-white/10'
-                  : 'border-emerald-500/40 bg-emerald-500/15 text-emerald-200'
-              }`}
-            >
-              All runs
-            </Link>
+            {VIEWS.map((v) => (
+              <Link
+                key={v.key}
+                href={v.href}
+                className={`rounded-full border px-3 py-1 text-[11px] font-semibold ${
+                  view === v.key
+                    ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-200'
+                    : 'border-white/10 bg-black/30 text-gray-400 hover:bg-white/10'
+                }`}
+              >
+                {v.label}
+              </Link>
+            ))}
+          </div>
+          <div className="ml-auto">
+            <ExportRunsButton rows={routes} scope={view === 'all' ? 'all' : `${view}-${todayKey}`} />
           </div>
         </div>
       </header>
 
+      {missedToday.length > 0 && (
+        <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+          <div className="text-xs font-semibold text-amber-200">
+            ⚠ {missedToday.length} site{missedToday.length === 1 ? '' : 's'} scheduled today (
+            {COLLECTION_DAY_LABELS[todayWeekday]}) not yet recorded
+          </div>
+          <p className="mt-1 text-[11px] text-amber-200/70">
+            No bin pickup or recycling check logged for these today. If the run is still going this
+            will clear as stops come in.
+          </p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {missedToday.map((m) => (
+              <span
+                key={m.id}
+                className="rounded-full border border-amber-500/30 bg-amber-500/15 px-2 py-0.5 text-[11px] text-amber-100"
+              >
+                {m.name}
+                {m.bins > 0 ? ` · ${m.bins} bin${m.bins === 1 ? '' : 's'}` : ''}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {routes.length === 0 ? (
         <div className="rounded-lg border border-white/10 bg-white/5 p-6 text-sm text-gray-400">
-          {todayOnly ? (
+          {view === 'today' ? (
             <>
               No runs today yet. A run appears here once an operator records a pickup on the
+              compost screen.
+            </>
+          ) : view === 'week' ? (
+            <>
+              No runs this week yet. A run appears here once an operator records a pickup on the
               compost screen.
             </>
           ) : (
