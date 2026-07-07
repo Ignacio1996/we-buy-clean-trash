@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { requireRole } from '@/lib/auth/session';
 import { adminDb } from '@/lib/firebase/admin';
 import type { CommercialAccountDoc } from '@/lib/types/commercialAccount';
-import { COLLECTION_DAY_LABELS } from '@/lib/types/commercialAccount';
+import { COLLECTION_DAY_LABELS, resolveOperativeBins } from '@/lib/types/commercialAccount';
 import type { BagDoc } from '@/lib/types/bag';
 import { resolveContainerType, containerBinSize } from '@/lib/types/bag';
 import { loadActiveMaterials } from '@/lib/admin/loadActiveMaterials';
@@ -127,6 +127,7 @@ export default async function CompostSiteStopPage({
             defaultBinSize={account.defaultBinSize}
             bins={bins}
             materials={materialChoices}
+            seedBinCount={resolveOperativeBins(account)}
           />
         )}
       </div>

@@ -19,7 +19,11 @@ import {
   X,
 } from 'lucide-react';
 import type { CommercialAccountDoc, SiteType } from '@/lib/types/commercialAccount';
-import { COLLECTION_DAY_LABELS, SITE_TYPE_LABELS } from '@/lib/types/commercialAccount';
+import {
+  COLLECTION_DAY_LABELS,
+  SITE_TYPE_LABELS,
+  resolveOperativeBins,
+} from '@/lib/types/commercialAccount';
 import { BIN_DISPLAY_NAMES, BIN_SIZES, type BinSize } from '@/lib/logic/binWeightTable';
 import type { MaterialId } from '@/lib/types/material';
 import type { MeasurementMode } from '@/lib/types/material';
@@ -98,7 +102,10 @@ export function CommercialAccountsClient({
   });
 
   const filtering = dayFilter != null || query.trim() !== '';
-  const totalBins = active.reduce((sum, a) => sum + (a.binCount ?? 0), 0);
+  // Total *declared* bins on site (what Tia means by "how many bins are out
+  // there"), not the count of provisioned QR labels.
+  const totalBins = active.reduce((sum, a) => sum + (a.binsOnSite ?? 0), 0);
+  const reducedCount = active.filter((a) => resolveOperativeBins(a) < (a.binsOnSite ?? 0)).length;
   const pausedCount = active.filter((a) => a.status === 'paused').length;
 
   return (
@@ -108,7 +115,13 @@ export function CommercialAccountsClient({
       {/* KPI overview — quick read on the program before drilling into a site. */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard icon={Building2} label="Active sites" value={active.length} tint="blue" />
-        <StatCard icon={Boxes} label="Bins provisioned" value={totalBins} tint="emerald" />
+        <StatCard
+          icon={Boxes}
+          label="Bins on site"
+          value={totalBins}
+          tint="emerald"
+          note={reducedCount > 0 ? `${reducedCount} at reduced capacity` : undefined}
+        />
         <StatCard icon={Pause} label="Paused" value={pausedCount} tint="orange" />
         <StatCard icon={Archive} label="Archived" value={inactive.length} tint="gray" />
       </div>
@@ -214,11 +227,13 @@ function StatCard({
   label,
   value,
   tint,
+  note,
 }: {
   icon: typeof Building2;
   label: string;
   value: number;
   tint: keyof typeof TINTS;
+  note?: string;
 }) {
   return (
     <div className="rounded-xl border border-white/10 bg-white/5 p-3">
@@ -227,6 +242,7 @@ function StatCard({
         {label}
       </div>
       <div className="mt-1.5 text-2xl font-semibold tabular-nums text-white">{value}</div>
+      {note && <div className="mt-0.5 text-[10px] font-medium text-orange-300">{note}</div>}
     </div>
   );
 }
@@ -310,6 +326,9 @@ function AccountCard({
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const paused = account.status === 'paused';
+  const declaredBins = account.binsOnSite ?? 0;
+  const operativeBins = resolveOperativeBins(account);
+  const reducedCapacity = operativeBins < declaredBins;
 
   const materialNames = account.materialIds
     .map((id) => materials.find((m) => m.id === id)?.name ?? id)
@@ -358,6 +377,7 @@ function AccountCard({
             <h3 className="text-base font-semibold text-white">{account.businessName}</h3>
             <SiteTypeBadge siteType={account.siteType ?? 'compost'} />
             {account.affiliationId && <Badge tone="amber">{account.affiliationId}</Badge>}
+            {reducedCapacity && <Badge tone="orange">Reduced capacity</Badge>}
             {paused && <Badge tone="orange">Paused</Badge>}
           </div>
           <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-gray-400">
@@ -423,6 +443,11 @@ function AccountCard({
 
       {/* Read-only summary — always visible, scannable. */}
       <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-xs sm:grid-cols-4">
+        <Stat
+          label="Bins on site"
+          value={reducedCapacity ? `${operativeBins} of ${declaredBins}` : String(declaredBins)}
+          highlight={reducedCapacity}
+        />
         <Stat label="Zone" value={zoneName} />
         <Stat label="Default bin" value={BIN_DISPLAY_NAMES[account.defaultBinSize]} />
         <Stat
@@ -640,15 +665,27 @@ function MaterialsField({
 function ScheduleField({ account }: { account: CommercialAccountView }) {
   const router = useRouter();
   const initialDays = account.collectionDays;
+  const initialBins = account.binsOnSite ?? 0;
+  // Stored form of operative bins: null when all bins are operative, else the
+  // reduced count. Mirrors what we persist so the dirty check is accurate.
+  const initialStoredOperative =
+    typeof account.operativeBins === 'number' && account.operativeBins < initialBins
+      ? account.operativeBins
+      : null;
   const [days, setDays] = useState<number[]>(initialDays);
-  const [bins, setBins] = useState<number>(account.binsOnSite ?? 0);
+  const [bins, setBins] = useState<number>(initialBins);
+  const [operative, setOperative] = useState<number>(resolveOperativeBins(account));
   const [perWeek, setPerWeek] = useState<number>(account.pickupsPerWeek);
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // null = every bin operative; otherwise the reduced count (< total bins).
+  const storedOperative = operative >= bins ? null : Math.max(0, Math.min(bins, operative));
+
   const dirty =
-    bins !== (account.binsOnSite ?? 0) ||
+    bins !== initialBins ||
+    storedOperative !== initialStoredOperative ||
     perWeek !== account.pickupsPerWeek ||
     days.length !== initialDays.length ||
     days.some((d, i) => d !== initialDays[i]);
@@ -672,7 +709,12 @@ function ScheduleField({ account }: { account: CommercialAccountView }) {
     const res = await fetch(`/api/admin/commercial-accounts/${account.id}`, {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ collectionDays: days, binsOnSite: bins, pickupsPerWeek: perWeek }),
+      body: JSON.stringify({
+        collectionDays: days,
+        binsOnSite: bins,
+        operativeBins: storedOperative,
+        pickupsPerWeek: perWeek,
+      }),
     });
     setBusy(false);
     if (!res.ok) {
@@ -726,10 +768,32 @@ function ScheduleField({ account }: { account: CommercialAccountView }) {
             value={bins}
             onChange={(e) => {
               setSaved(false);
-              setBins(Math.max(0, Math.min(99, Number(e.target.value) || 0)));
+              const next = Math.max(0, Math.min(99, Number(e.target.value) || 0));
+              setBins(next);
+              // Keep operative in range as the total shrinks/grows.
+              setOperative((op) => Math.min(op, next));
             }}
             className="mt-0.5 w-20 rounded border border-white/10 bg-black/40 px-2 py-1 text-xs text-white"
           />
+        </label>
+        <label className="block">
+          <span className="block text-[9px] uppercase tracking-wide text-gray-500">
+            Operative now
+          </span>
+          <input
+            type="number"
+            min={0}
+            max={bins}
+            value={operative}
+            onChange={(e) => {
+              setSaved(false);
+              setOperative(Math.max(0, Math.min(bins, Number(e.target.value) || 0)));
+            }}
+            className={`mt-0.5 w-20 rounded border bg-black/40 px-2 py-1 text-xs text-white ${
+              storedOperative !== null ? 'border-orange-400/50' : 'border-white/10'
+            }`}
+          />
+          <span className="mt-0.5 block text-[9px] text-gray-500">of {bins} · usable today</span>
         </label>
         <label className="block">
           <span className="block text-[9px] uppercase tracking-wide text-gray-500">
@@ -837,9 +901,9 @@ function BinSection({ account }: { account: CommercialAccountView }) {
     <div className="mt-3 rounded-lg border border-white/10 bg-black/20 px-3 py-2">
       <div className="flex items-center justify-between">
         <div className="inline-flex items-center gap-1.5 text-[11px] text-gray-300">
-          <Boxes className="h-3.5 w-3.5 text-gray-500" aria-hidden />
-          <span className="font-semibold text-white">{binCount}</span> bin
-          {binCount === 1 ? '' : 's'} provisioned
+          <Printer className="h-3.5 w-3.5 text-gray-500" aria-hidden />
+          <span className="font-semibold text-white">{binCount}</span> QR label
+          {binCount === 1 ? '' : 's'} printed
         </div>
         {!adding ? (
           <div className="flex items-center gap-3">
@@ -860,7 +924,7 @@ function BinSection({ account }: { account: CommercialAccountView }) {
               className="inline-flex items-center gap-1 text-[11px] text-blue-300 hover:text-blue-200"
             >
               <Plus className="h-3 w-3" aria-hidden />
-              Provision bins
+              Add QR bins
             </button>
           </div>
         ) : (
@@ -953,11 +1017,21 @@ function SaveButton({ onClick, disabled }: { onClick: () => void; disabled: bool
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({
+  label,
+  value,
+  highlight,
+}: {
+  label: string;
+  value: string;
+  highlight?: boolean;
+}) {
   return (
     <div>
       <div className="text-[9px] uppercase tracking-wide text-gray-500">{label}</div>
-      <div className="mt-0.5 text-gray-200">{value}</div>
+      <div className={`mt-0.5 ${highlight ? 'font-semibold text-orange-300' : 'text-gray-200'}`}>
+        {value}
+      </div>
     </div>
   );
 }

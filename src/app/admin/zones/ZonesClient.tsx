@@ -17,6 +17,13 @@ export interface MaterialChip {
   payoutMode: PayoutMode;
 }
 
+export interface CoverageRequest {
+  zip: string;
+  lookups: number;
+  signups: number;
+  lastRequestedLabel: string;
+}
+
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 function formatDays(days: number[]): string {
@@ -31,30 +38,92 @@ export function ZonesClient({
   zones,
   depots,
   materials,
+  coverageRequests = [],
 }: {
   zones: ZoneView[];
   depots: DepotView[];
   materials: MaterialChip[];
+  coverageRequests?: CoverageRequest[];
 }) {
   const depotNameById = new Map(depots.map((d) => [d.id, d.name]));
+  // Zone names grouped by the depot they feed — shown on each depot card so the
+  // territory → drop-off relationship reads from both sides.
+  const zoneNamesByDepot = new Map<string, string[]>();
+  for (const z of zones) {
+    const list = zoneNamesByDepot.get(z.depotId) ?? [];
+    list.push(z.name);
+    zoneNamesByDepot.set(z.depotId, list);
+  }
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-      <section>
-        <h2 className="text-sm font-semibold text-white">Depots</h2>
-        <DepotList depots={depots} materials={materials} />
-        <DepotForm />
-      </section>
-      <section>
-        <h2 className="text-sm font-semibold text-white">Zones</h2>
-        <ZoneList zones={zones} depotNameById={depotNameById} />
-        <ZoneForm depots={depots} />
-      </section>
+    <div className="space-y-6">
+      {coverageRequests.length > 0 && <CoverageRequestsSection requests={coverageRequests} />}
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <section>
+          <h2 className="text-sm font-semibold text-white">
+            Depots <span className="font-normal text-gray-500">· drop-off &amp; processing sites</span>
+          </h2>
+          <DepotList depots={depots} materials={materials} zoneNamesByDepot={zoneNamesByDepot} />
+          <DepotForm />
+        </section>
+        <section>
+          <h2 className="text-sm font-semibold text-white">
+            Zones <span className="font-normal text-gray-500">· ZIP service areas</span>
+          </h2>
+          <ZoneList zones={zones} depotNameById={depotNameById} />
+          <ZoneForm depots={depots} />
+        </section>
+      </div>
     </div>
   );
 }
 
-function DepotList({ depots, materials }: { depots: DepotView[]; materials: MaterialChip[] }) {
+/**
+ * ZIPs people checked or signed up from that no zone covers yet — the demand
+ * list Tia asked for so she knows where to extend service. Add a ZIP to a zone
+ * below and it drops off this list on the next load.
+ */
+function CoverageRequestsSection({ requests }: { requests: CoverageRequest[] }) {
+  return (
+    <section className="rounded-xl border border-amber-500/30 bg-amber-500/[0.07] p-4">
+      <div className="flex items-center gap-2">
+        <h2 className="text-sm font-semibold text-amber-200">
+          Coverage requests · {requests.length} unserved ZIP{requests.length === 1 ? '' : 's'}
+        </h2>
+      </div>
+      <p className="mt-1 text-[11px] text-amber-200/70">
+        People tried to sign up from these ZIPs but no zone covers them. Add the ones worth serving
+        to a zone&apos;s ZIP list.
+      </p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {requests.map((r) => (
+          <span
+            key={r.zip}
+            title={`Last checked ${r.lastRequestedLabel}`}
+            className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/15 px-2.5 py-1 text-[11px] text-amber-100"
+          >
+            <span className="font-mono font-semibold">{r.zip}</span>
+            <span className="text-amber-200/70">
+              {r.signups > 0 ? `${r.signups} signup${r.signups === 1 ? '' : 's'} · ` : ''}
+              {r.lookups} check{r.lookups === 1 ? '' : 's'}
+            </span>
+          </span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function DepotList({
+  depots,
+  materials,
+  zoneNamesByDepot,
+}: {
+  depots: DepotView[];
+  materials: MaterialChip[];
+  zoneNamesByDepot: Map<string, string[]>;
+}) {
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -89,6 +158,7 @@ function DepotList({ depots, materials }: { depots: DepotView[]; materials: Mate
             key={d.id}
             depot={d}
             materials={materials}
+            zoneNames={zoneNamesByDepot.get(d.id) ?? []}
             onDelete={() => handleDelete(d.id)}
             deleting={busyId === d.id}
           />
@@ -102,11 +172,13 @@ function DepotList({ depots, materials }: { depots: DepotView[]; materials: Mate
 function DepotCard({
   depot,
   materials,
+  zoneNames,
   onDelete,
   deleting,
 }: {
   depot: DepotView;
   materials: MaterialChip[];
+  zoneNames: string[];
   onDelete: () => void;
   deleting: boolean;
 }) {
@@ -157,6 +229,18 @@ function DepotCard({
           <div className="text-sm text-white">{depot.name}</div>
           <div className="text-xs text-gray-500">
             {depot.street}, {depot.city}, {depot.state} {depot.postalCode}
+          </div>
+          <div className="mt-1 text-[11px] text-gray-500">
+            {zoneNames.length === 0 ? (
+              <span className="text-gray-600">No zones feed this depot yet.</span>
+            ) : (
+              <>
+                <span className="text-gray-400">
+                  Fed by {zoneNames.length} zone{zoneNames.length === 1 ? '' : 's'}:
+                </span>{' '}
+                {zoneNames.join(', ')}
+              </>
+            )}
           </div>
         </div>
         <button

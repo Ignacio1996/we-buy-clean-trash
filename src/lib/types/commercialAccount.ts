@@ -75,6 +75,14 @@ export interface CommercialAccountDoc {
    * bag docs (which may be zero for historical/imported sites).
    */
   binsOnSite: number;
+  /**
+   * Number of bins currently usable/operative at the site — always <= binsOnSite.
+   * Lets the admin record a temporary capacity drop (e.g. bins damaged, or a
+   * reduced staging area that only fits two) without losing the declared total,
+   * so "mark full" and the operator's bin rows reflect real capacity. `null`
+   * means all binsOnSite are operative — the normal case and the legacy default.
+   */
+  operativeBins: number | null;
   /** Number of pickups per week — Tia's drivers sequence routes around this. */
   pickupsPerWeek: number;
   /**
@@ -121,6 +129,22 @@ export interface CommercialAccountDoc {
   driverNotes: string | null;
   createdAt: Timestamp;
   updatedAt: Timestamp;
+}
+
+/**
+ * Effective count of usable bins at a site — `operativeBins` when explicitly set
+ * (and clamped to the declared total), otherwise the full `binsOnSite`. Callers
+ * should use this instead of reading the raw fields so legacy docs (no
+ * `operativeBins`) and the "all operative" case both resolve correctly.
+ */
+export function resolveOperativeBins(account: {
+  binsOnSite: number;
+  operativeBins?: number | null;
+}): number {
+  const declared = Math.max(0, Math.floor(account.binsOnSite ?? 0));
+  const op = account.operativeBins;
+  if (typeof op !== 'number' || !Number.isFinite(op)) return declared;
+  return Math.max(0, Math.min(declared, Math.floor(op)));
 }
 
 export const COLLECTION_DAY_LABELS: Record<number, string> = {
