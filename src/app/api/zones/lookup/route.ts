@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 import { resolvePickupDays, type ZoneDoc } from '@/lib/types/zone';
+import { recordCoverageRequest } from '@/lib/admin/coverageRequests';
 
 // Public — used by the signup wizard before the user has an account.
 // Returns just the zone name and pickup days; no PII, no ZIP roster.
@@ -18,6 +19,8 @@ export async function GET(request: Request) {
     .get();
 
   if (snap.empty) {
+    // Log the unserved ZIP so admin can see where to extend coverage.
+    await recordCoverageRequest(zip, 'lookup');
     return NextResponse.json({ inService: false });
   }
 

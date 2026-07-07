@@ -270,7 +270,13 @@ export default async function CompostRoutesPage({
               </Link>
             ))}
           </div>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            <Link
+              href="/admin/compost/reconcile"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-white transition-colors hover:bg-white/10"
+            >
+              Reconcile week
+            </Link>
             <ExportRunsButton rows={routes} scope={view === 'all' ? 'all' : `${view}-${todayKey}`} />
           </div>
         </div>

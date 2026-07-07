@@ -95,6 +95,18 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     update.binsOnSite = Math.floor(n);
   }
 
+  if (raw.operativeBins !== undefined) {
+    if (raw.operativeBins === null || raw.operativeBins === '') {
+      update.operativeBins = null;
+    } else {
+      const n = typeof raw.operativeBins === 'number' ? raw.operativeBins : Number(raw.operativeBins);
+      if (!Number.isFinite(n) || n < 0) {
+        return NextResponse.json({ error: 'invalid_operative_bins' }, { status: 400 });
+      }
+      update.operativeBins = Math.floor(n);
+    }
+  }
+
   if (raw.pickupsPerWeek !== undefined) {
     const n = typeof raw.pickupsPerWeek === 'number' ? raw.pickupsPerWeek : Number(raw.pickupsPerWeek);
     if (!Number.isFinite(n) || n < 1 || n > 7) {

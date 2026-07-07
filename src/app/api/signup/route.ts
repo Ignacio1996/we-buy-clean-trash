@@ -6,6 +6,7 @@ import { normalizePhone } from '@/lib/types/user';
 import { sendEmail } from '@/lib/email/send';
 import { buildResidentWelcomeEmail } from '@/lib/email/welcome';
 import { SIGNUP_BONUS_POINTS } from '@/lib/logic/calculatePoints';
+import { recordCoverageRequest } from '@/lib/admin/coverageRequests';
 
 async function resolveZoneIdForZip(postalCode: string): Promise<string | null> {
   const snap = await adminDb
@@ -142,6 +143,12 @@ export async function POST(request: Request) {
       createdAt: FieldValue.serverTimestamp(),
     });
   });
+
+  // Signed up in an unserved ZIP (no matching zone) — a high-intent demand
+  // signal for extending coverage. Best-effort; never blocks signup.
+  if (!zoneId) {
+    await recordCoverageRequest(payload.address.postalCode, 'signup');
+  }
 
   // Fire-and-log the welcome email. The Firestore Send Email extension picks
   // it up asynchronously, so a failure here must never block signup.

@@ -6,9 +6,10 @@ import { ZonesClient } from './ZonesClient';
 import { GuideLink } from '@/components/admin/GuideLink';
 
 async function loadData() {
-  const [zonesSnap, depotsSnap, materials] = await Promise.all([
+  const [zonesSnap, depotsSnap, coverageSnap, materials] = await Promise.all([
     adminDb.collection('zones').orderBy('name').get(),
     adminDb.collection('depots').orderBy('name').get(),
+    adminDb.collection('coverageRequests').orderBy('lastRequestedAt', 'desc').limit(200).get(),
     loadActiveMaterials(),
   ]);
   const zones = zonesSnap.docs.map((d) => {
@@ -27,27 +28,60 @@ async function loadData() {
     const { createdAt: _c, updatedAt: _u, ...rest } = data;
     return rest;
   });
+
+  // Coverage requests for ZIPs not yet covered by any zone — the demand list.
+  const coveredZips = new Set(zones.flatMap((z) => z.zipCodes));
+  const dateFmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
+  const coverageRequests = coverageSnap.docs
+    .map((d) => {
+      const data = d.data() as {
+        zip?: string;
+        lookups?: number;
+        signups?: number;
+        lastRequestedAt?: { toDate?: () => Date };
+      };
+      return {
+        zip: typeof data.zip === 'string' ? data.zip : d.id,
+        lookups: typeof data.lookups === 'number' ? data.lookups : 0,
+        signups: typeof data.signups === 'number' ? data.signups : 0,
+        lastRequestedLabel: data.lastRequestedAt?.toDate
+          ? dateFmt.format(data.lastRequestedAt.toDate())
+          : '—',
+      };
+    })
+    .filter((r) => !coveredZips.has(r.zip))
+    .sort((a, b) => b.signups - a.signups || b.lookups - a.lookups);
+
   return {
     zones,
     depots,
+    coverageRequests,
     materials: materials.map((m) => ({ id: m.id, name: m.name, payoutMode: m.payoutMode })),
   };
 }
 
 export default async function AdminZonesPage() {
-  const { zones, depots, materials } = await loadData();
+  const { zones, depots, coverageRequests, materials } = await loadData();
   return (
     <div>
-      <header className="mb-6 flex items-end justify-between gap-4">
+      <header className="mb-4 flex items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-white">Zones & depots</h1>
-          <p className="mt-1 text-xs text-gray-500">
-            Pilot runs single-zone, but the data model supports many.
+          <p className="mt-1 max-w-2xl text-xs text-gray-500">
+            A <span className="text-gray-300">depot</span> is a physical drop-off / processing
+            site where material goes. A <span className="text-gray-300">zone</span> is a service
+            territory — a list of ZIP codes — that feeds one depot. Add a ZIP to a zone and
+            residents there can sign up and get auto-assigned.
           </p>
         </div>
         <GuideLink href="/user-guides/phase-4-admin.html" />
       </header>
-      <ZonesClient zones={zones} depots={depots} materials={materials} />
+      <ZonesClient
+        zones={zones}
+        depots={depots}
+        materials={materials}
+        coverageRequests={coverageRequests}
+      />
     </div>
   );
 }

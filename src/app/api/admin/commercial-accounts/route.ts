@@ -85,6 +85,13 @@ export async function POST(request: Request) {
   const binsOnSiteRaw = num(raw.binsOnSite);
   const binsOnSite = binsOnSiteRaw !== null && binsOnSiteRaw >= 0 ? Math.floor(binsOnSiteRaw) : 0;
 
+  // Optional: bins currently operative (<= binsOnSite). Null means all operative.
+  const operativeBinsRaw = num(raw.operativeBins);
+  const operativeBins =
+    operativeBinsRaw !== null && operativeBinsRaw >= 0
+      ? Math.min(binsOnSite, Math.floor(operativeBinsRaw))
+      : null;
+
   const collectionDays = normalizeCollectionDays(raw.collectionDays);
   if (!collectionDays) {
     return NextResponse.json({ error: 'invalid_collection_days' }, { status: 400 });
@@ -125,6 +132,7 @@ export async function POST(request: Request) {
     siteType: isSiteType(raw.siteType) ? raw.siteType : 'compost',
     defaultBinSize: defaultBinSize as BinSize,
     binsOnSite,
+    operativeBins,
     pickupsPerWeek,
     collectionDays,
     routeOrder,

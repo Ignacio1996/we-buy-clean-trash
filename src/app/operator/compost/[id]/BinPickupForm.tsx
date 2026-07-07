@@ -136,11 +136,19 @@ export function BinPickupForm({
   defaultBinSize,
   bins,
   materials,
+  seedBinCount = 1,
 }: {
   accountId: string;
   defaultBinSize: BinSize;
   bins: BinView[];
   materials: MaterialChoice[];
+  /**
+   * How many bin rows to start with when the site has no scannable QR bins —
+   * the operative bin count from the site profile. Lets a site running at
+   * reduced capacity (e.g. 2 of 5 bins) open with the right number of rows so
+   * "mark full" reflects real capacity. Clamped to a sane range.
+   */
+  seedBinCount?: number;
 }) {
   const router = useRouter();
 
@@ -179,7 +187,9 @@ export function BinPickupForm({
   }
 
   // Seed rows: one per provisioned bin, fullness defaults to empty so the
-  // driver actively picks. If no bins are provisioned, start with one manual row.
+  // driver actively picks. If no bins have QR labels, seed one manual row per
+  // operative bin (clamped 1..20) so the driver starts with the right count —
+  // and can still add/remove rows on-site.
   const initialRows = useMemo<RowState[]>(() => {
     if (bins.length > 0) {
       return bins.map((b) => ({
@@ -189,15 +199,14 @@ export function BinPickupForm({
         fullness: 0 as FullnessBucket,
       }));
     }
-    return [
-      {
-        key: 'manual_1',
-        bagId: null,
-        binSize: defaultBinSize,
-        fullness: 0 as FullnessBucket,
-      },
-    ];
-  }, [bins, defaultBinSize]);
+    const rowCount = Math.max(1, Math.min(20, Math.floor(seedBinCount) || 1));
+    return Array.from({ length: rowCount }, (_, i) => ({
+      key: `manual_${i + 1}`,
+      bagId: null,
+      binSize: defaultBinSize,
+      fullness: 0 as FullnessBucket,
+    }));
+  }, [bins, defaultBinSize, seedBinCount]);
   const [rows, setRows] = useState<RowState[]>(initialRows);
 
   const totalLbs = rows.reduce(
