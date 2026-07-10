@@ -2289,8 +2289,23 @@
   <h2 style="color:#ffffff;font-size:1.2rem;margin-bottom:6px;font-weight:700;">Updates &amp; Status</h2>
   <p style="font-size:0.78rem;color:#9ca3af;margin-bottom:18px;line-height:1.5;">Each section below summarises a milestone or meeting. Tap a row to expand the detail.</p>
 
-  <!-- ─── Jun 9 — Points rescale + Admin Assistant ─── -->
+  <!-- ─── Jul 9 — Operator manual-scan fallback ─── -->
   <details class="update-group" open>
+    <summary>
+      <div class="update-group-summary-text">
+        <div class="ug-title"><span class="ug-tag green">✅ JUL 9</span> Operator manual-scan fallback</div>
+        <div class="ug-blurb">Operators can now scan any resident bag to log a pickup even when the routing system fails to assign a route.</div>
+      </div>
+    </summary>
+    <div class="update-group-body">
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Operator:</strong> <strong>Manual scan</strong> screen (<code>/operator/scan</code>), reachable from an always-visible "Scan a bag manually" button on the operator home. Scan a QR or type the printed number to log a pickup — <em>independent of the route</em>, so a routing failure never blocks collection.</div>
+      <div><span style="color:#22c55e;font-weight:700;">+ NEW</span> <strong style="color:#fff;">Operator:</strong> Completes an existing scheduled pickup, or creates an <strong>ad-hoc</strong> one when the resident never scheduled the bag (operator declares separated/mixed in that case). Same condition + photo capture as the normal per-stop flow; the bag still weighs in and credits the resident at the depot.</div>
+      <div><span style="color:#3b82f6;font-weight:700;">UPDATED</span> <strong style="color:#fff;">Backend:</strong> New operator-only routes <code>/api/pickups/scan-resolve</code> and <code>/api/pickups/scan-complete</code> that bypass the route ownership / in-progress gates but keep operator auth; bag status guards completion so a bag can't be double-collected.</div>
+    </div>
+  </details>
+
+  <!-- ─── Jun 9 — Points rescale + Admin Assistant ─── -->
+  <details class="update-group">
     <summary>
       <div class="update-group-summary-text">
         <div class="ug-title"><span class="ug-tag green">✅ JUN 9</span> Points rescale, Admin AI Assistant &amp; admin polish</div>

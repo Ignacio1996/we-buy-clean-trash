@@ -12,6 +12,7 @@ import {
   SSOP,
   SSOpEyebrow,
   SSOpHeader,
+  SSOpPillLink,
   SSOpShell,
 } from '@/components/operator/SSOp';
 import { LogoutLink } from './LogoutLink';
@@ -348,6 +349,30 @@ export default async function OperatorHome() {
       }
     >
       <SSOpHeader kicker={headerKicker} title={headerTitle} sub={headerSub} />
+
+      {/* Always-available fallback: scan any bag even if routing failed. */}
+      <div style={{ background: '#fff', padding: '14px 20px 4px' }}>
+        <SSOpPillLink
+          href="/operator/scan"
+          variant="ink"
+          size="md"
+          leftIcon={<span>📷</span>}
+        >
+          Scan a bag manually
+        </SSOpPillLink>
+        <div
+          style={{
+            fontSize: 11,
+            fontWeight: 800,
+            color: SSOP.inkSoft,
+            textAlign: 'center',
+            marginTop: 8,
+            letterSpacing: 0.2,
+          }}
+        >
+          Works even if no route is assigned.
+        </div>
+      </div>
 
       {!route ? (
         <>
