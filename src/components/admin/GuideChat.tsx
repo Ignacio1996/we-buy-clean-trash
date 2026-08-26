@@ -1,11 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-
-interface Message {
-  role: 'user' | 'model';
-  content: string;
-}
+import Link from 'next/link';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { isInternalAdminHref } from '@/lib/ai/admin-routes';
+import { useAssistant, type Message } from './AssistantProvider';
 
 const SUGGESTIONS = [
   'How does a resident earn points?',
@@ -14,114 +12,120 @@ const SUGGESTIONS = [
   'How is the points payout calculated?',
 ];
 
-/** Minimal Markdown → plain rendering: bold, bullets, numbered lists. */
-function renderContent(text: string) {
-  const lines = text.split('\n');
-  return lines.map((line, i) => {
-    const bolded = line.split(/(\*\*[^*]+\*\*)/g).map((part, j) =>
-      part.startsWith('**') && part.endsWith('**') ? (
-        <strong key={j} className="font-semibold text-white">
+/** `[label](/admin/...)` → an in-app link; `**bold**` → bold. */
+const TOKEN = /(\[[^\]\n]+\]\([^)\s]+\)|\*\*[^*\n]+\*\*)/g;
+
+function renderInline(line: string): ReactNode[] {
+  return line.split(TOKEN).map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return (
+        <strong key={i} className="font-semibold text-white">
           {part.slice(2, -2)}
         </strong>
-      ) : (
-        <span key={j}>{part}</span>
-      ),
-    );
-    return (
-      <p key={i} className={line.trim() === '' ? 'h-2' : 'whitespace-pre-wrap'}>
-        {bolded}
-      </p>
-    );
+      );
+    }
+
+    const link = /^\[([^\]]+)\]\(([^)\s]+)\)$/.exec(part);
+    if (link) {
+      const [, label, href] = link;
+      // Only paths from the known admin route table become real links —
+      // anything else (a hallucinated path, an external URL) renders as text.
+      if (isInternalAdminHref(href)) {
+        return (
+          <Link
+            key={i}
+            href={href}
+            className="font-medium text-emerald-400 underline decoration-emerald-400/40 underline-offset-2 hover:text-emerald-300 hover:decoration-emerald-300"
+          >
+            {label}
+          </Link>
+        );
+      }
+      return <span key={i}>{label}</span>;
+    }
+
+    return <span key={i}>{part}</span>;
   });
 }
 
-export function GuideChat() {
-  const [messages, setMessages] = useState<Message[]>([]);
+/** Minimal Markdown → plain rendering: links, bold, bullets, numbered lists. */
+function renderContent(text: string) {
+  return text.split('\n').map((line, i) => (
+    <p key={i} className={line.trim() === '' ? 'h-2' : 'whitespace-pre-wrap'}>
+      {renderInline(line)}
+    </p>
+  ));
+}
+
+function Bubble({ message }: { message: Message }) {
+  return (
+    <div className={message.role === 'user' ? 'flex justify-end' : 'flex justify-start'}>
+      <div
+        className={
+          message.role === 'user'
+            ? 'max-w-[85%] rounded-2xl rounded-br-sm bg-emerald-600 px-4 py-2.5 text-sm text-white'
+            : 'max-w-[85%] rounded-2xl rounded-bl-sm bg-white/5 px-4 py-2.5 text-sm text-gray-200'
+        }
+      >
+        {message.role === 'model' && !message.content ? (
+          <span className="inline-flex gap-1">
+            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.3s]" />
+            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.15s]" />
+            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400" />
+          </span>
+        ) : (
+          <div className="space-y-0.5">{renderContent(message.content)}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The conversation itself. Conversation state lives in AssistantProvider, so the
+ * docked panel and the full-screen /admin/assistant page are the same thread.
+ *
+ * `variant` only affects sizing: 'page' fills the admin content column, 'dock'
+ * fills its fixed panel.
+ */
+export function GuideChat({ variant = 'page' }: { variant?: 'page' | 'dock' }) {
+  const { messages, busy, error, send } = useAssistant();
   const [input, setInput] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, busy]);
 
-  async function send(text: string) {
-    const question = text.trim();
-    if (!question || busy) return;
-    setError(null);
+  function submit() {
+    if (busy || !input.trim()) return;
+    send(input);
     setInput('');
-
-    const nextMessages: Message[] = [...messages, { role: 'user', content: question }];
-    setMessages(nextMessages);
-    setBusy(true);
-    // Placeholder assistant message we stream into.
-    setMessages((m) => [...m, { role: 'model', content: '' }]);
-
-    try {
-      const res = await fetch('/api/admin/guide-chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: nextMessages }),
-      });
-
-      if (!res.ok || !res.body) {
-        // Surface the real server-side error message, not a generic string.
-        let detail = `HTTP ${res.status}`;
-        try {
-          const body = await res.json();
-          if (body?.message) detail = body.message;
-          else if (body?.error) detail = body.error;
-        } catch {
-          const text = await res.text().catch(() => '');
-          if (text) detail = text;
-        }
-        throw new Error(detail);
-      }
-
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let acc = '';
-      for (;;) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        acc += decoder.decode(value, { stream: true });
-        setMessages((m) => {
-          const copy = [...m];
-          copy[copy.length - 1] = { role: 'model', content: acc };
-          return copy;
-        });
-      }
-      if (!acc.trim()) {
-        throw new Error('empty');
-      }
-    } catch (err) {
-      const detail = err instanceof Error ? err.message : String(err);
-      setError(`Assistant error: ${detail}`);
-      // Drop the empty placeholder.
-      setMessages((m) => {
-        const copy = [...m];
-        if (copy[copy.length - 1]?.role === 'model' && !copy[copy.length - 1].content) copy.pop();
-        return copy;
-      });
-    } finally {
-      setBusy(false);
-    }
   }
 
+  const dock = variant === 'dock';
   const empty = messages.length === 0;
 
   return (
-    <div className="flex h-[calc(100dvh-9rem)] flex-col rounded-2xl border border-white/10 bg-neutral-900/40">
-      <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto px-4 py-5 sm:px-6">
+    <div
+      className={
+        dock
+          ? 'flex min-h-0 flex-1 flex-col'
+          : 'flex h-[calc(100dvh-9rem)] flex-col rounded-2xl border border-white/10 bg-neutral-900/40'
+      }
+    >
+      <div
+        ref={scrollRef}
+        className={`flex-1 space-y-4 overflow-y-auto ${dock ? 'px-4 py-4' : 'px-4 py-5 sm:px-6'}`}
+      >
         {empty ? (
-          <div className="mx-auto max-w-lg pt-8 text-center">
+          <div className={`mx-auto max-w-lg text-center ${dock ? 'pt-2' : 'pt-8'}`}>
             <div className="text-3xl">💬</div>
             <h2 className="mt-3 text-lg font-semibold text-white">Ask anything about the app</h2>
             <p className="mt-1 text-sm text-gray-400">
               Grounded in your user guides — every role, every flow.
             </p>
-            <div className="mt-6 grid gap-2 sm:grid-cols-2">
+            <div className={`mt-6 grid gap-2 ${dock ? '' : 'sm:grid-cols-2'}`}>
               {SUGGESTIONS.map((s) => (
                 <button
                   key={s}
@@ -134,27 +138,7 @@ export function GuideChat() {
             </div>
           </div>
         ) : (
-          messages.map((m, i) => (
-            <div key={i} className={m.role === 'user' ? 'flex justify-end' : 'flex justify-start'}>
-              <div
-                className={
-                  m.role === 'user'
-                    ? 'max-w-[85%] rounded-2xl rounded-br-sm bg-emerald-600 px-4 py-2.5 text-sm text-white'
-                    : 'max-w-[85%] rounded-2xl rounded-bl-sm bg-white/5 px-4 py-2.5 text-sm text-gray-200'
-                }
-              >
-                {m.role === 'model' && !m.content ? (
-                  <span className="inline-flex gap-1">
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.3s]" />
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.15s]" />
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400" />
-                  </span>
-                ) : (
-                  <div className="space-y-0.5">{renderContent(m.content)}</div>
-                )}
-              </div>
-            </div>
-          ))
+          messages.map((m, i) => <Bubble key={i} message={m} />)
         )}
         {error && (
           <p className="mx-auto max-w-[90%] whitespace-pre-wrap break-words rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-left font-mono text-xs text-red-300">
@@ -166,9 +150,9 @@ export function GuideChat() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          send(input);
+          submit();
         }}
-        className="flex items-end gap-2 border-t border-white/10 p-3 sm:p-4"
+        className={`flex items-end gap-2 border-t border-white/10 ${dock ? 'p-3' : 'p-3 sm:p-4'}`}
       >
         <textarea
           value={input}
@@ -176,7 +160,7 @@ export function GuideChat() {
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();
-              send(input);
+              submit();
             }
           }}
           rows={1}

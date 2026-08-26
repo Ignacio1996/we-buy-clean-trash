@@ -18,7 +18,7 @@ export default function AssistantPage() {
           )}
         </p>
       </div>
-      <GuideChat />
+      <GuideChat variant="page" />
     </div>
   );
 }

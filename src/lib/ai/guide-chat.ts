@@ -1,5 +1,6 @@
 import 'server-only';
 import { GUIDE_KB, GUIDE_KB_SOURCES } from './guide-kb.generated';
+import { adminRouteMap } from './admin-routes';
 
 export interface ChatMessage {
   /** 'user' for the admin, 'model' for the assistant. */
@@ -18,6 +19,17 @@ Your knowledge comes ONLY from the user-guide documentation provided below. Foll
 - If a question is not covered by the documentation, say so plainly (e.g. "The guides don't cover that") and suggest where the admin might look — do NOT invent features, prices, or steps.
 - Never expose secrets, API keys, or test-account passwords unless they appear verbatim in the documentation and the admin clearly needs them.
 - You may use light Markdown (bold, bullets, numbered lists). Keep answers focused on the question.
+
+LINKING — this matters:
+- Whenever your answer tells the admin to go somewhere in the app, link the screen with a Markdown link to its real path, e.g. "Open [Staff invites](/admin/invites) and click Send invite."
+- Only ever link paths from the ADMIN SCREENS table below. Never invent a path, never link an external URL, and never link to a screen that isn't in the table.
+- Link the screen the FIRST time you name it in an answer; after that, just use its name.
+- For a multi-step answer, link the screen in the step where the admin needs it, so they can click through step by step.
+- The assistant panel stays open when the admin clicks one of these links, so write the steps expecting them to be read alongside the screen.
+
+=== ADMIN SCREENS ===
+${adminRouteMap()}
+=== END ADMIN SCREENS ===
 
 The documentation covers these guides: ${GUIDE_KB_SOURCES.join('; ')}.
 

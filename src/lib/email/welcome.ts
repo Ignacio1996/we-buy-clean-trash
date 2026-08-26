@@ -25,7 +25,7 @@ import { POINTS_PER_DOLLAR, SIGNUP_BONUS_POINTS } from '@/lib/logic/calculatePoi
 
 const PHYSICAL_ADDRESS =
   process.env.WBCT_PHYSICAL_ADDRESS ||
-  'We Buy Clean Trash, Oakland, CA';
+  'We Buy Clean Trash, 1550 Rochelle Avenue, Capitol Heights, MD 20743';
 
 const SUPPORT_EMAIL =
   process.env.WBCT_SUPPORT_EMAIL || 'support@webuycleantrash.com';

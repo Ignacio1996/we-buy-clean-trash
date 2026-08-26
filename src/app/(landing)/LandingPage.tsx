@@ -2,7 +2,13 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import styles from './landing.module.css';
 import { WaitlistButton } from './WaitlistButton';
-import { getRegionContent, type LandingRegion } from './regions';
+import {
+  CONTACT_ADDRESS_LINES,
+  CONTACT_EMAIL,
+  CONTACT_PHONE,
+  getRegionContent,
+  type LandingRegion,
+} from './regions';
 
 const svgProps = {
   viewBox: '0 0 24 24',
@@ -197,7 +203,7 @@ const FAQS = [
     id: 'operate',
     q: 'Where do you operate?',
     // Answer is region-specific — overridden at render from regions.ts.
-    a: "Oakland, Berkeley, Emeryville, Alameda, and the eastern San Francisco peninsula. We're launching Sacramento and San Jose in summer 2026. Drop your zip in the footer to join the waitlist for new cities.",
+    a: "Capitol Heights, Maryland and the surrounding Prince George's County area. Drop your zip in the footer to join the waitlist — we'll let you know the moment we reach your street.",
   },
   {
     q: 'How do you pay out?',
@@ -328,7 +334,7 @@ export function LandingPage({ region = 'default' }: { region?: LandingRegion }) 
           <div className={styles.pilotBody}>
             <strong>{content.pilotBannerStrong}</strong> {content.pilotBannerBody}
           </div>
-          <WaitlistButton label={content.waitlistLabel} />
+          <WaitlistButton region={region} />
         </div>
       </section>
 
@@ -703,16 +709,13 @@ export function LandingPage({ region = 'default' }: { region?: LandingRegion }) 
             <h5>Contact</h5>
             <ul>
               <li>
-                {/* TODO: support email */}
-                support@webuycleantrash.com
+                <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
               </li>
               <li>
-                {/* TODO: support phone */}
-                (510) 555-0000
+                <a href={`tel:+1${CONTACT_PHONE.replace(/\D/g, '')}`}>{CONTACT_PHONE}</a>
               </li>
               <li className={styles.footerAddr}>
-                {/* TODO: business mailing address */}
-                {content.contactAddressLines.map((line, i) => (
+                {CONTACT_ADDRESS_LINES.map((line, i) => (
                   <span key={i}>
                     {i > 0 && <br />}
                     {line}

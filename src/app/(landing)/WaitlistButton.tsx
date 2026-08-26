@@ -2,16 +2,18 @@
 
 import { useEffect, useRef, useState } from 'react';
 import styles from './landing.module.css';
+import { getRegionContent, type LandingRegion } from './regions';
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
 export function WaitlistButton({
-  label,
+  region = 'default',
   className,
 }: {
-  label: string;
+  region?: LandingRegion;
   className?: string;
 }) {
+  const content = getRegionContent(region);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -87,7 +89,7 @@ export function WaitlistButton({
         onClick={() => setOpen(true)}
         className={className ?? styles.pilotCta}
       >
-        {label} <span className={styles.arrow}>→</span>
+        {content.waitlistLabel} <span className={styles.arrow}>→</span>
       </button>
 
       {open && (
@@ -118,8 +120,8 @@ export function WaitlistButton({
                 </h3>
                 <p>
                   {alreadyOnList
-                    ? "You're already on the waitlist — we updated your details. We'll reach out as the Oakland pilot opens up."
-                    : 'Thanks — we logged your spot. When the Oakland pilot opens up, you’ll be among the first 200 households we email.'}
+                    ? content.waitlistSuccessReturning
+                    : content.waitlistSuccessNew}
                 </p>
                 <button
                   type="button"
@@ -133,10 +135,7 @@ export function WaitlistButton({
               <form onSubmit={handleSubmit} className={styles.waitlistForm}>
                 <div className={styles.waitlistTag}>Pilot waitlist</div>
                 <h3 id="waitlist-title">Join the waitlist.</h3>
-                <p className={styles.waitlistLede}>
-                  Oakland, summer 2026. We&apos;ll email you a few weeks before pickups start —
-                  zero spam, just one note when it&apos;s your turn.
-                </p>
+                <p className={styles.waitlistLede}>{content.waitlistLede}</p>
 
                 <label className={styles.waitlistField}>
                   <span>Name</span>
@@ -171,7 +170,7 @@ export function WaitlistButton({
                     type="text"
                     value={postalCode}
                     onChange={(e) => setPostalCode(e.target.value)}
-                    placeholder="94607"
+                    placeholder={content.waitlistZipPlaceholder}
                     inputMode="numeric"
                     autoComplete="postal-code"
                     pattern="\d{5}(-\d{4})?"
